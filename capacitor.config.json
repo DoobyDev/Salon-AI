@@ -1,0 +1,10 @@
+{
+  "appId": "com.salonai.receptionist",
+  "appName": "AI Salon Receptionist",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://www.aisalonreceptionist.co.uk",
+    "cleartext": false
+  }
+}

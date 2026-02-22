@@ -1,0 +1,452 @@
+{
+  "biz_profit_compute_1771697725811_378": {
+    "payrollEntries": [
+      {
+        "id": "310828f9-57a4-4643-9ff9-2570a000be6b",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:15:25.851Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771697725892_95599": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771698483848_55197": {
+    "payrollEntries": [
+      {
+        "id": "70a174c9-dca9-4113-8169-71eda07ebc1f",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:28:03.920Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771698483962_72379": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771699144060_51670": {
+    "payrollEntries": [
+      {
+        "id": "dc12a374-2d69-4964-893f-8d8bbfbf886a",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:39:04.124Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771699144176_18543": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771699526689_500": {
+    "payrollEntries": [
+      {
+        "id": "a9fca63d-fb95-4364-95c0-666d882c4dd5",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:45:26.720Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771699526741_89234": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771699638944_85492": {
+    "payrollEntries": [
+      {
+        "id": "53ce71e4-02c8-44a9-b31b-0b5428a26574",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:47:18.983Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771699639024_97820": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771699814330_91410": {
+    "payrollEntries": [
+      {
+        "id": "e299169b-cedd-4a23-9f59-7c53da3ec37b",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:50:14.363Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771699814404_31191": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771699976619_49574": {
+    "payrollEntries": [
+      {
+        "id": "eacbaad8-5729-4dc4-b2fb-dc5ac0a93d65",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:52:56.663Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771699976690_78482": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771700244343_55638": {
+    "payrollEntries": [
+      {
+        "id": "19103a73-8906-4014-8517-276ac8c50692",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T18:57:24.385Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771700244435_36090": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771700437580_51773": {
+    "payrollEntries": [
+      {
+        "id": "b983f59d-7de6-4513-9803-924e329514ea",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:00:37.616Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771700437658_98703": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771700770658_11381": {
+    "payrollEntries": [
+      {
+        "id": "a5f19f32-3400-4174-ae9b-095438956a82",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:06:10.695Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771700770719_66991": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771701748207_59279": {
+    "payrollEntries": [
+      {
+        "id": "33e0e58b-9c08-4fa9-a970-fad49480683d",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:22:28.245Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771701748282_27180": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771701871239_36384": {
+    "payrollEntries": [
+      {
+        "id": "6ce37864-4955-4129-ba6a-659a2a0a7474",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:24:31.275Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771701871320_16997": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771703200131_7648": {
+    "payrollEntries": [
+      {
+        "id": "20e02ae1-536b-4b02-8273-e8d1a0ac43d1",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:46:40.170Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771703200241_17924": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771703407070_34181": {
+    "payrollEntries": [
+      {
+        "id": "44d960a8-b62a-49f9-b4b8-c0ed4ee7ff8e",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-21T19:50:07.109Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771703407151_59699": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  },
+  "biz_profit_compute_1771722287675_96155": {
+    "payrollEntries": [
+      {
+        "id": "2f2b8169-bfc9-4782-8e82-e417705f9028",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-22T01:04:47.709Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771722287740_72976": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
+  }
+}

@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  salon-ai:
+    build: .
+    container_name: salon-ai-receptionist
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - salon_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  salon_data:

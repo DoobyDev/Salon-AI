@@ -1,0 +1,76 @@
+{
+  "name": "salon-ai-receptionist",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check public/dashboard.js",
+    "desktop": "concurrently \"npm:start\" \"wait-on http://localhost:3000 && electron .\"",
+    "desktop:prod": "electron .",
+    "desktop:build": "electron-builder --win --x64",
+    "desktop:build:all": "electron-builder -mwl",
+    "mobile:sync": "cap sync",
+    "mobile:open:android": "cap open android",
+    "mobile:open:ios": "cap open ios",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "db:seed": "node prisma/seed.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/ios": "^6.2.0",
+    "@prisma/client": "^6.3.1",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.69.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "^4.56.0",
+    "redis": "^5.11.0",
+    "stripe": "^17.3.1",
+    "twilio": "^5.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
+    "concurrently": "^9.0.1",
+    "electron": "^32.2.0",
+    "electron-builder": "^25.1.8",
+    "prisma": "^6.3.1",
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8",
+    "wait-on": "^8.0.1"
+  },
+  "main": "desktop/main.js",
+  "build": {
+    "appId": "com.salonai.receptionist",
+    "productName": "AI Salon Receptionist",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "files": [
+      "desktop/**/*",
+      "public/**/*",
+      "server.js",
+      "package.json",
+      "data/**/*"
+    ]
+  }
+}

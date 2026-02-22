@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legal Print Pack - Salon AI</title>
+  <style>
+    :root { --ink:#111; --muted:#555; --line:#d9d9d9; }
+    body { font-family: Georgia, "Times New Roman", serif; color:var(--ink); margin:0; background:#fff; }
+    .page { max-width: 900px; margin: 0 auto; padding: 32px; }
+    h1,h2,h3 { margin: 0 0 12px; }
+    p, li { line-height: 1.45; }
+    .muted { color: var(--muted); }
+    .card { border:1px solid var(--line); border-radius:10px; padding:16px; margin:12px 0; }
+    .break { page-break-before: always; }
+    @media print {
+      .page { padding: 18mm; max-width: none; }
+      .break { page-break-before: always; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <h1>Salon AI Legal Print Pack</h1>
+    <p class="muted">Print-ready cover and index for the legal document set. Print individual markdown legal files for full text, or use this as your legal pack cover sheet.</p>
+    <div class="card">
+      <h2>Required Before Use</h2>
+      <ul>
+        <li>Replace all placeholders in legal documents.</li>
+        <li>Confirm jurisdiction, tax, refund, and consumer-rights wording.</li>
+        <li>Have a solicitor review and approve final versions.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Document List</h2>
+      <ol>
+        <li>Terms and Conditions</li>
+        <li>Privacy Policy (UK GDPR)</li>
+        <li>Cookie Policy</li>
+        <li>Acceptable Use Policy</li>
+        <li>Subscription and Billing Policy</li>
+        <li>Refund and Cancellation Policy</li>
+        <li>AI Service Disclosure</li>
+        <li>Data Processing Addendum (DPA)</li>
+        <li>Information Security Policy</li>
+        <li>Incident Response and Breach Notification Policy</li>
+        <li>Intellectual Property and Takedown Policy</li>
+        <li>GDPR Data Retention Schedule</li>
+        <li>GDPR Data Subject Rights Procedure</li>
+        <li>GDPR Record of Processing Template (RoPA)</li>
+        <li>GDPR DPIA Template</li>
+        <li>Sub-Processor Register</li>
+        <li>Access Control and Password Policy</li>
+        <li>Backup and Business Continuity Policy</li>
+        <li>Vulnerability and Patch Management Policy</li>
+      </ol>
+    </div>
+    <p>Source folder: <code>docs/business_legal_pack/legal/</code></p>
+  </section>
+
+  <section class="page break">
+    <h2>Signature / Approval Record (Optional)</h2>
+    <p>Company name: ________________________________</p>
+    <p>Approved by: ________________________________</p>
+    <p>Role: ______________________________________</p>
+    <p>Date: ______________________________________</p>
+    <p>Solicitor / Reviewer: ________________________</p>
+    <p>Revision reference: __________________________</p>
+  </section>
+</body>
+</html>

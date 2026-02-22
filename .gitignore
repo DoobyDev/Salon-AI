@@ -1,0 +1,8 @@
+node_modules
+.env
+npm-debug.log*
+logs/
+data/db.json
+dist
+android
+ios

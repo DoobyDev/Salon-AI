@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hair &amp; Beauty AI | Sign In</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .auth-page {
+        width: min(1160px, 94vw);
+        margin: 2rem auto;
+        display: grid;
+        gap: 1rem;
+      }
+      .auth-topbar {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: linear-gradient(150deg, rgba(18, 29, 52, 0.88), rgba(11, 19, 35, 0.9));
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+        padding: 0.8rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+      }
+      .auth-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-family: "Sora", "Manrope", sans-serif;
+        font-weight: 700;
+      }
+      .auth-brand .brand-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #fff3ca, #d6b56a 60%, #8c7039);
+      }
+      .auth-wrap {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 1rem;
+      }
+      .auth-intro {
+        border: 1px solid rgba(156, 191, 255, 0.28);
+        border-radius: 18px;
+        padding: 1.1rem;
+        background:
+          radial-gradient(circle at 85% 0%, rgba(124, 234, 216, 0.14), transparent 42%),
+          linear-gradient(155deg, rgba(18, 29, 52, 0.9), rgba(11, 19, 35, 0.92));
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+      }
+      .auth-intro h1 {
+        margin: 0;
+        font-family: "Sora", "Manrope", sans-serif;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        line-height: 1.1;
+      }
+      .auth-intro p {
+        margin: 0.6rem 0 0;
+        color: var(--muted);
+      }
+      .auth-points {
+        margin: 1rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .auth-points li {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.55rem 0.65rem;
+        background: rgba(10, 16, 29, 0.8);
+      }
+      .auth-points strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-family: "Sora", "Manrope", sans-serif;
+        font-size: 0.9rem;
+      }
+      .auth-forms {
+        display: grid;
+        gap: 1rem;
+      }
+      .auth-card {
+        border: 1px solid rgba(156, 191, 255, 0.28);
+        background:
+          linear-gradient(155deg, rgba(18, 29, 52, 0.88), rgba(11, 19, 35, 0.9)),
+          radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 42%);
+        border-radius: 16px;
+        padding: 1.1rem;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+      }
+      .auth-card h1,
+      .auth-card h2 {
+        margin-top: 0;
+        margin-bottom: 0.35rem;
+        font-family: "Sora", "Manrope", sans-serif;
+        letter-spacing: 0.01em;
+      }
+      .auth-form {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .auth-form input,
+      .auth-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .auth-form input:focus,
+      .auth-form select:focus {
+        outline: none;
+        border-color: rgba(124, 234, 216, 0.52);
+        box-shadow: 0 0 0 2px rgba(124, 234, 216, 0.12);
+      }
+      .auth-note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 0.6rem;
+      }
+      .auth-card h1,
+      .auth-card h2 {
+        font-size: 1.25rem;
+      }
+      .dev-admin-card {
+        border: 1px solid rgba(214, 181, 106, 0.5);
+        background:
+          radial-gradient(circle at 100% 0%, rgba(214, 181, 106, 0.15), transparent 44%),
+          linear-gradient(155deg, rgba(23, 32, 54, 0.9), rgba(12, 19, 34, 0.92));
+      }
+      .dev-admin-card h2 {
+        margin: 0;
+      }
+      .dev-admin-note {
+        margin: 0.45rem 0 0;
+        color: #d7c49a;
+        font-size: 0.86rem;
+        line-height: 1.45;
+      }
+      .msg-box {
+        min-height: 1.3rem;
+        font-size: 0.9rem;
+      }
+      #subscriberFields {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .template-preview {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem;
+        background: rgba(9, 15, 28, 0.76);
+      }
+      .template-preview strong {
+        display: block;
+        margin-bottom: 0.35rem;
+      }
+      .template-preview small {
+        color: var(--muted);
+        display: block;
+        line-height: 1.45;
+      }
+      @media (max-width: 900px) {
+        .auth-wrap {
+          grid-template-columns: 1fr;
+        }
+        .auth-topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="auth-page">
+      <section class="auth-topbar">
+        <a class="auth-brand" href="/">
+          <span class="brand-dot"></span>
+           Hair &amp; Beauty AI Receptionist
+        </a>
+        <a class="btn btn-ghost" href="/">Back to Home</a>
+      </section>
+
+      <section class="auth-wrap">
+        <section class="auth-intro">
+          <h1>Access the right workspace for your role</h1>
+          <p>Sign in or register to manage bookings, operations, and growth from one secure platform.</p>
+          <ul class="auth-points">
+            <li>
+              <strong>Subscriber</strong>
+              Full business control dashboard for hair and beauty businesses.
+            </li>
+            <li>
+              <strong>Customer</strong>
+              Fast local booking flow with simple reschedule and cancellation tools.
+            </li>
+          </ul>
+        </section>
+
+        <section class="auth-forms">
+          <section class="auth-card">
+            <h1>Sign In</h1>
+            <p class="auth-note">Subscriber and customer sign in from one place.</p>
+            <form id="loginForm" class="auth-form" autocomplete="off">
+              <select id="loginRole">
+                <option value="customer">Customer</option>
+                <option value="subscriber">Subscriber</option>
+                <option id="loginRoleAdminOption" value="admin" hidden>Admin</option>
+              </select>
+              <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" autocapitalize="off" spellcheck="false" required />
+              <input id="loginPassword" type="password" placeholder="Password" autocomplete="new-password" required />
+              <button class="btn" type="submit">Sign In</button>
+            </form>
+            <p class="msg-box" id="loginMsg"></p>
+          </section>
+
+          <section class="auth-card dev-admin-card">
+            <h2>Developer &amp; Maintenance Access</h2>
+            <p class="dev-admin-note">
+              This section is restricted for platform owner, developer, and maintenance use only.
+            </p>
+            <button id="developerAdminAccess" class="btn btn-ghost" type="button">Admin Sign In</button>
+          </section>
+
+          <section class="auth-card">
+            <h2>Register</h2>
+            <p class="auth-note">Create a customer account or register a hair or beauty subscriber business.</p>
+            <form id="registerForm" class="auth-form" autocomplete="off">
+              <select id="registerRole">
+                <option value="customer">Customer</option>
+                <option value="subscriber">Subscriber</option>
+              </select>
+              <input id="registerName" type="text" placeholder="Full name" autocomplete="off" autocapitalize="words" spellcheck="false" required />
+              <input id="registerEmail" type="email" placeholder="Email" autocomplete="off" autocapitalize="off" spellcheck="false" required />
+              <input id="registerPassword" type="password" placeholder="Password" autocomplete="new-password" required />
+
+              <div id="subscriberFields" style="display:none;">
+                <select id="businessType">
+                  <option value="hair_salon">Hair Salon</option>
+                  <option value="barbershop">Barbershop</option>
+                  <option value="beauty_salon">Beauty Salon</option>
+                </select>
+                <input id="businessName" type="text" placeholder="Business name" />
+                <input id="businessCity" type="text" placeholder="City" />
+                <input id="businessCountry" type="text" placeholder="Country" />
+                <input id="businessPostcode" type="text" placeholder="Postcode / ZIP" />
+                <input id="businessPhone" type="text" placeholder="Phone" />
+                <div id="onboardingTemplatePreview" class="template-preview">
+                  <strong>Starter Template: Hair Salon</strong>
+                  <small>Default services and opening hours will be created for this category.</small>
+                </div>
+              </div>
+
+              <button class="btn" type="submit">Create Account</button>
+            </form>
+            <p class="msg-box" id="registerMsg"></p>
+          </section>
+        </section>
+      </section>
+    </main>
+    <script src="/theme-toggle.js"></script>
+    <script type="module" src="/auth.js"></script>
+  </body>
+</html>

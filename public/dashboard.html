@@ -1,0 +1,2435 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hair &amp; Beauty AI | Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .dash {
+        width: min(1200px, 94vw);
+        margin: 2rem auto;
+        display: grid;
+        gap: 1rem;
+      }
+      .dash-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+      .admin-scope {
+        margin-top: 0.55rem;
+        display: none;
+        align-items: center;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .admin-scope label {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .admin-scope select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.42rem 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+        min-width: 240px;
+      }
+      .admin-scope small {
+        color: var(--muted);
+      }
+      .dash-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+      body[data-role="customer"] #socialMediaSection,
+      body[data-role="customer"] #accountingIntegrationsSection,
+      body[data-role="customer"] #metricsGrid,
+      body[data-role="customer"] #staffRosterSection,
+      body[data-role="customer"] #waitlistSection,
+      body[data-role="customer"] #revenueAttributionSection,
+      body[data-role="customer"] #profitabilitySection {
+        display: none !important;
+      }
+      .dash-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(150deg, var(--surface), var(--surface-2));
+        padding: 0.8rem;
+      }
+      .dash-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .dash-card strong {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 1.4rem;
+      }
+      .bookings-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.6rem;
+      }
+      .bookings-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem;
+      }
+      .booking-tools {
+        display: grid;
+        gap: 0.7rem;
+      }
+      .booking-filters {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .booking-filters input,
+      .booking-filters select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .status-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+      .status-chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .status-chip.active {
+        border-color: rgba(124, 234, 216, 0.6);
+        background: rgba(124, 234, 216, 0.12);
+      }
+      .booking-pager {
+        margin-top: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .booking-pager small {
+        color: var(--muted);
+      }
+      .billing-actions {
+        display: flex;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .billing-actions .btn {
+        margin: 0.15rem;
+      }
+      .dash-role-hint {
+        margin: 0.3rem 0 0;
+        color: #d7fff4;
+        font-size: 0.83rem;
+      }
+      .dash-action-status {
+        margin: 0.25rem 0 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        min-height: 1rem;
+      }
+      .module-navigator {
+        display: grid;
+        gap: 0.8rem;
+        position: sticky;
+        top: 5.2rem;
+        z-index: 35;
+        border-color: rgba(124, 234, 216, 0.4);
+      }
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .module-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(9, 15, 28, 0.84);
+        padding: 0.6rem;
+        text-align: left;
+        color: var(--ink);
+        cursor: pointer;
+        transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+      }
+      .module-card:hover {
+        border-color: rgba(124, 234, 216, 0.58);
+        transform: translateY(-1px);
+      }
+      .module-card strong {
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+      .module-card small {
+        color: var(--muted);
+        display: block;
+        line-height: 1.4;
+      }
+      .module-card.active {
+        border-color: rgba(124, 234, 216, 0.65);
+        background: rgba(124, 234, 216, 0.12);
+      }
+      .module-info {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(9, 15, 28, 0.82);
+        padding: 0.7rem;
+      }
+      .module-info p {
+        margin: 0.2rem 0 0;
+        color: var(--muted);
+      }
+      body[data-density="compact"] .dash {
+        gap: 0.72rem;
+      }
+      body[data-density="compact"] .panel {
+        padding: 0.72rem;
+      }
+      body[data-density="compact"] .module-grid {
+        gap: 0.42rem;
+      }
+      body[data-density="compact"] .module-card {
+        padding: 0.48rem;
+      }
+      body[data-density="compact"] .bookings-list,
+      body[data-density="compact"] .staff-list,
+      body[data-density="compact"] .waitlist-list,
+      body[data-density="compact"] .crm-list,
+      body[data-density="compact"] .commercial-list,
+      body[data-density="compact"] .revenue-list,
+      body[data-density="compact"] .profit-list {
+        gap: 0.42rem;
+      }
+      .growth-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 0.65rem;
+      }
+      .growth-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(9, 15, 28, 0.82);
+        padding: 0.65rem;
+        display: grid;
+        gap: 0.45rem;
+      }
+      .growth-card h3 {
+        margin: 0;
+      }
+      .growth-list {
+        margin: 0;
+        padding-left: 1rem;
+        color: var(--muted);
+        display: grid;
+        gap: 0.28rem;
+      }
+      .growth-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .growth-kpis {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+      }
+      .growth-kpis article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.72);
+        padding: 0.5rem;
+      }
+      .growth-kpis p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .growth-kpis strong {
+        display: block;
+        margin-top: 0.15rem;
+      }
+      .manage-row {
+        margin-top: 0.65rem;
+        display: flex;
+        gap: 0.7rem;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+      .manage-note {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .manage-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(3, 8, 16, 0.72);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 1200;
+      }
+      .manage-modal {
+        width: min(560px, 96vw);
+        border: 1px solid rgba(156, 191, 255, 0.34);
+        border-radius: 14px;
+        background: linear-gradient(160deg, rgba(15, 27, 50, 0.96), rgba(9, 17, 31, 0.96));
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+        padding: 0.9rem;
+        display: grid;
+        gap: 0.7rem;
+      }
+      .manage-modal h3 {
+        margin: 0;
+      }
+      .manage-modal-grid {
+        display: grid;
+        gap: 0.55rem;
+      }
+      .manage-modal-grid label {
+        display: grid;
+        gap: 0.28rem;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .manage-modal-grid input,
+      .manage-modal-grid select,
+      .manage-modal-grid textarea {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .manage-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.45rem;
+      }
+      .manage-toast-stack {
+        position: fixed;
+        right: 0.9rem;
+        bottom: 0.9rem;
+        z-index: 1250;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .manage-toast {
+        border: 1px solid rgba(124, 234, 216, 0.45);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.95);
+        padding: 0.55rem 0.75rem;
+        color: #d7fff4;
+        min-width: 220px;
+      }
+      .manage-toast.error {
+        border-color: rgba(255, 173, 181, 0.5);
+        color: #ffd7dc;
+      }
+      .manage-only {
+        display: none !important;
+      }
+      body[data-manage-mode="on"] .manage-only {
+        display: inline-flex !important;
+      }
+      body[data-manage-mode="on"] .manage-row.manage-only {
+        display: flex !important;
+      }
+      .accounting-shell {
+        display: grid;
+        gap: 0.9rem;
+      }
+      .accounting-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 0.55rem;
+      }
+      .accounting-form input,
+      .accounting-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .accounting-note {
+        margin: 0;
+        color: var(--muted);
+      }
+      .accounting-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .accounting-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+      .accounting-live {
+        border: 1px solid rgba(124, 234, 216, 0.26);
+        border-radius: 14px;
+        background: radial-gradient(circle at top right, rgba(124, 234, 216, 0.14), rgba(9, 15, 28, 0.9) 52%);
+        padding: 0.75rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+      .accounting-live-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .timeframe-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.2rem;
+        background: rgba(9, 15, 28, 0.72);
+      }
+      .timeframe-switch button {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 0.25rem 0.6rem;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 0.78rem;
+      }
+      .timeframe-switch button.active {
+        color: #d7fff4;
+        border-color: rgba(124, 234, 216, 0.55);
+        background: rgba(124, 234, 216, 0.16);
+      }
+      .quick-filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .quick-filter-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .quick-filter-group .btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.78rem;
+      }
+      .quick-filter-group .btn.active {
+        border-color: rgba(124, 234, 216, 0.6);
+        background: rgba(124, 234, 216, 0.14);
+        color: #d7fff4;
+      }
+      .quick-filter-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .quick-filter-custom input {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.35rem 0.45rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .accounting-live-head h3 {
+        margin: 0;
+      }
+      .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border-radius: 999px;
+        border: 1px solid rgba(124, 234, 216, 0.5);
+        background: rgba(124, 234, 216, 0.12);
+        color: #d7fff4;
+        font-size: 0.78rem;
+        padding: 0.2rem 0.55rem;
+      }
+      .live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #7cead8;
+        box-shadow: 0 0 0 0 rgba(124, 234, 216, 0.7);
+        animation: livePulse 1.5s infinite;
+      }
+      @keyframes livePulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(124, 234, 216, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 8px rgba(124, 234, 216, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(124, 234, 216, 0);
+        }
+      }
+      .live-cards {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .live-cards article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .live-cards p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .live-cards strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .live-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 1.85fr;
+        gap: 0.65rem;
+      }
+      .live-gauges {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .gauge-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        place-items: center;
+        gap: 0.4rem;
+      }
+      .gauge-ring {
+        width: 104px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(rgba(124, 234, 216, 0.95) calc(var(--gauge-progress, 0) * 1%), rgba(255, 255, 255, 0.08) 0);
+        display: grid;
+        place-items: center;
+      }
+      .gauge-ring::before {
+        content: "";
+        width: 74px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: rgba(9, 15, 28, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .gauge-ring span {
+        position: absolute;
+        font-weight: 700;
+      }
+      .gauge-card small {
+        color: var(--muted);
+        text-align: center;
+      }
+      .live-charts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+      }
+      .live-chart {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.45rem;
+      }
+      .live-chart h4 {
+        margin: 0;
+        font-size: 0.88rem;
+      }
+      .live-bars {
+        min-height: 136px;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        align-items: end;
+        gap: 0.36rem;
+      }
+      .live-bar-col {
+        display: grid;
+        gap: 0.3rem;
+        justify-items: center;
+      }
+      .live-bar {
+        width: min(28px, 100%);
+        height: var(--bar-height, 8px);
+        min-height: 8px;
+        border-radius: 8px 8px 4px 4px;
+      }
+      .live-bar.revenue {
+        background: linear-gradient(180deg, rgba(124, 234, 216, 0.96), rgba(124, 234, 216, 0.35));
+      }
+      .live-bar.cancel {
+        background: linear-gradient(180deg, rgba(255, 148, 156, 0.96), rgba(255, 148, 156, 0.35));
+      }
+      .live-bar-col small {
+        color: var(--muted);
+        text-align: center;
+        font-size: 0.7rem;
+      }
+      .accounting-live-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .integration-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.75rem;
+        background: linear-gradient(150deg, var(--surface), var(--surface-2));
+      }
+      .integration-card.connected {
+        border-color: rgba(124, 234, 216, 0.55);
+      }
+      .integration-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .integration-status {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.76rem;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .integration-status.connected {
+        border-color: rgba(124, 234, 216, 0.6);
+        color: #d7fff4;
+        background: rgba(124, 234, 216, 0.12);
+      }
+      .integration-meta {
+        margin: 0.5rem 0 0;
+        color: var(--muted);
+      }
+      .integration-actions {
+        margin-top: 0.7rem;
+      }
+      .calendar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+      .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+      .calendar-nav button {
+        min-width: 44px;
+      }
+      .calendar-label {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .calendar-legend {
+        margin: 0.4rem 0 0;
+        color: var(--muted);
+      }
+      .calendar-weekdays,
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.4rem;
+      }
+      .calendar-weekdays span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .calendar-day {
+        min-height: 84px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.45rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .calendar-day.empty {
+        opacity: 0.45;
+      }
+      .calendar-day strong {
+        display: block;
+        font-size: 0.95rem;
+      }
+      .calendar-day small {
+        color: var(--muted);
+      }
+      .calendar-day.has-bookings {
+        border-color: rgba(124, 234, 216, 0.55);
+        background: rgba(124, 234, 216, 0.1);
+      }
+      .customer-search-form {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 0.8fr 1fr auto auto;
+        gap: 0.55rem;
+      }
+      .customer-search-form input,
+      .customer-search-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .customer-results,
+      .customer-slots,
+      .customer-history {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .customer-results li,
+      .customer-slots li,
+      .customer-history li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .customer-results li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.7rem;
+      }
+      .customer-contact {
+        margin-top: 0.6rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.65rem;
+        background: rgba(9, 15, 28, 0.82);
+        color: var(--muted);
+      }
+      .customer-chat-shell {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .customer-chat-box {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.82);
+        padding: 0.65rem;
+        min-height: 170px;
+        max-height: 260px;
+        overflow: auto;
+        display: grid;
+        gap: 0.45rem;
+      }
+      .customer-chat-msg {
+        border-radius: 10px;
+        padding: 0.5rem 0.65rem;
+        font-size: 0.93rem;
+      }
+      .customer-chat-msg.user {
+        justify-self: end;
+        background: rgba(124, 234, 216, 0.18);
+      }
+      .customer-chat-msg.ai {
+        justify-self: start;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .customer-chat-form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.55rem;
+      }
+      .customer-chat-form input {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .customer-analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.65rem;
+      }
+      .command-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.7rem;
+      }
+      .command-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: linear-gradient(150deg, var(--surface), var(--surface-2));
+        padding: 0.75rem;
+      }
+      .command-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .command-card strong {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 1.2rem;
+      }
+      .action-list {
+        margin: 0.8rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .action-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.45rem;
+      }
+      .action-list small {
+        color: var(--muted);
+      }
+      .action-controls {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .action-controls .btn {
+        padding: 0.3rem 0.65rem;
+        font-size: 0.82rem;
+      }
+      .command-status {
+        margin: 0.55rem 0 0;
+        color: var(--muted);
+        min-height: 1.1rem;
+      }
+      .staff-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .staff-form {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr 1.4fr auto;
+        gap: 0.5rem;
+      }
+      .staff-form input,
+      .staff-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .staff-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .staff-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .staff-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .staff-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .staff-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .staff-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+      .staff-meta small {
+        color: var(--muted);
+      }
+      .staff-actions {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .staff-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .waitlist-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .waitlist-form {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr auto;
+        gap: 0.5rem;
+      }
+      .waitlist-form input {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .waitlist-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .waitlist-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .waitlist-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .waitlist-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .waitlist-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .waitlist-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+      .waitlist-meta small {
+        color: var(--muted);
+      }
+      .waitlist-actions {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .waitlist-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .ops-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .ops-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+      }
+      .ops-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .ops-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.45rem;
+      }
+      .ops-list small {
+        color: var(--muted);
+      }
+      .ops-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .ops-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .crm-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .crm-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.6rem;
+      }
+      .crm-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.4rem;
+      }
+      .crm-list small {
+        color: var(--muted);
+      }
+      .crm-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .crm-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .commercial-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .commercial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.7rem;
+      }
+      .commercial-form {
+        display: grid;
+        gap: 0.45rem;
+      }
+      .commercial-form input,
+      .commercial-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .commercial-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .commercial-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.4rem;
+      }
+      .commercial-list small {
+        color: var(--muted);
+      }
+      .commercial-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .commercial-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .commercial-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .commercial-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .commercial-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .commercial-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .revenue-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .revenue-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .revenue-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .revenue-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .revenue-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .revenue-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 0.5rem;
+      }
+      .revenue-form input,
+      .revenue-form select {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .revenue-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .revenue-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.35rem;
+      }
+      .revenue-list small {
+        color: var(--muted);
+      }
+      .revenue-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .admin-revenue-shell {
+        display: grid;
+        gap: 0.85rem;
+      }
+      .admin-revenue-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .admin-revenue-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .admin-revenue-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .admin-revenue-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .admin-revenue-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .admin-revenue-charts {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 0.7rem;
+      }
+      .admin-chart-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.7rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .admin-chart-card h3 {
+        margin: 0 0 0.55rem;
+        font-size: 0.95rem;
+      }
+      .admin-chart-bars {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 0.45rem;
+        align-items: end;
+        min-height: 190px;
+      }
+      .admin-chart-col {
+        display: grid;
+        gap: 0.4rem;
+        justify-items: center;
+      }
+      .admin-bar-stack {
+        width: 100%;
+        min-height: 130px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0.22rem;
+      }
+      .admin-bar {
+        border-radius: 8px 8px 4px 4px;
+        min-height: 8px;
+      }
+      .admin-bar.revenue {
+        width: min(26px, 70%);
+        height: var(--bar-height, 8px);
+        background: linear-gradient(180deg, rgba(124, 234, 216, 0.98), rgba(124, 234, 216, 0.42));
+      }
+      .admin-bar.sub-cancel {
+        width: 38%;
+        height: var(--bar-height, 8px);
+        background: linear-gradient(180deg, rgba(255, 203, 107, 0.98), rgba(255, 203, 107, 0.4));
+      }
+      .admin-bar.booking-cancel {
+        width: 38%;
+        height: var(--bar-height, 8px);
+        background: linear-gradient(180deg, rgba(255, 141, 141, 0.98), rgba(255, 141, 141, 0.4));
+      }
+      .admin-chart-col small {
+        color: var(--muted);
+        text-align: center;
+      }
+      .admin-chart-legend {
+        margin-top: 0.55rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .admin-chart-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .admin-chart-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+      .admin-chart-dot.sub {
+        background: rgba(255, 203, 107, 0.95);
+      }
+      .admin-chart-dot.booking {
+        background: rgba(255, 141, 141, 0.95);
+      }
+      .admin-revenue-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .profit-shell {
+        display: grid;
+        gap: 0.8rem;
+      }
+      .profit-summary {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .profit-summary article {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.82);
+      }
+      .profit-summary p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .profit-summary strong {
+        display: block;
+        margin-top: 0.2rem;
+      }
+      .profit-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+      }
+      .profit-form {
+        display: grid;
+        gap: 0.45rem;
+      }
+      .profit-form input {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.55rem;
+        background: rgba(9, 15, 28, 0.88);
+        color: var(--ink);
+      }
+      .profit-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .profit-list li {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.6rem;
+        background: rgba(9, 15, 28, 0.82);
+        display: grid;
+        gap: 0.35rem;
+      }
+      .profit-list small {
+        color: var(--muted);
+      }
+      .profit-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .profit-status-note {
+        margin: 0;
+        color: var(--muted);
+        min-height: 1rem;
+      }
+      .dash {
+        position: relative;
+        width: min(1280px, 95vw);
+        margin: 1.25rem auto 2rem;
+        padding-bottom: 1rem;
+      }
+      .dash::before {
+        content: "";
+        position: absolute;
+        inset: -40px -30px auto -30px;
+        height: 220px;
+        background:
+          radial-gradient(circle at 8% 10%, rgba(124, 234, 216, 0.16), transparent 36%),
+          radial-gradient(circle at 70% 10%, rgba(89, 169, 255, 0.2), transparent 40%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      .panel {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(156, 191, 255, 0.32);
+        border-radius: 18px;
+        background:
+          linear-gradient(160deg, rgba(18, 29, 52, 0.9), rgba(11, 19, 35, 0.92)),
+          radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.1), transparent 42%);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        animation: panelIn 420ms ease both;
+        transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+      }
+      .panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(124, 234, 216, 0.06), transparent 32%);
+        pointer-events: none;
+      }
+      .panel h2,
+      .panel h3 {
+        letter-spacing: 0.01em;
+      }
+      .panel-focus {
+        border-color: rgba(124, 234, 216, 0.66) !important;
+        box-shadow: 0 16px 44px rgba(6, 14, 28, 0.56), 0 0 0 2px rgba(124, 234, 216, 0.18);
+        animation: panelFocusPulse 520ms ease;
+      }
+      .dash-top {
+        border-color: rgba(124, 234, 216, 0.45);
+        background:
+          linear-gradient(145deg, rgba(16, 30, 56, 0.95), rgba(10, 20, 38, 0.95)),
+          radial-gradient(circle at 85% 0%, rgba(124, 234, 216, 0.14), transparent 46%);
+      }
+      .dash-top h1 {
+        font-family: "Sora", "Manrope", sans-serif;
+        font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+      }
+      .dash-grid .dash-card,
+      .command-card,
+      .staff-summary article,
+      .waitlist-summary article,
+      .commercial-summary article,
+      .revenue-summary article,
+      .profit-summary article {
+        border-radius: 14px;
+        border-color: rgba(156, 191, 255, 0.34);
+        background: linear-gradient(160deg, rgba(15, 27, 50, 0.92), rgba(11, 20, 37, 0.92));
+      }
+      .bookings-list li,
+      .staff-list li,
+      .waitlist-list li,
+      .ops-list li,
+      .crm-list li,
+      .commercial-list li,
+      .revenue-list li,
+      .profit-list li,
+      .action-list li {
+        border-color: rgba(156, 191, 255, 0.28);
+        border-radius: 12px;
+        background: linear-gradient(155deg, rgba(13, 23, 42, 0.9), rgba(9, 17, 31, 0.9));
+      }
+      .frontdesk-hero {
+        border-color: rgba(124, 234, 216, 0.45);
+        background:
+          radial-gradient(circle at 10% 0%, rgba(124, 234, 216, 0.16), transparent 34%),
+          radial-gradient(circle at 84% 0%, rgba(89, 169, 255, 0.18), transparent 38%),
+          linear-gradient(155deg, rgba(18, 30, 54, 0.92), rgba(10, 19, 35, 0.94));
+      }
+      .frontdesk-contact {
+        margin-bottom: 0.9rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .frontdesk-contact .btn {
+        border-radius: 10px;
+        padding: 0.48rem 1rem;
+      }
+      .frontdesk-head {
+        display: flex;
+        align-items: center;
+        gap: 1.15rem;
+      }
+      .frontdesk-logo {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(124, 234, 216, 0.16);
+      }
+      .frontdesk-name {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+        font-family: "Sora", "Manrope", sans-serif;
+      }
+      .frontdesk-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.2rem;
+        flex-wrap: wrap;
+      }
+      .frontdesk-rating {
+        color: #7cead8;
+        font-weight: 800;
+      }
+      .frontdesk-columns {
+        margin-top: 1.2rem;
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+      }
+      .frontdesk-col {
+        flex: 1;
+        min-width: 220px;
+      }
+      .frontdesk-chat {
+        margin-top: 1rem;
+      }
+      .frontdesk-chatbox {
+        background: rgba(124, 234, 216, 0.09);
+        border: 1px solid rgba(124, 234, 216, 0.32);
+        border-radius: 12px;
+        padding: 0.72rem;
+      }
+      .panel:nth-of-type(2) { animation-delay: 40ms; }
+      .panel:nth-of-type(3) { animation-delay: 80ms; }
+      .panel:nth-of-type(4) { animation-delay: 120ms; }
+      .panel:nth-of-type(5) { animation-delay: 160ms; }
+      .panel:nth-of-type(6) { animation-delay: 200ms; }
+      .panel:nth-of-type(7) { animation-delay: 240ms; }
+      .panel:nth-of-type(8) { animation-delay: 280ms; }
+      .panel:nth-of-type(9) { animation-delay: 320ms; }
+      @keyframes panelIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes panelFocusPulse {
+        0% { transform: translateY(0) scale(0.998); }
+        45% { transform: translateY(-1px) scale(1); }
+        100% { transform: translateY(0) scale(1); }
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: rgba(124, 234, 216, 0.52);
+        box-shadow: 0 0 0 2px rgba(124, 234, 216, 0.12);
+      }
+      .bookings-list li,
+      .staff-list li,
+      .waitlist-list li,
+      .crm-list li,
+      .commercial-list li,
+      .revenue-list li,
+      .profit-list li,
+      .command-card {
+        transition: border-color 0.18s ease, transform 0.18s ease;
+      }
+      .bookings-list li:hover,
+      .staff-list li:hover,
+      .waitlist-list li:hover,
+      .crm-list li:hover,
+      .commercial-list li:hover,
+      .revenue-list li:hover,
+      .profit-list li:hover,
+      .command-card:hover {
+        border-color: rgba(124, 234, 216, 0.45);
+        transform: translateY(-1px);
+      }
+      .status-chip:hover {
+        border-color: rgba(124, 234, 216, 0.55);
+      }
+      @media (max-width: 1000px) {
+        .dash-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .command-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .live-cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .live-grid {
+          grid-template-columns: 1fr;
+        }
+        .staff-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .waitlist-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .ops-grid {
+          grid-template-columns: 1fr;
+        }
+        .commercial-grid {
+          grid-template-columns: 1fr;
+        }
+        .commercial-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .revenue-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .admin-revenue-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .admin-revenue-charts {
+          grid-template-columns: 1fr;
+        }
+        .profit-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .profit-grid {
+          grid-template-columns: 1fr;
+        }
+        .customer-search-form {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .customer-analytics-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (min-width: 701px) and (max-width: 1024px) {
+        .dash {
+          width: min(96vw, 96vw);
+          gap: 0.78rem;
+        }
+        .panel {
+          border-radius: 15px;
+        }
+        .module-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .module-navigator {
+          position: static;
+          top: auto;
+          z-index: auto;
+        }
+        .growth-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .live-cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .live-grid {
+          grid-template-columns: 1fr;
+        }
+        .accounting-form {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-height: 520px) and (orientation: landscape) {
+        .dash {
+          margin: 0.55rem auto 0.9rem;
+          gap: 0.58rem;
+        }
+        .panel {
+          padding: 0.58rem;
+          border-radius: 11px;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.26);
+        }
+        .panel h2 {
+          font-size: 0.94rem;
+        }
+        .panel h3 {
+          font-size: 0.88rem;
+        }
+        .panel p,
+        .panel small,
+        .panel li {
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+        .dash-top h1 {
+          font-size: 1.04rem;
+        }
+        .frontdesk-logo {
+          width: 52px;
+          height: 52px;
+        }
+        .frontdesk-name {
+          font-size: 1.08rem;
+        }
+        .billing-actions {
+          gap: 0.38rem;
+        }
+        .billing-actions .btn,
+        .billing-actions select {
+          min-height: 38px;
+          font-size: 0.76rem;
+        }
+        .module-navigator {
+          position: static;
+          top: auto;
+          z-index: auto;
+        }
+        .module-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0.42rem;
+        }
+      }
+      @media (max-width: 700px) {
+        .dash {
+          gap: 0.7rem;
+          margin: 0.85rem auto 1.25rem;
+        }
+        .panel {
+          border-radius: 14px;
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+        }
+        .panel h2 {
+          font-size: 1.04rem;
+        }
+        .panel h3 {
+          font-size: 0.96rem;
+        }
+        .panel p,
+        .panel small,
+        .panel li {
+          font-size: 0.88rem;
+          line-height: 1.45;
+        }
+        .dash-top h1 {
+          font-size: 1.24rem;
+        }
+        .dash-role-hint {
+          font-size: 0.78rem;
+        }
+        .btn {
+          font-size: 0.82rem;
+          padding: 0.5rem 0.72rem;
+        }
+        .module-card {
+          padding: 0.5rem;
+        }
+        .module-card strong {
+          font-size: 0.88rem;
+        }
+        .module-card small {
+          font-size: 0.76rem;
+        }
+        .growth-kpis strong,
+        .dash-card strong {
+          font-size: 1.1rem;
+        }
+        .gauge-ring {
+          width: 86px;
+        }
+        .gauge-ring::before {
+          width: 62px;
+        }
+        .frontdesk-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .dash-grid {
+          grid-template-columns: 1fr;
+        }
+        .command-grid {
+          grid-template-columns: 1fr;
+        }
+        .booking-filters {
+          grid-template-columns: 1fr;
+        }
+        .accounting-form {
+          grid-template-columns: 1fr;
+        }
+        .live-cards {
+          grid-template-columns: 1fr;
+        }
+        .live-gauges {
+          grid-template-columns: 1fr;
+        }
+        .live-charts {
+          grid-template-columns: 1fr;
+        }
+        .staff-form {
+          grid-template-columns: 1fr;
+        }
+        .waitlist-form {
+          grid-template-columns: 1fr;
+        }
+        .accounting-list {
+          grid-template-columns: 1fr;
+        }
+        .staff-summary {
+          grid-template-columns: 1fr;
+        }
+        .waitlist-summary {
+          grid-template-columns: 1fr;
+        }
+        .commercial-summary {
+          grid-template-columns: 1fr;
+        }
+        .revenue-summary {
+          grid-template-columns: 1fr;
+        }
+        .admin-revenue-summary {
+          grid-template-columns: 1fr;
+        }
+        .revenue-form {
+          grid-template-columns: 1fr;
+        }
+        .profit-summary {
+          grid-template-columns: 1fr;
+        }
+        .customer-search-form {
+          grid-template-columns: 1fr;
+        }
+        .customer-results li {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .customer-chat-form {
+          grid-template-columns: 1fr;
+        }
+        .customer-analytics-grid {
+          grid-template-columns: 1fr;
+        }
+        .billing-actions {
+          justify-content: flex-start;
+        }
+        .module-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .growth-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 560px) {
+        .panel {
+          padding: 0.72rem;
+          border-radius: 12px;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+        }
+        .panel h2 {
+          font-size: 0.98rem;
+        }
+        .panel h3 {
+          font-size: 0.92rem;
+        }
+        .billing-actions {
+          gap: 0.45rem;
+        }
+        .billing-actions .btn,
+        .billing-actions select {
+          width: 100%;
+          justify-content: center;
+        }
+        .module-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 430px) {
+        .dash {
+          width: min(98vw, 98vw);
+          margin: 0.65rem auto 1rem;
+          gap: 0.62rem;
+        }
+        .dash::before {
+          inset: -28px -18px auto -18px;
+          height: 150px;
+        }
+        .panel {
+          padding: 0.62rem;
+          border-radius: 11px;
+        }
+        .dash-top h1 {
+          font-size: 1.08rem;
+        }
+        .panel h2 {
+          font-size: 0.94rem;
+        }
+        .panel p,
+        .panel small,
+        .panel li {
+          font-size: 0.84rem;
+          line-height: 1.42;
+        }
+        .frontdesk-logo {
+          width: 58px;
+          height: 58px;
+        }
+        .frontdesk-name {
+          font-size: 1.2rem;
+        }
+      }
+      @media (max-width: 390px) {
+        .btn {
+          font-size: 0.79rem;
+          padding: 0.45rem 0.62rem;
+          min-height: 42px;
+        }
+        .billing-actions .btn,
+        .billing-actions select {
+          min-height: 42px;
+        }
+        .module-card {
+          padding: 0.45rem;
+        }
+        .module-card strong {
+          font-size: 0.84rem;
+        }
+        .module-card small {
+          font-size: 0.73rem;
+        }
+        .live-chart h4 {
+          font-size: 0.8rem;
+        }
+        .gauge-ring {
+          width: 78px;
+        }
+        .gauge-ring::before {
+          width: 56px;
+        }
+      }
+      @media (max-width: 360px) {
+        .dash-top h1 {
+          font-size: 1rem;
+        }
+        .panel h2 {
+          font-size: 0.9rem;
+        }
+        .panel p,
+        .panel small,
+        .panel li {
+          font-size: 0.8rem;
+        }
+        .growth-kpis strong,
+        .dash-card strong {
+          font-size: 0.98rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#dashboardMain">Skip to dashboard content</a>
+    <main class="dash" id="dashboardMain">
+      <section class="panel frontdesk-hero" id="frontDeskSection">
+        <div class="frontdesk-contact">
+          <a href="/auth" class="btn">Developer Access</a>
+        </div>
+        <div class="frontdesk-head">
+          <img id="businessLogo" src="/icons/barber.svg" alt="Business Logo" class="frontdesk-logo" />
+          <div>
+            <h2 id="frontDeskBusinessName" class="frontdesk-name">Business Name</h2>
+            <div class="frontdesk-meta">
+              <span id="frontDeskRating" class="frontdesk-rating">4.8/5</span>
+              <span id="frontDeskDescription" style="color:var(--muted);font-size:1rem;">Business description goes here.</span>
+            </div>
+            <div id="frontDeskSocialIcons" style="margin-top:0.6rem;display:flex;gap:0.5rem;"></div>
+          </div>
+        </div>
+        <div class="frontdesk-columns">
+          <div class="frontdesk-col">
+            <h3 style="margin:0 0 0.4rem 0;color:var(--ink);">Featured Services</h3>
+            <div id="frontDeskServices" style="display:flex;gap:0.7rem;flex-wrap:wrap;"></div>
+          </div>
+          <div class="frontdesk-col">
+            <h3 style="margin:0 0 0.4rem 0;color:var(--ink);">Customer Reviews</h3>
+            <div id="frontDeskReviews" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+          </div>
+          <div class="frontdesk-col">
+            <h3 style="margin:0 0 0.4rem 0;color:var(--ink);">Business Analytics</h3>
+            <div id="frontDeskAnalytics" style="display:flex;flex-direction:column;gap:0.3rem;color:var(--muted);"></div>
+          </div>
+        </div>
+        <div class="frontdesk-chat">
+          <h3 style="margin:0 0 0.4rem 0;color:var(--ink);">AI Receptionist</h3>
+          <div id="frontDeskAIChat" class="frontdesk-chatbox">How can I help you today?</div>
+        </div>
+      </section>
+
+      <section class="panel" id="subscriberCalendarSection">
+        <div class="calendar-head">
+          <h2 style="margin:0;">Booking Calendar</h2>
+          <div class="calendar-nav">
+            <button id="calendarPrev" class="btn btn-ghost" type="button" aria-label="Previous month">&lt;</button>
+            <p id="calendarMonthLabel" class="calendar-label">Month</p>
+            <button id="calendarNext" class="btn btn-ghost" type="button" aria-label="Next month">&gt;</button>
+          </div>
+        </div>
+        <p id="calendarLegend" class="calendar-legend">Dates with bookings are highlighted.</p>
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>Sun</span>
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+        </div>
+        <div id="bookingCalendarGrid" class="calendar-grid"></div>
+      </section>
+
+      <section class="panel" id="socialMediaSection">
+        <h2 style="margin-top:0;">Social Media Links</h2>
+        <form id="socialMediaForm" class="accounting-form">
+          <input type="text" id="facebookInput" placeholder="Facebook URL" />
+          <input type="text" id="instagramInput" placeholder="Instagram URL" />
+          <input type="text" id="twitterInput" placeholder="Twitter URL" />
+          <input type="text" id="linkedinInput" placeholder="LinkedIn URL" />
+          <input type="text" id="tiktokInput" placeholder="TikTok URL" />
+          <input type="text" id="customSocialInput" placeholder="Other social media URL" />
+          <input type="text" id="socialImageInput" placeholder="Profile image URL (optional)" />
+          <button class="btn" type="submit">Save Social Media</button>
+        </form>
+        <div id="socialMediaPreview" class="accounting-list"></div>
+      </section>
+
+      <section class="panel" id="businessProfileSection">
+        <h2 style="margin-top:0;">Business Profile &amp; Template Settings</h2>
+        <p class="accounting-note">
+          Subscribers can edit core business details, business type, opening hours, and service list at any time.
+        </p>
+        <form id="businessProfileForm" class="accounting-form">
+          <input id="businessProfileName" type="text" placeholder="Business name" required />
+          <select id="businessProfileType" required>
+            <option value="hair_salon">Hair Salon</option>
+            <option value="barbershop">Barbershop</option>
+            <option value="beauty_salon">Beauty Salon</option>
+          </select>
+          <input id="businessProfilePhone" type="text" placeholder="Phone" required />
+          <input id="businessProfileEmail" type="email" placeholder="Business email" required />
+          <input id="businessProfileCity" type="text" placeholder="City" required />
+          <input id="businessProfileCountry" type="text" placeholder="Country" required />
+          <input id="businessProfilePostcode" type="text" placeholder="Postcode / ZIP" required />
+          <input id="businessProfileAddress" type="text" placeholder="Address" required />
+          <input id="businessProfileWebsiteUrl" type="text" placeholder="Website URL (optional)" />
+          <input id="businessProfileWebsiteTitle" type="text" placeholder="Website title (optional)" />
+          <input id="businessProfileWebsiteImageUrl" type="text" placeholder="Website image URL (optional)" />
+          <textarea id="businessProfileDescription" rows="3" placeholder="Business description"></textarea>
+          <textarea id="businessProfileWebsiteSummary" rows="3" placeholder="Website summary (optional)"></textarea>
+          <input id="businessHoursMonday" type="text" placeholder="Monday hours (e.g. 09:00-18:00 or Closed)" />
+          <input id="businessHoursTuesday" type="text" placeholder="Tuesday hours (e.g. 09:00-18:00 or Closed)" />
+          <input id="businessHoursWednesday" type="text" placeholder="Wednesday hours (e.g. 09:00-18:00 or Closed)" />
+          <input id="businessHoursThursday" type="text" placeholder="Thursday hours (e.g. 09:00-20:00 or Closed)" />
+          <input id="businessHoursFriday" type="text" placeholder="Friday hours (e.g. 09:00-20:00 or Closed)" />
+          <input id="businessHoursSaturday" type="text" placeholder="Saturday hours (e.g. 10:00-17:00 or Closed)" />
+          <input id="businessHoursSunday" type="text" placeholder="Sunday hours (e.g. Closed)" />
+          <textarea
+            id="businessProfileServices"
+            rows="5"
+            placeholder="Services (one per line): Name | DurationMin | Price&#10;Example: Haircut | 45 | 60"
+            required
+          ></textarea>
+          <p class="accounting-note" style="margin:0;">
+            Reset to Selected Template Defaults updates your business type, description, opening hours, and services to template values. It does not change your business name, contact details, location, or website fields.
+          </p>
+          <button id="businessProfileApplyTemplate" class="btn btn-ghost" type="button">Reset to Template Defaults</button>
+          <button class="btn" type="submit">Save Business Profile</button>
+        </form>
+        <p id="businessProfileStatus" class="accounting-note"></p>
+      </section>
+
+      <section class="panel" id="accountingIntegrationsSection">
+        <h2 style="margin-top:0;">Accounting Integrations</h2>
+        <p class="accounting-note">
+          Link your bookkeeping platform so your team can keep financial records aligned with booking activity.
+        </p>
+        <div class="accounting-shell">
+          <div class="accounting-actions">
+            <button id="accountingBookingExportBtn" class="btn btn-ghost" type="button">Export Booking Accounting CSV</button>
+            <button id="accountingPlatformExportBtn" class="btn btn-ghost" type="button">Export Platform Revenue CSV</button>
+          </div>
+          <div id="accountingLivePanel" class="accounting-live">
+            <div class="accounting-live-head">
+              <h3>Live Revenue Stream</h3>
+              <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                <div id="accountingTimeframeSwitch" class="timeframe-switch" role="tablist" aria-label="Live revenue timeframe">
+                  <button id="accountingTfToday" class="active" type="button" data-timeframe="today">Today</button>
+                  <button id="accountingTf7d" type="button" data-timeframe="7d">7 Days</button>
+                  <button id="accountingTf30d" type="button" data-timeframe="30d">30 Days</button>
+                </div>
+                <span class="live-pill"><i class="live-dot"></i> Live every 15s</span>
+              </div>
+            </div>
+            <div class="quick-filter-row">
+              <div id="accountingQuickFilterGroup" class="quick-filter-group">
+                <button id="accountingQfWeek" class="btn btn-ghost" type="button">This Week</button>
+                <button id="accountingQfMonth" class="btn btn-ghost" type="button">This Month</button>
+              </div>
+              <div class="quick-filter-custom">
+                <input id="accountingCustomFrom" type="date" />
+                <input id="accountingCustomTo" type="date" />
+                <button id="accountingCustomApply" class="btn btn-ghost" type="button">Custom Range</button>
+              </div>
+            </div>
+            <div id="accountingLiveCards" class="live-cards"></div>
+            <div class="live-grid">
+              <div id="accountingLiveGauges" class="live-gauges"></div>
+              <div class="live-charts">
+                <article class="live-chart">
+                  <h4>Recent Revenue Flow</h4>
+                  <div id="accountingLiveRevenueBars" class="live-bars"></div>
+                </article>
+                <article class="live-chart">
+                  <h4>Cancellation Trend</h4>
+                  <div id="accountingLiveCancelBars" class="live-bars"></div>
+                </article>
+              </div>
+            </div>
+            <p id="accountingLiveNote" class="accounting-live-note"></p>
+          </div>
+          <form id="accountingConnectForm" class="accounting-form">
+            <select id="accountingProvider" required>
+              <option value="quickbooks">QuickBooks</option>
+              <option value="xero">Xero</option>
+              <option value="freshbooks">FreshBooks</option>
+              <option value="sage">Sage</option>
+            </select>
+            <input id="accountingAccountLabel" type="text" placeholder="Account label (e.g., Main Ledger)" required />
+            <select id="accountingSyncMode" required>
+              <option value="daily">Daily sync</option>
+              <option value="weekly">Weekly sync</option>
+              <option value="manual">Manual sync</option>
+            </select>
+            <button class="btn" type="submit">Link Software</button>
+          </form>
+          <p id="accountingStatusNote" class="accounting-note"></p>
+          <div id="accountingIntegrationsList" class="accounting-list"></div>
+        </div>
+      </section>
+
+      <section class="panel dash-top">
+        <div>
+          <h1 id="dashTitle" style="margin:0;">Dashboard</h1>
+          <p id="dashUser" style="margin:0.3rem 0 0;color:var(--muted);"></p>
+          <p id="dashRoleHint" class="dash-role-hint"></p>
+          <p id="dashActionStatus" class="dash-action-status" aria-live="polite"></p>
+          <div id="adminBusinessScope" class="admin-scope">
+            <label for="adminBusinessSelect">Managed business</label>
+            <select id="adminBusinessSelect" aria-label="Select managed business"></select>
+            <small id="adminBusinessStatus"></small>
+          </div>
+        </div>
+        <div class="billing-actions">
+          <button id="manageModeToggle" class="btn btn-ghost" type="button">Manage Mode: Off</button>
+          <select id="uiDensityToggle" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select layout density">
+            <option value="comfortable">Layout: Comfortable</option>
+            <option value="compact">Layout: Compact</option>
+          </select>
+          <select id="subscriptionBillingCycle" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select billing cycle">
+            <option value="monthly">Monthly - £29.99</option>
+            <option value="yearly">Yearly - £299.99 (Save 16.6%)</option>
+          </select>
+          <select id="subscriptionBillingProvider" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select payment provider">
+            <option value="stripe">Pay with Stripe</option>
+            <option value="paypal">Pay with PayPal</option>
+          </select>
+          <button id="startBilling" class="btn">Renew Subscription</button>
+          <button id="manageBilling" class="btn btn-ghost">Manage Billing</button>
+          <button id="logoutBtn" class="btn btn-ghost">Sign Out</button>
+        </div>
+      </section>
+
+      <section class="panel" id="businessGrowthSection">
+        <div class="growth-grid">
+          <article class="growth-card">
+            <h3>Live Subscription Plan</h3>
+            <p id="billingLiveBanner" style="margin:0;color:var(--ink);">Loading billing status...</p>
+            <small id="billingLiveMeta" style="color:var(--muted);"></small>
+            <small id="yearlySavingsLine" style="color:#d7fff4;"></small>
+          </article>
+          <article class="growth-card">
+            <h3>Onboarding Checklist</h3>
+            <ul id="onboardingChecklist" class="growth-list"></ul>
+          </article>
+          <article class="growth-card">
+            <h3>First 7 Days Performance</h3>
+            <div id="first7DaysGrid" class="growth-kpis"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel module-navigator" id="moduleNavigatorSection">
+        <div>
+          <h2 style="margin:0;">Module Switcher</h2>
+          <p id="moduleNavigatorIntro" style="margin:0.35rem 0 0;color:var(--muted);">
+            Pick one module to focus on. This keeps the dashboard cleaner with less scrolling.
+          </p>
+        </div>
+        <div id="moduleCards" class="module-grid"></div>
+        <article id="moduleDetails" class="module-info"></article>
+      </section>
+
+      <section class="panel" id="customerSearchSection">
+        <h2 style="margin:0;">Business Search</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Use advanced filters to find a good match quickly.</p>
+        <form id="customerSearchForm" class="customer-search-form" style="margin-top:0.8rem;">
+          <input id="customerSearchQuery" type="text" placeholder="Name, service, or specialist" aria-label="Search query" />
+          <input id="customerSearchService" type="text" placeholder="Service (e.g., fade, balayage)" aria-label="Service filter" />
+          <select id="customerSearchBusinessType" aria-label="Business type filter">
+            <option value="">Any business type</option>
+            <option value="hair_salon">Hair Salon</option>
+            <option value="barbershop">Barbershop</option>
+            <option value="beauty_salon">Beauty Salon</option>
+          </select>
+          <input id="customerSearchLocation" type="text" placeholder="City / area" aria-label="Location filter" />
+          <select id="customerSearchRating" aria-label="Rating filter">
+            <option value="">Any rating</option>
+            <option value="4.5">4.5+</option>
+            <option value="4.0">4.0+</option>
+            <option value="3.5">3.5+</option>
+          </select>
+          <input id="customerSearchDate" type="date" aria-label="Date filter" />
+          <button class="btn" type="submit">Search</button>
+          <button class="btn btn-ghost" id="customerSearchReset" type="button">Reset</button>
+        </form>
+        <ul id="customerSearchResults" class="customer-results" style="margin-top:0.8rem;"></ul>
+      </section>
+
+      <section class="panel" id="customerReceptionSection">
+        <h2 style="margin:0;">AI Receptionist</h2>
+        <div class="customer-chat-shell" style="margin-top:0.75rem;">
+          <div id="customerReceptionMessages" class="customer-chat-box"></div>
+          <form id="customerReceptionForm" class="customer-chat-form">
+            <label class="sr-only" for="customerReceptionInput">Message AI receptionist</label>
+            <input id="customerReceptionInput" type="text" placeholder="Ask about services, slots, or contact info..." aria-label="Message AI receptionist" />
+            <button class="btn" type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel" id="customerSlotsSection">
+        <h2 style="margin:0;">Available Slots and Contact</h2>
+        <p id="customerSelectedSalonLabel" style="margin:0.35rem 0 0;color:var(--muted);">Select a business from search results.</p>
+        <div id="customerSalonContact" class="customer-contact"></div>
+        <ul id="customerAvailableSlots" class="customer-slots" style="margin-top:0.7rem;"></ul>
+      </section>
+
+      <section class="panel" id="customerHistorySection">
+        <h2 style="margin:0;">Visit and Booking History</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">View your previous and upcoming appointments in one place.</p>
+        <ul id="customerBookingHistory" class="customer-history" style="margin-top:0.75rem;"></ul>
+      </section>
+
+      <section class="panel" id="customerAnalyticsSection">
+        <h2 style="margin:0;">Personal Booking Analytics</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Personal usage trends only. No sensitive business data.</p>
+        <div id="customerAnalyticsGrid" class="customer-analytics-grid" style="margin-top:0.75rem;"></div>
+      </section>
+
+      <section class="dash-grid" id="metricsGrid"></section>
+      <section class="panel" id="subscriberCommandCenterSection">
+        <h2 style="margin:0;">Daily Command Center</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Your operating snapshot for today and the next 7 days.</p>
+        <div class="command-grid" id="commandCenterCards" style="margin-top:0.8rem;"></div>
+        <ul class="action-list" id="commandCenterActions"></ul>
+        <p id="commandCenterStatus" class="command-status"></p>
+      </section>
+
+      <section class="panel" id="staffRosterSection">
+        <h2 style="margin:0;">Staff and Capacity</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Manage on-duty coverage and shift days for booking capacity planning.</p>
+        <div class="staff-shell" style="margin-top:0.8rem;">
+          <form id="staffRosterForm" class="staff-form">
+            <input id="staffNameInput" type="text" placeholder="Staff name" required />
+            <select id="staffRoleInput">
+              <option value="barber">Barber</option>
+              <option value="stylist">Stylist</option>
+              <option value="colorist">Colorist</option>
+              <option value="esthetician">Esthetician</option>
+              <option value="nail_tech">Nail Technician</option>
+              <option value="lash_tech">Lash Technician</option>
+              <option value="receptionist">Receptionist</option>
+            </select>
+            <select id="staffAvailabilityInput">
+              <option value="on_duty">On duty</option>
+              <option value="off_duty">Off duty</option>
+            </select>
+            <input id="staffShiftDaysInput" type="text" placeholder="Shift days (e.g. mon,tue,wed)" />
+            <button class="btn" type="submit">Add Staff</button>
+          </form>
+          <div class="staff-summary" id="staffSummaryCards"></div>
+          <ul id="staffRosterList" class="staff-list"></ul>
+          <p id="staffStatusNote" class="staff-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="waitlistSection">
+        <h2 style="margin:0;">Waitlist and Backfill</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Capture demand and quickly contact waitlisted clients when cancellations happen.</p>
+        <div class="waitlist-shell" style="margin-top:0.8rem;">
+          <form id="waitlistForm" class="waitlist-form">
+            <input id="waitlistNameInput" type="text" placeholder="Customer name" required />
+            <input id="waitlistPhoneInput" type="text" placeholder="Phone (optional)" />
+            <input id="waitlistEmailInput" type="email" placeholder="Email (optional)" />
+            <input id="waitlistServiceInput" type="text" placeholder="Service preference" />
+            <input id="waitlistDateInput" type="text" placeholder="Preferred date/time (optional)" />
+            <button class="btn" type="submit">Add to Waitlist</button>
+          </form>
+          <div class="waitlist-summary" id="waitlistSummaryCards"></div>
+          <ul id="waitlistList" class="waitlist-list"></ul>
+          <p id="waitlistStatusNote" class="waitlist-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="operationsInsightsSection">
+        <h2 style="margin:0;">No-Show Risk and Rebooking</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Prioritize reminders for risky bookings and proactively rebook inactive clients.</p>
+        <div class="ops-shell" style="margin-top:0.8rem;">
+          <div class="ops-grid">
+            <article>
+              <h3 style="margin:0 0 0.5rem;">At-Risk Upcoming Bookings</h3>
+              <ul id="noShowRiskList" class="ops-list"></ul>
+            </article>
+            <article>
+              <h3 style="margin:0 0 0.5rem;">Rebooking Opportunities</h3>
+              <ul id="rebookingPromptList" class="ops-list"></ul>
+            </article>
+          </div>
+          <p id="operationsStatusNote" class="ops-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="crmSection">
+        <h2 style="margin:0;">CRM and Campaign Automation</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Target the right clients with segment-specific re-engagement campaigns.</p>
+        <div class="crm-shell" style="margin-top:0.8rem;">
+          <ul id="crmSegmentsList" class="crm-list"></ul>
+          <p id="crmStatusNote" class="crm-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="commercialSection">
+        <h2 style="margin:0;">Memberships, Packages, and Gift Cards</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Manage recurring plans, prepaid service bundles, and gift-card balances from one place.</p>
+        <div class="commercial-shell" style="margin-top:0.8rem;">
+          <div id="commercialSummaryCards" class="commercial-summary"></div>
+          <div class="commercial-grid">
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Membership Plans</h3>
+              <form id="membershipForm" class="commercial-form">
+                <input id="membershipNameInput" type="text" placeholder="Plan name" required />
+                <input id="membershipPriceInput" type="number" step="0.01" min="0" placeholder="Price" required />
+                <select id="membershipCycleInput">
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+                <input id="membershipBenefitsInput" type="text" placeholder="Benefits (optional)" />
+                <button class="btn" type="submit">Save Membership</button>
+              </form>
+              <ul id="membershipList" class="commercial-list" style="margin-top:0.6rem;"></ul>
+            </article>
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Service Packages</h3>
+              <form id="packageForm" class="commercial-form">
+                <input id="packageNameInput" type="text" placeholder="Package name" required />
+                <input id="packagePriceInput" type="number" step="0.01" min="0" placeholder="Price" required />
+                <input id="packageSessionsInput" type="number" step="1" min="1" placeholder="Session count" required />
+                <button class="btn" type="submit">Save Package</button>
+              </form>
+              <ul id="packageList" class="commercial-list" style="margin-top:0.6rem;"></ul>
+            </article>
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Gift Cards</h3>
+              <form id="giftCardForm" class="commercial-form">
+                <input id="giftPurchaserInput" type="text" placeholder="Purchaser name" required />
+                <input id="giftRecipientInput" type="text" placeholder="Recipient name" required />
+                <input id="giftBalanceInput" type="number" step="0.01" min="0.01" placeholder="Balance" required />
+                <input id="giftExpiresInput" type="date" />
+                <button class="btn" type="submit">Issue Gift Card</button>
+              </form>
+              <ul id="giftCardList" class="commercial-list" style="margin-top:0.6rem;"></ul>
+            </article>
+          </div>
+          <p id="commercialStatusNote" class="commercial-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="revenueAttributionSection">
+        <h2 style="margin:0;">Revenue Attribution and Channel ROI</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Track where bookings come from and compare channel spend against generated revenue.</p>
+        <div class="revenue-shell" style="margin-top:0.8rem;">
+          <div id="revenueSummaryCards" class="revenue-summary"></div>
+          <form id="revenueSpendForm" class="revenue-form">
+            <select id="revenueChannelInput">
+              <option value="direct">Direct</option>
+              <option value="ai_assistant">AI Assistant</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="google_ads">Google Ads</option>
+              <option value="tiktok">TikTok</option>
+              <option value="referral">Referral</option>
+            </select>
+            <input id="revenueSpendInput" type="number" step="0.01" min="0" placeholder="Channel spend" required />
+            <button class="btn" type="submit">Save Spend</button>
+          </form>
+          <ul id="revenueChannelList" class="revenue-list"></ul>
+          <p id="revenueStatusNote" class="revenue-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="profitabilitySection">
+        <h2 style="margin:0;">Profitability and Payroll</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Input payroll and operating costs to estimate profit, margin, and break-even targets.</p>
+        <div class="profit-shell" style="margin-top:0.8rem;">
+          <div id="profitSummaryCards" class="profit-summary"></div>
+          <div class="profit-grid">
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Payroll Inputs</h3>
+              <form id="profitPayrollForm" class="profit-form">
+                <input id="profitStaffNameInput" type="text" placeholder="Staff name" required />
+                <input id="profitStaffRoleInput" type="text" placeholder="Role (optional)" />
+                <input id="profitStaffHoursInput" type="number" step="0.25" min="0" placeholder="Hours" required />
+                <input id="profitStaffRateInput" type="number" step="0.01" min="0" placeholder="Hourly rate" required />
+                <input id="profitStaffBonusInput" type="number" step="0.01" min="0" placeholder="Bonus (optional)" />
+                <button class="btn" type="submit">Save Payroll Entry</button>
+              </form>
+              <ul id="profitPayrollList" class="profit-list" style="margin-top:0.6rem;"></ul>
+            </article>
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Operating Costs</h3>
+              <form id="profitCostsForm" class="profit-form">
+                <input id="profitRentInput" type="number" step="0.01" min="0" placeholder="Rent" />
+                <input id="profitUtilitiesInput" type="number" step="0.01" min="0" placeholder="Utilities" />
+                <input id="profitSoftwareInput" type="number" step="0.01" min="0" placeholder="Software" />
+                <input id="profitOtherInput" type="number" step="0.01" min="0" placeholder="Other fixed costs" />
+                <input id="profitCogsPercentInput" type="number" step="0.1" min="0" max="95" placeholder="COGS % (0-95)" />
+                <button class="btn" type="submit">Save Cost Inputs</button>
+              </form>
+            </article>
+          </div>
+          <p id="profitStatusNote" class="profit-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="bookingOperationsSection">
+        <h2 style="margin:0;">Booking Operations</h2>
+        <div class="booking-tools" id="bookingTools" style="margin-top:0.7rem;">
+          <div class="booking-filters">
+            <input id="bookingSearch" type="text" placeholder="Search by customer, service, or date" />
+            <select id="bookingStatus">
+              <option value="all">All Statuses</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="bookingSort">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="status">By Status</option>
+            </select>
+          </div>
+          <div class="status-chips" id="statusChips">
+            <button class="status-chip active" data-status="all" type="button">All</button>
+            <button class="status-chip" data-status="confirmed" type="button">Confirmed</button>
+            <button class="status-chip" data-status="completed" type="button">Completed</button>
+            <button class="status-chip" data-status="cancelled" type="button">Cancelled</button>
+          </div>
+          <small id="bookingsCountLabel" style="color:var(--muted);">Loading bookings...</small>
+        </div>
+        <ul id="bookings" class="bookings-list" style="margin-top:0.8rem;"></ul>
+        <div class="booking-pager">
+          <button id="loadMoreBookings" class="btn btn-ghost" type="button">Load More</button>
+        </div>
+      </section>
+    </main>
+    <script src="/theme-toggle.js"></script>
+    <script type="module" src="/dashboard.js?v=20260221"></script>
+  </body>
+</html>
+
+

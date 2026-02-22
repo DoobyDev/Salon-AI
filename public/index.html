@@ -1,0 +1,499 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Hair &amp; Beauty Receptionist | AI Front Desk, Bookings, Growth</title>
+    <meta
+      name="description"
+      content="AI Hair & Beauty Receptionist helps hair and beauty businesses automate bookings, reduce no-shows, recover lost revenue, and run a better business with AI."
+    />
+    <meta name="theme-color" content="#05070d" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AI Hair & Beauty Receptionist" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-maskable.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#home">Skip to main content</a>
+    <header class="topbar">
+      <a class="brand" href="#home">
+        <span class="brand-dot"></span>
+        AI Hair &amp; Beauty Receptionist
+      </a>
+      <nav class="nav">
+        <a href="#frontdesk">Book a Visit</a>
+        <a href="#join">Join</a>
+        <a href="#dashboards">Dashboard Demo</a>
+        <a href="#platform">Features</a>
+        <a href="#cancellation">Cancellation Policy</a>
+      </nav>
+      <div class="auth-actions">
+        <a class="btn btn-ghost" href="/auth?role=customer">Customer Sign In</a>
+        <a class="btn btn-ghost" href="/auth?role=subscriber">Subscriber Sign In</a>
+      </div>
+    </header>
+
+    <main class="page" id="home">
+      <section class="hero">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Luxury-Grade AI Platform for Hair &amp; Beauty Businesses</p>
+          <h1>The Intelligent Operating System for Bookings, Revenue, and Client Retention</h1>
+          <p class="hero-text">
+            AI Hair &amp; Beauty Receptionist gives business owners a complete control center: AI receptionist
+            automation, live booking management, staff and capacity tools, no-show protection,
+            retention campaigns, and financial performance visibility.
+          </p>
+          <div class="cta-row">
+            <a class="btn" href="/auth?role=subscriber&mode=register">Start Setup in Minutes</a>
+            <a class="btn btn-ghost" href="#dashboards">View Live Dashboard Demo</a>
+            <a class="btn btn-ghost" href="#frontdesk">Try Customer Booking</a>
+          </div>
+          <div class="cta-proof">
+            <strong>Launch from £29.99/month</strong>
+            <span>or £299.99/year (save 16.6%)</span>
+            <span>No long setup required</span>
+          </div>
+          <div class="hero-badges">
+            <span>24/7 AI Receptionist</span>
+            <span>Subscriber and Customer Portals</span>
+            <span>Revenue, Capacity, CRM, and Profitability Intelligence</span>
+          </div>
+          <div class="hero-capabilities">
+            <article>
+              <h3>Front Desk Automation</h3>
+              <p>Capture and convert enquiries into confirmed bookings around the clock.</p>
+            </article>
+            <article>
+              <h3>Operational Command Center</h3>
+              <p>Manage staff coverage, waitlists, cancellations, and service demand in one dashboard.</p>
+            </article>
+            <article>
+              <h3>Growth and Profit Intelligence</h3>
+              <p>Track channel ROI, repeat-client opportunities, payroll costs, and margin performance.</p>
+            </article>
+          </div>
+          <div class="hero-stats">
+            <article class="stat-chip">
+              <h3 class="count-up" data-target="35">0%</h3>
+              <p>Lower front desk call volume</p>
+            </article>
+            <article class="stat-chip">
+              <h3>24/7</h3>
+              <p>AI chat + voice availability</p>
+            </article>
+            <article class="stat-chip">
+              <h3 class="count-up" data-target="18">0%</h3>
+              <p>Repeat booking uplift</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="hero-media reveal">
+          <img
+            src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1400&q=80"
+            alt="Modern hair and beauty business serving customers"
+          />
+          <div class="floating-card">
+            <p>Live Availability</p>
+            <strong id="liveBookingSummary">Loading live booking availability...</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-strip reveal">
+        <div class="trust-label">Built for premium hair and beauty businesses that operate with precision</div>
+        <ul>
+          <li>High Street Studios</li>
+          <li>Urban Fade Collective</li>
+          <li>Coastline Beauty Group</li>
+          <li>Atlas Barber Guild</li>
+          <li>Northpoint Salon Hub</li>
+        </ul>
+      </section>
+
+      <section class="panel privacy-promise reveal" id="data-policy">
+        <div class="section-header">
+          <h2>Your Data Stays Yours</h2>
+          <p>
+            We do not sell your data and we do not share your customer data with third parties for advertising or marketing.
+            Data is only used to run your bookings, dashboards, billing, and approved service integrations.
+          </p>
+        </div>
+        <div class="privacy-promise-grid">
+          <article>
+            <h3>Private by Default</h3>
+            <p>Business and customer booking information is used only to operate your account and service features.</p>
+          </article>
+          <article>
+            <h3>No Data Selling</h3>
+            <p>We never sell subscriber or customer data. No ad-network resale, no marketing data trading.</p>
+          </article>
+          <article>
+            <h3>Controlled Integrations</h3>
+            <p>Only trusted providers (for payments, messaging, or hosting) process data when required to deliver the service.</p>
+          </article>
+        </div>
+        <p class="privacy-promise-note">
+          See our Privacy Policy, DPA, and GDPR/Security documentation for full details.
+        </p>
+      </section>
+
+      <section class="experience-strip reveal" id="experience">
+        <div class="section-header">
+          <h2>Why Teams Keep Using This Every Day</h2>
+          <p>Simple flow, powerful outcomes: the platform guides teams from enquiry to revenue without dashboard overload.</p>
+        </div>
+        <div class="experience-grid">
+          <article class="experience-card">
+            <p class="experience-tag">Step 1</p>
+            <h3>Capture Demand Instantly</h3>
+            <p>Customers find, ask, and book in one smooth path with AI receptionist support.</p>
+          </article>
+          <article class="experience-card">
+            <p class="experience-tag">Step 2</p>
+            <h3>Run Operations with Less Effort</h3>
+            <p>Module switching keeps teams focused on one job at a time: bookings, staffing, waitlist, and revenue.</p>
+          </article>
+          <article class="experience-card">
+            <p class="experience-tag">Step 3</p>
+            <h3>Grow with Live Business Signals</h3>
+            <p>Revenue streams, cancellations, exports, and profitability view make decision-making faster and clearer.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-showcase reveal" id="dashboards">
+        <div class="section-header">
+          <h2>Subscriber &amp; Admin Dashboard Demo (Updated)</h2>
+          <p>
+            This preview mirrors the updated live accounting panel design with timeframe switches,
+            quick filters, gauges, and revenue stream charts.
+          </p>
+        </div>
+
+        <div class="dashboard-actions">
+          <a class="btn" href="/dashboard?mock=1&role=subscriber">Open Subscriber Demo</a>
+          <a class="btn btn-ghost" href="/dashboard?role=subscriber">Open Subscriber Dashboard</a>
+          <a class="btn btn-ghost" href="/dashboard?role=customer">Open Customer Dashboard</a>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <p>Revenue Window</p>
+            <strong id="homeDemoWindowLabel">Today</strong>
+            <span class="trend up">Live Preview</span>
+          </article>
+          <article class="metric-card">
+            <p>Window Revenue</p>
+            <strong id="homeDemoWindowRevenue">$0</strong>
+            <span class="trend up" id="homeDemoWindowRevenueTrend">+0%</span>
+          </article>
+          <article class="metric-card">
+            <p>Cancellations</p>
+            <strong id="homeDemoWindowCancels">0</strong>
+            <span class="trend down" id="homeDemoWindowCancelTrend">0%</span>
+          </article>
+          <article class="metric-card">
+            <p>Target Progress</p>
+            <strong id="homeDemoTargetPct">0%</strong>
+            <span class="trend up">Goal Visibility</span>
+          </article>
+        </div>
+
+        <div class="home-live-panel">
+          <div class="home-live-head">
+            <h3>Live Revenue Stream</h3>
+            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+              <div id="homeDemoTimeframeSwitch" class="timeframe-switch" role="tablist" aria-label="Demo timeframe">
+                <button class="active" type="button" data-timeframe="today">Today</button>
+                <button type="button" data-timeframe="7d">7 Days</button>
+                <button type="button" data-timeframe="30d">30 Days</button>
+              </div>
+              <span class="live-pill"><i class="live-dot"></i> Demo live pulse</span>
+            </div>
+          </div>
+          <div class="quick-filter-row">
+            <div id="homeDemoQuickFilters" class="quick-filter-group">
+              <button class="btn btn-ghost" type="button" data-quick="week">This Week</button>
+              <button class="btn btn-ghost" type="button" data-quick="month">This Month</button>
+            </div>
+            <div class="quick-filter-custom">
+              <input id="homeDemoFrom" type="date" />
+              <input id="homeDemoTo" type="date" />
+              <button id="homeDemoCustomApply" class="btn btn-ghost" type="button">Custom Range</button>
+            </div>
+          </div>
+          <div id="homeDemoCards" class="live-cards"></div>
+          <div class="home-live-grid">
+            <div id="homeDemoGauges" class="live-gauges"></div>
+            <div class="live-charts">
+              <article class="live-chart">
+                <h4>Revenue Flow</h4>
+                <div id="homeDemoRevenueSparkline" class="sparkline-wrap"></div>
+                <div id="homeDemoRevenueBars" class="live-bars"></div>
+              </article>
+              <article class="live-chart">
+                <h4>Cancellation Trend</h4>
+                <div id="homeDemoCancelSparkline" class="sparkline-wrap"></div>
+                <div id="homeDemoCancelBars" class="live-bars"></div>
+              </article>
+            </div>
+          </div>
+          <p id="homeDemoNote" class="accounting-live-note">Demo sync active.</p>
+        </div>
+
+        <div class="dashboard-layout" style="margin-top:0.8rem;">
+          <article class="panel">
+            <h3>Front Desk Snapshot</h3>
+            <p id="salonMeta">Loading salon information...</p>
+            <h4>Latest Bookings Created</h4>
+            <ul id="bookingsList" class="bookings"></ul>
+          </article>
+          <article class="panel">
+            <h3>Performance Highlights</h3>
+            <ul class="highlights">
+              <li>Live feed updates as bookings are created by form or AI chat</li>
+              <li>Cancellation policy consistently applied in backend workflows</li>
+              <li>Subscriber metrics include booking and revenue rollups</li>
+              <li>Role-based access controls dashboard and billing actions</li>
+              <li>Audit logging tracks key auth, billing, and booking events</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel join-roles reveal" id="join">
+        <div class="section-header">
+          <h2>Join as Subscriber or Customer</h2>
+          <p>Choose your role to access the right dashboard, tools, and booking experience.</p>
+        </div>
+        <div class="join-grid">
+          <article class="join-card">
+            <h3>Subscriber</h3>
+            <p>Run your entire business: bookings, staffing, waitlist, CRM, finance, and growth analytics.</p>
+            <a class="btn" href="/auth?role=subscriber&mode=register">Create Subscriber Account</a>
+          </article>
+          <article class="join-card">
+            <h3>Customer</h3>
+            <p>Find trusted local hair and beauty businesses, then book, reschedule, or cancel with ease.</p>
+            <a class="btn btn-ghost" href="/auth?role=customer">Continue as Customer</a>
+          </article>
+          <article class="join-card join-card-benefits">
+            <h3>Why Businesses Choose AI</h3>
+            <p>Designed to increase bookings, protect revenue, and elevate the client experience from day one.</p>
+            <ul class="benefit-list">
+              <li>Convert more enquiries into confirmed appointments</li>
+              <li>Reduce no-shows with intelligent reminder and policy flows</li>
+              <li>Improve retention with rebooking and CRM automations</li>
+              <li>Track profitability and growth with live business insights</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="impact-grid reveal" id="platform">
+        <article class="impact-card">
+          <h2>What Business Owners Get</h2>
+          <ul>
+            <li>AI receptionist + booking automation that works 24/7</li>
+            <li>Unified operational dashboard for bookings, capacity, and demand</li>
+            <li>No-show risk controls and fast cancellation backfill workflows</li>
+            <li>CRM segmentation with campaign actions for retention and reactivation</li>
+            <li>Revenue attribution and profitability visibility for better decisions</li>
+          </ul>
+        </article>
+        <article class="impact-card">
+          <h2>What Customers Experience</h2>
+          <ul>
+            <li>Fast local discovery by business name, location, postcode, or phone</li>
+            <li>Clear service menus, availability windows, and booking policies</li>
+            <li>Simple booking, reschedule, and cancellation experience</li>
+            <li>AI-assisted appointment flow with natural-language support</li>
+            <li>Personal booking history and appointment visibility</li>
+          </ul>
+        </article>
+        <article class="impact-card">
+          <h2>Why This Platform Sells on First View</h2>
+          <ul>
+            <li>Premium, modern interface designed for trust and conversion</li>
+            <li>Clearly defined workflows from enquiry to confirmed booking</li>
+            <li>Business intelligence that turns data into actionable next steps</li>
+            <li>Role-based controls for owners, teams, and customers</li>
+            <li>Scalable architecture across web, desktop, and mobile wrappers</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="storyline reveal">
+        <article>
+          <h3>1. Capture Demand Instantly</h3>
+          <p>
+            AI receptionist answers every enquiry in real time and converts intent into confirmed
+            bookings before customers leave your page.
+          </p>
+        </article>
+        <article>
+          <h3>2. Protect Revenue Automatically</h3>
+          <p>
+            Policy-backed cancellations reduce no-shows and help protect high-demand time slots.
+          </p>
+        </article>
+        <article>
+          <h3>3. Scale with Clarity</h3>
+          <p>
+            Multi-role dashboards show exactly where growth is happening, where service quality dips,
+            and where to optimize.
+          </p>
+        </article>
+      </section>
+
+      <section class="frontdesk-section panel reveal" id="frontdesk">
+        <div class="section-header">
+          <h2>Book a Visit</h2>
+          <p>
+            Search live worldwide availability by business name, city/country, postcode, or phone.
+            Select a business to view its front desk profile and slots.
+          </p>
+        </div>
+
+        <div class="finder-grid">
+          <form id="searchForm" class="search-form">
+            <label>
+              Business Name
+              <input id="filterName" type="text" placeholder="Glow Studio" />
+            </label>
+            <label>
+              Business Type
+              <select id="filterBusinessType">
+                <option value="">Any Type</option>
+                <option value="hair_salon">Hair Salon</option>
+                <option value="barbershop">Barbershop</option>
+                <option value="beauty_salon">Beauty Salon</option>
+              </select>
+            </label>
+            <label>
+              Location / City / Country
+              <input id="filterLocation" type="text" placeholder="London, UK" />
+            </label>
+            <label>
+              Postcode / ZIP
+              <input id="filterPostcode" type="text" placeholder="SW1A 1AA / 10001" />
+            </label>
+            <label>
+              Phone Number
+              <input id="filterPhone" type="text" placeholder="+44 / +1 / +61 ..." />
+            </label>
+            <div class="search-actions">
+              <button class="btn" type="submit">Find Availability</button>
+              <button class="btn btn-ghost" type="button" id="clearFilters">Clear Filters</button>
+            </div>
+          </form>
+
+          <div class="finder-results">
+            <p class="live-label" id="liveAreaLabel">Scanning worldwide live availability...</p>
+            <p id="appStatus" class="live-label" aria-live="polite"></p>
+            <ul id="salonResults" class="salon-results"></ul>
+          </div>
+        </div>
+
+        <div class="selected-business" id="selectedBusiness">
+          <h3>Select a business to view front desk details</h3>
+          <p>Availability, services, profile information, and quick booking tools appear here.</p>
+        </div>
+      </section>
+
+      <section class="panel receptionist-live reveal">
+        <div class="section-header">
+          <h2>Live AI Receptionist Demo</h2>
+          <p>Use natural language to ask questions or create a booking in real time.</p>
+        </div>
+        <div class="chat-shell">
+          <div id="chatWindow" class="chat-window" aria-live="polite"></div>
+          <form id="chatForm" class="chat-form">
+            <label class="sr-only" for="chatInput">Message AI receptionist</label>
+            <input
+              id="chatInput"
+              type="text"
+              placeholder="Example: Book a skin fade in New York tomorrow at 3 PM..."
+              autocomplete="off"
+              required
+            />
+            <button class="btn" type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel policy reveal" id="cancellation">
+        <h2>Cancellation Policy</h2>
+        <p class="policy-intro">
+          Late cancellations are one of the largest avoidable revenue leaks for hair and beauty businesses
+          worldwide. Hair &amp; Beauty AI enforces a consistent, professional policy that protects booked time and
+          supports sustainable business operations.
+        </p>
+        <div class="policy-grid">
+          <article class="policy-card policy-card-accent">
+            <h3>Clear Rule</h3>
+            <p>
+              If a booking is cancelled less than <strong>24 hours</strong> before the appointment,
+              a <strong>\$10 cancellation fee</strong> applies.
+            </p>
+          </article>
+          <article class="policy-card">
+            <h3>Customer Fairness</h3>
+            <p>
+              Customers can still cancel or reschedule outside the 24-hour window without penalty.
+            </p>
+          </article>
+          <article class="policy-card">
+            <h3>Business Protection</h3>
+            <p>
+              This policy reduces last-minute empty chair time, protects service capacity, and keeps
+              booking operations reliable.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel role-cta reveal" id="subscriber">
+        <h2>Launch Faster with a Professional Hair &amp; Beauty Booking Experience</h2>
+        <p>
+          Role-based dashboards, secure authentication, analytics, and automation tools are available
+          from one platform.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="/auth?role=subscriber&mode=register">Create Subscriber Account</a>
+          <a class="btn btn-ghost" href="/auth?role=subscriber">Subscriber Sign In</a>
+          <a class="btn btn-ghost" href="/auth?role=customer">Customer Sign In</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-links" aria-label="Legal links">
+        <a href="/legal.html#privacy">Privacy Policy</a>
+        <a href="/legal.html#terms">Terms &amp; Conditions</a>
+        <a href="/legal.html#cookies">Cookie Policy</a>
+        <a href="/legal.html#billing">Billing Policy</a>
+        <a href="/legal.html#refunds">Refunds</a>
+        <a href="/legal.html#ai">AI Disclosure</a>
+      </div>
+      <p>
+        AI Hair &amp; Beauty Receptionist: AI booking software, appointment automation,
+        front desk management, customer retention, and business analytics.
+      </p>
+    </footer>
+    <script src="/theme-toggle.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

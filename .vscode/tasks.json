@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Seed database with new Business fields",
+			"type": "shell",
+			"command": "npx prisma db seed",
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  admin
+  subscriber
+  customer
+}
+
+enum BookingStatus {
+  confirmed
+  cancelled
+  completed
+}
+
+model User {
+  id           String    @id @default(cuid())
+  role         Role
+  name         String
+  email        String    @unique
+  passwordHash String
+  businessId   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  business     Business? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  @@index([role, createdAt])
+  @@index([businessId, createdAt])
+}
+
+model Business {
+  id           String         @id @default(cuid())
+  name         String
+  type         String
+  phone        String
+  email        String
+  websiteUrl   String?
+  websiteTitle String?
+  websiteSummary String?
+  websiteImageUrl String?
+  socialFacebook String?
+  socialInstagram String?
+  socialTwitter String?
+  socialLinkedin String?
+  socialTiktok String?
+  city         String
+  country      String
+  postcode     String
+  address      String
+  rating       Float          @default(4.7)
+  description  String
+  hoursJson    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  users        User[]
+  services     Service[]
+  bookings     Booking[]
+  subscription Subscription?
+
+  @@index([createdAt])
+  @@index([city, country])
+  @@index([postcode])
+  @@index([phone])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  durationMin Int
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, name])
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  businessId    String
+  businessName  String
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  service       String
+  price         Float         @default(0)
+  date          String
+  time          String
+  status        BookingStatus @default(confirmed)
+  source        String
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  business      Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt, id])
+  @@index([businessId, createdAt, id])
+  @@index([customerEmail, createdAt, id])
+  @@index([status, createdAt, id])
+  @@index([businessId, date, time, status])
+}
+
+model Subscription {
+  id                 String   @id @default(cuid())
+  businessId         String   @unique
+  stripeCustomerId   String?  @unique
+  stripeSubscription String?  @unique
+  status             String   @default("inactive")
+  plan               String   @default("starter")
+  currentPeriodEnd   DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  business           Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([status, updatedAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorRole  String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, createdAt])
+  @@index([actorRole, createdAt])
+  @@index([entityId, createdAt])
+}
