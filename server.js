@@ -50,7 +50,8 @@ const paypalClientSecret = String(process.env.PAYPAL_CLIENT_SECRET || "").trim()
 const paypalEnv = String(process.env.PAYPAL_ENV || "sandbox").trim().toLowerCase();
 const paypalWebhookId = String(process.env.PAYPAL_WEBHOOK_ID || "").trim();
 const appUrl = process.env.APP_URL || `http://localhost:${port}`;
-const corsOrigin = process.env.CORS_ORIGIN || "*";
+const configuredCorsOrigin = String(process.env.CORS_ORIGIN || "").trim();
+const corsOrigin = configuredCorsOrigin || (process.env.NODE_ENV === "production" ? appUrl : "*");
 const openai = openAiKey ? new OpenAI({ apiKey: openAiKey }) : null;
 const stripe = stripeSecret ? new Stripe(stripeSecret) : null;
 let prisma = createUnavailablePrisma();
