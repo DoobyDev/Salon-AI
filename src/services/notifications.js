@@ -7,7 +7,15 @@ const twilioFrom = process.env.TWILIO_FROM_NUMBER || "";
 const sendGridApiKey = process.env.SENDGRID_API_KEY || "";
 const openAiKey = process.env.OPENAI_API_KEY || "";
 
-const twilioClient = twilioSid && twilioToken ? twilio(twilioSid, twilioToken) : null;
+let twilioClient = null;
+if (twilioSid && twilioToken) {
+  try {
+    twilioClient = twilio(twilioSid, twilioToken);
+  } catch (error) {
+    console.warn("Twilio disabled:", error.message);
+    twilioClient = null;
+  }
+}
 const openai = openAiKey ? new OpenAI({ apiKey: openAiKey }) : null;
 
 async function sendSms(to, body) {
