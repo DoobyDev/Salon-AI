@@ -244,7 +244,7 @@ a {
 
 .page {
   width: min(1280px, 94vw);
-  margin: 1rem auto 2rem;
+  margin: 0.55rem auto 2rem;
   display: grid;
   gap: 1rem;
 }
@@ -489,6 +489,7 @@ body .page {
 
 .hero-chat-demo {
   border: 1px solid rgba(205, 220, 255, 0.18);
+  margin-top: -0.35rem;
   background: linear-gradient(155deg, rgba(16, 25, 45, 0.94), rgba(10, 16, 30, 0.96));
   padding: 0.9rem;
   display: grid;
@@ -2338,6 +2339,7 @@ body .page {
   overflow: auto;
   padding: 0.75rem;
   display: grid;
+  align-content: end;
   gap: 0.6rem;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
@@ -3515,6 +3517,7 @@ body .topbar {
 }
 
 body .page {
+  margin-top: 0.35rem;
   gap: 1rem;
 }
 
@@ -3543,6 +3546,8 @@ body .page {
 
 .hero-chat-demo {
   border-color: rgba(124, 234, 216, 0.18);
+  align-self: start;
+  margin-top: -0.85rem;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.03),
     0 18px 40px rgba(0,0,0,0.3);
@@ -3572,7 +3577,7 @@ body .page {
 }
 
 .hero-chat-demo .msg {
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.32);
+  text-shadow: none;
 }
 
 .hero-chat-demo .msg.assistant {
@@ -3583,10 +3588,7 @@ body .page {
   color: #060b13;
   font-weight: 700;
   letter-spacing: 0.005em;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9),
-    0 0 8px rgba(255, 126, 138, 0.55),
-    0 0 16px rgba(255, 78, 92, 0.35);
+  text-shadow: none;
 }
 
 .hero-chat-demo .msg.user {
@@ -3595,10 +3597,15 @@ body .page {
   box-shadow: none;
   color: #060b13;
   font-weight: 700;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9),
-    0 0 8px rgba(112, 177, 255, 0.55),
-    0 0 16px rgba(70, 142, 255, 0.35);
+  text-shadow: none;
+}
+
+.hero-chat-demo .chat-window .msg.assistant:last-child {
+  text-shadow: none;
+}
+
+.hero-chat-demo .chat-window .msg.user:last-child {
+  text-shadow: none;
 }
 
 .hero-chat-demo .chat-form {
@@ -3728,7 +3735,7 @@ body .page {
 
   .page {
     width: min(96vw, 96vw);
-    margin: 0.7rem auto calc(1.2rem + env(safe-area-inset-bottom));
+    margin: 0.35rem auto calc(1.2rem + env(safe-area-inset-bottom));
     gap: 0.8rem;
   }
 
@@ -3780,6 +3787,7 @@ body .page {
 
   .hero-chat-demo {
     border-radius: 16px;
+    margin-top: -0.2rem;
     padding: 0.8rem;
   }
 
@@ -3922,3 +3930,7 @@ body .page {
     animation: none !important;
   }
 }
+
+
+
+

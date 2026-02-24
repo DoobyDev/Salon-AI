@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -1090,7 +1090,7 @@
         font-weight: 600;
       }
       .hub-fold[open] summary::after {
-        content: "−";
+        content: "-";
         border-color: rgba(124, 234, 216, 0.24);
         background: rgba(124, 234, 216, 0.08);
       }
@@ -1738,7 +1738,7 @@
         background-blend-mode: screen;
         padding: 0.65rem;
         display: grid;
-        align-content: start;
+        align-content: end;
         gap: 0.5rem;
         min-height: 0;
         max-height: none;
@@ -1780,22 +1780,22 @@
         border: none;
         color: #060b13;
         font-weight: 700;
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.9),
-          0 0 8px rgba(255, 126, 138, 0.55),
-          0 0 16px rgba(255, 78, 92, 0.35);
+        text-shadow: none;
       }
       .copilot-chat-message.is-user .copilot-chat-bubble {
         background: transparent;
         border: none;
         color: #060b13;
         font-weight: 700;
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.9),
-          0 0 8px rgba(112, 177, 255, 0.55),
-          0 0 16px rgba(70, 142, 255, 0.35);
+        text-shadow: none;
       }
-      .copilot-chat-message.is-pending .copilot-chat-bubble {
+      .copilot-chat-messages .copilot-chat-message.is-assistant:last-child .copilot-chat-bubble {
+  text-shadow: none;
+}
+.copilot-chat-messages .copilot-chat-message.is-user:last-child .copilot-chat-bubble {
+  text-shadow: none;
+}
+.copilot-chat-message.is-pending .copilot-chat-bubble {
         opacity: 0.85;
       }
       .lexi-pending-popup {
@@ -4584,6 +4584,7 @@
         max-height: 260px;
         overflow: auto;
         display: grid;
+        align-content: end;
         gap: 0.45rem;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
         position: relative;
@@ -4607,10 +4608,7 @@
         border: none;
         color: #060b13;
         font-weight: 700;
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.9),
-          0 0 8px rgba(112, 177, 255, 0.55),
-          0 0 16px rgba(70, 142, 255, 0.35);
+        text-shadow: none;
       }
       .customer-chat-msg.ai {
         justify-self: start;
@@ -4618,12 +4616,15 @@
         border: none;
         color: #060b13;
         font-weight: 700;
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.9),
-          0 0 8px rgba(255, 126, 138, 0.55),
-          0 0 16px rgba(255, 78, 92, 0.35);
+        text-shadow: none;
       }
-      .customer-chat-form {
+      .customer-chat-box .customer-chat-msg.user:last-child {
+  text-shadow: none;
+}
+.customer-chat-box .customer-chat-msg.ai:last-child {
+  text-shadow: none;
+}
+.customer-chat-form {
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 0.55rem;
@@ -9484,7 +9485,7 @@
               <section id="subscriberCopilotResult" class="copilot-result copilot-result-popup" aria-live="polite">
                 <div>
                   <h3>Latest Answer</h3>
-                  <div id="subscriberCopilotAnswer" class="copilot-answer">Ask a question about your bookings, team, waitlist or revenue and I’ll help you decide what to do next.</div>
+                  <div id="subscriberCopilotAnswer" class="copilot-answer">Ask a question about your bookings, team, waitlist or revenue and I�ll help you decide what to do next.</div>
                   <div id="subscriberCopilotLinks" class="copilot-answer-links" aria-label="Related business modules"></div>
                 </div>
               </section>
@@ -9625,7 +9626,7 @@
           <div class="business-profile-launch-grid">
             <article class="business-profile-launch-card">
               <h3>What this setup covers</h3>
-              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboard’s front desk context.</p>
+              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboard�s front desk context.</p>
               <ul class="business-profile-launch-list">
                 <li>Company name, type, phone, email, and address</li>
                 <li>Website details, business description, and summary text</li>
@@ -9889,7 +9890,7 @@
         <div class="workspace-actions-grid">
           <button class="workspace-action-btn" type="button" data-module-jump="home">
             <strong>Home Overview</strong>
-            <small>Start here and check today’s priorities</small>
+            <small>Start here and check today�s priorities</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="calendar">
             <strong>Booking Diary</strong>
@@ -10159,8 +10160,8 @@
               <label class="subscription-plan-select-wrap" for="subscriptionBillingCycle">
                 <span class="subscription-mini-label">Change Subscription</span>
                 <select id="subscriptionBillingCycle" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select subscription plan">
-                  <option value="monthly">Monthly - £29.99</option>
-                  <option value="yearly">Yearly - £299.99 (Save 16.6%)</option>
+                  <option value="monthly">Monthly - �29.99</option>
+                  <option value="yearly">Yearly - �299.99 (Save 16.6%)</option>
                 </select>
               </label>
               <select id="subscriptionBillingProvider" class="btn btn-ghost" style="display:none;padding-right:2.2rem;" aria-label="Select payment provider" hidden>
@@ -10330,9 +10331,9 @@
             </form>
             <div class="staff-rota-controls">
               <div class="staff-week-nav">
-                <button id="staffWeekPrevBtn" class="btn btn-ghost" type="button" aria-label="Previous rota week">◀</button>
+                <button id="staffWeekPrevBtn" class="btn btn-ghost" type="button" aria-label="Previous rota week">?</button>
                 <button id="staffWeekTodayBtn" class="btn btn-ghost" type="button">This Week</button>
-                <button id="staffWeekNextBtn" class="btn btn-ghost" type="button" aria-label="Next rota week">▶</button>
+                <button id="staffWeekNextBtn" class="btn btn-ghost" type="button" aria-label="Next rota week">?</button>
                 <span id="staffWeekLabel" class="staff-week-label">Loading week...</span>
               </div>
               <div class="staff-rota-actions">
@@ -10587,52 +10588,52 @@
     </main>
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile dashboard navigation">
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="dashboardOverviewSection" data-mobile-nav-module="home">
-        <span class="mobile-nav-icon" aria-hidden="true">⌂</span>
+        <span class="mobile-nav-icon" aria-hidden="true">�</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="subscriberCalendarSection" data-mobile-nav-module="calendar">
-        <span class="mobile-nav-icon" aria-hidden="true">◫</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Diary</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only" type="button" data-mobile-nav-section="subscriberCopilotSection" data-mobile-nav-module="subscriber_copilot">
-        <span class="mobile-nav-icon" aria-hidden="true">✦</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Copilot</span>
       </button>
       <button class="mobile-bottom-nav-item admin-only" type="button" data-mobile-nav-section="adminCopilotSection" data-mobile-nav-module="admin_copilot">
-        <span class="mobile-nav-icon" aria-hidden="true">✦</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Copilot</span>
       </button>
       <button class="mobile-bottom-nav-item quick-action" type="button" data-mobile-nav-action="quick-sheet" aria-label="Open quick actions">
-        <span class="mobile-nav-icon" aria-hidden="true">＋</span>
+        <span class="mobile-nav-icon" aria-hidden="true">+</span>
         <span class="mobile-nav-label">Quick</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="businessGrowthSection">
-        <span class="mobile-nav-icon" aria-hidden="true">▣</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Hub</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="bookingOperationsSection" data-mobile-nav-module="booking_ops">
-        <span class="mobile-nav-icon" aria-hidden="true">☰</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Bookings</span>
       </button>
 
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="dashboardOverviewSection">
-        <span class="mobile-nav-icon" aria-hidden="true">⌂</span>
+        <span class="mobile-nav-icon" aria-hidden="true">�</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerSearchSection">
-        <span class="mobile-nav-icon" aria-hidden="true">⌕</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Search</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerReceptionSection">
-        <span class="mobile-nav-icon" aria-hidden="true">✦</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Chat</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerSlotsSection">
-        <span class="mobile-nav-icon" aria-hidden="true">◷</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Slots</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerHistorySection">
-        <span class="mobile-nav-icon" aria-hidden="true">☑</span>
+        <span class="mobile-nav-icon" aria-hidden="true">?</span>
         <span class="mobile-nav-label">Bookings</span>
       </button>
     </nav>
@@ -10643,39 +10644,39 @@
             <h3 id="mobileQuickSheetTitle">Quick Actions</h3>
             <p>Fast shortcuts for the things you use most during the day.</p>
           </div>
-          <button class="btn btn-ghost mobile-quick-sheet-close" id="mobileQuickSheetClose" type="button" aria-label="Close quick actions">✕</button>
+          <button class="btn btn-ghost mobile-quick-sheet-close" id="mobileQuickSheetClose" type="button" aria-label="Close quick actions">?</button>
         </div>
         <div class="mobile-quick-sheet-grid">
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="home">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">⌂</span><strong>Back to Dashboard</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">�</span><strong>Back to Dashboard</strong></span>
             <small>Return to your main Home view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="today">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">◷</span><strong>Today</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Today</strong></span>
             <small>Open today in the diary and jump into the day view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="new-booking">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">＋</span><strong>New Booking</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">+</span><strong>New Booking</strong></span>
             <small>Add a booking quickly from your phone</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="calendar">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">◫</span><strong>Booking Diary</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Booking Diary</strong></span>
             <small>Jump to the diary and day view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="bookings">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">☰</span><strong>Booking Operations</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Booking Operations</strong></span>
             <small>Manage bookings and changes</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="waitlist">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">↺</span><strong>Waitlist Recovery</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Waitlist Recovery</strong></span>
             <small>Fill cancellations and gaps</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="copilot">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">✦</span><strong>Open Copilot</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Open Copilot</strong></span>
             <small>Ask for guidance or checks quickly</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="hub">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">▣</span><strong>Business Hub &amp; Setup</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Business Hub &amp; Setup</strong></span>
             <small>Open setup and business modules</small>
           </button>
         </div>
@@ -10699,5 +10700,7 @@
     <script type="module" src="/dashboard.js?v=20260221"></script>
   </body>
 </html>
+
+
 
 

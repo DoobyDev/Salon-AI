@@ -106,7 +106,7 @@ const homeDemoDisplayValues = {
   targetPct: 0
 };
 
-const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi, your receptionist. I can explain the app, help you find subscribed salon, barber, and beauty businesses, check available slots, and help you book. How can I help today?";
+const CHATBOT_WELCOME_MESSAGE = "Hi I'm Lexi, how can I help you today?";
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
 
@@ -1399,3 +1399,5 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
+
+

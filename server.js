@@ -3641,6 +3641,16 @@ function normalizeLexiTypos(text) {
   return q;
 }
 
+function extractLexiIntroducedName(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return "";
+  const match = raw.match(/\b(?:i am|i'm|im|my name is)\s+([a-z][a-z'-]{1,24})\b/i);
+  if (!match) return "";
+  const name = String(match[1] || "").trim();
+  if (!name) return "";
+  return `${name.charAt(0).toUpperCase()}${name.slice(1).toLowerCase()}`;
+}
+
 function isLexiAppQuestion(text) {
   const q = normalizeLexiTypos(String(text || "").toLowerCase());
   if (!q) return false;
@@ -3759,14 +3769,23 @@ async function searchPublicSubscribedBusinesses({ query = "", location = "", ser
   return rows.map(mapPublicBusinessProfile);
 }
 
-async function buildPublicLexiFallbackReply(message, business) {
+async function buildPublicLexiFallbackReply(message, business, history = []) {
   const q = String(message || "").trim();
   const qLower = normalizeLexiTypos(q.toLowerCase());
   const bizName = String(business?.name || "the salon").trim() || "the salon";
   const services = Array.isArray(business?.services) ? business.services.slice(0, 6) : [];
   const serviceNames = services.map((s) => String(s?.name || "").trim()).filter(Boolean);
   const serviceExamples = serviceNames.length ? serviceNames.slice(0, 4).join(", ") : "haircuts, colour, barber services, and beauty treatments";
+  const safeHistory = Array.isArray(history) ? history : [];
+  const priorMessages = safeHistory
+    .filter((entry) => entry && typeof entry.content === "string" && (entry.role === "user" || entry.role === "assistant"))
+    .slice(-8);
+  const lastAssistantText = String([...priorMessages].reverse().find((entry) => entry.role === "assistant")?.content || "");
+  const introducedName = extractLexiIntroducedName(q);
 
+  if (!introducedName && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+    return "Hi, I'm Lexi. Lovely to hear from you. I can help with bookings, availability, salon and beauty questions, and how the app works. What can I help you with today?";
+  }
   if (false && !q) {
     return "Hi, I'm Lexi. I can answer questions about the app, how bookings work, what each dashboard/module does, and how to use Lexi. I can't share personal data.";
   }
@@ -3780,7 +3799,23 @@ async function buildPublicLexiFallbackReply(message, business) {
   if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
   }
+  if (introducedName) {
+    const displayName = introducedName.charAt(0).toUpperCase() + introducedName.slice(1);
+    return `Hi ${displayName}, lovely to meet you. I'm Lexi. I can help with bookings, availability, salon and beauty questions, and how the app works. What can I help you with today?`;
+  }
   const shortReplyWordCount = q.split(/\s+/).filter(Boolean).length;
+  if (shortReplyWordCount > 0 && shortReplyWordCount <= 6 && lastAssistantText) {
+    const lastAssistantLower = normalizeLexiTypos(lastAssistantText.toLowerCase());
+    if (/(which one|which business|tell me which one|what business)/.test(lastAssistantLower)) {
+      return `Perfect, I can work with "${q}". Tell me the day or date you want, and I'll check available slots.`;
+    }
+    if (/(what service|which service can i book|what service would you like)/.test(lastAssistantLower)) {
+      return "Great choice. What day or date would you like, and roughly what time suits you best?";
+    }
+    if (/(what day|which day|what date|tell me the day|tell me the date)/.test(lastAssistantLower)) {
+      return "Perfect. Tell me the time that would suit you best, and I'll help check the best options.";
+    }
+  }
   if (business?.id && shortReplyWordCount > 0 && shortReplyWordCount <= 6 && /(\bbest\b|\bthat\b|\byes\b|\byeah\b|\bok\b|\bokay\b|\bsure\b|\bworks\b|\bnorth\b|\bsouth\b|\beast\b|\bwest\b)/.test(qLower)) {
     return `Perfect. ${bizName} works. What service would you like to book, and what day/time suits you best?`;
   }
@@ -3932,9 +3967,9 @@ async function buildPublicLexiFallbackReply(message, business) {
   return "I can help with salon and beauty questions, booking guidance, product/aftercare basics, and how to use the app. Ask me anything, and if it’s a booking request, include the service, date, and time you want.";
 }
 
-async function buildPublicLexiFallbackReplySafe(message, business) {
+async function buildPublicLexiFallbackReplySafe(message, business, history = []) {
   try {
-    return await buildPublicLexiFallbackReply(message, business);
+    return await buildPublicLexiFallbackReply(message, business, history);
   } catch (error) {
     console.error("Lexi fallback reply error:", error?.message || error);
     return "I can still help, but I hit a temporary issue while checking that. Try asking again, or tell me the service and date you want and I’ll help step by step.";
@@ -5755,7 +5790,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       });
     }
     if (!openai) {
-      return res.json({ reply: await buildPublicLexiFallbackReplySafe(userMessage, business), fallback: true });
+      return res.json({ reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history), fallback: true });
     }
     await writeAuditLog({
       actorRole: "anonymous",
@@ -6064,7 +6099,7 @@ Rules:
       try {
         if (business) {
           return res.json({
-            reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
+            reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history),
             fallback: true
           });
         }

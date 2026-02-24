@@ -114,6 +114,21 @@
             <h2>Meet Lexi | Your AI Receptionist</h2>
             <p>Lexi handles bookings, service questions, and front desk support while your team stays focused on clients.</p>
           </div>
+          <div class="chat-shell">
+            <div id="chatWindow" class="chat-window" aria-live="polite"></div>
+            <form id="chatForm" class="chat-form">
+              <label class="sr-only" for="chatInput">Message AI receptionist</label>
+              <input
+                id="chatInput"
+                type="text"
+                placeholder="Example: Book a skin fade in New York tomorrow at 3 PM..."
+                autocomplete="off"
+                required
+              />
+              <button class="btn" type="submit">Send</button>
+              <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
+            </form>
+          </div>
           <div class="hero-lexi-sell-card" aria-label="Lexi and business profile overview">
               <div class="hero-lexi-sell-head">
                 <p>Lexi + Your Business Profile</p>
@@ -137,21 +152,6 @@
             <p>
               Lexi can answer general salon/beauty questions and use your salon profile for booking help, but customer and business data is protected using GDPR/UK GDPR-aligned data minimisation and is not shared publicly.
             </p>
-          </div>
-          <div class="chat-shell">
-            <div id="chatWindow" class="chat-window" aria-live="polite"></div>
-            <form id="chatForm" class="chat-form">
-              <label class="sr-only" for="chatInput">Message AI receptionist</label>
-              <input
-                id="chatInput"
-                type="text"
-                placeholder="Example: Book a skin fade in New York tomorrow at 3 PM..."
-                autocomplete="off"
-                required
-              />
-              <button class="btn" type="submit">Send</button>
-              <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
-            </form>
           </div>
           <div class="hero-chat-features" aria-label="AI receptionist features">
             <article>
@@ -1052,3 +1052,9 @@
     <script type="module" src="/app.js"></script>
   </body>
 </html>
+
+
+
+
+
+
