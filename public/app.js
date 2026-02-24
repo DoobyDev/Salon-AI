@@ -880,7 +880,7 @@ function renderBookings(bookings) {
   if (!bookings.length) {
     const item = document.createElement("li");
     item.className = "booking-item";
-    item.textContent = "No live bookings yet. First booking appears here.";
+    item.textContent = "No live bookings yet. Your first booking will appear here.";
     bookingsList.appendChild(item);
     return;
   }
@@ -925,7 +925,7 @@ function renderBusinessDetails(business) {
     <h4>Available Booking Slots</h4>
     <ul class="slot-list">${slots}</ul>
     <div class="salon-actions">
-      <button class="btn btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Book with AI Receptionist</button>
+      <button class="btn btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Book with Lexi</button>
     </div>
   `;
 }
@@ -935,7 +935,7 @@ function renderBusinessResults(results) {
   if (!results.length) {
     const item = document.createElement("li");
     item.className = "salon-item";
-    item.textContent = "No hair/beauty businesses found for these filters.";
+    item.textContent = "No salon, barber, or beauty businesses matched those filters.";
     salonResults.appendChild(item);
     return;
   }
@@ -949,8 +949,8 @@ function renderBusinessResults(results) {
       <p>${escapeHtml(business.phone)} | Rating: ${business.rating} | slots shown in profile</p>
       <p>Services: ${escapeHtml(business.services.map((s) => s.name).join(", "))}</p>
       <div class="salon-actions">
-        <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">Open Profile</button>
-        <button class="btn btn-ghost btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Quick Book</button>
+        <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">View Profile</button>
+        <button class="btn btn-ghost btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Ask Lexi to Book</button>
       </div>
     `;
     salonResults.appendChild(item);
@@ -960,16 +960,16 @@ function renderBusinessResults(results) {
 async function searchBusinesses() {
   const filters = getFilters();
   const params = new URLSearchParams({ ...filters, limit: "25" });
-  setAppStatus("Searching businesses...", false, 0);
+  setAppStatus("Searching subscribed businesses...", false, 0);
   try {
     const response = await fetch(`/api/search/businesses?${params.toString()}`);
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Unable to search businesses right now.");
+    if (!response.ok) throw new Error(data.error || "I can't search businesses right now. Please try again in a moment.");
     const results = Array.isArray(data.results) ? data.results : [];
     businessCache = results;
     renderBusinessResults(results);
     updateLiveSummary(results, filters.location);
-    setAppStatus(results.length ? `Found ${results.length} result${results.length === 1 ? "" : "s"}.` : "No matches found. Try broader filters.");
+    setAppStatus(results.length ? `Found ${results.length} result${results.length === 1 ? "" : "s"}.` : "No matches yet. Try broader filters or another area.");
   } catch (error) {
     businessCache = [];
     renderBusinessResults([]);
@@ -998,23 +998,23 @@ async function loadConfig() {
     const featuredMeta = `${featured.name} | ${featured.phone} | ${featured.location.address}, ${featured.location.city} | Cancellation: ${policyText}`;
     salonMeta.textContent = featuredMeta;
     if (heroSalonMeta) {
-      heroSalonMeta.textContent = "Lexi can answer service questions, check available slots, and start booking requests using your business profile, service menu, and front desk details.";
+      heroSalonMeta.textContent = "Lexi can answer service questions, check available slots, and start booking requests using your business profile, services, and front desk details.";
     }
     liveBookingSummary.textContent = `${featured.availableSlots.length} slots available today at ${featured.name}.`;
     selectedBusinessId = featured.id;
   } else {
     salonMeta.textContent = `No featured business configured yet. Cancellation: ${policyText}`;
     if (heroSalonMeta) {
-      heroSalonMeta.textContent = "No featured business configured yet. Add your business profile to show Lexi’s front-desk experience, live availability, and service guidance on the homepage.";
+      heroSalonMeta.textContent = "No featured business is set yet. Add your business profile to show Lexi's front-desk experience, live availability, and service guidance on the homepage.";
     }
-    liveBookingSummary.textContent = "No live availability yet. Add businesses to see slots.";
+    liveBookingSummary.textContent = "No live availability is showing yet. Add businesses to display slots.";
     selectedBusinessId = "";
   }
 
   if (!llmEnabled) {
     appendMessage(
       "assistant",
-      "AI chat is disabled. Add OPENAI_API_KEY in environment variables and restart the server."
+      "Lexi advanced AI is currently offline. Add OPENAI_API_KEY to your environment and restart the server to enable it."
     );
   } else {
     appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
@@ -1025,7 +1025,7 @@ async function loadBookings() {
   try {
     const response = await fetch("/api/bookings/public-demo");
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Unable to load demo bookings.");
+    if (!response.ok) throw new Error(data.error || "I couldn't load the demo bookings right now.");
     renderBookings(data.bookings || []);
   } catch (error) {
     renderBookings([]);
@@ -1051,11 +1051,11 @@ chatForm.addEventListener("submit", async (event) => {
 
   const thinking = document.createElement("div");
   thinking.className = "msg assistant";
-  thinking.textContent = "Working on that...";
+  thinking.textContent = "Let me check that for you...";
   chatWindow.appendChild(thinking);
 
   try {
-    setAppStatus("AI is preparing a response...", false, 0);
+    setAppStatus("Lexi is preparing a reply...", false, 0);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1063,19 +1063,19 @@ chatForm.addEventListener("submit", async (event) => {
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(String(data?.error || "Failed to process chat request."));
+      throw new Error(String(data?.error || "I couldn't process that message just now."));
     }
     thinking.remove();
 
-    const reply = data.reply || data.error || "I could not answer right now.";
+    const reply = data.reply || data.error || "I couldn't answer that right now.";
     appendMessage("assistant", reply);
     history.push({ role: "assistant", content: reply });
-    setAppStatus(data.bookingCreated ? "Booking captured successfully." : "Response received.");
+    setAppStatus(data.bookingCreated ? "Booking request captured successfully." : "Lexi has replied.");
 
     if (data.bookingCreated) await loadBookings();
   } catch (error) {
     thinking.remove();
-    const errorMessage = String(error?.message || "Network error. Please try again.");
+    const errorMessage = String(error?.message || "Connection issue. Please try again.");
     appendMessage("assistant", errorMessage);
     setAppStatus(errorMessage, true);
   }
@@ -1104,7 +1104,7 @@ clearFiltersBtn.addEventListener("click", async () => {
   filterPostcode.value = "";
   filterPhone.value = "";
   await searchBusinesses();
-  setAppStatus("Filters cleared.");
+  setAppStatus("Search filters cleared.");
 });
 
 salonResults.addEventListener("click", (event) => {
@@ -1122,18 +1122,18 @@ salonResults.addEventListener("click", (event) => {
     const response = await fetch(`/api/businesses/${business.id}`);
     const data = await response.json();
     if (!response.ok || !data.business) {
-      throw new Error(data.error || "Could not load selected business.");
+      throw new Error(data.error || "I couldn't load that business profile right now.");
     }
     selectedBusinessId = data.business.id;
     renderBusinessDetails(data.business);
     setAppStatus("Business profile loaded.");
   } else if (target.classList.contains("btn-quickbook")) {
     quickBookBusiness(business);
-    setAppStatus("Quick booking prompt added to chat.");
+    setAppStatus("I've added a booking prompt to the Lexi chat.");
   }
   };
   run().catch((error) => {
-    setAppStatus(error.message || "Unable to complete that action.", true);
+    setAppStatus(error.message || "I couldn't complete that action right now.", true);
   });
 });
 

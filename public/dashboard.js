@@ -94,6 +94,7 @@ const hubReportStatusText = document.getElementById("hubReportStatusText");
 const hubPriorityList = document.getElementById("hubPriorityList");
 const hubAutoRoutines = document.getElementById("hubAutoRoutines");
 const hubRunPrioritySweepBtn = document.getElementById("hubRunPrioritySweepBtn");
+const subscriberLexiQuickOpenButtons = Array.from(document.querySelectorAll("[data-open-subscriber-lexi]"));
 const billingLiveBanner = document.getElementById("billingLiveBanner");
 const billingLiveMeta = document.getElementById("billingLiveMeta");
 const yearlySavingsLine = document.getElementById("yearlySavingsLine");
@@ -432,7 +433,7 @@ const frontDeskMock = {
     { label: "No-Show Rate", value: "3.6%" },
     { label: "Repeat Client Rate", value: "62%" }
   ],
-  aiChat: "Hi, I'm Lexi, your receptionist. I can help with app questions, bookings, available slots, and front desk support. How can I help today?"
+  aiChat: "Hi, I'm Lexi. How can I help today?"
 };
 
 const customerSalonDirectory = [
@@ -495,16 +496,16 @@ const customerSalonDirectory = [
 ];
 
 const subscriberFullDemoModuleGuide = [
-  { name: "Daily Workspace", detail: "Top shortcut launchpad for the main operating areas so subscribers can move around the app quickly." },
-  { name: "Booking Diary", detail: "Calendar planning with Lexi support, date spotlighting, staffing context, and booking pressure signals." },
-  { name: "Lexi Business Command AI", detail: "Main operational AI assistant for bookings, staffing, calendar planning, revenue protection, and growth actions." },
-  { name: "Executive Pulse", detail: "Real-time business health snapshot with trend signals, gauges, and priority actions." },
-  { name: "Booking Operations", detail: "Booking list management, status updates, pending confirmations, and operational workflows." },
-  { name: "Waitlist Recovery", detail: "Backfill cancellations and recover empty slots using waitlist outreach and quick actions." },
-  { name: "Staff Rota & Capacity", detail: "Manage team availability, rota coverage, and capacity planning across the week." },
-  { name: "CRM & Campaigns", detail: "Customer segments and reactivation actions to drive repeat bookings and retention." },
-  { name: "Commercial Controls", detail: "Packages, memberships, and commercial offers to improve customer lifetime value." },
-  { name: "Accounting / Revenue / Profitability", detail: "Connected finance signals, attribution, and profitability reporting with live-style mock data in demo mode." }
+  { name: "Daily Workspace", detail: "Quick links to the main parts of the business so you can move around the app fast." },
+  { name: "Booking Diary", detail: "Your booking calendar with Lexi support, staffing visibility, and clear busy-day signals." },
+  { name: "Lexi Business Command AI", detail: "Your main Lexi workspace for bookings, staffing, planning, revenue protection, and growth actions." },
+  { name: "Executive Pulse", detail: "A quick business health view with trends, key signals, and the priorities that need attention." },
+  { name: "Booking Operations", detail: "Manage bookings, status changes, pending confirmations, and front-desk tasks in one place." },
+  { name: "Waitlist Recovery", detail: "Fill cancellations faster using the waitlist and quick outreach actions." },
+  { name: "Staff Rota & Capacity", detail: "Manage team availability, rota cover, and capacity across the week." },
+  { name: "CRM & Campaigns", detail: "Run customer follow-ups, reactivation campaigns, and retention actions to drive repeat bookings." },
+  { name: "Commercial Controls", detail: "Manage packages, memberships, and offers to increase repeat spend and customer value." },
+  { name: "Accounting / Revenue / Profitability", detail: "Track takings, revenue signals, and profitability with realistic mock data in demo mode." }
 ];
 
 const subscriberFullDemoMockCustomers = [
@@ -1015,8 +1016,8 @@ function renderSubscriberCopilotSnapshot(snapshot) {
     { label: "Cancelled", value: bookings.cancelled ?? "n/a" },
     { label: "Cancellation Rate", value: typeof bookings.cancelRatePct === "number" ? `${bookings.cancelRatePct}%` : "n/a" },
     { label: "Upcoming (7d)", value: bookings.upcoming7d ?? "n/a" },
-    { label: "OpenAI", value: health.openaiConfigured ? "Configured" : "Missing" },
-    { label: "Accounting Live", value: health.accountingSignalsAvailable ? "Available" : "Not loaded" }
+    { label: "AI Service", value: health.openaiConfigured ? "Connected" : "Not connected" },
+    { label: "Accounting Feed", value: health.accountingSignalsAvailable ? "Live" : "Not loaded" }
   ];
   subscriberCopilotSnapshot.innerHTML = "";
   cards.forEach((card) => {
@@ -1051,7 +1052,7 @@ function renderSubscriberCopilotLinks(links) {
 
   const label = document.createElement("span");
   label.className = "copilot-answer-links-label";
-  label.textContent = "Open in your dashboard:";
+  label.textContent = "Open this in your dashboard:";
   subscriberCopilotLinks.appendChild(label);
 
   rows.forEach((item) => {
@@ -1148,7 +1149,7 @@ function appendCopilotChatMessage(role, kind, text, options = {}) {
 function ensureCopilotChatSeed(role) {
   const refs = copilotPopupRefs(role);
   if (!refs.messages || refs.messages.childElementCount > 0) return;
-  appendCopilotChatMessage(role, "assistant", String(refs.answer?.textContent || "Ask a question to get started."));
+  appendCopilotChatMessage(role, "assistant", String(refs.answer?.textContent || "Ask Lexi a question and I'll help."));
 }
 
 function resetCopilotChat(role, introText) {
@@ -1191,14 +1192,14 @@ function closeBusinessAiChatPopup(role) {
 
 function renderSubscriberCopilotResponse(payload, options = {}) {
   if (subscriberCopilotAnswer) {
-    subscriberCopilotAnswer.textContent = String(payload?.answer || "No answer available.");
+    subscriberCopilotAnswer.textContent = String(payload?.answer || "No reply came back yet.");
   }
   renderSubscriberCopilotLinks(buildSubscriberCopilotLinks(payload, options.question));
 }
 
 function renderAdminCopilotResponse(payload) {
   if (adminCopilotAnswer) {
-    adminCopilotAnswer.textContent = String(payload?.answer || "No answer available.");
+    adminCopilotAnswer.textContent = String(payload?.answer || "No reply came back yet.");
   }
   renderCopilotList(adminCopilotFindings, payload?.findings, "No findings.");
   renderCopilotList(adminCopilotFixes, payload?.suggestedFixes, "No suggested fixes.");
@@ -1369,14 +1370,14 @@ function renderCalendarFeatureSidebar(summary) {
     const selected = summary?.selectedDay || null;
     if (!selected) {
       calendarSelectedDaySummary.innerHTML = `
-        <h3>Selected Day Spotlight</h3>
-        <p>Click a date to view bookings, staffing cover and revenue context for that day. This also updates Your Business AI context automatically.</p>
+        <h3>Selected Day Summary</h3>
+        <p>Click a date to view bookings, staffing cover, and revenue context for that day. Lexi will also update the business chat context automatically.</p>
       `;
       return;
     }
     const staffNames = Array.isArray(selected.staffNames) ? selected.staffNames : [];
     calendarSelectedDaySummary.innerHTML = `
-      <h3>Selected Day Spotlight</h3>
+      <h3>Selected Day Summary</h3>
       <p><strong>${escapeHtml(selected.label)}</strong> (${escapeHtml(selected.dateKey)})</p>
       <ul class="calendar-selected-day-list">
         <li><strong>${escapeHtml(String(selected.bookings))} booking${selected.bookings === 1 ? "" : "s"}</strong><small>${escapeHtml(String(selected.completed || 0))} completed • ${escapeHtml(String(selected.cancelled || 0))} cancelled</small></li>
@@ -2006,11 +2007,11 @@ function openContactAdminModal() {
     <div class="contact-admin-modal-head">
       <div>
         <h3 id="contactAdminModalTitle">Emergency Admin Contact</h3>
-        <p>Use this only for urgent issues that need admin attention (for example access problems or critical dashboard issues).</p>
+        <p>Use this only for urgent issues that need admin support (for example access problems or a critical dashboard issue).</p>
       </div>
       <button type="button" class="module-info-close" aria-label="Close contact admin window">✕</button>
     </div>
-    <p class="contact-admin-note">Emergency messages only. Usually responds within 24hrs.</p>
+    <p class="contact-admin-note">Urgent messages only. We usually reply within 24 hours.</p>
     <form class="contact-admin-form" novalidate>
       <input id="contactAdminSubject" type="text" maxlength="120" placeholder="Subject (e.g. Urgent login issue)" />
       <textarea id="contactAdminMessage" required maxlength="2000" placeholder="Describe the urgent issue and what you need help with..."></textarea>
@@ -6281,7 +6282,7 @@ function renderCustomerSearchResults() {
   if (!customerSearchResults) return;
   customerSearchResults.innerHTML = "";
   if (!customerSalonResults.length) {
-    customerSearchResults.innerHTML = "<li>No salons match those filters yet. Try widening your search.</li>";
+    customerSearchResults.innerHTML = "<li>No businesses match those filters yet. Try widening your search a little.</li>";
     return;
   }
   customerSalonResults.forEach((salon) => {
@@ -6305,28 +6306,28 @@ function renderCustomerSelectedSalon() {
   if (customerSelectedSalonLabel) {
     customerSelectedSalonLabel.textContent = salon
       ? `${salon.name} in ${salon.city}`
-      : "Select a business from search results.";
+      : "Choose a business from the search results.";
   }
   if (customerSalonContact) {
     customerSalonContact.innerHTML = salon
       ? `<strong>Contact</strong><br /><small>${salon.phone} | ${salon.email}<br />${salon.address}</small>`
-      : "<small>Choose a salon to see contact details and availability.</small>";
+      : "<small>Choose a business to see contact details and availability.</small>";
   }
   if (customerAvailableSlots) {
     customerAvailableSlots.innerHTML = "";
     if (!salon) {
-      customerAvailableSlots.innerHTML = "<li>Choose a salon to see available booking times.</li>";
+      customerAvailableSlots.innerHTML = "<li>Choose a business to see available booking times.</li>";
       renderCustomerLexiCalendar();
       return;
     }
     if (!Array.isArray(salon.availableSlots) || !salon.availableSlots.length) {
-      customerAvailableSlots.innerHTML = "<li>No open slots are showing right now.</li>";
+      customerAvailableSlots.innerHTML = "<li>There are no open slots showing right now.</li>";
       renderCustomerLexiCalendar();
       return;
     }
     salon.availableSlots.forEach((slot) => {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${slot}</strong><br /><small>Call or chat with AI Receptionist to request this slot.</small>`;
+      li.innerHTML = `<strong>${slot}</strong><br /><small>Ask Lexi to help you request this slot.</small>`;
       customerAvailableSlots.appendChild(li);
     });
   }
@@ -6416,44 +6417,44 @@ function normalizeCustomerLexiTypos(text) {
 function getReceptionReply(inputText) {
   const message = normalizeCustomerLexiTypos(inputText);
   const salon = getSelectedCustomerSalon();
-  if (!message) return "Please type your question and I can help.";
+  if (!message) return "Please type your question and I'll help.";
   if (/(password|api key|token|secret|all customers|customer list|phone numbers|emails|addresses|personal data|private data)/.test(message)) {
-    return "I can help with app and booking questions, but I can’t share personal data, private account details, or security information.";
+    return "I can help with app and booking questions, but I can't share personal data, private account details, or security information.";
   }
   if (/(how does this app work|what can lexi do|what can the app do|dashboard|module|modules|subscriber|admin|customer dashboard|demo mode|booking confirmation|pending booking|notification|notifications|how .*work|gdpr|privacy|data protection|lexi)/.test(message)) {
-    return "Absolutely. I can explain how the app works, what each dashboard/module does, how Lexi supports bookings and front desk tasks, and how confirmations/notifications work. I can’t share personal data, but I can guide you through the features and workflow clearly.";
+    return "Absolutely. I can walk you through how the app works, what each dashboard and module does, how Lexi supports bookings and front desk tasks, and how confirmations and notifications work. I can't share personal data, but I can explain the features clearly.";
   }
   if (/(find|search).*(salon|barber|beauty)|business search/.test(message)) {
-    return "Use the business search filters to find salons, barbers, or beauty businesses by name, service, location, rating, and date. Once you select a business, I can help with slots, services, and booking guidance.";
+    return "Use the search filters to find salons, barbers, or beauty businesses by name, service, location, rating, or date. Once you pick a business, I can help with slots, services, and booking guidance.";
   }
   if (message.includes("slot") || message.includes("available") || message.includes("book")) {
-    if (!salon) return "Select a business first and I can walk you through available slots.";
+    if (!salon) return "Choose a business first and I'll help you check available slots.";
     if (message.includes("confirm")) {
-      return "Bookings can be created from the available slots shown. Some businesses use a pending confirmation flow, where the salon confirms the appointment first and then you receive a confirmation update.";
+      return "You can request a booking from the available slots shown. Some businesses use a pending confirmation step, so the salon confirms the appointment first and then sends your confirmation update.";
     }
     const nextSlot = salon.availableSlots[0];
     return nextSlot
-      ? `${salon.name} currently has availability at ${nextSlot}. If you'd like, I can help you choose the best time based on your schedule.`
+      ? `${salon.name} currently has availability at ${nextSlot}. If you'd like, I can help you choose the best time for your schedule.`
       : `${salon.name} has no open slots listed right now.`;
   }
   if (message.includes("phone") || message.includes("email") || message.includes("contact")) {
-    if (!salon) return "Select a business first and I will share contact info.";
+    if (!salon) return "Choose a business first and I'll show the contact details.";
     return `You can reach ${salon.name} at ${salon.phone} or ${salon.email}.`;
   }
   if (message.includes("service")) {
-    if (!salon) return "Select a business first and I can list services.";
-    return `${salon.name} offers services including ${salon.services.join(", ")}. If you tell me what result you’re looking for, I can suggest the best option.`;
+    if (!salon) return "Choose a business first and I can list the services.";
+    return `${salon.name} offers services including ${salon.services.join(", ")}. If you tell me what result you're looking for, I can suggest the best option.`;
   }
   if (/(policy|deposit|late|cancellation|cancelation|no show|no-show)/.test(message)) {
-    return "I can help explain booking policies such as deposits, late arrivals, cancellations, and no-shows. If you tell me which policy you want to check, I’ll guide you through it.";
+    return "I can explain booking policies like deposits, late arrivals, cancellations, and no-shows. Tell me which policy you want to check and I'll walk you through it.";
   }
   if (message.includes("calendar") || message.includes("planner")) {
-    return "The Lexi Booking Calendar Planner helps you view Day, Week, and Month booking/slot availability, compare dates, and ask Lexi for recommendations on the best time to book.";
+    return "The Lexi Booking Calendar Planner lets you view Day, Week, and Month availability, compare dates, and ask Lexi for the best time to book.";
   }
   if (message.includes("bookings") || message.includes("appointment")) {
     return "I can help with booking questions, available slots, business search, services, contact details, and how booking confirmations work in the app.";
   }
-  return "I can help with app questions, booking guidance, business search, available slots, services, policies, contact details, and how the booking workflow works.";
+  return "I can help with app questions, booking guidance, business search, available slots, services, policies, contact details, and how the booking process works.";
 }
 
 function parseCustomerSlotEntry(value) {
@@ -6836,7 +6837,7 @@ function initializeCustomerExperience() {
   customerReceptionTranscript = [
     {
       role: "ai",
-        text: "Hi, I'm Lexi, your receptionist. I can help with app questions, bookings, available slots, and front desk support. How can I help today?"
+        text: "Hi, I'm Lexi. How can I help today?"
     }
   ];
   renderCustomerSearchResults();
@@ -9694,6 +9695,7 @@ if (user.role !== "subscriber" && user.role !== "admin") {
 if (user.role !== "customer") {
   hideSection(customerSearchSection);
   hideSection(customerReceptionSection);
+  hideSection(customerLexiCalendarSection);
   hideSection(customerSlotsSection);
   hideSection(customerHistorySection);
   hideSection(customerAnalyticsSection);
@@ -10740,6 +10742,13 @@ if (user.role === "subscriber" || user.role === "admin") {
 subscriberCopilotOpenPopup?.addEventListener("click", (event) => {
   openBusinessAiChatPopup("subscriber", { trigger: event.currentTarget });
 });
+subscriberLexiQuickOpenButtons.forEach((btn) => {
+  btn.addEventListener("click", (event) => {
+    if (!(user.role === "subscriber" || user.role === "admin")) return;
+    const lexiRole = user.role === "admin" ? "admin" : "subscriber";
+    openBusinessAiChatPopup(lexiRole, { trigger: event.currentTarget });
+  });
+});
 subscriberCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("subscriber"));
 subscriberCopilotPopup?.addEventListener("click", (event) => {
   if (event.target === subscriberCopilotPopup) closeBusinessAiChatPopup("subscriber");
@@ -10766,26 +10775,26 @@ adminCopilotForm?.addEventListener("submit", async (event) => {
   if (adminCopilotInput) adminCopilotInput.value = "";
   openBusinessAiChatPopup("admin", { focusInput: false });
   appendCopilotChatMessage("admin", "user", question);
-  const pending = appendCopilotChatMessage("admin", "assistant", "Checking platform health and pulling together suggested fixes...", { pending: true });
+  const pending = appendCopilotChatMessage("admin", "assistant", "Give me a moment while I check platform health and pull together the key fixes.", { pending: true });
   if (adminCopilotSend) adminCopilotSend.disabled = true;
-  if (adminCopilotAnswer) adminCopilotAnswer.textContent = "Checking platform health and pulling together suggested fixes...";
+  if (adminCopilotAnswer) adminCopilotAnswer.textContent = "Give me a moment while I check platform health and pull together the key fixes.";
   try {
     const payload = await askAdminCopilot(copilotPromptWithBusinessContext("admin", question));
     renderAdminCopilotResponse(payload);
     if (pending?.bubble) {
-      pending.bubble.textContent = String(payload?.answer || "No answer available.");
+      pending.bubble.textContent = String(payload?.answer || "No reply came back yet.");
       pending.row?.classList.remove("is-pending");
     }
   } catch (error) {
     const fallback = {
-      answer: error.message || "Admin copilot failed.",
-      findings: ["Could not complete admin copilot request."],
-      suggestedFixes: ["Check OpenAI configuration and server logs, then retry."],
+      answer: error.message || "I couldn't complete that admin Lexi check just now.",
+      findings: ["I couldn't complete that admin request right now."],
+      suggestedFixes: ["Check the AI service setup and server logs, then try again."],
       snapshot: null
     };
     renderAdminCopilotResponse(fallback);
     if (pending?.bubble) {
-      pending.bubble.textContent = String(fallback.answer || "Admin copilot failed.");
+      pending.bubble.textContent = String(fallback.answer || "I couldn't complete that admin Lexi check just now.");
       pending.row?.classList.remove("is-pending");
     }
   } finally {
@@ -10795,9 +10804,9 @@ adminCopilotForm?.addEventListener("submit", async (event) => {
 
 adminCopilotClear?.addEventListener("click", () => {
   if (adminCopilotInput) adminCopilotInput.value = "";
-  resetCopilotChat("admin", "Ask me about admin diagnostics, managed businesses, or general salon/barber/beauty/business questions.");
+  resetCopilotChat("admin", "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions.");
   renderAdminCopilotResponse({
-    answer: "Ask me about admin diagnostics, managed businesses, or general salon/barber/beauty/business questions.",
+    answer: "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions.",
     findings: [],
     suggestedFixes: [],
     snapshot: null
@@ -10824,26 +10833,26 @@ subscriberCopilotForm?.addEventListener("submit", async (event) => {
   if (subscriberCopilotInput) subscriberCopilotInput.value = "";
   openBusinessAiChatPopup("subscriber", { focusInput: false });
   appendCopilotChatMessage("subscriber", "user", question);
-  const pending = appendCopilotChatMessage("subscriber", "assistant", "Checking today’s bookings and business signals so I can give you clear advice...", { pending: true });
+  const pending = appendCopilotChatMessage("subscriber", "assistant", "Give me a moment while I check today's bookings and business signals so I can give you clear advice.", { pending: true });
   if (subscriberCopilotSend) subscriberCopilotSend.disabled = true;
-  if (subscriberCopilotAnswer) subscriberCopilotAnswer.textContent = "Checking today’s bookings and business signals so I can give you clear advice...";
+  if (subscriberCopilotAnswer) subscriberCopilotAnswer.textContent = "Give me a moment while I check today's bookings and business signals so I can give you clear advice.";
   try {
     const payload = await askSubscriberCopilot(copilotPromptWithBusinessContext("subscriber", question));
     renderSubscriberCopilotResponse(payload, { question });
     if (pending?.bubble) {
-      pending.bubble.textContent = String(payload?.answer || "No answer available.");
+      pending.bubble.textContent = String(payload?.answer || "No reply came back yet.");
       pending.row?.classList.remove("is-pending");
     }
   } catch (error) {
     const fallback = {
-      answer: error.message || "Subscriber copilot failed.",
-      findings: ["Could not complete subscriber copilot request."],
-      suggestedActions: ["Check server logs and OpenAI configuration, then retry."],
+      answer: error.message || "I couldn't complete that Lexi check just now.",
+      findings: ["I couldn't complete that request right now."],
+      suggestedActions: ["Check the server logs and AI service setup, then try again."],
       snapshot: null
     };
     renderSubscriberCopilotResponse(fallback, { question });
     if (pending?.bubble) {
-      pending.bubble.textContent = String(fallback.answer || "Subscriber copilot failed.");
+      pending.bubble.textContent = String(fallback.answer || "I couldn't complete that Lexi check just now.");
       pending.row?.classList.remove("is-pending");
     }
   } finally {
@@ -10853,9 +10862,9 @@ subscriberCopilotForm?.addEventListener("submit", async (event) => {
 
 subscriberCopilotClear?.addEventListener("click", () => {
   if (subscriberCopilotInput) subscriberCopilotInput.value = "";
-  resetCopilotChat("subscriber", "Ask me about your salon dashboard, bookings, beauty services, products, or general salon/barber questions.");
+  resetCopilotChat("subscriber", "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions.");
   renderSubscriberCopilotResponse({
-    answer: "Ask me about your salon dashboard, bookings, beauty services, products, or general salon/barber questions.",
+    answer: "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions.",
     findings: [],
     suggestedActions: [],
     snapshot: null
@@ -11064,7 +11073,7 @@ function renderCalendarFeatureSidebarLexi(summary) {
     if (!selected) {
       calendarSelectedDaySummary.innerHTML = `
         <div class="calendar-spotlight-head">
-          <h3>Selected Day Spotlight</h3>
+          <h3>Selected Day Summary</h3>
           <span class="calendar-spotlight-tag">Waiting for date</span>
         </div>
         <p>Click a date to view bookings, staffing cover and revenue context for that day. Lexi will use it in the Business AI workspace automatically.</p>
@@ -11084,7 +11093,7 @@ function renderCalendarFeatureSidebarLexi(summary) {
 
     calendarSelectedDaySummary.innerHTML = `
       <div class="calendar-spotlight-head">
-        <h3>Selected Day Spotlight</h3>
+        <h3>Selected Day Summary</h3>
         <span class="calendar-spotlight-tag">${escapeHtml(selectedTag)}</span>
       </div>
       <p><strong>${escapeHtml(selectedDateLabel)}</strong></p>
@@ -12390,5 +12399,6 @@ if (isMockMode) {
     }
   })();
 }
+
 
 

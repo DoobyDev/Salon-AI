@@ -9295,6 +9295,7 @@
           padding: 0.35rem;
         }
       }
+    
     </style>
   </head>
   <body>
@@ -9344,14 +9345,14 @@
             <button id="calendarNext" class="btn btn-ghost" type="button" aria-label="Next month">&gt;</button>
           </div>
         </div>
-        <p id="calendarLegend" class="calendar-legend">Dates with bookings are highlighted.</p>
+        <p id="calendarLegend" class="calendar-legend">Days with bookings are highlighted.</p>
         <div class="calendar-wow-strip" aria-label="Lexi calendar planning overview">
           <div class="calendar-wow-strip-head">
             <p class="calendar-wow-kicker">Lexi Calendar Command</p>
-            <h3>Plan the day, spot pressure, and act before the schedule slips.</h3>
+            <h3>Plan the day, spot pressure early, and stay ahead of the diary.</h3>
             <p>
-              Use the diary with Lexi to identify high-pressure windows, empty slots, staffing gaps, and same-day recovery opportunities.
-            </p>
+              Use the diary with Lexi to spot busy periods, empty slots, staffing gaps, and same-day recovery opportunities.
+              before they become problems.</p>
           </div>
           <div class="calendar-wow-strip-pills" aria-label="Calendar outcomes">
             <span>Daily capacity view</span>
@@ -9377,19 +9378,19 @@
             </div>
           </div>
           <aside class="calendar-feature-rail" aria-label="Calendar summary and selected day details">
-            <div id="calendarFeatureMeta" class="calendar-feature-meta">AI calendar summary is loading...</div>
+            <div id="calendarFeatureMeta" class="calendar-feature-meta">Lexi is loading your calendar summary...</div>
             <div id="calendarFeatureStats" class="calendar-feature-stats"></div>
             <div id="calendarSelectedDaySummary" class="calendar-selected-day-card">
-              <h3>Selected Day Spotlight</h3>
-              <p>Click a date to see day-level bookings, staffing and revenue context here.</p>
+              <h3>Selected Day Summary</h3>
+              <p>Click a date to see bookings, staffing, and revenue context for that day.</p>
             </div>
           </aside>
         </div>
         <div id="calendarLexiCommandDeck" class="calendar-lexi-command-deck" aria-live="polite">
           <div class="calendar-lexi-command-card">
             <p class="calendar-lexi-command-kicker">Lexi Command Deck</p>
-            <h4>Calendar actions will appear here</h4>
-            <p>Pick a date and Lexi will surface planning actions, gap recovery ideas, and communication prompts.</p>
+            <h4>Lexi's calendar actions will appear here</h4>
+            <p>Pick a date and Lexi will suggest planning actions, gap-fill ideas, and useful client communication prompts.</p>
           </div>
         </div>
       </section>
@@ -9400,8 +9401,8 @@
             <div>
               <h2 style="margin:0;">Lexi | Business Command AI</h2>
               <p>
-                Your main AI business assistant for day-to-day salon operations: bookings, calendar planning, staffing cover,
-                waitlist recovery, revenue protection, and growth actions. Responses use safe business summary data only.
+                Your main AI business assistant for the day-to-day running of your salon: bookings, diary planning, staffing cover,
+                waitlist recovery, revenue protection, and growth actions. Replies use safe business summary data only.
               </p>
             </div>
             <span class="live-pill"><i class="live-dot"></i> Main AI assistant</span>
@@ -9412,7 +9413,7 @@
               <p class="lexi-command-card-kicker">Lexi at the center of your day</p>
               <h3>Ask once. Get a prioritized next move.</h3>
               <p>
-                Lexi reads your booking flow, calendar pressure, staffing coverage, cancellations, and growth signals to help you decide what to do next.
+                Lexi reads your bookings, diary pressure, staffing cover, cancellations, and growth signals to help you decide the best next step.
               </p>
               <div class="lexi-command-chip-row">
                 <span>Bookings</span>
@@ -9460,15 +9461,15 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="subscriberCopilotOpenPopup" class="btn" type="button">Open AI Chat Window</button>
-            <span class="copilot-guardrail">Lexi can answer salon/beauty questions and use your salon dashboard context when relevant. No platform admin checks in this chat.</span>
+            <button id="subscriberCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
+            <span class="copilot-guardrail">Lexi can answer salon and beauty questions and use your salon dashboard context when it helps. This chat does not run platform admin checks.</span>
           </div>
           <div id="subscriberCopilotPopup" class="copilot-chat-popup-overlay" aria-hidden="true">
             <section class="copilot-chat-popup" role="dialog" aria-modal="true" aria-labelledby="subscriberCopilotPopupTitle">
               <div class="copilot-chat-popup-head">
                 <div>
-                  <h3 id="subscriberCopilotPopupTitle">Lexi | Business AI Chat</h3>
-                  <p>Chat with Lexi about your salon dashboard, bookings, staffing, growth, or general salon/barber/beauty questions in one conversation.</p>
+                  <h3 id="subscriberCopilotPopupTitle">Lexi | Business Chat</h3>
+                  <p>Chat with Lexi about your salon, bookings, staffing, growth, or general salon/barber/beauty questions in one place.</p>
                 </div>
                 <button id="subscriberCopilotPopupClose" class="btn btn-ghost" type="button" aria-label="Close Business AI chat">Close</button>
               </div>
@@ -9477,15 +9478,15 @@
                 <label class="sr-only" for="subscriberCopilotInput">Ask Lexi</label>
                 <textarea id="subscriberCopilotInput" placeholder="Example: What should I focus on today, or what ingredients should I avoid for color-treated hair?" required></textarea>
                 <div class="copilot-form-actions">
-                  <button id="subscriberCopilotSend" class="btn" type="submit">Ask Me</button>
+                  <button id="subscriberCopilotSend" class="btn" type="submit">Ask Lexi</button>
                   <button id="subscriberCopilotClear" class="btn btn-ghost" type="button">Clear</button>
-                  <span class="copilot-guardrail">One Lexi mode: general salon/beauty guidance + your salon dashboard context when relevant.</span>
+                  <span class="copilot-guardrail">One Lexi mode: salon and beauty guidance plus your salon dashboard context when helpful.</span>
                 </div>
               </form>
               <section id="subscriberCopilotResult" class="copilot-result copilot-result-popup" aria-live="polite">
                 <div>
                   <h3>Latest Answer</h3>
-                  <div id="subscriberCopilotAnswer" class="copilot-answer">Ask a question about your bookings, team, waitlist or revenue and I’ll help you decide what to do next.</div>
+                  <div id="subscriberCopilotAnswer" class="copilot-answer">Ask about your bookings, team, waitlist, or revenue and Lexi will help you decide what to do next.</div>
                   <div id="subscriberCopilotLinks" class="copilot-answer-links" aria-label="Related business modules"></div>
                 </div>
               </section>
@@ -9500,8 +9501,8 @@
             <div>
               <h2 style="margin:0;">Lexi | Managed Business Command AI</h2>
               <p>
-                Your main AI assistant for managed-business oversight, diagnostics, subscriber issues, operational pressure,
-                and recommended next actions. Responses use safe, sanitized summaries only.
+                Your main AI assistant for managed business oversight, diagnostics, subscriber support, and operational pressure,
+                with recommended next actions. Replies use safe, sanitized summaries only.
               </p>
             </div>
             <span class="live-pill"><i class="live-dot"></i> Main AI assistant</span>
@@ -9552,7 +9553,7 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="adminCopilotOpenPopup" class="btn" type="button">Open AI Chat Window</button>
+            <button id="adminCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
             <span class="copilot-guardrail">Lexi can answer salon/beauty questions and use admin/managed-business context when relevant. No auto-fix actions.</span>
           </div>
           <div id="adminCopilotPopup" class="copilot-chat-popup-overlay" aria-hidden="true">
@@ -9626,7 +9627,7 @@
           <div class="business-profile-launch-grid">
             <article class="business-profile-launch-card">
               <h3>What this setup covers</h3>
-              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboard’s front desk context.</p>
+              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboardï¿½s front desk context.</p>
               <ul class="business-profile-launch-list">
                 <li>Company name, type, phone, email, and address</li>
                 <li>Website details, business description, and summary text</li>
@@ -9890,7 +9891,7 @@
         <div class="workspace-actions-grid">
           <button class="workspace-action-btn" type="button" data-module-jump="home">
             <strong>Home Overview</strong>
-            <small>Start here and check today’s priorities</small>
+            <small>Start here and check todayï¿½s priorities</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="calendar">
             <strong>Booking Diary</strong>
@@ -10036,6 +10037,9 @@
           <article class="growth-card growth-card-onboarding growth-card-feature" id="businessSetupHubCard">
             <h3>Business Hub &amp; Setup</h3>
             <p style="margin:0;color:var(--muted);">This is your main business control hub. Open the setup areas you need and keep your daily modules ready below.</p>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.45rem;">
+              <button type="button" class="btn" data-open-subscriber-lexi="hub_setup">Ask Lexi</button>
+            </div>
             <section class="hub-command-deck" aria-label="AI Business Command Deck">
               <div class="hub-command-head">
                 <div>
@@ -10118,7 +10122,10 @@
                   <h4>Business Modules</h4>
                   <p>Jump straight into the part of the business you want to work on. Keep setup folded away and use modules as your day-to-day control area.</p>
                 </div>
-                <span class="hub-module-badge">Main workspace</span>
+                <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
+                  <button type="button" class="btn" data-open-subscriber-lexi="business_modules">Ask Lexi</button>
+                  <span class="hub-module-badge">Main workspace</span>
+                </div>
               </div>
               <section class="module-navigator module-navigator-inline" id="moduleNavigatorSection">
                 <div>
@@ -10160,8 +10167,8 @@
               <label class="subscription-plan-select-wrap" for="subscriptionBillingCycle">
                 <span class="subscription-mini-label">Change Subscription</span>
                 <select id="subscriptionBillingCycle" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select subscription plan">
-                  <option value="monthly">Monthly - £29.99</option>
-                  <option value="yearly">Yearly - £299.99 (Save 16.6%)</option>
+                  <option value="monthly">Monthly - ï¿½29.99</option>
+                  <option value="yearly">Yearly - ï¿½299.99 (Save 16.6%)</option>
                 </select>
               </label>
               <select id="subscriptionBillingProvider" class="btn btn-ghost" style="display:none;padding-right:2.2rem;" aria-label="Select payment provider" hidden>
@@ -10588,7 +10595,7 @@
     </main>
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile dashboard navigation">
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="dashboardOverviewSection" data-mobile-nav-module="home">
-        <span class="mobile-nav-icon" aria-hidden="true">¦</span>
+        <span class="mobile-nav-icon" aria-hidden="true">ï¿½</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="subscriberCalendarSection" data-mobile-nav-module="calendar">
@@ -10617,7 +10624,7 @@
       </button>
 
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="dashboardOverviewSection">
-        <span class="mobile-nav-icon" aria-hidden="true">¦</span>
+        <span class="mobile-nav-icon" aria-hidden="true">ï¿½</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerSearchSection">
@@ -10648,7 +10655,7 @@
         </div>
         <div class="mobile-quick-sheet-grid">
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="home">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">¦</span><strong>Back to Dashboard</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">ï¿½</span><strong>Back to Dashboard</strong></span>
             <small>Return to your main Home view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="today">
