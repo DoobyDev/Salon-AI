@@ -3315,11 +3315,12 @@ async function buildAdminCopilotResponse({ question, snapshot }) {
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       temperature: 0.2,
+      max_tokens: 450,
       messages: [
         {
           role: "system",
           content:
-            "You are Lexi, an AI assistant for a salon SaaS admin dashboard. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Tone: sound human, natural, and helpful. Answer the user's actual question first in plain language. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user specifically asks for a report."
+            "You are Lexi, the lead AI receptionist and operations assistant for a salon SaaS admin dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, and easy to talk to. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Style rules: answer the user's question immediately in the first sentence, keep answers tight by default (1-4 short sentences unless they ask for detail), use plain language, and ask at most one follow-up question when needed. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user explicitly asks for a report."
         },
         {
           role: "user",
@@ -3507,10 +3508,10 @@ async function buildPublicLexiFallbackReply(message, business) {
   const serviceNames = services.map((s) => String(s?.name || "").trim()).filter(Boolean);
   const serviceExamples = serviceNames.length ? serviceNames.slice(0, 4).join(", ") : "haircuts, colour, barber services, and beauty treatments";
 
-  if (!q) {
+  if (false && !q) {
     return "Hi, I'm Lexi. I can answer questions about the app, how bookings work, what each dashboard/module does, and how to use Lexi. I can't share personal data.";
   }
-  if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+  if (false && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return "Hi, I'm Lexi. I can explain this app's features, bookings flow, dashboards, and how Lexi helps your business. I can't share personal data or private account information. What would you like to know?";
   }
 
@@ -3806,11 +3807,12 @@ async function buildSubscriberCopilotResponse({ question, snapshot }) {
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       temperature: 0.2,
+      max_tokens: 450,
       messages: [
         {
           role: "system",
           content:
-            "You are Lexi, an AI receptionist and business copilot for a salon SaaS dashboard. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Tone: human, warm, confident, and practical. Answer the user's question first in natural language, then add brief findings/actions only if helpful. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (1-4 short sentences unless asked for depth), sound like a high-performing receptionist not a report engine, and ask at most one follow-up question when needed. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
         },
         {
           role: "user",
@@ -5454,19 +5456,33 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
     if (!business && !openai) {
       return res.json({
-        reply: "I can help you find subscribed salon, barber, and beauty businesses. Tell me the business name or location and I can look for available slots.",
+        reply: "I can help with that. Tell me the salon, barber, or beauty business name (or the area), and I’ll look for subscribed businesses and available slots.",
         fallback: true
       });
     }
     if (!business) {
+      const shortFollowUp = userMessage.trim().split(/\s+/).filter(Boolean).length <= 5;
+      const likelyBusinessNameOnly = shortFollowUp && !isLexiAppQuestion(userMessageLower) && !/(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2})/i.test(userMessageLower);
+      if (likelyBusinessNameOnly) {
+        const matches = await searchPublicSubscribedBusinesses({ query: userMessage, limit: 5 });
+        if (matches.length) {
+          const summary = matches.slice(0, 4).map((row) => `${row.name} (${row.city})`).join(" | ");
+          return res.json({
+            reply: `I found ${matches.length} subscribed business${matches.length === 1 ? "" : "es"} matching "${userMessage}": ${summary}. Tell me which one you want and what day/date, and I’ll check available slots.`
+          });
+        }
+        return res.json({
+          reply: `I couldn't find a subscribed business matching "${userMessage}" right now. If you want, tell me the town/city and I’ll search nearby salons, barbers, or beauty businesses.`
+        });
+      }
       const looksFinderOrAvailability = /(find|search|salon|barber|beauty|slot|availability|available|free space|book\b|booking)/i.test(userMessageLower);
       if (looksFinderOrAvailability) {
         return res.json({
-          reply: "I can help with that, but I need a subscribed business to search from. Tell me a business name (for example SLH Cuts) or a location, and I’ll look for matching subscribed businesses and available slots."
+          reply: "I can help with that. First, tell me the business name (for example SLH Cuts) or the area you want, and I’ll look for subscribed businesses and available slots."
         });
       }
       return res.json({
-        reply: "I can answer app questions and help you find subscribed businesses, but I can’t see any subscribed business data right now. Try asking an app question, or tell me a business name/location to search."
+        reply: "I can answer app questions and help you find subscribed businesses. Right now I don’t have a business selected, so tell me a business name or location and I’ll search for you."
       });
     }
     if (!openai) {
@@ -5572,6 +5588,8 @@ Style:
 - answer like a real receptionist speaking naturally to a customer
 - respond to the user's actual question first before giving extra detail
 - avoid robotic phrases such as "I reviewed" / "the system indicates" / "snapshot"
+- keep replies quick and clear by default (usually 1-4 short sentences unless the user asks for more detail)
+- act like the star front-desk assistant: confident, helpful, and proactive without sounding salesy
 - if the question is real-time (weather/news/live prices) and you do not have live data, say so clearly and offer a useful alternative
 
 Rules:
@@ -5597,7 +5615,8 @@ Rules:
 
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      temperature: 0.3,
+      temperature: 0.2,
+      max_tokens: 450,
       messages,
       tools,
       tool_choice: "auto"

@@ -432,7 +432,7 @@ const frontDeskMock = {
     { label: "No-Show Rate", value: "3.6%" },
     { label: "Repeat Client Rate", value: "62%" }
   ],
-  aiChat: "Hi, I'm Lexi, your receptionist. I can help with bookings, service questions, and front desk support. How can I help today?"
+  aiChat: "Hi, I'm Lexi, your receptionist. I can help with app questions, bookings, available slots, and front desk support. How can I help today?"
 };
 
 const customerSalonDirectory = [
@@ -6802,7 +6802,7 @@ function initializeCustomerExperience() {
   customerReceptionTranscript = [
     {
       role: "ai",
-        text: "Hi, I'm Lexi, your receptionist. I can help with bookings, service questions, and front desk support. How can I help today?"
+        text: "Hi, I'm Lexi, your receptionist. I can help with app questions, bookings, available slots, and front desk support. How can I help today?"
     }
   ];
   renderCustomerSearchResults();
