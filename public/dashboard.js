@@ -6382,8 +6382,39 @@ function renderCustomerReceptionChat() {
   customerReceptionMessages.scrollTop = customerReceptionMessages.scrollHeight;
 }
 
+function normalizeCustomerLexiTypos(text) {
+  let message = normalizeText(text);
+  const aliases = [
+    ["moday", "monday"],
+    ["monay", "monday"],
+    ["wednsday", "wednesday"],
+    ["thurday", "thursday"],
+    ["thrusday", "thursday"],
+    ["frday", "friday"],
+    ["saterday", "saturday"],
+    ["sundey", "sunday"],
+    ["tomorow", "tomorrow"],
+    ["tommorow", "tomorrow"],
+    ["avaiable", "available"],
+    ["availble", "available"],
+    ["avialable", "available"],
+    ["availabilty", "availability"],
+    ["bokking", "booking"],
+    ["bookng", "booking"],
+    ["appoinment", "appointment"],
+    ["calender", "calendar"],
+    ["dashbord", "dashboard"],
+    ["subcriber", "subscriber"],
+    ["renenue", "revenue"]
+  ];
+  aliases.forEach(([wrong, correct]) => {
+    message = message.replaceAll(wrong, correct);
+  });
+  return message;
+}
+
 function getReceptionReply(inputText) {
-  const message = normalizeText(inputText);
+  const message = normalizeCustomerLexiTypos(inputText);
   const salon = getSelectedCustomerSalon();
   if (!message) return "Please type your question and I can help.";
   if (/(password|api key|token|secret|all customers|customer list|phone numbers|emails|addresses|personal data|private data)/.test(message)) {

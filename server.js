@@ -3168,7 +3168,7 @@ app.get("/api/admin/businesses", authRequired, requireRole("admin"), async (_req
 
 function buildAdminCopilotHeuristicResponse(question, snapshot) {
   const q = String(question || "").trim();
-  const qLower = q.toLowerCase();
+  const qLower = normalizeLexiTypos(q.toLowerCase());
   const findings = [];
   const suggestedFixes = [];
   const platform = snapshot?.platform || {};
@@ -3373,7 +3373,7 @@ function nextDateForWeekday(weekdayIndex, fromDate = new Date()) {
 }
 
 function weekdayFromText(text) {
-  const q = String(text || "").toLowerCase();
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
   const map = [
     ["sunday", 0],
     ["monday", 1],
@@ -3387,14 +3387,57 @@ function weekdayFromText(text) {
   return hit ? hit[1] : null;
 }
 
+function normalizeLexiTypos(text) {
+  let q = String(text || "").toLowerCase();
+  const aliases = [
+    ["moday", "monday"],
+    ["monay", "monday"],
+    ["monda", "monday"],
+    ["tuseday", "tuesday"],
+    ["tuesay", "tuesday"],
+    ["wednsday", "wednesday"],
+    ["wedesday", "wednesday"],
+    ["wensday", "wednesday"],
+    ["thurday", "thursday"],
+    ["thrusday", "thursday"],
+    ["thurdsay", "thursday"],
+    ["frday", "friday"],
+    ["saterday", "saturday"],
+    ["satarday", "saturday"],
+    ["sundey", "sunday"],
+    ["tomorow", "tomorrow"],
+    ["tommorow", "tomorrow"],
+    ["avaiable", "available"],
+    ["availble", "available"],
+    ["avialable", "available"],
+    ["availabilty", "availability"],
+    ["slto", "slot"],
+    ["sltos", "slots"],
+    ["bokking", "booking"],
+    ["boooking", "booking"],
+    ["bookng", "booking"],
+    ["appoinment", "appointment"],
+    ["calender", "calendar"],
+    ["dashbord", "dashboard"],
+    ["deashboard", "dashboard"],
+    ["subcriber", "subscriber"],
+    ["recptionist", "receptionist"],
+    ["renenue", "revenue"]
+  ];
+  for (const [wrong, correct] of aliases) {
+    q = q.replaceAll(wrong, correct);
+  }
+  return q;
+}
+
 function isLexiAppQuestion(text) {
-  const q = String(text || "").toLowerCase();
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
   if (!q) return false;
   return /(app|lexi|dashboard|signup|sign up|register|login|log in|\bbook\b|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
 }
 
 function isLexiPublicAvailabilityQuestion(text) {
-  const q = String(text || "").toLowerCase();
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
   return /(available|availability|slots?|space)/.test(q) && /(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2}|\bnext\b)/.test(q);
 }
 
@@ -3403,7 +3446,7 @@ function formatCurrencyGBP(amount) {
 }
 
 function resolveLexiDateKeyFromQuestion(question, now = new Date()) {
-  const q = String(question || "").toLowerCase();
+  const q = normalizeLexiTypos(String(question || "").toLowerCase());
   if (/\btomorrow\b/.test(q)) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
     return d.toISOString().slice(0, 10);
@@ -3502,7 +3545,7 @@ async function searchPublicSubscribedBusinesses({ query = "", location = "", ser
 
 async function buildPublicLexiFallbackReply(message, business) {
   const q = String(message || "").trim();
-  const qLower = q.toLowerCase();
+  const qLower = normalizeLexiTypos(q.toLowerCase());
   const bizName = String(business?.name || "the salon").trim() || "the salon";
   const services = Array.isArray(business?.services) ? business.services.slice(0, 6) : [];
   const serviceNames = services.map((s) => String(s?.name || "").trim()).filter(Boolean);
@@ -3674,7 +3717,7 @@ async function buildPublicLexiFallbackReplySafe(message, business) {
 
 function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
   const q = String(question || "").trim();
-  const qLower = q.toLowerCase();
+  const qLower = normalizeLexiTypos(q.toLowerCase());
   const business = snapshot?.business || {};
   const bookings = snapshot?.bookings || {};
   const findings = [];
