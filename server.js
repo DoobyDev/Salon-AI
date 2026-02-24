@@ -3389,11 +3389,97 @@ function weekdayFromText(text) {
 function isLexiAppQuestion(text) {
   const q = String(text || "").toLowerCase();
   if (!q) return false;
-  return /(app|lexi|dashboard|signup|sign up|register|login|log in|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do)/.test(q);
+  return /(app|lexi|dashboard|signup|sign up|register|login|log in|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
+}
+
+function isLexiPublicAvailabilityQuestion(text) {
+  const q = String(text || "").toLowerCase();
+  return /(available|availability|slots?|space)/.test(q) && /(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2}|\bnext\b)/.test(q);
 }
 
 function formatCurrencyGBP(amount) {
   return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(amount || 0));
+}
+
+function isPublicSubscriptionStatus(status) {
+  const normalized = String(status || "").toLowerCase();
+  return ["active", "trialing", "trial", "past_due"].includes(normalized);
+}
+
+function mapPublicBusinessProfile(business) {
+  if (!business) return null;
+  return {
+    id: business.id,
+    name: business.name,
+    type: business.type,
+    city: business.city,
+    country: business.country,
+    postcode: business.postcode,
+    address: business.address,
+    rating: Number(business.rating || 0),
+    description: business.description || "",
+    phone: business.phone || "",
+    email: business.email || "",
+    websiteUrl: business.websiteUrl || null,
+    websiteTitle: business.websiteTitle || null,
+    websiteSummary: business.websiteSummary || null,
+    hours: parseHours(business.hoursJson),
+    services: Array.isArray(business.services)
+      ? business.services.map((s) => ({ name: s.name, durationMin: Number(s.durationMin || 0), price: Number(s.price || 0) }))
+      : []
+  };
+}
+
+async function searchPublicSubscribedBusinesses({ query = "", location = "", service = "", businessType = "", limit = 5 } = {}) {
+  const q = String(query || "").trim();
+  const loc = String(location || "").trim();
+  const svc = String(service || "").trim();
+  const type = String(businessType || "").trim();
+  const take = Math.min(10, Math.max(1, Number(limit || 5)));
+  const andFilters = [];
+  if (q) {
+    andFilters.push({
+      OR: [
+        { name: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } }
+      ]
+    });
+  }
+  if (loc) {
+    andFilters.push({
+      OR: [
+        { city: { contains: loc, mode: "insensitive" } },
+        { country: { contains: loc, mode: "insensitive" } },
+        { postcode: { contains: loc, mode: "insensitive" } }
+      ]
+    });
+  }
+  if (type) {
+    andFilters.push({ type: { in: businessTypeSearchValues(type) } });
+  }
+  if (svc) {
+    andFilters.push({
+      services: { some: { name: { contains: svc, mode: "insensitive" } } }
+    });
+  }
+
+  const rows = await prisma.business.findMany({
+    where: {
+      AND: andFilters,
+      subscription: {
+        is: {
+          status: { in: ["active", "trialing", "trial", "past_due"] }
+        }
+      }
+    },
+    include: {
+      services: { orderBy: [{ createdAt: "asc" }, { name: "asc" }] },
+      subscription: true
+    },
+    orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+    take
+  });
+  return rows.map(mapPublicBusinessProfile);
 }
 
 async function buildPublicLexiFallbackReply(message, business) {
@@ -3417,8 +3503,35 @@ async function buildPublicLexiFallbackReply(message, business) {
   if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
   }
-  if (!isLexiAppQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
+  if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
     return "I can answer questions about the app and how it works (features, bookings flow, dashboards, Lexi, setup, and business tools), but I can't answer unrelated questions in this chat.";
+  }
+  if (/(find|search|show).*(salon|barber|barbershop|beauty)/.test(qLower)) {
+    const locationMatch = q.match(/\b(?:in|near)\s+([a-zA-Z\s'-]{2,40})$/i);
+    const location = locationMatch ? String(locationMatch[1] || "").trim() : "";
+    const typeMatch = qLower.includes("barber")
+      ? "barber"
+      : qLower.includes("beauty")
+        ? "beauty"
+        : "salon";
+    const results = await searchPublicSubscribedBusinesses({ location, businessType: typeMatch, limit: 5 });
+    if (!results.length) {
+      return `I couldn't find any subscribed ${typeMatch} businesses${location ? ` near ${location}` : ""} right now. Try another location or ask me to search by service.`;
+    }
+    const lines = results.slice(0, 4).map((b) => `${b.name} (${b.city})${b.services?.length ? ` - services include ${b.services.slice(0, 2).map((s) => s.name).join(", ")}` : ""}`);
+    return `I found ${results.length} subscribed ${typeMatch} business${results.length === 1 ? "" : "es"}${location ? ` near ${location}` : ""}: ${lines.join(" | ")}. Ask me to check availability for one of them by name.`;
+  }
+  if (/(show|tell me|give me).*(info|information|details).*(for|about)\s+/.test(qLower) || /(about)\s+[a-z0-9\s'&-]+$/.test(qLower)) {
+    const aboutMatch = q.match(/(?:for|about)\s+([a-z0-9\s'&.-]{2,60})$/i);
+    const targetName = String(aboutMatch?.[1] || "").trim();
+    if (targetName) {
+      const matches = await searchPublicSubscribedBusinesses({ query: targetName, limit: 3 });
+      const exact = matches.find((b) => String(b.name || "").toLowerCase() === targetName.toLowerCase()) || matches[0];
+      if (exact) {
+        const servicePreview = (exact.services || []).slice(0, 4).map((s) => s.name).join(", ");
+        return `${exact.name} is a subscribed ${exact.type} business in ${exact.city}. ${exact.description || ""}${servicePreview ? ` Services include ${servicePreview}.` : ""} ${exact.phone ? `Phone: ${exact.phone}.` : ""}${exact.websiteUrl ? ` Website: ${exact.websiteUrl}.` : ""} Ask me to check available slots if you'd like to book.`;
+      }
+    }
   }
   if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
@@ -5279,10 +5392,18 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       });
       return res.json({ reply: `The time is ${formattedTime}.` });
     }
-    business = await prisma.business.findUnique({
-      where: { id: businessId || undefined },
-      include: { services: true }
-    }) || (await prisma.business.findFirst({ include: { services: true } }));
+    business = await prisma.business.findFirst({
+      where: businessId
+        ? {
+            id: businessId,
+            subscription: { is: { status: { in: ["active", "trialing", "trial", "past_due"] } } }
+          }
+        : {
+            subscription: { is: { status: { in: ["active", "trialing", "trial", "past_due"] } } }
+          },
+      include: { services: true, subscription: true },
+      orderBy: [{ rating: "desc" }, { createdAt: "desc" }]
+    }) || (businessId ? null : (await prisma.business.findFirst({ include: { services: true, subscription: true } })));
 
     if (!business) return res.status(500).json({ error: "No business configured." });
     if (!openai) {
@@ -5296,6 +5417,37 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     });
 
     const tools = [
+      {
+        type: "function",
+        function: {
+          name: "search_public_businesses",
+          description: "Search subscribed salon, barber, or beauty businesses using public information only.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: { type: "string", description: "Business name or search phrase." },
+              location: { type: "string", description: "City, postcode, or area." },
+              service: { type: "string", description: "Optional service to search for." },
+              business_type: { type: "string", description: "salon, barber, or beauty" },
+              limit: { type: "number", description: "Max results 1-10" }
+            }
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "get_business_public_profile",
+          description: "Get public profile information for a subscribed business by id or name.",
+          parameters: {
+            type: "object",
+            properties: {
+              business_id: { type: "string" },
+              business_name: { type: "string" }
+            }
+          }
+        }
+      },
       {
         type: "function",
         function: {
@@ -5340,10 +5492,12 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         role: "system",
         content: `You are Lexi, the confident and highly knowledgeable AI Salon Receptionist for ${business.name}.
 
-You are an expert guide for this salon AI receptionist app. Your public chat role is to explain how the app works, how Lexi works, and how bookings/front-desk features work.
+You are an expert guide for this salon AI receptionist app. Your public chat role is to explain how the app works, help users find subscribed salon/barber/beauty businesses, and help them check slots or book appointments using public business information only.
 You can answer app questions in a ChatGPT-style conversation, but you should not answer unrelated general-world questions in this public chat.
 You can:
 - answer app and feature questions clearly
+- help users find subscribed businesses by name/location/service
+- provide public business profile information
 - explain the booking, confirmation, and dashboard workflows
 - check available booking slots
 - collect booking details and confirm bookings
@@ -5359,8 +5513,11 @@ Style:
 
 Rules:
 - keep this public chat focused on app information and app workflows
+- you may also help users discover subscribed businesses and book with them using public business info and open availability only
 - if the user asks an unrelated question, politely explain that this chat is for app questions and invite an app-related question
 - never invent unavailable services, prices, or slots
+- use search_public_businesses when the user asks to find salons/barbers/beauty businesses
+- use get_business_public_profile when the user asks about a specific business
 - use check_available_slots when the user asks about times/availability
 - use create_booking only when required booking details are complete
 - only confirm a booking after create_booking succeeds
@@ -5386,14 +5543,65 @@ Rules:
     const choice = completion.choices?.[0]?.message;
     if (choice?.tool_calls?.length) {
       const call = choice.tool_calls[0];
+      if (call.function?.name === "search_public_businesses") {
+        const args = JSON.parse(call.function.arguments || "{}");
+        const results = await searchPublicSubscribedBusinesses({
+          query: String(args.query || "").trim(),
+          location: String(args.location || "").trim(),
+          service: String(args.service || "").trim(),
+          businessType: String(args.business_type || "").trim(),
+          limit: Number(args.limit || 5)
+        });
+        if (!results.length) {
+          return res.json({ reply: "I couldn't find any subscribed businesses matching that search yet. Try another location, business name, or service." });
+        }
+        const summary = results.slice(0, 5).map((b) => {
+          const servicesPreview = (b.services || []).slice(0, 3).map((s) => s.name).join(", ");
+          return `${b.name} (${b.type}, ${b.city})${servicesPreview ? ` - ${servicesPreview}` : ""}`;
+        }).join(" | ");
+        return res.json({
+          reply: `I found ${results.length} subscribed business${results.length === 1 ? "" : "es"}: ${summary}. Tell me which one you want, and I can check available slots.`,
+          businesses: results
+        });
+      }
+      if (call.function?.name === "get_business_public_profile") {
+        const args = JSON.parse(call.function.arguments || "{}");
+        const id = String(args.business_id || "").trim();
+        const name = String(args.business_name || "").trim();
+        const target = id
+          ? await prisma.business.findUnique({
+              where: { id },
+              include: { services: true, subscription: true }
+            })
+          : (await prisma.business.findFirst({
+              where: {
+                name: { contains: name, mode: "insensitive" },
+                subscription: { is: { status: { in: ["active", "trialing", "trial", "past_due"] } } }
+              },
+              include: { services: true, subscription: true },
+              orderBy: [{ rating: "desc" }, { createdAt: "desc" }]
+            }));
+        if (!target || !isPublicSubscriptionStatus(target.subscription?.status)) {
+          return res.json({ reply: "I couldn't find a subscribed business with that name. Try the business finder first and I can list matching businesses." });
+        }
+        const profile = mapPublicBusinessProfile(target);
+        const servicePreview = profile.services.slice(0, 5).map((s) => `${s.name} (${s.durationMin} min${Number.isFinite(s.price) ? `, ${formatCurrencyGBP(s.price)}` : ""})`).join(", ");
+        return res.json({
+          reply: `${profile.name} is a ${profile.type} business in ${profile.city}. ${profile.description || ""}${servicePreview ? ` Services: ${servicePreview}.` : ""} ${profile.phone ? `Phone: ${profile.phone}.` : ""}${profile.websiteUrl ? ` Website: ${profile.websiteUrl}.` : ""} Ask me to check slots if you'd like to book.`,
+          businessProfile: profile
+        });
+      }
       if (call.function?.name === "check_available_slots") {
         const args = JSON.parse(call.function.arguments || "{}");
         const targetBusinessId = String(args.business_id || business.id);
         const target = await prisma.business.findUnique({
           where: { id: targetBusinessId },
-          include: { services: true }
+          include: { services: true, subscription: true }
         });
         if (!target) return res.status(404).json({ error: "Selected business not found." });
+        if (!isPublicSubscriptionStatus(target.subscription?.status)) {
+          return res.json({ reply: "I can only check slots for subscribed businesses in this public chat. Please choose a subscribed business first." });
+        }
         const requestedDate = String(args.date || "").trim();
         const daysAheadRaw = Number(args.days_ahead);
         const limitRaw = Number(args.limit);
@@ -5419,9 +5627,12 @@ Rules:
         const targetBusinessId = String(args.business_id || business.id);
         const target = await prisma.business.findUnique({
           where: { id: targetBusinessId },
-          include: { services: true }
+          include: { services: true, subscription: true }
         });
         if (!target) return res.status(404).json({ error: "Selected business not found." });
+        if (!isPublicSubscriptionStatus(target.subscription?.status)) {
+          return res.json({ reply: "I can only create bookings for subscribed businesses in this public chat." });
+        }
         const normalized = normalizeBookingDateTime(args.date, args.time);
         if (!normalized) return res.status(400).json({ error: "Invalid date/time format from assistant." });
         if (!isValidPhone(String(args.phone || "").trim())) {
