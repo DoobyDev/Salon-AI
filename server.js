@@ -3389,7 +3389,7 @@ function weekdayFromText(text) {
 function isLexiAppQuestion(text) {
   const q = String(text || "").toLowerCase();
   if (!q) return false;
-  return /(app|lexi|dashboard|signup|sign up|register|login|log in|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
+  return /(app|lexi|dashboard|signup|sign up|register|login|log in|\bbook\b|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
 }
 
 function isLexiPublicAvailabilityQuestion(text) {
@@ -3399,6 +3399,23 @@ function isLexiPublicAvailabilityQuestion(text) {
 
 function formatCurrencyGBP(amount) {
   return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(amount || 0));
+}
+
+function resolveLexiDateKeyFromQuestion(question, now = new Date()) {
+  const q = String(question || "").toLowerCase();
+  if (/\btomorrow\b/.test(q)) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  }
+  if (/\btoday\b/.test(q)) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return d.toISOString().slice(0, 10);
+  }
+  const explicit = q.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  if (explicit) return explicit[1];
+  const weekday = weekdayFromText(q);
+  if (weekday !== null) return nextDateForWeekday(weekday, now).toISOString().slice(0, 10);
+  return "";
 }
 
 function isPublicSubscriptionStatus(status) {
@@ -3532,6 +3549,36 @@ async function buildPublicLexiFallbackReply(message, business) {
         return `${exact.name} is a subscribed ${exact.type} business in ${exact.city}. ${exact.description || ""}${servicePreview ? ` Services include ${servicePreview}.` : ""} ${exact.phone ? `Phone: ${exact.phone}.` : ""}${exact.websiteUrl ? ` Website: ${exact.websiteUrl}.` : ""} Ask me to check available slots if you'd like to book.`;
       }
     }
+  }
+  if (/\bbook\b/.test(qLower) && /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2})\b/.test(qLower)) {
+    let targetBusiness = business;
+    const atMatch = q.match(/\bat\s+([a-z0-9\s'&.-]{2,50})/i);
+    const requestedName = String(atMatch?.[1] || "").trim();
+    if (requestedName) {
+      const found = await prisma.business.findFirst({
+        where: {
+          name: { contains: requestedName, mode: "insensitive" },
+          subscription: { is: { status: { in: ["active", "trialing", "trial", "past_due"] } } }
+        },
+        include: { services: true, subscription: true },
+        orderBy: [{ rating: "desc" }, { createdAt: "desc" }]
+      });
+      if (found) targetBusiness = found;
+    }
+    if (!targetBusiness?.id) {
+      return "I can help with that. Tell me the salon, barber, or beauty business name, and I’ll check available slots for the day you want.";
+    }
+    const dateKey = resolveLexiDateKeyFromQuestion(qLower);
+    if (!dateKey) {
+      return `I can help you book at ${targetBusiness.name}. Tell me the day or date you want (for example tomorrow, Monday, or 2026-02-24) and I'll check slots.`;
+    }
+    const slots = await getAvailableSlotsForBusiness(targetBusiness, 14);
+    const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
+    const labelDate = new Date(`${dateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+    if (!filtered.length) {
+      return `I can’t see any available slots for ${targetBusiness.name} on ${labelDate}. If you want, I can check another day or help you find another subscribed business.`;
+    }
+    return `Yes, you can book at ${targetBusiness.name} on ${labelDate}. Available slots I can see are: ${filtered.join(", ")}. Tell me your service and preferred time, and I can help you book it.`;
   }
   if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
