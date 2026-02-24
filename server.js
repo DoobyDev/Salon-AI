@@ -3780,6 +3780,10 @@ async function buildPublicLexiFallbackReply(message, business) {
   if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
   }
+  const shortReplyWordCount = q.split(/\s+/).filter(Boolean).length;
+  if (business?.id && shortReplyWordCount > 0 && shortReplyWordCount <= 6 && /(\bbest\b|\bthat\b|\byes\b|\byeah\b|\bok\b|\bokay\b|\bsure\b|\bworks\b|\bnorth\b|\bsouth\b|\beast\b|\bwest\b)/.test(qLower)) {
+    return `Perfect. ${bizName} works. What service would you like to book, and what day/time suits you best?`;
+  }
   if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !isLexiSalonBeautyQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
     return "I can help with app questions, salon/barber/beauty service guidance, public business info, and booking availability. I can’t share private or personal data in chat.";
   }
