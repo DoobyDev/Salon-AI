@@ -5452,7 +5452,23 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       orderBy: [{ rating: "desc" }, { createdAt: "desc" }]
     }) || (businessId ? null : (await prisma.business.findFirst({ include: { services: true, subscription: true } })));
 
-    if (!business) return res.status(500).json({ error: "No business configured." });
+    if (!business && !openai) {
+      return res.json({
+        reply: "I can help you find subscribed salon, barber, and beauty businesses. Tell me the business name or location and I can look for available slots.",
+        fallback: true
+      });
+    }
+    if (!business) {
+      const looksFinderOrAvailability = /(find|search|salon|barber|beauty|slot|availability|available|free space|book\b|booking)/i.test(userMessageLower);
+      if (looksFinderOrAvailability) {
+        return res.json({
+          reply: "I can help with that, but I need a subscribed business to search from. Tell me a business name (for example SLH Cuts) or a location, and I’ll look for matching subscribed businesses and available slots."
+        });
+      }
+      return res.json({
+        reply: "I can answer app questions and help you find subscribed businesses, but I can’t see any subscribed business data right now. Try asking an app question, or tell me a business name/location to search."
+      });
+    }
     if (!openai) {
       return res.json({ reply: await buildPublicLexiFallbackReplySafe(userMessage, business), fallback: true });
     }
