@@ -3386,6 +3386,16 @@ function weekdayFromText(text) {
   return hit ? hit[1] : null;
 }
 
+function isLexiAppQuestion(text) {
+  const q = String(text || "").toLowerCase();
+  if (!q) return false;
+  return /(app|lexi|dashboard|signup|sign up|register|login|log in|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do)/.test(q);
+}
+
+function formatCurrencyGBP(amount) {
+  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(amount || 0));
+}
+
 async function buildPublicLexiFallbackReply(message, business) {
   const q = String(message || "").trim();
   const qLower = q.toLowerCase();
@@ -3395,10 +3405,20 @@ async function buildPublicLexiFallbackReply(message, business) {
   const serviceExamples = serviceNames.length ? serviceNames.slice(0, 4).join(", ") : "haircuts, colour, barber services, and beauty treatments";
 
   if (!q) {
+    return "Hi, I'm Lexi. I can answer questions about the app, how bookings work, what each dashboard/module does, and how to use Lexi. I can't share personal data.";
+  }
+  if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+    return "Hi, I'm Lexi. I can explain this app's features, bookings flow, dashboards, and how Lexi helps your business. I can't share personal data or private account information. What would you like to know?";
+  }
+
+  if (!q) {
     return "Hi, I’m Lexi. I can help with bookings, service questions, salon guidance, and how to use the app. What would you like help with?";
   }
   if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
+  }
+  if (!isLexiAppQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
+    return "I can answer questions about the app and how it works (features, bookings flow, dashboards, Lexi, setup, and business tools), but I can't answer unrelated questions in this chat.";
   }
   if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
@@ -3433,6 +3453,26 @@ async function buildPublicLexiFallbackReply(message, business) {
       }
       return `Yes, there are available slots for ${bizName} on ${label}. Here are some times: ${filtered.join(", ")}.`;
     }
+  }
+  if (/(today'?s|today).*(revenue|renenue|takings|sales)|\b(revenue|renenue|takings|sales)\b.*\btoday\b/.test(qLower)) {
+    if (business?.id) {
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const rows = await prisma.booking.findMany({
+        where: { businessId: business.id, date: todayKey },
+        select: { status: true, price: true, service: true }
+      });
+      const completedOrConfirmed = rows.filter((r) => {
+        const status = String(r.status || "").toLowerCase();
+        return status === "confirmed" || status === "completed";
+      });
+      const cancelled = rows.filter((r) => String(r.status || "").toLowerCase() === "cancelled").length;
+      const revenue = completedOrConfirmed.reduce((sum, row) => sum + Number(row.price || 0), 0);
+      if (!rows.length) {
+        return `I can’t see any bookings for ${bizName} today yet, so there’s no booking revenue recorded for today right now.`;
+      }
+      return `For ${bizName} today, I can see ${rows.length} booking${rows.length === 1 ? "" : "s"}${cancelled ? ` (${cancelled} cancelled)` : ""} and an estimated booking revenue of ${formatCurrencyGBP(revenue)} from confirmed/completed appointments.`;
+    }
+    return "I can help with today’s revenue/takings, but I need a business context to check booking-based revenue.";
   }
   if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower)) {
     return `I can help with that. Tell me the service you want, your preferred date, and roughly what time, and I’ll help you check availability for ${bizName}.`;
@@ -5300,11 +5340,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         role: "system",
         content: `You are Lexi, the confident and highly knowledgeable AI Salon Receptionist for ${business.name}.
 
-You are an expert in hair salons, barbershops, and beauty businesses, including common services, booking flow, aftercare basics, and product guidance.
-You can also answer general salon, barber, beauty, and business questions in a ChatGPT-style conversation, including questions about how the app and Lexi work.
+You are an expert guide for this salon AI receptionist app. Your public chat role is to explain how the app works, how Lexi works, and how bookings/front-desk features work.
+You can answer app questions in a ChatGPT-style conversation, but you should not answer unrelated general-world questions in this public chat.
 You can:
-- answer service and product questions clearly
-- help customers choose suitable services
+- answer app and feature questions clearly
+- explain the booking, confirmation, and dashboard workflows
 - check available booking slots
 - collect booking details and confirm bookings
 
@@ -5318,6 +5358,8 @@ Style:
 - if the question is real-time (weather/news/live prices) and you do not have live data, say so clearly and offer a useful alternative
 
 Rules:
+- keep this public chat focused on app information and app workflows
+- if the user asks an unrelated question, politely explain that this chat is for app questions and invite an app-related question
 - never invent unavailable services, prices, or slots
 - use check_available_slots when the user asks about times/availability
 - use create_booking only when required booking details are complete
@@ -5449,13 +5491,26 @@ Rules:
     const code = String(error?.error?.code || error?.code || "");
     const message = String(error?.error?.message || error?.message || "");
     console.error("Chat error:", status || "", code || "", message || "");
+    const safePublicFallback = async () => {
+      try {
+        if (business) {
+          return res.json({
+            reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
+            fallback: true
+          });
+        }
+      } catch (fallbackError) {
+        console.error("Chat fallback error:", fallbackError?.message || fallbackError);
+      }
+      return res.json({
+        reply: "I can answer questions about the app and how to use it, but I hit a temporary issue just now. Please try again.",
+        fallback: true
+      });
+    };
 
     if (status === 429 || code === "insufficient_quota") {
       if (business) {
-        return res.json({
-          reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
-          fallback: true
-        });
+        return safePublicFallback();
       }
       return res.status(429).json({
         error: "OpenAI quota exceeded. Please add billing/credits in your OpenAI project."
@@ -5463,20 +5518,14 @@ Rules:
     }
     if (status === 401) {
       if (business) {
-        return res.json({
-          reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
-          fallback: true
-        });
+        return safePublicFallback();
       }
       return res.status(401).json({
         error: "OpenAI authentication failed. Check OPENAI_API_KEY in .env."
       });
     }
     if (business) {
-      return res.json({
-        reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
-        fallback: true
-      });
+      return safePublicFallback();
     }
     return res.status(500).json({ error: "Failed to process chat request." });
   }
