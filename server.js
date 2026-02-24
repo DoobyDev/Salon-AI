@@ -579,14 +579,20 @@ async function ensureLexiDemoSubscribedBusinesses() {
   });
   if (activeCount > 0 && !forceSeed) return;
 
-  const deletedSlh = await prisma.business.deleteMany({
-    where: { name: { equals: "SLH Cuts", mode: "insensitive" } }
+  const slhRows = await prisma.business.findMany({
+    where: { name: { contains: "slh cuts", mode: "insensitive" } },
+    select: { id: true }
   });
+  const deletedSlh = slhRows.length
+    ? await prisma.business.deleteMany({
+        where: { id: { in: slhRows.map((row) => row.id) } }
+      })
+    : { count: 0 };
 
   const seedBusinesses = buildLexiDemoSeedBusinesses();
   for (const row of seedBusinesses) {
     const existing = await prisma.business.findFirst({
-      where: { name: { equals: row.name, mode: "insensitive" } },
+      where: { name: { contains: row.name, mode: "insensitive" } },
       include: { services: true }
     });
     const businessType = normalizeBusinessType(row.type);
