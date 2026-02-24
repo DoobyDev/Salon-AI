@@ -3420,7 +3420,7 @@ async function buildPublicLexiFallbackReply(message, business) {
       return `Yes, ${bizName} has ${rows.length} booking${rows.length === 1 ? "" : "s"} on ${label}${cancelled ? ` (${cancelled} cancelled)` : ""}. ${preview ? `The first bookings I can see are: ${preview}.` : ""}`;
     }
   }
-  if (/(available|availability|slots?).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bslots?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
+  if (/(available|availability|slots?|space).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\b(slots?|space)\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
     if (weekday !== null && business?.id) {
       const target = nextDateForWeekday(weekday);
@@ -3460,6 +3460,15 @@ async function buildPublicLexiFallbackReply(message, business) {
   }
 
   return "I can help with salon and beauty questions, booking guidance, product/aftercare basics, and how to use the app. Ask me anything, and if it’s a booking request, include the service, date, and time you want.";
+}
+
+async function buildPublicLexiFallbackReplySafe(message, business) {
+  try {
+    return await buildPublicLexiFallbackReply(message, business);
+  } catch (error) {
+    console.error("Lexi fallback reply error:", error?.message || error);
+    return "I can still help, but I hit a temporary issue while checking that. Try asking again, or tell me the service and date you want and I’ll help step by step.";
+  }
 }
 
 function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
@@ -5237,7 +5246,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
     if (!business) return res.status(500).json({ error: "No business configured." });
     if (!openai) {
-      return res.json({ reply: await buildPublicLexiFallbackReply(userMessage, business), fallback: true });
+      return res.json({ reply: await buildPublicLexiFallbackReplySafe(userMessage, business), fallback: true });
     }
     await writeAuditLog({
       actorRole: "anonymous",
@@ -5444,7 +5453,7 @@ Rules:
     if (status === 429 || code === "insufficient_quota") {
       if (business) {
         return res.json({
-          reply: await buildPublicLexiFallbackReply(userMessage, business),
+          reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
           fallback: true
         });
       }
@@ -5455,7 +5464,7 @@ Rules:
     if (status === 401) {
       if (business) {
         return res.json({
-          reply: await buildPublicLexiFallbackReply(userMessage, business),
+          reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
           fallback: true
         });
       }
@@ -5465,7 +5474,7 @@ Rules:
     }
     if (business) {
       return res.json({
-        reply: await buildPublicLexiFallbackReply(userMessage, business),
+        reply: await buildPublicLexiFallbackReplySafe(userMessage, business),
         fallback: true
       });
     }
