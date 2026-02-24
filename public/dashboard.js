@@ -6421,7 +6421,7 @@ function getReceptionReply(inputText) {
     return "I can help with app and booking questions, but I can’t share personal data, private account details, or security information.";
   }
   if (/(how does this app work|what can lexi do|what can the app do|dashboard|module|modules|subscriber|admin|customer dashboard|demo mode|booking confirmation|pending booking|notification|notifications|how .*work|gdpr|privacy|data protection|lexi)/.test(message)) {
-    return "I can explain how the app works, what each dashboard/module does, how Lexi helps with bookings and front desk support, and how booking confirmations/notifications work. I can’t share personal data, but I can explain the features and workflow.";
+    return "Absolutely. I can explain how the app works, what each dashboard/module does, how Lexi supports bookings and front desk tasks, and how confirmations/notifications work. I can’t share personal data, but I can guide you through the features and workflow clearly.";
   }
   if (/(find|search).*(salon|barber|beauty)|business search/.test(message)) {
     return "Use the business search filters to find salons, barbers, or beauty businesses by name, service, location, rating, and date. Once you select a business, I can help with slots, services, and booking guidance.";
@@ -6429,11 +6429,11 @@ function getReceptionReply(inputText) {
   if (message.includes("slot") || message.includes("available") || message.includes("book")) {
     if (!salon) return "Select a business first and I can walk you through available slots.";
     if (message.includes("confirm")) {
-      return "Bookings can be created from the available slots shown. Some businesses may use a pending confirmation flow, where the salon confirms the booking and then the customer gets a confirmation update.";
+      return "Bookings can be created from the available slots shown. Some businesses use a pending confirmation flow, where the salon confirms the appointment first and then you receive a confirmation update.";
     }
     const nextSlot = salon.availableSlots[0];
     return nextSlot
-      ? `${salon.name} has upcoming availability at ${nextSlot}.`
+      ? `${salon.name} currently has availability at ${nextSlot}. If you'd like, I can help you choose the best time based on your schedule.`
       : `${salon.name} has no open slots listed right now.`;
   }
   if (message.includes("phone") || message.includes("email") || message.includes("contact")) {
@@ -6442,7 +6442,10 @@ function getReceptionReply(inputText) {
   }
   if (message.includes("service")) {
     if (!salon) return "Select a business first and I can list services.";
-    return `${salon.name} services include ${salon.services.join(", ")}.`;
+    return `${salon.name} offers services including ${salon.services.join(", ")}. If you tell me what result you’re looking for, I can suggest the best option.`;
+  }
+  if (/(policy|deposit|late|cancellation|cancelation|no show|no-show)/.test(message)) {
+    return "I can help explain booking policies such as deposits, late arrivals, cancellations, and no-shows. If you tell me which policy you want to check, I’ll guide you through it.";
   }
   if (message.includes("calendar") || message.includes("planner")) {
     return "The Lexi Booking Calendar Planner helps you view Day, Week, and Month booking/slot availability, compare dates, and ask Lexi for recommendations on the best time to book.";
@@ -6450,7 +6453,7 @@ function getReceptionReply(inputText) {
   if (message.includes("bookings") || message.includes("appointment")) {
     return "I can help with booking questions, available slots, business search, services, contact details, and how booking confirmations work in the app.";
   }
-  return "I can help with app questions, booking guidance, business search, available slots, services, contact details, and how the booking workflow works.";
+  return "I can help with app questions, booking guidance, business search, available slots, services, policies, contact details, and how the booking workflow works.";
 }
 
 function parseCustomerSlotEntry(value) {

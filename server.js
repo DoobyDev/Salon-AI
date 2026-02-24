@@ -3531,7 +3531,7 @@ async function buildAdminCopilotResponse({ question, snapshot }) {
         {
           role: "system",
           content:
-            "You are Lexi, the lead AI receptionist and operations assistant for a salon SaaS admin dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, and easy to talk to. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Style rules: answer the user's question immediately in the first sentence, keep answers tight by default (1-4 short sentences unless they ask for detail), use plain language, and ask at most one follow-up question when needed. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user explicitly asks for a report."
+            "You are Lexi, the lead AI receptionist and operations assistant for a salon SaaS admin dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and easy to talk to. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Style rules: answer the user's question immediately in the first sentence, keep answers tight by default (1-4 short sentences unless they ask for detail), use plain language, and ask at most one follow-up question when needed. Sound premium, reassuring, and solution-oriented. When discussing bookings, policies, pricing, or client experience, be structured and professional. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user explicitly asks for a report."
         },
         {
           role: "user",
@@ -3895,13 +3895,19 @@ async function buildPublicLexiFallbackReply(message, business) {
     return "I can help with today’s revenue/takings, but I need a business context to check booking-based revenue.";
   }
   if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower)) {
-    return `I can help with that. Tell me the service you want, your preferred date, and roughly what time, and I’ll help you check availability for ${bizName}.`;
+    return `Absolutely. What service would you like to book at ${bizName}, and what day/time works best for you? Once I have that, I’ll check availability and offer the best options.`;
   }
   if (/(service|services|do you do|what do you offer|treatment)/.test(qLower)) {
     return `I can help with services. ${bizName} can support bookings and service guidance here. Example services include ${serviceExamples}. If you want, tell me what result you’re looking for and I’ll suggest the best service type.`;
   }
   if (/(price|cost|how much|pricing)/.test(qLower)) {
-    return "I can help with pricing guidance, but I won’t guess exact prices if they aren’t available in the current profile. Tell me the service you’re interested in and I’ll guide you on what to ask or what usually affects the price.";
+    return "I can help with pricing guidance. Prices can vary based on service choice, hair length/density, and time required, so I won’t guess if the profile doesn’t show exact pricing. Tell me the service you’re considering and I’ll explain what usually affects the price and what to confirm before booking.";
+  }
+  if (/(policy|deposit|late|cancellation|cancelation|no show|no-show|grace period)/.test(qLower)) {
+    return "I can explain booking policies in a clear way. Most salons set policies for deposits, late arrival grace periods, cancellations, and no-shows, and I’ll always explain them professionally if they apply to your booking. Tell me which policy you want to check.";
+  }
+  if (/(don'?t know what i want|not sure what i want|unsure what i want|recommend.*service|what should i get)/.test(qLower)) {
+    return "I can help you choose. Tell me your goal (for example shape, colour, repair, smoother hair, lower maintenance), your usual maintenance level, and any recent colour/chemical history, and I’ll recommend a few strong options.";
   }
   if (/(open|opening hours|hours|closing time|when are you open)/.test(qLower)) {
     return `I can help with opening-hours questions for ${bizName} if the business profile includes them. If you don’t see the hours listed yet, I can still help you plan the best day/time to book.`;
@@ -4071,7 +4077,7 @@ async function buildSubscriberCopilotResponse({ question, snapshot }) {
         {
           role: "system",
           content:
-            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (1-4 short sentences unless asked for depth), sound like a high-performing receptionist not a report engine, and ask at most one follow-up question when needed. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (1-4 short sentences unless asked for depth), sound like a premium receptionist and operator (not a report engine), and ask at most one follow-up question when needed. Be strong on pricing/policy explanations and suggest tasteful upsells only when clearly relevant. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
         },
         {
           role: "user",
@@ -5851,6 +5857,11 @@ Style:
 - avoid robotic phrases such as "I reviewed" / "the system indicates" / "snapshot"
 - keep replies quick and clear by default (usually 1-4 short sentences unless the user asks for more detail)
 - act like the star front-desk assistant: confident, helpful, and proactive without sounding salesy
+- sound premium, polished, and reassuring
+- when discussing bookings, confirm key details clearly (service, date, time, price estimate if available)
+- if a client is unsure what they want, ask smart consultation questions (goals, maintenance, history) and give 2-3 recommendations
+- suggest relevant add-ons or aftercare only when helpful (never pushy)
+- explain policies (deposit, late, cancellation, no-show) clearly and professionally when asked
 - if the question is real-time (weather/news/live prices) and you do not have live data, say so clearly and offer a useful alternative
 
 Rules:
@@ -6032,7 +6043,7 @@ Rules:
         });
 
         return res.json({
-          reply: `Booked at ${target.name}. ${booking.customerName} is confirmed for ${booking.service} on ${booking.date} at ${booking.time}.`,
+          reply: `You're all set at ${target.name}. ${booking.customerName} is confirmed for ${booking.service} on ${booking.date} at ${booking.time}. We look forward to seeing you.`,
           bookingCreated: true,
           booking
         });
