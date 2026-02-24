@@ -3681,6 +3681,22 @@ function extractLexiIntroducedName(text) {
   return `${name.charAt(0).toUpperCase()}${name.slice(1).toLowerCase()}`;
 }
 
+function extractLexiTimeFromQuestion(text) {
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
+  if (!q) return "";
+  const ampmMatch = q.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/);
+  if (ampmMatch) {
+    const hour = Number(ampmMatch[1]);
+    const minute = String(ampmMatch[2] || "00").padStart(2, "0");
+    return `${hour}:${minute}${ampmMatch[3]}`;
+  }
+  const twentyFourMatch = q.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+  if (twentyFourMatch) {
+    return `${twentyFourMatch[1]}:${twentyFourMatch[2]}`;
+  }
+  return "";
+}
+
 function isLexiAppQuestion(text) {
   const q = normalizeLexiTypos(String(text || "").toLowerCase());
   if (!q) return false;
@@ -3713,6 +3729,32 @@ function resolveLexiDateKeyFromQuestion(question, now = new Date()) {
   }
   const explicit = q.match(/\b(\d{4}-\d{2}-\d{2})\b/);
   if (explicit) return explicit[1];
+  const natural = q.match(/\b(?:(mon|monday|tue|tues|tuesday|wed|weds|wednesday|thu|thur|thurs|thursday|fri|friday|sat|saturday|sun|sunday)\s+)?(\d{1,2})(?:st|nd|rd|th)?\s+(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)(?:\s+(\d{4}))?\b/);
+  if (natural) {
+    const dayNum = Number(natural[2]);
+    const monthToken = String(natural[3] || "").slice(0, 3);
+    const monthMap = {
+      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+      jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+    };
+    const monthIndex = monthMap[monthToken];
+    if (Number.isFinite(dayNum) && dayNum >= 1 && dayNum <= 31 && Number.isInteger(monthIndex)) {
+      let year = Number(natural[4] || new Date(now).getFullYear());
+      let candidate = new Date(year, monthIndex, dayNum);
+      if (Number.isNaN(candidate.getTime()) || candidate.getMonth() !== monthIndex || candidate.getDate() !== dayNum) {
+        candidate = null;
+      }
+      if (candidate && !natural[4]) {
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if (candidate < today) {
+          candidate = new Date(year + 1, monthIndex, dayNum);
+        }
+      }
+      if (candidate && !Number.isNaN(candidate.getTime())) {
+        return candidate.toISOString().slice(0, 10);
+      }
+    }
+  }
   const weekday = weekdayFromText(q);
   if (weekday !== null) return nextDateForWeekday(weekday, now).toISOString().slice(0, 10);
   return "";
@@ -3811,7 +3853,16 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     .filter((entry) => entry && typeof entry.content === "string" && (entry.role === "user" || entry.role === "assistant"))
     .slice(-8);
   const lastAssistantText = String([...priorMessages].reverse().find((entry) => entry.role === "assistant")?.content || "");
+  const recentUserText = priorMessages
+    .filter((entry) => entry.role === "user")
+    .slice(-4)
+    .map((entry) => String(entry.content || ""))
+    .join(" ");
   const introducedName = extractLexiIntroducedName(q);
+  const currentDateKey = resolveLexiDateKeyFromQuestion(qLower);
+  const currentTimeHint = extractLexiTimeFromQuestion(qLower);
+  const recentDateKey = currentDateKey || resolveLexiDateKeyFromQuestion(recentUserText);
+  const recentTimeHint = currentTimeHint || extractLexiTimeFromQuestion(recentUserText);
 
   if (!introducedName && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return "Hi, I'm Lexi. Lovely to hear from you. I can help with bookings, availability, salon and beauty questions, and how the app works. What can I help you with today?";
@@ -3840,10 +3891,29 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       return `Perfect, I can work with "${q}". Tell me the day or date you want, and I'll check available slots.`;
     }
     if (/(what service|which service can i book|what service would you like)/.test(lastAssistantLower)) {
+      if (recentTimeHint && !recentDateKey) {
+        return `Great, ${recentTimeHint} sounds good. What day or date would you like?`;
+      }
+      if (recentDateKey && !recentTimeHint) {
+        return "Great choice. What time would suit you best?";
+      }
+      if (recentDateKey && recentTimeHint) {
+        return `Perfect. I’ve got ${recentTimeHint} on ${recentDateKey}. What service would you like to book?`;
+      }
       return "Great choice. What day or date would you like, and roughly what time suits you best?";
     }
     if (/(what day|which day|what date|tell me the day|tell me the date)/.test(lastAssistantLower)) {
+      if (currentDateKey && recentTimeHint) {
+        const labelDate = new Date(`${currentDateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+        return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
+      }
       return "Perfect. Tell me the time that would suit you best, and I'll help check the best options.";
+    }
+    if (/(what time|which time|what time suits you best|tell me the time)/.test(lastAssistantLower)) {
+      if (recentTimeHint && recentDateKey) {
+        const labelDate = new Date(`${recentDateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+        return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
+      }
     }
   }
   if (business?.id && shortReplyWordCount > 0 && shortReplyWordCount <= 6 && /(\bbest\b|\bthat\b|\byes\b|\byeah\b|\bok\b|\bokay\b|\bsure\b|\bworks\b|\bnorth\b|\bsouth\b|\beast\b|\bwest\b)/.test(qLower)) {
