@@ -54,6 +54,13 @@ const configuredCorsOrigin = String(process.env.CORS_ORIGIN || "").trim();
 const corsOrigin = configuredCorsOrigin || (process.env.NODE_ENV === "production" ? appUrl : "*");
 const openai = openAiKey ? new OpenAI({ apiKey: openAiKey }) : null;
 const stripe = stripeSecret ? new Stripe(stripeSecret) : null;
+const OPENAI_QUOTA_COOLDOWN_MS = 10 * 60 * 1000;
+const OPENAI_QUOTA_LOG_THROTTLE_MS = 60 * 1000;
+const openAiQuotaCircuit = {
+  disabledUntil: 0,
+  lastLogAt: 0,
+  reason: ""
+};
 let prisma = createUnavailablePrisma();
 let jobRuntime = null;
 let runtimeReadyPromise = null;
@@ -133,6 +140,29 @@ function getPayPalBaseUrl() {
 
 function isPayPalConfigured() {
   return Boolean(paypalClientId && paypalClientSecret);
+}
+
+function isOpenAiQuotaCircuitActive() {
+  return Date.now() < Number(openAiQuotaCircuit.disabledUntil || 0);
+}
+
+function markOpenAiQuotaCircuit(reason = "insufficient_quota") {
+  openAiQuotaCircuit.disabledUntil = Date.now() + OPENAI_QUOTA_COOLDOWN_MS;
+  openAiQuotaCircuit.reason = String(reason || "insufficient_quota");
+}
+
+function clearOpenAiQuotaCircuit() {
+  openAiQuotaCircuit.disabledUntil = 0;
+  openAiQuotaCircuit.reason = "";
+}
+
+function shouldLogOpenAiQuotaError() {
+  const now = Date.now();
+  if (now - Number(openAiQuotaCircuit.lastLogAt || 0) < OPENAI_QUOTA_LOG_THROTTLE_MS) {
+    return false;
+  }
+  openAiQuotaCircuit.lastLogAt = now;
+  return true;
 }
 
 async function createPayPalAccessToken() {
@@ -3796,8 +3826,8 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   if (!q) {
     return "Hi, I’m Lexi. I can help with bookings, service questions, salon guidance, and how to use the app. What would you like help with?";
   }
-  if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
-    return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
+  if (!introducedName && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+    return "Hi, I'm Lexi. I can help with bookings, availability, salon and beauty questions, and how the app works. What can I help you with today?";
   }
   if (introducedName) {
     const displayName = introducedName.charAt(0).toUpperCase() + introducedName.slice(1);
@@ -5716,10 +5746,12 @@ app.post("/api/billing/create-portal-session", authRequired, requireRole("subscr
 app.post("/api/chat", chatLimiter, async (req, res) => {
   let userMessage = "";
   let business = null;
+  let history = [];
   try {
     userMessage = String(req.body?.message || "").trim();
-    const history = Array.isArray(req.body?.history) ? req.body.history : [];
+    history = Array.isArray(req.body?.history) ? req.body.history : [];
     const businessId = String(req.body?.businessId || "").trim();
+    const canUseOpenAi = Boolean(openai) && !isOpenAiQuotaCircuitActive();
     if (!userMessage) return res.status(400).json({ error: "Message is required." });
     if (isLexiRestrictedDataRequest(userMessage, { role: "public" })) {
       return res.json({
@@ -5758,10 +5790,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       orderBy: [{ rating: "desc" }, { createdAt: "desc" }]
     }) || (businessId ? null : (await prisma.business.findFirst({ include: { services: true, subscription: true } })));
 
-    if (!business && !openai) {
+    if (!business && !canUseOpenAi) {
       return res.json({
         reply: "I can help with that. Tell me the salon, barber, or beauty business name (or the area), and I’ll look for subscribed businesses and available slots.",
-        fallback: true
+        fallback: true,
+        fallbackMode: isOpenAiQuotaCircuitActive() ? "quota" : "local"
       });
     }
     if (!business) {
@@ -5789,8 +5822,12 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         reply: "I can help with app questions and salon/barber/beauty guidance right away. If you want availability or booking help, tell me a business name or location and I’ll search for subscribed businesses."
       });
     }
-    if (!openai) {
-      return res.json({ reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history), fallback: true });
+    if (!canUseOpenAi) {
+      return res.json({
+        reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history),
+        fallback: true,
+        fallbackMode: isOpenAiQuotaCircuitActive() ? "quota" : "local"
+      });
     }
     await writeAuditLog({
       actorRole: "anonymous",
@@ -5934,6 +5971,7 @@ Rules:
     });
 
     const choice = completion.choices?.[0]?.message;
+    clearOpenAiQuotaCircuit();
     if (choice?.tool_calls?.length) {
       const call = choice.tool_calls[0];
       if (call.function?.name === "search_public_businesses") {
@@ -6094,7 +6132,13 @@ Rules:
     const status = Number(error?.status || error?.code || 0);
     const code = String(error?.error?.code || error?.code || "");
     const message = String(error?.error?.message || error?.message || "");
-    console.error("Chat error:", status || "", code || "", message || "");
+    if (status === 429 || code === "insufficient_quota") {
+      if (shouldLogOpenAiQuotaError()) {
+        console.error("Chat error:", status || "", code || "", message || "");
+      }
+    } else {
+      console.error("Chat error:", status || "", code || "", message || "");
+    }
     const safePublicFallback = async () => {
       try {
         if (business) {
@@ -6113,6 +6157,7 @@ Rules:
     };
 
     if (status === 429 || code === "insufficient_quota") {
+      markOpenAiQuotaCircuit(code || "insufficient_quota");
       if (business) {
         return safePublicFallback();
       }
@@ -6178,3 +6223,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log(`Background queues: ${jobRuntime?.enabled ? "enabled (Redis)" : "inline fallback"}`);
   });
 }
+
