@@ -1,7 +1,9 @@
 const chatWindow = document.getElementById("chatWindow");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
+const chatClear = document.getElementById("chatClear");
 const salonMeta = document.getElementById("salonMeta");
+const heroSalonMeta = document.getElementById("heroSalonMeta");
 const bookingsList = document.getElementById("bookingsList");
 const liveBookingSummary = document.getElementById("liveBookingSummary");
 
@@ -35,6 +37,59 @@ const homeDemoWindowRevenueTrend = document.getElementById("homeDemoWindowRevenu
 const homeDemoWindowCancels = document.getElementById("homeDemoWindowCancels");
 const homeDemoWindowCancelTrend = document.getElementById("homeDemoWindowCancelTrend");
 const homeDemoTargetPct = document.getElementById("homeDemoTargetPct");
+const homeModuleGrid = document.getElementById("homeModuleGrid");
+const homeTrialModal = document.getElementById("homeTrialModal");
+const homeTrialModalClose = document.getElementById("homeTrialModalClose");
+const homeTrialCancel = document.getElementById("homeTrialCancel");
+const homeTrialForm = document.getElementById("homeTrialForm");
+const homeTrialSubmit = document.getElementById("homeTrialSubmit");
+const homeTrialMsg = document.getElementById("homeTrialMsg");
+const homeTrialRegisterName = document.getElementById("homeTrialRegisterName");
+const homeTrialRegisterEmail = document.getElementById("homeTrialRegisterEmail");
+const homeTrialRegisterPassword = document.getElementById("homeTrialRegisterPassword");
+const homeTrialBusinessType = document.getElementById("homeTrialBusinessType");
+const homeTrialBusinessName = document.getElementById("homeTrialBusinessName");
+const homeTrialBusinessCity = document.getElementById("homeTrialBusinessCity");
+const homeTrialBusinessCountry = document.getElementById("homeTrialBusinessCountry");
+const homeTrialBusinessPostcode = document.getElementById("homeTrialBusinessPostcode");
+const homeTrialBusinessPhone = document.getElementById("homeTrialBusinessPhone");
+const homeTrialTemplatePreview = document.getElementById("homeTrialTemplatePreview");
+const homeTrialTriggers = Array.from(document.querySelectorAll("[data-open-trial-modal]"));
+const homeSubscriberSigninModal = document.getElementById("homeSubscriberSigninModal");
+const homeSubscriberSigninClose = document.getElementById("homeSubscriberSigninClose");
+const homeSubscriberSigninForm = document.getElementById("homeSubscriberSigninForm");
+const homeSubscriberSigninEmail = document.getElementById("homeSubscriberSigninEmail");
+const homeSubscriberSigninPassword = document.getElementById("homeSubscriberSigninPassword");
+const homeSubscriberSigninSubmit = document.getElementById("homeSubscriberSigninSubmit");
+const homeSubscriberSigninMsg = document.getElementById("homeSubscriberSigninMsg");
+const homeSubscriberSigninTriggers = Array.from(document.querySelectorAll("[data-open-subscriber-signin-modal]"));
+const homeAdminSigninModal = document.getElementById("homeAdminSigninModal");
+const homeAdminSigninClose = document.getElementById("homeAdminSigninClose");
+const homeAdminSigninForm = document.getElementById("homeAdminSigninForm");
+const homeAdminSigninEmail = document.getElementById("homeAdminSigninEmail");
+const homeAdminSigninPassword = document.getElementById("homeAdminSigninPassword");
+const homeAdminSigninSubmit = document.getElementById("homeAdminSigninSubmit");
+const homeAdminSigninMsg = document.getElementById("homeAdminSigninMsg");
+const homeAdminSigninTriggers = Array.from(document.querySelectorAll("[data-open-admin-signin-modal]"));
+const homeCustomerAccessModal = document.getElementById("homeCustomerAccessModal");
+const homeCustomerAccessClose = document.getElementById("homeCustomerAccessClose");
+const homeCustomerAccessTriggers = Array.from(document.querySelectorAll("[data-open-customer-access-modal]"));
+const homeCustomerModeSignIn = document.getElementById("homeCustomerModeSignIn");
+const homeCustomerModeSignUp = document.getElementById("homeCustomerModeSignUp");
+const homeCustomerSigninPanel = document.getElementById("homeCustomerSigninPanel");
+const homeCustomerSignupPanel = document.getElementById("homeCustomerSignupPanel");
+const homeCustomerSigninForm = document.getElementById("homeCustomerSigninForm");
+const homeCustomerSigninEmail = document.getElementById("homeCustomerSigninEmail");
+const homeCustomerSigninPassword = document.getElementById("homeCustomerSigninPassword");
+const homeCustomerSigninSubmit = document.getElementById("homeCustomerSigninSubmit");
+const homeCustomerSigninMsg = document.getElementById("homeCustomerSigninMsg");
+const homeCustomerSignupForm = document.getElementById("homeCustomerSignupForm");
+const homeCustomerSignupName = document.getElementById("homeCustomerSignupName");
+const homeCustomerSignupEmail = document.getElementById("homeCustomerSignupEmail");
+const homeCustomerSignupPassword = document.getElementById("homeCustomerSignupPassword");
+const homeCustomerSignupSubmit = document.getElementById("homeCustomerSignupSubmit");
+const homeCustomerSignupMsg = document.getElementById("homeCustomerSignupMsg");
+const homeCustomerModeSwitchers = Array.from(document.querySelectorAll("[data-home-customer-mode]"));
 
 const history = [];
 let llmEnabled = false;
@@ -51,6 +106,91 @@ const homeDemoDisplayValues = {
   targetPct: 0
 };
 
+const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi, your receptionist. I can help with bookings, service questions, and front desk support. How can I help today?";
+const AUTH_TOKEN_KEY = "salon_ai_token";
+const AUTH_USER_KEY = "salon_ai_user";
+
+const HOME_TRIAL_TEMPLATES = {
+  hair_salon: {
+    label: "Hair Salon",
+    services: ["Haircut", "Blowout", "Color Refresh"],
+    hours: "Mon-Wed 9:00-18:00, Thu-Fri 9:00-20:00, Sat 9:00-17:00"
+  },
+  barbershop: {
+    label: "Barbershop",
+    services: ["Skin Fade", "Classic Cut", "Beard Trim"],
+    hours: "Mon-Wed 9:00-19:00, Thu-Fri 9:00-20:00, Sat 10:00-18:00"
+  },
+  beauty_salon: {
+    label: "Beauty Salon",
+    services: ["Signature Facial", "Brow Shaping", "Gel Manicure"],
+    hours: "Mon-Wed 10:00-18:00, Thu-Fri 10:00-19:00, Sat 9:00-17:00"
+  }
+};
+
+const HOME_MODULE_DETAILS = {
+  frontdesk: {
+    title: "Front Desk",
+    badge: "Start here",
+    summary: "This is the day-to-day front desk side of the app. It helps your team handle enquiries, answer common questions, and move clients into booked appointments without losing track of what is happening.",
+    bullets: [
+      "Handle bookings and client questions in one flow",
+      "Keep your team focused during busy periods",
+      "Create a smoother booking experience for clients"
+    ]
+  },
+  operations: {
+    title: "Operations",
+    badge: "Use daily",
+    summary: "This area is for running the day properly. It brings together bookings, calendar visibility, staffing pressure, and live priorities so the team knows what needs attention next.",
+    bullets: [
+      "See what needs attention first today",
+      "Manage bookings, coverage, and cancellations",
+      "Reduce firefighting during peak times"
+    ]
+  },
+  waitlist: {
+    title: "Waitlist Recovery",
+    badge: "Use daily",
+    summary: "When a client cancels, this helps you fill that slot faster. Your team can use the waitlist to contact the right people quickly instead of losing the appointment entirely.",
+    bullets: [
+      "Refill cancelled appointments faster",
+      "Protect revenue from last-minute cancellations",
+      "Keep chairs and treatment slots full"
+    ]
+  },
+  growth: {
+    title: "Client Growth",
+    badge: "Weekly check",
+    summary: "This is where you work on repeat bookings and follow-up activity. It helps you stay consistent with client rebooking and retention instead of relying on memory.",
+    bullets: [
+      "Support repeat bookings and reactivation",
+      "Use CRM-style segments and campaign prompts",
+      "Keep marketing actions tied to actual bookings"
+    ]
+  },
+  finance: {
+    title: "Revenue & Profit",
+    badge: "Weekly check",
+    summary: "This area helps you check how the business is performing, not just how busy it feels. It brings revenue, spend, and profitability signals into one place.",
+    bullets: [
+      "Track revenue trends and channel performance",
+      "Review spend vs results more clearly",
+      "See what is helping profit, not just turnover"
+    ]
+  },
+  owner_clarity: {
+    title: "Owner View",
+    badge: "Quick view",
+    summary: "This is the simple high-level view for owners and managers. It helps you check what is going well, what needs attention, and where to focus next without digging through every screen.",
+    bullets: [
+      "Quick summary of priorities and business signals",
+      "Useful for end-of-day and start-of-day checks",
+      "Helps with clearer decision-making"
+    ]
+  }
+};
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -58,6 +198,231 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function saveSessionAuth(token, user) {
+  sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+}
+
+function setHomeTrialMessage(text, state = "") {
+  if (!homeTrialMsg) return;
+  homeTrialMsg.textContent = String(text || "");
+  homeTrialMsg.classList.remove("error", "success");
+  if (state) homeTrialMsg.classList.add(state);
+}
+
+function renderHomeTrialTemplatePreview() {
+  if (!homeTrialTemplatePreview) return;
+  const key = String(homeTrialBusinessType?.value || "hair_salon").trim().toLowerCase();
+  const template = HOME_TRIAL_TEMPLATES[key] || HOME_TRIAL_TEMPLATES.hair_salon;
+  homeTrialTemplatePreview.innerHTML = `
+    <strong>Starter Template: ${escapeHtml(template.label)}</strong>
+    <small><strong>Default services:</strong> ${escapeHtml(template.services.join(", "))}</small>
+    <small><strong>Default hours:</strong> ${escapeHtml(template.hours)}, Sun Closed</small>
+  `;
+}
+
+let lastHomeTrialTrigger = null;
+let lastHomeSubscriberSigninTrigger = null;
+let lastHomeAdminSigninTrigger = null;
+let lastHomeCustomerAccessTrigger = null;
+let homeCustomerAccessMode = "signin";
+function openHomeTrialModal(trigger = null) {
+  if (!homeTrialModal) return;
+  if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
+  if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
+  if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
+  if (trigger instanceof HTMLElement) lastHomeTrialTrigger = trigger;
+  homeTrialModal.classList.add("is-open");
+  homeTrialModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  renderHomeTrialTemplatePreview();
+  setHomeTrialMessage("", "");
+  window.requestAnimationFrame(() => homeTrialRegisterName?.focus());
+}
+
+function closeHomeTrialModal() {
+  if (!homeTrialModal) return;
+  homeTrialModal.classList.remove("is-open");
+  homeTrialModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastHomeTrialTrigger instanceof HTMLElement) lastHomeTrialTrigger.focus();
+}
+
+function setHomeSubscriberSigninMessage(text, state = "") {
+  if (!homeSubscriberSigninMsg) return;
+  homeSubscriberSigninMsg.textContent = String(text || "");
+  homeSubscriberSigninMsg.classList.remove("error", "success");
+  if (state) homeSubscriberSigninMsg.classList.add(state);
+}
+
+function openHomeSubscriberSigninModal(trigger = null) {
+  if (!homeSubscriberSigninModal) return;
+  if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
+  if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
+  if (trigger instanceof HTMLElement) lastHomeSubscriberSigninTrigger = trigger;
+  homeSubscriberSigninModal.classList.add("is-open");
+  homeSubscriberSigninModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  setHomeSubscriberSigninMessage("");
+  window.requestAnimationFrame(() => homeSubscriberSigninEmail?.focus());
+}
+
+function closeHomeSubscriberSigninModal() {
+  if (!homeSubscriberSigninModal) return;
+  homeSubscriberSigninModal.classList.remove("is-open");
+  homeSubscriberSigninModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastHomeSubscriberSigninTrigger instanceof HTMLElement) lastHomeSubscriberSigninTrigger.focus();
+}
+
+function setHomeAdminSigninMessage(text, state = "") {
+  if (!homeAdminSigninMsg) return;
+  homeAdminSigninMsg.textContent = String(text || "");
+  homeAdminSigninMsg.classList.remove("error", "success");
+  if (state) homeAdminSigninMsg.classList.add(state);
+}
+
+function openHomeAdminSigninModal(trigger = null) {
+  if (!homeAdminSigninModal) return;
+  if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
+  if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
+  if (trigger instanceof HTMLElement) lastHomeAdminSigninTrigger = trigger;
+  homeAdminSigninModal.classList.add("is-open");
+  homeAdminSigninModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  setHomeAdminSigninMessage("");
+  window.requestAnimationFrame(() => homeAdminSigninEmail?.focus());
+}
+
+function closeHomeAdminSigninModal() {
+  if (!homeAdminSigninModal) return;
+  homeAdminSigninModal.classList.remove("is-open");
+  homeAdminSigninModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastHomeAdminSigninTrigger instanceof HTMLElement) lastHomeAdminSigninTrigger.focus();
+}
+
+function openHomeCustomerAccessModal(trigger = null) {
+  if (!homeCustomerAccessModal) return;
+  if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
+  if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
+  if (trigger instanceof HTMLElement) lastHomeCustomerAccessTrigger = trigger;
+  homeCustomerAccessModal.classList.add("is-open");
+  homeCustomerAccessModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  setHomeCustomerAccessMode(homeCustomerAccessMode || "signin");
+  window.requestAnimationFrame(() => {
+    if (homeCustomerAccessMode === "signup") {
+      homeCustomerSignupName?.focus();
+      return;
+    }
+    homeCustomerSigninEmail?.focus();
+  });
+}
+
+function closeHomeCustomerAccessModal() {
+  if (!homeCustomerAccessModal) return;
+  homeCustomerAccessModal.classList.remove("is-open");
+  homeCustomerAccessModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastHomeCustomerAccessTrigger instanceof HTMLElement) lastHomeCustomerAccessTrigger.focus();
+}
+
+function setHomeCustomerSigninMessage(text, state = "") {
+  if (!homeCustomerSigninMsg) return;
+  homeCustomerSigninMsg.textContent = String(text || "");
+  homeCustomerSigninMsg.classList.remove("error", "success");
+  if (state) homeCustomerSigninMsg.classList.add(state);
+}
+
+function setHomeCustomerSignupMessage(text, state = "") {
+  if (!homeCustomerSignupMsg) return;
+  homeCustomerSignupMsg.textContent = String(text || "");
+  homeCustomerSignupMsg.classList.remove("error", "success");
+  if (state) homeCustomerSignupMsg.classList.add(state);
+}
+
+function setHomeCustomerAccessMode(mode) {
+  const nextMode = mode === "signup" ? "signup" : "signin";
+  homeCustomerAccessMode = nextMode;
+  homeCustomerModeSignIn?.classList.toggle("is-active", nextMode === "signin");
+  homeCustomerModeSignUp?.classList.toggle("is-active", nextMode === "signup");
+  homeCustomerModeSignIn?.setAttribute("aria-selected", nextMode === "signin" ? "true" : "false");
+  homeCustomerModeSignUp?.setAttribute("aria-selected", nextMode === "signup" ? "true" : "false");
+  if (homeCustomerSigninPanel) {
+    homeCustomerSigninPanel.classList.toggle("is-active", nextMode === "signin");
+    homeCustomerSigninPanel.hidden = nextMode !== "signin";
+  }
+  if (homeCustomerSignupPanel) {
+    homeCustomerSignupPanel.classList.toggle("is-active", nextMode === "signup");
+    homeCustomerSignupPanel.hidden = nextMode !== "signup";
+  }
+}
+
+function ensureHomeModuleOverlay() {
+  let overlay = document.getElementById("homeModuleOverlay");
+  if (overlay) return overlay;
+  overlay = document.createElement("div");
+  overlay.id = "homeModuleOverlay";
+  overlay.className = "home-module-overlay";
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function openHomeModuleModal(moduleKey) {
+  const detail = HOME_MODULE_DETAILS[String(moduleKey || "").trim()];
+  if (!detail) return;
+  const overlay = ensureHomeModuleOverlay();
+  overlay.innerHTML = `
+    <section class="home-module-modal" role="dialog" aria-modal="true" aria-labelledby="homeModuleModalTitle">
+      <div class="home-module-modal-head">
+        <div>
+          <h3 id="homeModuleModalTitle">${escapeHtml(detail.title)}</h3>
+          <div class="home-module-modal-meta">
+            <span class="home-module-chip">${escapeHtml(detail.badge)}</span>
+            <span class="home-module-chip soft">Homepage quick view</span>
+          </div>
+        </div>
+        <button type="button" class="home-module-close" aria-label="Close">Ã¢Å“â€¢</button>
+      </div>
+      <section class="home-module-pane">
+        <h4>What this helps with</h4>
+        <p>${escapeHtml(detail.summary)}</p>
+      </section>
+      <section class="home-module-pane">
+        <h4>What you can do here</h4>
+        <ul class="home-module-feature-list">${detail.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      </section>
+      <div class="home-module-modal-actions">
+        <small class="home-module-modal-hint">Press Esc or click outside to close.</small>
+        <button type="button" class="btn btn-ghost home-module-dismiss">Close</button>
+        <a class="btn" href="#dashboards">View Dashboard Demo</a>
+      </div>
+    </section>
+  `;
+  overlay.classList.add("is-open");
+
+  const close = () => {
+    overlay.classList.remove("is-open");
+    overlay.innerHTML = "";
+    document.removeEventListener("keydown", onKeyDown);
+  };
+  const onKeyDown = (event) => {
+    if (event.key === "Escape") close();
+  };
+  document.addEventListener("keydown", onKeyDown);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) close();
+  }, { once: true });
+  overlay.querySelector(".home-module-close")?.addEventListener("click", close);
+  overlay.querySelector(".home-module-dismiss")?.addEventListener("click", close);
 }
 
 function appendMessage(role, content) {
@@ -86,8 +451,8 @@ function setAppStatus(message, isError = false, autoClearMs = 4200) {
 
 function formatMoney(value) {
   const num = Number(value || 0);
-  if (!Number.isFinite(num)) return "$0";
-  return `$${Math.round(num).toLocaleString()}`;
+  if (!Number.isFinite(num)) return "Ã‚Â£0";
+  return `Ã‚Â£${Math.round(num).toLocaleString("en-GB")}`;
 }
 
 function formatRelativeTime(iso) {
@@ -630,11 +995,18 @@ async function loadConfig() {
   const policyText = config?.cancellationPolicy?.feeRule || "Cancellation policy unavailable.";
 
   if (featured) {
-    salonMeta.textContent = `${featured.name} | ${featured.phone} | ${featured.location.address}, ${featured.location.city} | Cancellation: ${policyText}`;
+    const featuredMeta = `${featured.name} | ${featured.phone} | ${featured.location.address}, ${featured.location.city} | Cancellation: ${policyText}`;
+    salonMeta.textContent = featuredMeta;
+    if (heroSalonMeta) {
+      heroSalonMeta.textContent = "Lexi can answer service questions, check available slots, and start booking requests using your business profile, service menu, and front desk details.";
+    }
     liveBookingSummary.textContent = `${featured.availableSlots.length} slots available today at ${featured.name}.`;
     selectedBusinessId = featured.id;
   } else {
     salonMeta.textContent = `No featured business configured yet. Cancellation: ${policyText}`;
+    if (heroSalonMeta) {
+      heroSalonMeta.textContent = "No featured business configured yet. Add your business profile to show Lexi’s front-desk experience, live availability, and service guidance on the homepage.";
+    }
     liveBookingSummary.textContent = "No live availability yet. Add businesses to see slots.";
     selectedBusinessId = "";
   }
@@ -645,7 +1017,7 @@ async function loadConfig() {
       "AI chat is disabled. Add OPENAI_API_KEY in environment variables and restart the server."
     );
   } else {
-    appendMessage("assistant", "Welcome to AI Hair & Beauty Receptionist. I can help you book now.");
+    appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
   }
 }
 
@@ -660,6 +1032,13 @@ async function loadBookings() {
     setAppStatus(error.message, true);
   }
 }
+
+chatInput?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  if (event.shiftKey) return;
+  event.preventDefault();
+  chatForm?.requestSubmit();
+});
 
 chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -696,6 +1075,17 @@ chatForm.addEventListener("submit", async (event) => {
     appendMessage("assistant", "Network error. Please try again.");
     setAppStatus("Network error. Please try again.", true);
   }
+});
+
+chatClear?.addEventListener("click", () => {
+  history.length = 0;
+  if (chatWindow) chatWindow.innerHTML = "";
+  appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
+  if (chatInput) {
+    chatInput.value = "";
+    chatInput.focus();
+  }
+  setAppStatus("Chat cleared.");
 });
 
 searchForm.addEventListener("submit", async (event) => {
@@ -754,6 +1144,240 @@ selectedBusiness.addEventListener("click", (event) => {
   if (!business) return;
   quickBookBusiness(business);
 });
+
+homeModuleGrid?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const card = target.closest("[data-home-module]");
+  if (!(card instanceof HTMLElement)) return;
+  const key = String(card.getAttribute("data-home-module") || "").trim();
+  if (!key) return;
+  openHomeModuleModal(key);
+});
+
+homeTrialTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openHomeTrialModal(trigger);
+  });
+});
+
+homeTrialModalClose?.addEventListener("click", closeHomeTrialModal);
+homeTrialCancel?.addEventListener("click", closeHomeTrialModal);
+homeTrialModal?.addEventListener("click", (event) => {
+  if (event.target === homeTrialModal) closeHomeTrialModal();
+});
+homeTrialBusinessType?.addEventListener("change", renderHomeTrialTemplatePreview);
+
+homeSubscriberSigninTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openHomeSubscriberSigninModal(trigger);
+  });
+});
+homeSubscriberSigninClose?.addEventListener("click", closeHomeSubscriberSigninModal);
+homeSubscriberSigninModal?.addEventListener("click", (event) => {
+  if (event.target === homeSubscriberSigninModal) closeHomeSubscriberSigninModal();
+});
+
+homeAdminSigninTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openHomeAdminSigninModal(trigger);
+  });
+});
+homeAdminSigninClose?.addEventListener("click", closeHomeAdminSigninModal);
+homeAdminSigninModal?.addEventListener("click", (event) => {
+  if (event.target === homeAdminSigninModal) closeHomeAdminSigninModal();
+});
+
+homeCustomerAccessTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openHomeCustomerAccessModal(trigger);
+  });
+});
+homeCustomerAccessClose?.addEventListener("click", closeHomeCustomerAccessModal);
+homeCustomerAccessModal?.addEventListener("click", (event) => {
+  if (event.target === homeCustomerAccessModal) closeHomeCustomerAccessModal();
+});
+homeCustomerModeSwitchers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLElement)) return;
+    const mode = String(target.getAttribute("data-home-customer-mode") || "").trim().toLowerCase();
+    if (mode !== "signin" && mode !== "signup") return;
+    event.preventDefault();
+    setHomeCustomerAccessMode(mode);
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
+  if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
+  if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
+});
+
+homeTrialForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!(homeTrialRegisterName && homeTrialRegisterEmail && homeTrialRegisterPassword && homeTrialBusinessType &&
+      homeTrialBusinessName && homeTrialBusinessCity && homeTrialBusinessCountry && homeTrialBusinessPostcode && homeTrialBusinessPhone)) {
+    return;
+  }
+
+  const payload = {
+    name: homeTrialRegisterName.value.trim(),
+    email: homeTrialRegisterEmail.value.trim(),
+    password: homeTrialRegisterPassword.value,
+    businessType: homeTrialBusinessType.value,
+    businessName: homeTrialBusinessName.value.trim(),
+    city: homeTrialBusinessCity.value.trim(),
+    country: homeTrialBusinessCountry.value.trim(),
+    postcode: homeTrialBusinessPostcode.value.trim(),
+    phone: homeTrialBusinessPhone.value.trim()
+  };
+
+  setHomeTrialMessage("Creating your subscriber workspace...", "");
+  if (homeTrialSubmit) homeTrialSubmit.disabled = true;
+
+  try {
+    const response = await fetch("/api/auth/register/subscriber", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Registration failed.");
+    saveSessionAuth(data.token, data.user);
+    setHomeTrialMessage("Account created. Redirecting to your dashboard...", "success");
+    window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "subscriber"))}`;
+  } catch (error) {
+    setHomeTrialMessage(error?.message || "Unable to create account right now.", "error");
+  } finally {
+    if (homeTrialSubmit) homeTrialSubmit.disabled = false;
+  }
+});
+
+homeSubscriberSigninForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = String(homeSubscriberSigninEmail?.value || "").trim();
+  const password = String(homeSubscriberSigninPassword?.value || "");
+  if (!email || !password) return;
+
+  setHomeSubscriberSigninMessage("Signing in...", "");
+  if (homeSubscriberSigninSubmit) homeSubscriberSigninSubmit.disabled = true;
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+        requestedRole: "subscriber"
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to sign in.");
+    saveSessionAuth(data.token, data.user);
+    setHomeSubscriberSigninMessage("Signed in. Redirecting...", "success");
+    window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "subscriber"))}`;
+  } catch (error) {
+    setHomeSubscriberSigninMessage(error?.message || "Failed to sign in.", "error");
+  } finally {
+    if (homeSubscriberSigninSubmit) homeSubscriberSigninSubmit.disabled = false;
+  }
+});
+
+homeAdminSigninForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = String(homeAdminSigninEmail?.value || "").trim();
+  const password = String(homeAdminSigninPassword?.value || "");
+  if (!email || !password) return;
+
+  setHomeAdminSigninMessage("Signing in...", "");
+  if (homeAdminSigninSubmit) homeAdminSigninSubmit.disabled = true;
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+        requestedRole: "admin"
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to sign in.");
+    saveSessionAuth(data.token, data.user);
+    setHomeAdminSigninMessage("Signed in. Redirecting...", "success");
+    window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "admin"))}`;
+  } catch (error) {
+    setHomeAdminSigninMessage(error?.message || "Failed to sign in.", "error");
+  } finally {
+    if (homeAdminSigninSubmit) homeAdminSigninSubmit.disabled = false;
+  }
+});
+
+homeCustomerSigninForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = String(homeCustomerSigninEmail?.value || "").trim();
+  const password = String(homeCustomerSigninPassword?.value || "");
+  if (!email || !password) return;
+
+  setHomeCustomerSigninMessage("Signing in...", "");
+  if (homeCustomerSigninSubmit) homeCustomerSigninSubmit.disabled = true;
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+        requestedRole: "customer"
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to sign in.");
+    saveSessionAuth(data.token, data.user);
+    setHomeCustomerSigninMessage("Signed in. Redirecting...", "success");
+    window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
+  } catch (error) {
+    setHomeCustomerSigninMessage(error?.message || "Failed to sign in.", "error");
+  } finally {
+    if (homeCustomerSigninSubmit) homeCustomerSigninSubmit.disabled = false;
+  }
+});
+
+homeCustomerSignupForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const name = String(homeCustomerSignupName?.value || "").trim();
+  const email = String(homeCustomerSignupEmail?.value || "").trim();
+  const password = String(homeCustomerSignupPassword?.value || "");
+  if (!name || !email || !password) return;
+
+  setHomeCustomerSignupMessage("Creating customer account...", "");
+  if (homeCustomerSignupSubmit) homeCustomerSignupSubmit.disabled = true;
+  try {
+    const response = await fetch("/api/auth/register/customer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Registration failed.");
+    saveSessionAuth(data.token, data.user);
+    setHomeCustomerSignupMessage("Account created. Redirecting...", "success");
+    window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
+  } catch (error) {
+    setHomeCustomerSignupMessage(error?.message || "Registration failed.", "error");
+  } finally {
+    if (homeCustomerSignupSubmit) homeCustomerSignupSubmit.disabled = false;
+  }
+});
+
+renderHomeTrialTemplatePreview();
 
 try {
   await loadConfig();

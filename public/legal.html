@@ -40,6 +40,29 @@
         color: #afc0dc;
         line-height: 1.55;
       }
+      .legal-doc ul {
+        margin: 0.45rem 0 0;
+        padding-left: 1.1rem;
+        color: #bdd0ee;
+        line-height: 1.5;
+      }
+      .legal-doc li + li {
+        margin-top: 0.25rem;
+      }
+      .legal-warning {
+        border: 1px solid rgba(255, 132, 132, 0.32);
+        border-radius: 14px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(255, 132, 132, 0.08), transparent 48%),
+          rgba(36, 13, 17, 0.38);
+        padding: 0.8rem;
+        color: #ffe0e4;
+      }
+      .legal-warning strong {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: #ffd4da;
+      }
       .legal-note {
         margin: 0;
         color: #c9d9ef;
@@ -86,12 +109,30 @@
         <p>
           We collect only the data needed to run accounts, bookings, dashboards, notifications, and billing. Data may be processed by trusted service providers (such as payment, messaging, and hosting providers) only where necessary to operate the service. We support UK GDPR-aligned rights requests and retention controls.
         </p>
+        <div class="legal-warning" role="note">
+          <strong>Important payment and banking privacy notice</strong>
+          Do not enter full bank account numbers, full card numbers, CVV/CVC codes, or online banking credentials into general sign-up forms. Sensitive payment information must be entered only through approved secure payment provider flows.
+        </div>
+        <p>
+          For admins, subscribers, and customers involved in payments or refunds, we may collect and process payment-related account information, billing contact details, transaction IDs, refund references, and masked payment method details (for example, card brand/last four digits or masked payout references) for billing operations, refund handling, fraud prevention, chargeback management, reconciliation, support, and legal compliance.
+        </p>
+        <p>
+          We do not sell personal data, and we do not share personal banking information for advertising. Where payment or payout processing is required, sensitive financial data is handled by the applicable payment processor (for example, Stripe or PayPal) under that provider’s terms and privacy policy. We may retain only the minimum operational record needed to confirm payment status, refunds, and account support actions.
+        </p>
+        <ul>
+          <li>Purpose limitation: billing, refunds, payouts, fraud prevention, audit, and compliance only.</li>
+          <li>Role access controls: admin access is restricted to operational needs; subscribers manage their own business payment/refund activity; customers can access only their own payment/refund records where provided.</li>
+          <li>Retention: records are kept only as long as needed for service delivery, dispute handling, and legal/accounting obligations.</li>
+        </ul>
       </section>
 
       <section class="panel legal-doc" id="terms">
         <h2>Terms &amp; Conditions Summary</h2>
         <p>
           These terms govern use of the platform by admins, subscribers, and customers. They cover acceptable use, account responsibilities, billing terms, service availability, limitations of liability, and governing law.
+        </p>
+        <p>
+          Users must provide accurate payment/refund contact details where requested and must not submit sensitive banking credentials in free-text fields or unsupported forms. Subscribers are responsible for the accuracy of their business payout/refund setup and their own customer-facing cancellation/refund policies. Admin-only payment operations are restricted to platform owner/developer maintenance and support tasks.
         </p>
       </section>
 
@@ -107,12 +148,26 @@
         <p>
           Subscriber plans are currently offered at GBP 29.99 monthly or GBP 299.99 yearly. Billing may be processed via Stripe or PayPal. Subscriptions renew automatically unless cancelled before renewal, subject to applicable law and provider terms.
         </p>
+        <p>
+          Payment and payout processing for admins, subscribers, and customers may involve third-party processors. Sensitive payment credentials are collected and stored by those processors, not in general registration forms. The platform may store limited payment metadata (such as provider name, transaction references, status, and masked identifiers) to support invoicing, reconciliation, and refund administration.
+        </p>
+        <ul>
+          <li>Subscriber billing: subscription fees, renewals, and account billing management.</li>
+          <li>Customer payments: appointment or service payments may be processed under the subscriber business’s configured payment method(s).</li>
+          <li>Admin actions: restricted support/maintenance functions for platform billing operations only.</li>
+        </ul>
       </section>
 
       <section class="panel legal-doc" id="refunds">
         <h2>Refund &amp; Cancellation Policy Summary</h2>
         <p>
           Platform refund and cancellation handling follows the published billing/refund policy and any mandatory consumer rights. Individual salon/barbershop/beauty business appointment cancellation terms may differ and are controlled by each subscriber business.
+        </p>
+        <p>
+          We may request payment/refund setup details so refunds can be issued to the correct person or business and so payment disputes can be resolved efficiently. Refunds are generally returned to the original payment method where possible, unless another legally permitted and documented method is agreed.
+        </p>
+        <p>
+          To protect users, the platform does not require full bank details in standard sign-up forms. If additional payment information is required for a refund or payout, it should be collected only through an approved secure process or payment provider workflow.
         </p>
       </section>
 
@@ -127,6 +182,9 @@
         <h2 style="margin:0 0 .35rem;font-family:'Sora','Manrope',sans-serif;">Compliance &amp; Security</h2>
         <p>
           Our documentation set also includes GDPR data retention schedules, DSAR procedures, RoPA and DPIA templates, sub-processor register, access control policies, backup/continuity policies, and vulnerability management procedures.
+        </p>
+        <p>
+          Payment security controls should also include PCI DSS-aligned payment processor usage, least-privilege access to billing/refund tools, audit logging for refund actions, and documented incident response for payment-related events.
         </p>
         <p class="legal-note">
           Final published legal wording should be reviewed by your solicitor before customer-facing release.
@@ -145,4 +203,3 @@
     <script src="/theme-toggle.js"></script>
   </body>
   </html>
-

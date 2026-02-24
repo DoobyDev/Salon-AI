@@ -448,5 +448,35 @@
       "other": 0
     },
     "cogsPercent": 0
+  },
+  "biz_profit_compute_1771926501712_89611": {
+    "payrollEntries": [
+      {
+        "id": "e8776d45-ab23-445d-acc5-06b11c6c9fa4",
+        "staffName": "Jordan Miles",
+        "role": "Barber",
+        "hours": 10,
+        "hourlyRate": 20,
+        "bonus": 15,
+        "updatedAt": "2026-02-24T09:48:21.759Z"
+      }
+    ],
+    "fixedCosts": {
+      "rent": 100,
+      "utilities": 50,
+      "software": 25,
+      "other": 10
+    },
+    "cogsPercent": 10
+  },
+  "biz_profit_remove_1771926501789_92827": {
+    "payrollEntries": [],
+    "fixedCosts": {
+      "rent": 0,
+      "utilities": 0,
+      "software": 0,
+      "other": 0
+    },
+    "cogsPercent": 0
   }
 }

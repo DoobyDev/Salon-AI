@@ -1256,5 +1256,79 @@
         "updatedAt": "2026-02-22T01:04:48.070Z"
       }
     ]
+  },
+  "biz_controls_create_1771926501633_63992": {
+    "memberships": [
+      {
+        "id": "9a38690f-2ac7-49bd-a31b-0ac0fc6b8ee4",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-24T09:48:21.713Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "967b7b39-3442-452b-985c-e3b655a08a0d",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-24T09:48:21.753Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "ef12bc21-6bc6-4b03-addb-bc8b38cc6ecd",
+        "code": "GIFT-A230D143",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-24T09:48:21.769Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-24T09:48:21.769Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1771926501792_26657": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "fab9be21-b7ef-4f1d-8436-93fe82edeee8",
+        "code": "GIFT-9662F301",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-24T09:48:21.800Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-24T09:48:21.816Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1771926501823_26613": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "f436b102-1c75-4f0a-9e5a-8f1ab8cd2d2a",
+        "code": "GIFT-FF3115A4",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-24T09:48:21.830Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-24T09:48:21.830Z"
+      }
+    ]
   }
 }

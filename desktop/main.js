@@ -58,6 +58,7 @@ function stopEmbeddedBackend() {
 }
 
 async function createWindow() {
+  const appIconPath = path.join(__dirname, "..", "public", "Salon_AI_IMG.png");
   const win = new BrowserWindow({
     width: 1400,
     height: 920,
@@ -65,6 +66,7 @@ async function createWindow() {
     minHeight: 740,
     backgroundColor: "#05070d",
     autoHideMenuBar: true,
+    icon: appIconPath,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false

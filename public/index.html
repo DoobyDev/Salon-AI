@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Hair &amp; Beauty Receptionist | AI Front Desk, Bookings, Growth</title>
+    <title>AI Salon Receptionist | Salon Bookings, Front Desk & Business Dashboard</title>
     <meta
       name="description"
       content="AI Hair & Beauty Receptionist helps hair and beauty businesses automate bookings, reduce no-shows, recover lost revenue, and run a better business with AI."
@@ -12,10 +12,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="AI Hair & Beauty Receptionist" />
+    <meta name="apple-mobile-web-app-title" content="AI Salon Receptionist" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/icons/icon-maskable.svg" />
+    <link rel="icon" href="/Salon_AI_IMG.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/Salon_AI_IMG.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -29,58 +29,68 @@
     <header class="topbar">
       <a class="brand" href="#home">
         <span class="brand-dot"></span>
-        AI Hair &amp; Beauty Receptionist
+        AI Salon Receptionist
       </a>
       <nav class="nav">
-        <a href="#frontdesk">Book a Visit</a>
-        <a href="#join">Join</a>
-        <a href="#dashboards">Dashboard Demo</a>
-        <a href="#platform">Features</a>
-        <a href="#cancellation">Cancellation Policy</a>
+        <a data-open-trial-modal href="/auth?role=subscriber&mode=register">Join</a>
+        <a href="#dashboards">Demo</a>
+        <a class="nav-secondary" href="#platform">Features</a>
+        <a class="nav-secondary" href="#footerPolicies">Policy</a>
       </nav>
       <div class="auth-actions">
-        <a class="btn btn-ghost" href="/auth?role=customer">Customer Sign In</a>
-        <a class="btn btn-ghost" href="/auth?role=subscriber">Subscriber Sign In</a>
+        <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">CUSTOMERS</a>
+        <a class="btn btn-ghost" data-open-subscriber-signin-modal href="/auth?role=subscriber">SUBSCRIBERS</a>
+        <a class="btn btn-ghost nav-admin-only" data-open-admin-signin-modal href="/auth">ADMIN ONLY</a>
       </div>
     </header>
 
-    <main class="page" id="home">
+    <main class="page control-room-home" id="home">
       <section class="hero">
         <div class="hero-copy reveal">
-          <p class="eyebrow">Luxury-Grade AI Platform for Hair &amp; Beauty Businesses</p>
-          <h1>The Intelligent Operating System for Bookings, Revenue, and Client Retention</h1>
+          <p class="eyebrow">Built for salon owners, barbers, and beauty teams</p>
+          <h1>Run Your Front Desk, Bookings, and Salon Performance From One Place</h1>
           <p class="hero-text">
-            AI Hair &amp; Beauty Receptionist gives business owners a complete control center: AI receptionist
-            automation, live booking management, staff and capacity tools, no-show protection,
-            retention campaigns, and financial performance visibility.
+            AI Salon Receptionist gives you one working dashboard for the day-to-day running of your business:
+            handling enquiries, managing bookings, covering busy hours, filling cancellations,
+            keeping clients coming back, and staying on top of your numbers.
           </p>
           <div class="cta-row">
-            <a class="btn" href="/auth?role=subscriber&mode=register">Start Setup in Minutes</a>
+            <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
             <a class="btn btn-ghost" href="#dashboards">View Live Dashboard Demo</a>
-            <a class="btn btn-ghost" href="#frontdesk">Try Customer Booking</a>
+            <a class="btn btn-ghost btn-minimal" href="#frontdesk">Try the Booking Journey</a>
           </div>
+          <p class="hero-cta-note">Look around first, then start your free trial when you're ready.</p>
           <div class="cta-proof">
-            <strong>Launch from £29.99/month</strong>
+            <strong>free trial to all new subscribers</strong>
+            <span>Then plans start from £29.99/month</span>
             <span>or £299.99/year (save 16.6%)</span>
-            <span>No long setup required</span>
+            <span>No long setup project needed</span>
+          </div>
+          <div class="hero-operator-note">
+            <p class="hero-note-label">Made for real salon owners and front desk teams</p>
+            <ul>
+              <li>Works for salons, barbershops, and beauty studios</li>
+              <li>Quick setup for your team and a simple booking experience for clients</li>
+              <li>Live dashboard demo so you can see how it feels before signing up</li>
+            </ul>
           </div>
           <div class="hero-badges">
             <span>24/7 AI Receptionist</span>
             <span>Subscriber and Customer Portals</span>
-            <span>Revenue, Capacity, CRM, and Profitability Intelligence</span>
+            <span>Bookings, staffing, retention, and revenue visibility</span>
           </div>
           <div class="hero-capabilities">
             <article>
               <h3>Front Desk Automation</h3>
-              <p>Capture and convert enquiries into confirmed bookings around the clock.</p>
+              <p>Turn enquiries into booked appointments even when your team is busy.</p>
             </article>
             <article>
               <h3>Operational Command Center</h3>
-              <p>Manage staff coverage, waitlists, cancellations, and service demand in one dashboard.</p>
+              <p>Keep on top of staffing, waitlists, cancellations, and demand in one place.</p>
             </article>
             <article>
               <h3>Growth and Profit Intelligence</h3>
-              <p>Track channel ROI, repeat-client opportunities, payroll costs, and margin performance.</p>
+              <p>See what is bringing in bookings and what is actually making you profit.</p>
             </article>
           </div>
           <div class="hero-stats">
@@ -99,20 +109,129 @@
           </div>
         </div>
 
-        <div class="hero-media reveal">
-          <img
-            src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1400&q=80"
-            alt="Modern hair and beauty business serving customers"
-          />
-          <div class="floating-card">
+        <div class="hero-media hero-chat-demo receptionist-live reveal" id="frontdesk">
+          <div class="section-header">
+            <h2>Meet Lexi | Your AI Receptionist</h2>
+            <p>Lexi handles bookings, service questions, and front desk support while your team stays focused on clients.</p>
+          </div>
+          <div class="hero-lexi-sell-card" aria-label="Lexi and business profile overview">
+              <div class="hero-lexi-sell-head">
+                <p>Lexi + Your Business Profile</p>
+                <strong>Lexi gives your business a faster, smarter front desk experience from the first customer message.</strong>
+              </div>
+            <p id="heroSalonMeta" class="hero-lexi-business-meta">Loading featured salon business information...</p>
+            <div class="hero-lexi-value-pills" aria-label="What Lexi and the app can do">
+              <span>Answer enquiries instantly</span>
+              <span>Check availability</span>
+              <span>Start booking requests</span>
+              <span>Reduce missed calls</span>
+              <span>Support salon, barber & beauty services</span>
+            </div>
+          </div>
+          <div class="hero-chat-status">
             <p>Live Availability</p>
             <strong id="liveBookingSummary">Loading live booking availability...</strong>
+          </div>
+          <div class="chat-shell">
+            <div id="chatWindow" class="chat-window" aria-live="polite"></div>
+            <form id="chatForm" class="chat-form">
+              <label class="sr-only" for="chatInput">Message AI receptionist</label>
+              <input
+                id="chatInput"
+                type="text"
+                placeholder="Example: Book a skin fade in New York tomorrow at 3 PM..."
+                autocomplete="off"
+                required
+              />
+              <button class="btn" type="submit">Send</button>
+              <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
+            </form>
+          </div>
+          <div class="hero-chat-features" aria-label="AI receptionist features">
+            <article>
+              <h3>Answers Questions</h3>
+              <p>Services, prices, opening hours, and booking guidance in one chat.</p>
+            </article>
+            <article>
+              <h3>Starts Bookings</h3>
+              <p>Turns natural messages into booking requests your team can confirm.</p>
+            </article>
+            <article>
+              <h3>Works 24/7</h3>
+              <p>Captures client intent even when the salon is closed or the team is busy.</p>
+            </article>
+            <article>
+              <h3>Handles FAQs</h3>
+              <p>Answers the repeat questions that normally tie up your front desk.</p>
+            </article>
+            <article>
+              <h3>Promotes Services</h3>
+              <p>Helps clients choose the right service before they book the wrong slot.</p>
+            </article>
+            <article>
+              <h3>Supports Rebooking</h3>
+              <p>Encourages the next appointment while the client is already engaged.</p>
+            </article>
+            <article>
+              <h3>Reduces Missed Calls</h3>
+              <p>Keeps enquiries moving when the team is on the floor with clients.</p>
+            </article>
+            <article>
+              <h3>Captures Intent</h3>
+              <p>Collects useful booking details early so follow-up is faster for staff.</p>
+            </article>
+            <article>
+              <h3>Feels On-Brand</h3>
+              <p>Gives clients a polished first response that supports trust and conversion.</p>
+            </article>
           </div>
         </div>
       </section>
 
+      <section class="command-deck reveal" aria-label="Salon growth control room overview">
+        <div class="command-deck-intro">
+          <div>
+            <p class="eyebrow">Premium salon growth system</p>
+            <h2>See the whole revenue engine before you commit</h2>
+            <p>
+              Explore the AI receptionist, operating dashboards, cancellation protection, and live booking journey
+              in the same order a salon owner evaluates software before buying.
+            </p>
+          </div>
+          <div class="command-deck-actions">
+            <a class="btn" href="#dashboards">Open Demo Control Room</a>
+            <a class="btn btn-ghost" href="#frontdesk">Test AI Receptionist</a>
+            <a class="btn btn-ghost btn-minimal" href="#join">Create Workspace</a>
+          </div>
+        </div>
+        <div class="command-deck-grid" aria-label="Evaluation checkpoints">
+          <article class="command-deck-card">
+            <p>Step 1</p>
+            <h3>Prove Conversion</h3>
+            <span>AI chat captures enquiries and starts bookings in real time.</span>
+          </article>
+          <article class="command-deck-card">
+            <p>Step 2</p>
+            <h3>Verify Operations</h3>
+            <span>Business modules and dashboards show how the day runs under pressure.</span>
+          </article>
+          <article class="command-deck-card">
+            <p>Step 3</p>
+            <h3>Protect Revenue</h3>
+            <span>Cancellation policy and waitlist workflows reduce empty-chair time.</span>
+          </article>
+          <article class="command-deck-card command-deck-card-accent">
+            <p>Step 4</p>
+            <h3>Launch Fast</h3>
+            <span>Subscriber and customer flows are ready when you decide to go live.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="homepage-flow-grid reveal" aria-label="Sales evaluation path">
+        <div class="homepage-flow-main">
       <section class="trust-strip reveal">
-        <div class="trust-label">Built for premium hair and beauty businesses that operate with precision</div>
+          <div class="trust-label">Built for modern hair and beauty businesses that want a smoother day</div>
         <ul>
           <li>High Street Studios</li>
           <li>Urban Fade Collective</li>
@@ -120,6 +239,123 @@
           <li>Atlas Barber Guild</li>
           <li>Northpoint Salon Hub</li>
         </ul>
+      </section>
+
+      <section class="home-quick-paths panel reveal" aria-label="Quick platform paths">
+        <div class="section-header">
+          <h2>Pick Your Path</h2>
+          <p>Jump into the part of the platform you want to explore first, without scrolling through everything.</p>
+        </div>
+        <div class="home-quick-path-grid">
+          <a class="home-quick-path-card" href="#frontdesk">
+            <strong>Try the AI Receptionist</strong>
+            <small>See how bookings and enquiries are handled in the live demo chat.</small>
+            <span class="home-module-pill accent">Start here</span>
+          </a>
+          <a class="home-quick-path-card" href="#experience">
+            <strong>Explore Business Areas</strong>
+            <small>Open focused popups for operations, waitlist, growth, and owner view.</small>
+            <span class="home-module-pill">Use daily</span>
+          </a>
+          <a class="home-quick-path-card" href="#dashboards">
+            <strong>See the Dashboard UX</strong>
+            <small>Preview the subscriber/admin control-room layout and business modules.</small>
+            <span class="home-module-pill soft">Live demo</span>
+          </a>
+          <a class="home-quick-path-card" href="#join">
+            <strong>Set Up Your Salon</strong>
+            <small>Start your account and build your salon workspace when you are ready.</small>
+            <span class="home-module-pill soft">Get started</span>
+          </a>
+        </div>
+      </section>
+        </div>
+        <aside class="homepage-command-rail" aria-label="Control room checklist">
+          <div class="homepage-command-rail-head">
+            <p class="eyebrow">Buyer checklist</p>
+            <h2>Evaluate like an owner</h2>
+            <p>Follow the same path most salon owners take when deciding if the platform is worth switching to.</p>
+          </div>
+          <ol class="homepage-command-steps">
+            <li><a href="#frontdesk">Test live front desk experience</a></li>
+            <li><a href="#experience">Open business area quick views</a></li>
+            <li><a href="#dashboards">Review dashboard command center</a></li>
+            <li><a href="#cancellation">Check revenue protection policy</a></li>
+            <li><a href="#join">Start subscriber workspace setup</a></li>
+          </ol>
+          <div class="homepage-command-proof">
+            <span class="home-module-pill accent">Live demo</span>
+            <strong>All major flows are visible on this page</strong>
+            <p>No sales call required to understand the product structure.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="control-room-frame reveal" aria-labelledby="controlRoomTitle">
+        <div class="control-room-frame-head">
+          <p class="eyebrow">Operations + intelligence</p>
+          <h2 id="controlRoomTitle">Premium Control Room Layout</h2>
+          <p>
+            This section is arranged like a working command center: quick module access first, data/privacy trust next,
+            then a live dashboard preview for owner-level decision making.
+          </p>
+        </div>
+        <div class="control-room-frame-grid">
+          <aside class="control-room-sidebar" aria-label="Control room navigation">
+            <div class="control-room-sidebar-panel">
+              <p class="control-room-sidebar-label">Zones</p>
+              <a href="#experience">Business Areas</a>
+              <a href="#data-policy">Data Policy</a>
+              <a href="#dashboards">Dashboard Demo</a>
+            </div>
+            <div class="control-room-sidebar-panel">
+              <p class="control-room-sidebar-label">Outcomes</p>
+              <ul>
+                <li>Faster front-desk decisions</li>
+                <li>Operational visibility in one place</li>
+                <li>Revenue and cancellation trend awareness</li>
+                <li>Clear path from demo to account creation</li>
+              </ul>
+            </div>
+          </aside>
+          <div class="control-room-frame-main">
+      <section class="home-business-modules panel reveal" id="experience" aria-label="Business areas">
+        <div class="section-header">
+          <h2>Business Areas</h2>
+          <p>Open a quick view for the part of the salon you want to focus on, without cluttering the homepage.</p>
+        </div>
+        <div class="home-module-grid" id="homeModuleGrid">
+          <button class="home-module-card" type="button" data-home-module="frontdesk">
+            <strong>Front Desk</strong>
+            <small>Handle enquiries, bookings, and client questions quickly.</small>
+            <span class="home-module-pill accent">Start here</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="operations">
+            <strong>Operations</strong>
+            <small>Keep the day running with bookings, staffing, and cancellations.</small>
+            <span class="home-module-pill">Use daily</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="waitlist">
+            <strong>Waitlist Recovery</strong>
+            <small>Refill cancelled slots before the chair sits empty.</small>
+            <span class="home-module-pill">Use daily</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="growth">
+            <strong>Client Growth</strong>
+            <small>Follow up, rebook, and bring regular clients back in.</small>
+            <span class="home-module-pill soft">Weekly check</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="finance">
+            <strong>Revenue &amp; Profit</strong>
+            <small>See takings, trends, and what is actually making money.</small>
+            <span class="home-module-pill soft">Weekly check</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="owner_clarity">
+            <strong>Owner View</strong>
+            <small>Get a simple picture of what needs attention next.</small>
+            <span class="home-module-pill soft">Quick view</span>
+          </button>
+        </div>
       </section>
 
       <section class="panel privacy-promise reveal" id="data-policy">
@@ -149,36 +385,11 @@
         </p>
       </section>
 
-      <section class="experience-strip reveal" id="experience">
-        <div class="section-header">
-          <h2>Why Teams Keep Using This Every Day</h2>
-          <p>Simple flow, powerful outcomes: the platform guides teams from enquiry to revenue without dashboard overload.</p>
-        </div>
-        <div class="experience-grid">
-          <article class="experience-card">
-            <p class="experience-tag">Step 1</p>
-            <h3>Capture Demand Instantly</h3>
-            <p>Customers find, ask, and book in one smooth path with AI receptionist support.</p>
-          </article>
-          <article class="experience-card">
-            <p class="experience-tag">Step 2</p>
-            <h3>Run Operations with Less Effort</h3>
-            <p>Module switching keeps teams focused on one job at a time: bookings, staffing, waitlist, and revenue.</p>
-          </article>
-          <article class="experience-card">
-            <p class="experience-tag">Step 3</p>
-            <h3>Grow with Live Business Signals</h3>
-            <p>Revenue streams, cancellations, exports, and profitability view make decision-making faster and clearer.</p>
-          </article>
-        </div>
-      </section>
-
       <section class="dashboard-showcase reveal" id="dashboards">
         <div class="section-header">
-          <h2>Subscriber &amp; Admin Dashboard Demo (Updated)</h2>
+          <h2>Subscriber &amp; Admin Dashboard Demo</h2>
           <p>
-            This preview mirrors the updated live accounting panel design with timeframe switches,
-            quick filters, gauges, and revenue stream charts.
+            See how a salon owner can run bookings, staffing, waitlist recovery, and revenue checks from one dashboard.
           </p>
         </div>
 
@@ -196,7 +407,7 @@
           </article>
           <article class="metric-card">
             <p>Window Revenue</p>
-            <strong id="homeDemoWindowRevenue">$0</strong>
+            <strong id="homeDemoWindowRevenue">£0</strong>
             <span class="trend up" id="homeDemoWindowRevenueTrend">+0%</span>
           </article>
           <article class="metric-card">
@@ -272,24 +483,30 @@
           </article>
         </div>
       </section>
+          </div>
+        </div>
+      </section>
 
       <section class="panel join-roles reveal" id="join">
         <div class="section-header">
           <h2>Join as Subscriber or Customer</h2>
-          <p>Choose your role to access the right dashboard, tools, and booking experience.</p>
+          <p>Choose your role to access the right dashboard, tools, and booking experience. All new subscribers get a free trial.</p>
         </div>
         <div class="join-grid">
           <article class="join-card">
+            <p class="join-tag">For salon owners &amp; teams • Free Trial available</p>
             <h3>Subscriber</h3>
             <p>Run your entire business: bookings, staffing, waitlist, CRM, finance, and growth analytics.</p>
-            <a class="btn" href="/auth?role=subscriber&mode=register">Create Subscriber Account</a>
+            <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
           </article>
           <article class="join-card">
+            <p class="join-tag">For end customers</p>
             <h3>Customer</h3>
             <p>Find trusted local hair and beauty businesses, then book, reschedule, or cancel with ease.</p>
-            <a class="btn btn-ghost" href="/auth?role=customer">Continue as Customer</a>
+            <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">Book as a Customer</a>
           </article>
           <article class="join-card join-card-benefits">
+            <p class="join-tag join-tag-gold">Most requested outcomes</p>
             <h3>Why Businesses Choose AI</h3>
             <p>Designed to increase bookings, protect revenue, and elevate the client experience from day one.</p>
             <ul class="benefit-list">
@@ -299,6 +516,19 @@
               <li>Track profitability and growth with live business insights</li>
             </ul>
           </article>
+        </div>
+      </section>
+
+      <section class="panel role-cta reveal" aria-label="Free trial invite">
+        <h2>Start Your Subscriber Free Trial</h2>
+        <p>
+          Try the AI receptionist, dashboards, and booking workflows before committing. Explore the live demo above,
+          then create your subscriber workspace to begin your free trial.
+        </p>
+        <div class="cta-row">
+          <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+          <a class="btn btn-ghost" href="#dashboards">Review Dashboard Demo</a>
+          <a class="btn btn-ghost" href="#frontdesk">Test AI Receptionist</a>
         </div>
       </section>
 
@@ -358,7 +588,7 @@
         </article>
       </section>
 
-      <section class="frontdesk-section panel reveal" id="frontdesk">
+      <section class="frontdesk-section panel reveal">
         <div class="section-header">
           <h2>Book a Visit</h2>
           <p>
@@ -413,27 +643,6 @@
         </div>
       </section>
 
-      <section class="panel receptionist-live reveal">
-        <div class="section-header">
-          <h2>Live AI Receptionist Demo</h2>
-          <p>Use natural language to ask questions or create a booking in real time.</p>
-        </div>
-        <div class="chat-shell">
-          <div id="chatWindow" class="chat-window" aria-live="polite"></div>
-          <form id="chatForm" class="chat-form">
-            <label class="sr-only" for="chatInput">Message AI receptionist</label>
-            <input
-              id="chatInput"
-              type="text"
-              placeholder="Example: Book a skin fade in New York tomorrow at 3 PM..."
-              autocomplete="off"
-              required
-            />
-            <button class="btn" type="submit">Send</button>
-          </form>
-        </div>
-      </section>
-
       <section class="panel policy reveal" id="cancellation">
         <h2>Cancellation Policy</h2>
         <p class="policy-intro">
@@ -446,7 +655,7 @@
             <h3>Clear Rule</h3>
             <p>
               If a booking is cancelled less than <strong>24 hours</strong> before the appointment,
-              a <strong>\$10 cancellation fee</strong> applies.
+              a <strong>£10 cancellation fee</strong> applies.
             </p>
           </article>
           <article class="policy-card">
@@ -473,14 +682,338 @@
         </p>
         <div class="cta-row">
           <a class="btn" href="/auth?role=subscriber&mode=register">Create Subscriber Account</a>
-          <a class="btn btn-ghost" href="/auth?role=subscriber">Subscriber Sign In</a>
-          <a class="btn btn-ghost" href="/auth?role=customer">Customer Sign In</a>
+          <a class="btn btn-ghost" data-open-subscriber-signin-modal href="/auth?role=subscriber">Subscriber Sign In</a>
+          <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">Customer Sign In</a>
         </div>
       </section>
     </main>
 
+    <div id="homeTrialModal" class="home-trial-overlay" aria-hidden="true">
+      <section class="home-trial-modal" role="dialog" aria-modal="true" aria-labelledby="homeTrialModalTitle">
+        <div class="home-trial-modal-head">
+          <div>
+            <p class="eyebrow">free trial to all new subscribers</p>
+            <h2 id="homeTrialModalTitle">Start Free Trial</h2>
+            <p>Create your subscriber workspace here, then continue straight into your dashboard.</p>
+          </div>
+          <button id="homeTrialModalClose" class="btn btn-ghost" type="button" aria-label="Close free trial form">Close</button>
+        </div>
+
+        <div class="home-trial-modal-layout">
+          <aside class="home-trial-modal-rail" aria-label="Free trial summary">
+            <div class="home-trial-rail-card">
+              <h3>What happens next</h3>
+              <ul>
+                <li>Create your subscriber account</li>
+                <li>Set your business type and location</li>
+                <li>Get a starter setup template</li>
+                <li>Open your dashboard and continue onboarding</li>
+              </ul>
+            </div>
+            <div class="home-trial-rail-card">
+              <h3>Before you submit</h3>
+              <p>Fill in your business details so your workspace is set up correctly for salon, barbershop, or beauty operations.</p>
+            </div>
+          </aside>
+
+          <form id="homeTrialForm" class="home-trial-form" autocomplete="off">
+            <div class="home-trial-form-grid">
+              <label>
+                Full Name
+                <input id="homeTrialRegisterName" type="text" placeholder="Full name" required />
+              </label>
+              <label>
+                Work Email
+                <input id="homeTrialRegisterEmail" type="email" placeholder="you@business.com" required />
+              </label>
+              <label>
+                Password
+                <input id="homeTrialRegisterPassword" type="password" placeholder="Create password" required />
+              </label>
+              <label>
+                Business Type
+                <select id="homeTrialBusinessType" required>
+                  <option value="hair_salon">Hair Salon</option>
+                  <option value="barbershop">Barbershop</option>
+                  <option value="beauty_salon">Beauty Salon</option>
+                </select>
+              </label>
+              <label class="home-trial-field-span">
+                Business Name
+                <input id="homeTrialBusinessName" type="text" placeholder="Business name" required />
+              </label>
+              <label>
+                City
+                <input id="homeTrialBusinessCity" type="text" placeholder="City" required />
+              </label>
+              <label>
+                Country
+                <input id="homeTrialBusinessCountry" type="text" placeholder="Country" required />
+              </label>
+              <label>
+                Postcode / ZIP
+                <input id="homeTrialBusinessPostcode" type="text" placeholder="Postcode / ZIP" required />
+              </label>
+              <label>
+                Phone
+                <input id="homeTrialBusinessPhone" type="text" placeholder="+44 / +1 / +61 ..." required />
+              </label>
+              <label>
+                Website (optional)
+                <input id="homeTrialBusinessWebsite" type="url" placeholder="https://yourbusiness.com" />
+              </label>
+              <label>
+                Team Size (optional)
+                <select id="homeTrialTeamSize">
+                  <option value="">Select team size</option>
+                  <option value="solo">Solo</option>
+                  <option value="2-5">2-5</option>
+                  <option value="6-10">6-10</option>
+                  <option value="11+">11+</option>
+                </select>
+              </label>
+              <label>
+                Main Goal (optional)
+                <select id="homeTrialPrimaryGoal">
+                  <option value="">Choose a goal</option>
+                  <option value="more_bookings">More bookings</option>
+                  <option value="reduce_cancellations">Reduce cancellations</option>
+                  <option value="retention">Improve retention</option>
+                  <option value="visibility">Better visibility</option>
+                </select>
+              </label>
+              <label class="home-trial-field-span">
+                Setup Notes (optional)
+                <textarea id="homeTrialSetupNotes" rows="4" placeholder="Tell us what you want to set up first (optional)"></textarea>
+              </label>
+            </div>
+
+            <section class="home-payment-setup-block" aria-labelledby="homeTrialPaymentSetupTitle">
+              <div class="home-payment-warning" role="note" aria-live="polite">
+                <strong>IMPORTANT PAYMENT &amp; REFUND NOTICE</strong>
+                <p>
+                  We only ask for payment/refund setup details so refunds and payouts can be handled correctly when needed. Do not enter full bank account or card numbers in this form. Your personal banking information is not shared or stored in this app and is handled only through secure payment providers.
+                </p>
+              </div>
+              <h3 id="homeTrialPaymentSetupTitle">Payment &amp; Refund Setup (Subscriber)</h3>
+              <p class="home-payment-setup-note">
+                Stripe and PayPal are connected securely after sign-up inside your dashboard. This is used for subscriber billing, payouts, and refund routing across admin, subscriber, and customer payment workflows.
+              </p>
+              <div class="home-payment-provider-row" aria-label="Supported payment providers">
+                <button class="btn btn-ghost" type="button" disabled>Connect Stripe After Sign-Up</button>
+                <button class="btn btn-ghost" type="button" disabled>Connect PayPal After Sign-Up</button>
+              </div>
+              <label class="home-trial-check">
+                <input id="homeTrialPaymentConsent" type="checkbox" required />
+                <span>
+                  I understand payment and refund setup is completed securely after sign-up through Stripe or PayPal, and I will not enter full bank account or card numbers here. I have read the
+                  <a href="/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>,
+                  <a href="/legal.html#billing" target="_blank" rel="noopener">Billing Policy</a>, and
+                  <a href="/legal.html#refunds" target="_blank" rel="noopener">Refund Policy</a>.
+                </span>
+              </label>
+            </section>
+
+            <div id="homeTrialTemplatePreview" class="home-trial-template-preview" aria-live="polite"></div>
+
+            <label class="home-trial-check">
+              <input id="homeTrialTerms" type="checkbox" required />
+              <span>I confirm I am creating a subscriber workspace and want to continue to account setup.</span>
+            </label>
+            <label class="home-trial-check">
+              <input id="homeTrialTipsOptIn" type="checkbox" checked />
+              <span>Send setup tips and onboarding updates (optional).</span>
+            </label>
+
+            <div class="home-trial-form-actions">
+              <button id="homeTrialSubmit" class="btn" type="submit">Create Subscriber Workspace</button>
+              <button id="homeTrialCancel" class="btn btn-ghost" type="button">Cancel</button>
+              <span id="homeTrialMsg" class="home-trial-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <div id="homeSubscriberSigninModal" class="home-trial-overlay" aria-hidden="true">
+      <section class="home-trial-modal home-access-modal" role="dialog" aria-modal="true" aria-labelledby="homeSubscriberSigninTitle">
+        <div class="home-trial-modal-head">
+          <div>
+            <p class="eyebrow">Subscribers</p>
+            <h2 id="homeSubscriberSigninTitle">Subscriber Sign In</h2>
+            <p>Sign in to your salon workspace to manage bookings, operations, waitlist, and business performance.</p>
+          </div>
+          <button id="homeSubscriberSigninClose" class="btn btn-ghost" type="button" aria-label="Close subscriber sign in">Close</button>
+        </div>
+        <form id="homeSubscriberSigninForm" class="home-access-form" autocomplete="off">
+          <label>
+            Email
+            <input id="homeSubscriberSigninEmail" type="email" placeholder="Email" required />
+          </label>
+          <label>
+            Password
+            <input id="homeSubscriberSigninPassword" type="password" placeholder="Password" required />
+          </label>
+          <div class="home-access-form-actions">
+            <button id="homeSubscriberSigninSubmit" class="btn" type="submit">Sign In</button>
+            <a class="btn btn-ghost" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+            <span id="homeSubscriberSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div id="homeCustomerAccessModal" class="home-trial-overlay" aria-hidden="true">
+      <section class="home-trial-modal" role="dialog" aria-modal="true" aria-labelledby="homeCustomerAccessTitle">
+        <div class="home-trial-modal-head">
+          <div>
+            <p class="eyebrow">Customers</p>
+            <h2 id="homeCustomerAccessTitle">Customer Access</h2>
+            <p>Sign in to manage your bookings or create a new customer account in the same popup.</p>
+          </div>
+          <button id="homeCustomerAccessClose" class="btn btn-ghost" type="button" aria-label="Close customer access options">Close</button>
+        </div>
+        <div class="home-customer-mode-tabs" role="tablist" aria-label="Customer access options">
+          <button id="homeCustomerModeSignIn" class="home-customer-mode-tab is-active" type="button" role="tab" aria-selected="true" data-home-customer-mode="signin">
+            Sign In
+          </button>
+          <button id="homeCustomerModeSignUp" class="home-customer-mode-tab" type="button" role="tab" aria-selected="false" data-home-customer-mode="signup">
+            Sign Up
+          </button>
+        </div>
+
+        <div id="homeCustomerSigninPanel" class="home-customer-panel is-active" role="tabpanel" aria-labelledby="homeCustomerModeSignIn">
+          <form id="homeCustomerSigninForm" class="home-access-form" autocomplete="off">
+            <label>
+              Email
+              <input id="homeCustomerSigninEmail" type="email" placeholder="Email" required />
+            </label>
+            <label>
+              Password
+              <input id="homeCustomerSigninPassword" type="password" placeholder="Password" required />
+            </label>
+            <div class="home-access-form-actions">
+              <button id="homeCustomerSigninSubmit" class="btn" type="submit">Sign In</button>
+              <button class="btn btn-ghost" data-home-customer-mode="signup" type="button">Need an account?</button>
+              <span id="homeCustomerSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+
+        <div id="homeCustomerSignupPanel" class="home-customer-panel" role="tabpanel" aria-labelledby="homeCustomerModeSignUp" hidden>
+          <form id="homeCustomerSignupForm" class="home-trial-form" autocomplete="off">
+            <div class="home-trial-form-grid">
+              <label>
+                Full Name
+                <input id="homeCustomerSignupName" type="text" placeholder="Full name" required />
+              </label>
+              <label>
+                Email
+                <input id="homeCustomerSignupEmail" type="email" placeholder="Email" required />
+              </label>
+              <label>
+                Password
+                <input id="homeCustomerSignupPassword" type="password" placeholder="Create password" required />
+              </label>
+              <label>
+                Phone (optional)
+                <input id="homeCustomerSignupPhone" type="text" placeholder="+44 / +1 / +61 ..." />
+              </label>
+              <label>
+                City (optional)
+                <input id="homeCustomerSignupCity" type="text" placeholder="City" />
+              </label>
+              <label>
+                Preferred Service (optional)
+                <select id="homeCustomerSignupService">
+                  <option value="">Select service interest</option>
+                  <option value="haircut">Haircut</option>
+                  <option value="colour">Colour</option>
+                  <option value="barber">Barber Services</option>
+                  <option value="beauty">Beauty Treatments</option>
+                </select>
+              </label>
+              <label class="home-trial-field-span">
+                Booking Notes (optional)
+                <textarea id="homeCustomerSignupNotes" rows="4" placeholder="Anything useful for your first booking (optional)"></textarea>
+              </label>
+            </div>
+            <section class="home-payment-setup-block" aria-labelledby="homeCustomerPaymentSetupTitle">
+              <div class="home-payment-warning" role="note" aria-live="polite">
+                <strong>IMPORTANT PAYMENT &amp; REFUND NOTICE</strong>
+                <p>
+                  We only ask for payment/refund setup details so refunds can be issued if needed. Do not enter full bank account or card numbers in this form. Your personal banking information is not shared or stored in this app and is handled only through secure payment providers.
+                </p>
+              </div>
+              <h3 id="homeCustomerPaymentSetupTitle">Payment &amp; Refund Setup (Customer)</h3>
+              <p class="home-payment-setup-note">
+                Your payment method and any refund handling are completed securely through Stripe or PayPal after sign-up / during checkout. Do not enter bank or card details in this form.
+              </p>
+              <div class="home-payment-provider-row" aria-label="Supported customer payment providers">
+                <button class="btn btn-ghost" type="button" disabled>Secure Stripe Checkout / Refunds</button>
+                <button class="btn btn-ghost" type="button" disabled>Secure PayPal Checkout / Refunds</button>
+              </div>
+              <label class="home-trial-check">
+                <input id="homeCustomerPaymentConsent" type="checkbox" required />
+                <span>
+                  I understand payment and refund handling uses secure provider flows (Stripe/PayPal), and this form must not include full bank account or card numbers. I have read the
+                  <a href="/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>,
+                  <a href="/legal.html#billing" target="_blank" rel="noopener">Billing Policy</a>, and
+                  <a href="/legal.html#refunds" target="_blank" rel="noopener">Refund Policy</a>.
+                </span>
+              </label>
+            </section>
+            <label class="home-trial-check">
+              <input id="homeCustomerSignupTerms" type="checkbox" required />
+              <span>I want to create a customer account so I can manage bookings and appointment history.</span>
+            </label>
+            <label class="home-trial-check">
+              <input id="homeCustomerSignupUpdates" type="checkbox" checked />
+              <span>Send booking tips and updates (optional).</span>
+            </label>
+            <div class="home-trial-form-actions">
+              <button id="homeCustomerSignupSubmit" class="btn" type="submit">Create Customer Account</button>
+              <button class="btn btn-ghost" data-home-customer-mode="signin" type="button">Already have an account?</button>
+              <span id="homeCustomerSignupMsg" class="home-trial-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <div id="homeAdminSigninModal" class="home-trial-overlay" aria-hidden="true">
+      <section class="home-trial-modal home-access-modal" role="dialog" aria-modal="true" aria-labelledby="homeAdminSigninTitle">
+        <div class="home-trial-modal-head">
+          <div>
+            <p class="eyebrow">Admin Only</p>
+            <h2 id="homeAdminSigninTitle">Developer &amp; App Maintenance Only</h2>
+            <p>This area is restricted to the developer and app maintenance access only. Unauthorized access is not permitted.</p>
+          </div>
+          <button id="homeAdminSigninClose" class="btn btn-ghost" type="button" aria-label="Close admin sign in">Close</button>
+        </div>
+        <div class="home-admin-warning">
+          <strong>Restricted Area</strong>
+          <p>Use this sign-in only for platform owner, developer, and maintenance tasks.</p>
+        </div>
+        <form id="homeAdminSigninForm" class="home-access-form" autocomplete="off">
+          <label>
+            Admin Email
+            <input id="homeAdminSigninEmail" type="email" placeholder="Admin email" required />
+          </label>
+          <label>
+            Password
+            <input id="homeAdminSigninPassword" type="password" placeholder="Password" required />
+          </label>
+          <div class="home-access-form-actions">
+            <button id="homeAdminSigninSubmit" class="btn" type="submit">Admin Sign In</button>
+            <span id="homeAdminSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+    </div>
+
     <footer class="footer">
-      <div class="footer-links" aria-label="Legal links">
+      <div id="footerPolicies" class="footer-links" aria-label="Legal links">
         <a href="/legal.html#privacy">Privacy Policy</a>
         <a href="/legal.html#terms">Terms &amp; Conditions</a>
         <a href="/legal.html#cookies">Cookie Policy</a>
@@ -489,7 +1022,7 @@
         <a href="/legal.html#ai">AI Disclosure</a>
       </div>
       <p>
-        AI Hair &amp; Beauty Receptionist: AI booking software, appointment automation,
+        AI Salon Receptionist: AI booking software, appointment automation,
         front desk management, customer retention, and business analytics.
       </p>
     </footer>

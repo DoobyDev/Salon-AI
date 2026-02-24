@@ -64,9 +64,12 @@ const commercialControlsFile = path.join(__dirname, "data", "commercial_controls
 const revenueSpendFile = path.join(__dirname, "data", "revenue_spend.json");
 const profitabilityInputsFile = path.join(__dirname, "data", "profitability_inputs.json");
 const socialMediaFile = path.join(__dirname, "data", "social_media.json");
+const businessReportQueueFile = path.join(__dirname, "data", "business_report_email_queue.json");
 const supportedAccountingProviders = ["quickbooks", "xero", "freshbooks", "sage"];
 const supportedStaffAvailability = new Set(["on_duty", "off_duty"]);
 const supportedShiftDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const supportedStaffRotaStatus = new Set(["scheduled", "available", "off", "sick", "covering"]);
+const supportedStaffRotaShift = new Set(["full", "am", "pm"]);
 const supportedWaitlistStatus = new Set(["waiting", "contacted", "booked", "cancelled"]);
 const supportedMembershipCycles = new Set(["weekly", "monthly", "quarterly", "yearly"]);
 const supportedCommercialStatus = new Set(["active", "inactive"]);
@@ -1375,6 +1378,22 @@ async function readSocialMediaFile() {
   }
 }
 
+async function readBusinessReportQueueFile() {
+  try {
+    const raw = await readFile(businessReportQueueFile, "utf8");
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+async function writeBusinessReportQueueFile(payload) {
+  await mkdir(path.dirname(businessReportQueueFile), { recursive: true });
+  await writeFile(businessReportQueueFile, JSON.stringify(payload, null, 2), "utf8");
+}
+
 async function writeSocialMediaFile(payload) {
   await mkdir(path.dirname(socialMediaFile), { recursive: true });
   await writeFile(socialMediaFile, JSON.stringify(payload, null, 2), "utf8");
@@ -1845,6 +1864,124 @@ function normalizeStaffMembers(rows) {
       updatedAt: item?.updatedAt || null
     }))
     .filter((item) => item.id && item.name);
+}
+
+function normalizeWeekStartKey(input) {
+  const value = String(input || "").trim();
+  return bookingDateRegex.test(value) ? value : "";
+}
+
+function currentWeekStartKey() {
+  const now = new Date();
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const day = base.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  base.setDate(base.getDate() + mondayOffset);
+  const yyyy = base.getFullYear();
+  const mm = String(base.getMonth() + 1).padStart(2, "0");
+  const dd = String(base.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function normalizeStaffRotaShift(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  return supportedStaffRotaShift.has(raw) ? raw : "full";
+}
+
+function normalizeStaffRotaStatus(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  return supportedStaffRotaStatus.has(raw) ? raw : "off";
+}
+
+function normalizeStaffRotaDayKey(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  return supportedShiftDays.includes(raw) ? raw : "";
+}
+
+function normalizeStaffRotaCell(cell) {
+  if (!cell || typeof cell !== "object") return null;
+  return {
+    status: normalizeStaffRotaStatus(cell.status),
+    shift: normalizeStaffRotaShift(cell.shift),
+    updatedAt: typeof cell.updatedAt === "string" ? cell.updatedAt : null,
+    updatedByRole: typeof cell.updatedByRole === "string" ? String(cell.updatedByRole) : null
+  };
+}
+
+function normalizeStaffRotaWeek(rawWeek) {
+  const source = rawWeek && typeof rawWeek === "object" ? rawWeek : {};
+  const rawCells = source.cells && typeof source.cells === "object" ? source.cells : {};
+  const cells = {};
+  Object.entries(rawCells).forEach(([staffId, dayMap]) => {
+    const normalizedStaffId = String(staffId || "").trim();
+    if (!normalizedStaffId || !dayMap || typeof dayMap !== "object") return;
+    const normalizedDayMap = {};
+    Object.entries(dayMap).forEach(([dayKey, cell]) => {
+      const normalizedDay = normalizeStaffRotaDayKey(dayKey);
+      if (!normalizedDay) return;
+      const normalizedCell = normalizeStaffRotaCell(cell);
+      if (!normalizedCell) return;
+      normalizedDayMap[normalizedDay] = normalizedCell;
+    });
+    if (Object.keys(normalizedDayMap).length) cells[normalizedStaffId] = normalizedDayMap;
+  });
+  const sicknessLogs = Array.isArray(source.sicknessLogs)
+    ? source.sicknessLogs
+        .map((entry) => ({
+          id: String(entry?.id || "").trim() || randomUUID(),
+          staffId: String(entry?.staffId || "").trim(),
+          staffName: String(entry?.staffName || "").trim(),
+          day: normalizeStaffRotaDayKey(entry?.day),
+          shift: normalizeStaffRotaShift(entry?.shift),
+          replacementMode: String(entry?.replacementMode || "suggest").trim().toLowerCase() === "auto" ? "auto" : "suggest",
+          weekStart: normalizeWeekStartKey(entry?.weekStart) || null,
+          reportedAt: typeof entry?.reportedAt === "string" ? entry.reportedAt : null,
+          actorId: typeof entry?.actorId === "string" ? entry.actorId : null,
+          actorRole: typeof entry?.actorRole === "string" ? entry.actorRole : null
+        }))
+        .filter((entry) => entry.staffId && entry.day)
+    : [];
+  return {
+    cells,
+    sicknessLogs,
+    updatedAt: typeof source.updatedAt === "string" ? source.updatedAt : null
+  };
+}
+
+function getNormalizedStaffBusinessRecord(all, businessId) {
+  const raw = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  return {
+    ...raw,
+    members: normalizeStaffMembers(raw.members || []),
+    rotaWeeks:
+      raw.rotaWeeks && typeof raw.rotaWeeks === "object"
+        ? Object.fromEntries(
+            Object.entries(raw.rotaWeeks)
+              .map(([weekKey, week]) => [normalizeWeekStartKey(weekKey), normalizeStaffRotaWeek(week)])
+              .filter(([weekKey]) => Boolean(weekKey))
+          )
+        : {}
+  };
+}
+
+function getStaffRotaWeekPayload(businessRecord, weekStart) {
+  const key = normalizeWeekStartKey(weekStart) || currentWeekStartKey();
+  const week = normalizeStaffRotaWeek(businessRecord?.rotaWeeks?.[key]);
+  return { weekStart: key, ...week };
+}
+
+function buildStaffRosterResponse(businessRecord, options = {}) {
+  const members = normalizeStaffMembers(businessRecord?.members || []);
+  const response = {
+    members,
+    summary: summarizeStaffRoster(members)
+  };
+  if (options.includeRotaWeek) {
+    Object.assign(response, {
+      rotaWeek: getStaffRotaWeekPayload(businessRecord, options.weekStart)
+    });
+  }
+  return response;
 }
 
 function isSlotWithinBusinessHours(business, date, time, durationMin = 45) {
@@ -3029,6 +3166,381 @@ app.get("/api/admin/businesses", authRequired, requireRole("admin"), async (_req
   });
 });
 
+function buildAdminCopilotHeuristicResponse(question, snapshot) {
+  const q = String(question || "").trim();
+  const qLower = q.toLowerCase();
+  const findings = [];
+  const suggestedFixes = [];
+  const platform = snapshot?.platform || {};
+  const health = snapshot?.health || {};
+  const scope = snapshot?.managedBusiness || null;
+  const cancelRate = Number(platform.cancelRatePct || 0);
+  const looksLikeAdminDiagnostics = /admin|platform|diagnostic|diagnostics|scope|subscriber|billing|bookings|calendar|cancell|accounting|redis|prisma|api|server|dashboard|managed business|business/i.test(q);
+  const looksLikeRealtimeGeneral = /weather|temperature|forecast|news|stock|price of|traffic/i.test(qLower);
+
+  if (!looksLikeAdminDiagnostics) {
+    const generalAnswer = looksLikeRealtimeGeneral
+      ? "I can help with salon and business planning, but I don’t have live weather lookup in this chat yet. If you tell me your city, I can still suggest how weather usually affects walk-ins, cancellations, and demand."
+      : "Yes, I can help with general salon, barber, beauty, and business questions here, and I can also use admin or managed-business context when your question is about the dashboard.";
+    return {
+      answer: generalAnswer,
+      findings: [
+        scope?.selected
+          ? `Managed business context is available (${scope.name || "selected business"}) if you want business-specific guidance.`
+          : "No managed business is selected right now, but general guidance is still available."
+      ],
+      suggestedFixes: [
+        "Ask your general question directly (services, products, client experience, operations ideas, etc.).",
+        "For business-specific diagnostics, mention the dashboard/module or the managed business issue you want checked."
+      ]
+    };
+  }
+
+  if (!health.prismaReady) {
+    findings.push("Database diagnostics are partially unavailable because Prisma queries failed.");
+    suggestedFixes.push("Verify Prisma client generation and database connectivity, then retry the copilot query.");
+  }
+  if (!health.openaiConfigured) {
+    findings.push("OpenAI API is not configured for enhanced copilot reasoning.");
+    suggestedFixes.push("Set OPENAI_API_KEY on the server environment to enable richer copilot responses.");
+  }
+  if (cancelRate >= 12) {
+    findings.push(`Platform cancellation rate is elevated (${cancelRate.toFixed(1)}%).`);
+    suggestedFixes.push("Review cancellation workflows, reminder timing, and waitlist backfill usage across active businesses.");
+  }
+  if (health.redisConfigured && !health.redisEnabled) {
+    findings.push("Redis URL is configured but runtime is using inline fallback queues/cache behavior.");
+    suggestedFixes.push("Confirm Redis connectivity and runtime startup logs so queue-backed features run as expected.");
+  }
+  if ((/subscriber|business|scope/i.test(q) || q.length < 8) && !scope?.selected) {
+    findings.push("No managed business scope is selected for this admin session.");
+    suggestedFixes.push("Select a managed business in the admin scope dropdown for business-specific diagnostics.");
+  }
+  if (!findings.length) {
+    findings.push("No obvious platform-wide configuration red flags were detected in the sanitized snapshot.");
+    suggestedFixes.push("Use a more specific question (billing, bookings, calendar, cancellations, accounting, admin scope) for targeted diagnostics.");
+  }
+
+  const answerParts = [
+    "Here’s a quick admin summary based on the current platform snapshot.",
+    scope?.selected
+      ? `I also included checks for ${scope.name || "the selected business"}.`
+      : "No managed business is selected, so this is a platform-level view.",
+    findings.length ? `Main thing to look at: ${findings[0]}` : ""
+  ].filter(Boolean);
+
+  return {
+    answer: answerParts.join(" "),
+    findings: findings.slice(0, 6),
+    suggestedFixes: suggestedFixes.slice(0, 6)
+  };
+}
+
+async function buildAdminCopilotSnapshot(req) {
+  const snapshot = {
+    platform: {
+      businesses: null,
+      users: null,
+      bookings: null,
+      cancelledBookings: null,
+      cancelRatePct: null
+    },
+    managedBusiness: {
+      selected: false,
+      id: null,
+      name: "",
+      bookings: null,
+      cancelledBookings: null,
+      users: null
+    },
+    health: {
+      prismaReady: true,
+      openaiConfigured: Boolean(openai),
+      stripeConfigured: Boolean(stripe),
+      paypalConfigured: Boolean(paypalClientId && paypalClientSecret),
+      redisConfigured: Boolean(getRedisUrl()),
+      redisEnabled: isRedisEnabled(),
+      nodeEnv: process.env.NODE_ENV || "development",
+      uptimeMinutes: Math.round(process.uptime() / 60)
+    }
+  };
+
+  try {
+    const [businesses, users, bookings, cancelled] = await Promise.all([
+      prisma.business.count(),
+      prisma.user.count(),
+      prisma.booking.count(),
+      prisma.booking.count({ where: { status: "cancelled" } })
+    ]);
+    snapshot.platform = {
+      businesses,
+      users,
+      bookings,
+      cancelledBookings: cancelled,
+      cancelRatePct: bookings ? Number(((cancelled / bookings) * 100).toFixed(1)) : 0
+    };
+  } catch {
+    snapshot.health.prismaReady = false;
+  }
+
+  try {
+    const businessId = await resolveManagedBusinessId(req);
+    if (businessId) {
+      const [business, bookings, cancelledBookings, users] = await Promise.all([
+        prisma.business.findUnique({ where: { id: businessId }, select: { id: true, name: true } }),
+        prisma.booking.count({ where: { businessId } }),
+        prisma.booking.count({ where: { businessId, status: "cancelled" } }),
+        prisma.user.count({ where: { businessId } })
+      ]);
+      snapshot.managedBusiness = {
+        selected: Boolean(businessId),
+        id: businessId,
+        name: business?.name || "",
+        bookings,
+        cancelledBookings,
+        users
+      };
+    }
+  } catch {
+    snapshot.health.prismaReady = false;
+  }
+
+  return snapshot;
+}
+
+async function buildAdminCopilotResponse({ question, snapshot }) {
+  const base = buildAdminCopilotHeuristicResponse(question, snapshot);
+  if (!openai) return base;
+  try {
+    const completion = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are Lexi, an AI assistant for a salon SaaS admin dashboard. You can answer both: (1) admin/platform/managed-business diagnostics questions using the provided sanitized snapshot, and (2) general salon/barber/beauty/business questions (ChatGPT-style guidance). Use the snapshot only when relevant. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Tone: sound human, natural, and helpful. Answer the user's actual question first in plain language. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user specifically asks for a report."
+        },
+        {
+          role: "user",
+          content: JSON.stringify({ question, snapshot, heuristic: base })
+        }
+      ]
+    });
+    const raw = String(completion.choices?.[0]?.message?.content || "").trim();
+    const parsed = JSON.parse(raw);
+    return {
+      answer: String(parsed?.answer || base.answer),
+      findings: Array.isArray(parsed?.findings) ? parsed.findings.slice(0, 6).map(String) : base.findings,
+      suggestedFixes: Array.isArray(parsed?.suggestedFixes) ? parsed.suggestedFixes.slice(0, 6).map(String) : base.suggestedFixes
+    };
+  } catch {
+    return base;
+  }
+}
+
+function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
+  const q = String(question || "").trim();
+  const qLower = q.toLowerCase();
+  const business = snapshot?.business || {};
+  const bookings = snapshot?.bookings || {};
+  const findings = [];
+  const suggestedActions = [];
+  const cancelRate = Number(bookings.cancelRatePct || 0);
+  const upcoming7d = Number(bookings.upcoming7d || 0);
+  const total = Number(bookings.total || 0);
+
+  if (!business.id) {
+    return {
+      answer: "Subscriber Copilot could not detect a business context for this session.",
+      findings: ["No business scope is available for the current subscriber session."],
+      suggestedActions: ["Sign in again or contact support if your subscriber account is not linked to a business."]
+    };
+  }
+
+  if (total === 0) {
+    findings.push("No bookings are currently recorded for this business.");
+    suggestedActions.push("Review front-desk profile, services, and booking flow; then test a booking end-to-end from the customer side.");
+  }
+  if (cancelRate >= 12) {
+    findings.push(`Cancellation rate is elevated at ${cancelRate.toFixed(1)}%.`);
+    suggestedActions.push("Prioritize reminder timing, waitlist backfill, and same-day recovery offers to reduce lost slots.");
+  }
+  if (upcoming7d <= 5 && total > 0) {
+    findings.push(`Upcoming 7-day booking volume is light (${upcoming7d} bookings).`);
+    suggestedActions.push("Run a short rebooking campaign for recent customers and promote off-peak slots.");
+  }
+  if (!findings.length) {
+    findings.push("Booking and operations snapshot looks stable based on current sanitized metrics.");
+    suggestedActions.push("Focus on repeat-booking prompts, upsells, and reducing operational friction during peak windows.");
+  }
+
+  if (/waitlist|cancel/i.test(q) && cancelRate < 5) {
+    findings.push("Cancellation pressure appears relatively controlled in the current snapshot.");
+    suggestedActions.push("Keep waitlist workflows active so last-minute gaps are still recoverable during busy periods.");
+  }
+  if (/staff|capacity/i.test(q)) {
+    suggestedActions.push("Use the calendar + booking operations filters to compare peak booking days against roster coverage.");
+  }
+
+  const topicLabel =
+    /staff|capacity|rota|cover/.test(qLower) ? "staffing and capacity" :
+    /waitlist|cancel|gap|backfill/.test(qLower) ? "cancellations and waitlist recovery" :
+    /revenue|takings|money|cash|profit|finance/.test(qLower) ? "revenue and finance signals" :
+    /calendar|diary|week|month|day|slot/.test(qLower) ? "calendar and booking load" :
+    /review|referral|campaign|crm|retention|growth|social/.test(qLower) ? "growth and retention opportunities" :
+    "business operations";
+  const leadFinding = findings[0] || "Current booking and operations signals were reviewed.";
+  const leadAction = suggestedActions[0] || "Open the relevant module and work through the highest-impact action first.";
+
+  return {
+    answer: `I checked ${topicLabel} for ${business.name || "your business"}. The main thing I can see is: ${leadFinding} Best next step: ${leadAction}`,
+    findings: findings.slice(0, 6),
+    suggestedActions: suggestedActions.slice(0, 6)
+  };
+}
+
+async function buildSubscriberCopilotSnapshot(req) {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) {
+    return {
+      business: { id: null, name: "", type: "" },
+      bookings: { total: 0, cancelled: 0, confirmed: 0, completed: 0, upcoming7d: 0, cancelRatePct: 0 },
+      health: {
+        openaiConfigured: Boolean(openai),
+        accountingSignalsAvailable: Boolean(stripe || paypalClientId)
+      }
+    };
+  }
+
+  const today = new Date();
+  const from = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const to = new Date(from);
+  to.setDate(to.getDate() + 7);
+  const fromKey = from.toISOString().slice(0, 10);
+  const toKey = to.toISOString().slice(0, 10);
+
+  const [business, total, cancelled, confirmed, completed, upcoming7d] = await Promise.all([
+    prisma.business.findUnique({ where: { id: businessId }, select: { id: true, name: true, type: true } }),
+    prisma.booking.count({ where: { businessId } }),
+    prisma.booking.count({ where: { businessId, status: "cancelled" } }),
+    prisma.booking.count({ where: { businessId, status: "confirmed" } }),
+    prisma.booking.count({ where: { businessId, status: "completed" } }),
+    prisma.booking.count({ where: { businessId, date: { gte: fromKey, lte: toKey }, status: "confirmed" } })
+  ]);
+
+  return {
+    business: {
+      id: business?.id || businessId,
+      name: business?.name || "",
+      type: business?.type || ""
+    },
+    bookings: {
+      total,
+      cancelled,
+      confirmed,
+      completed,
+      upcoming7d,
+      cancelRatePct: total ? Number(((cancelled / total) * 100).toFixed(1)) : 0
+    },
+    health: {
+      openaiConfigured: Boolean(openai),
+      accountingSignalsAvailable: Boolean(stripe || paypalClientId)
+    }
+  };
+}
+
+async function buildSubscriberCopilotResponse({ question, snapshot }) {
+  const base = buildSubscriberCopilotHeuristicResponse(question, snapshot);
+  if (!openai) return base;
+  try {
+    const completion = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are Lexi, an AI receptionist and business copilot for a salon SaaS dashboard. You can answer both: (1) general salon/barbershop/beauty/business questions (ChatGPT-style guidance), and (2) subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Tone: human, warm, confident, and practical. Answer the user's question first in natural language, then add brief findings/actions only if helpful. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+        },
+        {
+          role: "user",
+          content: JSON.stringify({ question, snapshot, heuristic: base })
+        }
+      ]
+    });
+    const raw = String(completion.choices?.[0]?.message?.content || "").trim();
+    const parsed = JSON.parse(raw);
+    return {
+      answer: String(parsed?.answer || base.answer),
+      findings: Array.isArray(parsed?.findings) ? parsed.findings.slice(0, 6).map(String) : base.findings,
+      suggestedActions: Array.isArray(parsed?.suggestedActions) ? parsed.suggestedActions.slice(0, 6).map(String) : base.suggestedActions
+    };
+  } catch {
+    return base;
+  }
+}
+
+app.post("/api/copilot/subscriber", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const question = String(req.body?.question || "").trim();
+  if (!question) return res.status(400).json({ error: "Question is required." });
+  if (question.length > 1200) return res.status(400).json({ error: "Question is too long." });
+  try {
+    const snapshot = await buildSubscriberCopilotSnapshot(req);
+    if (!snapshot?.business?.id) {
+      return res.status(400).json({ error: "No business scope available for subscriber copilot." });
+    }
+    const copilot = await buildSubscriberCopilotResponse({ question, snapshot });
+    await writeAuditLog({
+      actorId: req.auth.sub,
+      actorRole: req.auth.role,
+      action: "subscriber.copilot_query",
+      entityType: "system",
+      metadata: {
+        questionLength: question.length,
+        businessId: snapshot.business.id
+      }
+    });
+    return res.json({
+      answer: copilot.answer,
+      findings: copilot.findings,
+      suggestedActions: copilot.suggestedActions,
+      snapshot
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || "Subscriber copilot unavailable." });
+  }
+});
+
+app.post("/api/admin/copilot", authRequired, requireRole("admin"), async (req, res) => {
+  const question = String(req.body?.question || "").trim();
+  if (!question) return res.status(400).json({ error: "Question is required." });
+  if (question.length > 1200) return res.status(400).json({ error: "Question is too long." });
+
+  try {
+    const snapshot = await buildAdminCopilotSnapshot(req);
+    const copilot = await buildAdminCopilotResponse({ question, snapshot });
+    await writeAuditLog({
+      actorId: req.auth.sub,
+      actorRole: req.auth.role,
+      action: "admin.copilot_query",
+      entityType: "system",
+      metadata: {
+        questionLength: question.length,
+        hasManagedBusinessScope: Boolean(snapshot?.managedBusiness?.selected)
+      }
+    });
+    return res.json({
+      answer: copilot.answer,
+      findings: copilot.findings,
+      suggestedFixes: copilot.suggestedFixes,
+      snapshot
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || "Admin copilot unavailable." });
+  }
+});
+
 app.get("/api/dashboard/subscriber", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
@@ -3806,6 +4318,57 @@ app.get("/api/accounting-integrations/export", authRequired, requireRole("subscr
   return res.status(200).send(csv);
 });
 
+app.post("/api/business-reports/email", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+
+  const recipientEmail = String(req.body?.recipientEmail || "").trim().toLowerCase();
+  const subject = String(req.body?.subject || "").trim();
+  const note = String(req.body?.note || "").trim();
+  const report = req.body?.report && typeof req.body.report === "object" ? req.body.report : null;
+  if (!recipientEmail) return res.status(400).json({ error: "Recipient email is required." });
+  if (!isValidEmail(recipientEmail)) return res.status(400).json({ error: "Invalid recipient email format." });
+  if (!report) return res.status(400).json({ error: "Report payload is required." });
+
+  const queue = await readBusinessReportQueueFile();
+  const businessQueue = Array.isArray(queue?.[businessId]) ? queue[businessId] : [];
+  const queuedAt = new Date().toISOString();
+  const item = {
+    id: randomUUID(),
+    businessId,
+    recipientEmail,
+    subject: subject || `Business Report (${queuedAt.slice(0, 10)})`,
+    note,
+    report,
+    queuedAt,
+    status: "queued",
+    requestedBy: {
+      userId: String(req.auth?.sub || ""),
+      role: String(req.auth?.role || ""),
+      email: String(req.auth?.email || "")
+    }
+  };
+  queue[businessId] = [item, ...businessQueue].slice(0, 100);
+  await writeBusinessReportQueueFile(queue);
+
+  await writeAuditLog({
+    actorId: req.auth.sub,
+    actorRole: req.auth.role,
+    action: "business_report.email_queued",
+    entityType: "business_report",
+    entityId: item.id,
+    metadata: { businessId, recipientEmail }
+  });
+
+  return res.json({
+    ok: true,
+    queued: true,
+    deliveryMode: "queue",
+    id: item.id,
+    queuedAt
+  });
+});
+
 app.get("/api/accounting-integrations", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
@@ -3910,24 +4473,13 @@ app.get("/api/staff-roster", authRequired, requireRole("subscriber", "admin"), a
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
   const all = await readStaffRosterFile();
-  const membersRaw = Array.isArray(all?.[businessId]?.members) ? all[businessId].members : [];
-  const members = membersRaw
-    .map((item) => ({
-      id: String(item?.id || ""),
-      name: String(item?.name || "").trim(),
-      role: String(item?.role || "staff").trim(),
-      availability: supportedStaffAvailability.has(String(item?.availability || "off_duty").trim())
-        ? String(item.availability)
-        : "off_duty",
-      shiftDays: normalizeShiftDays(item?.shiftDays),
-      updatedAt: item?.updatedAt || null
-    }))
-    .filter((item) => item.id && item.name);
-
-  return res.json({
-    members,
-    summary: summarizeStaffRoster(members)
-  });
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  return res.json(
+    buildStaffRosterResponse(businessRecord, {
+      includeRotaWeek: true,
+      weekStart: req.query?.weekStart
+    })
+  );
 });
 
 app.post("/api/staff-roster/upsert", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
@@ -3945,7 +4497,7 @@ app.post("/api/staff-roster/upsert", authRequired, requireRole("subscriber", "ad
   }
 
   const all = await readStaffRosterFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const existingIndex = members.findIndex((member) => String(member?.id || "") === id);
   const nextMember = {
@@ -3974,21 +4526,13 @@ app.post("/api/staff-roster/upsert", authRequired, requireRole("subscriber", "ad
     metadata: { businessId, availability }
   });
 
-  const responseMembers = members
-    .map((item) => ({
-      id: String(item.id),
-      name: String(item.name),
-      role: String(item.role || "staff"),
-      availability: supportedStaffAvailability.has(String(item.availability)) ? String(item.availability) : "off_duty",
-      shiftDays: normalizeShiftDays(item.shiftDays),
-      updatedAt: item.updatedAt || null
-    }))
-    .filter((item) => item.id && item.name);
-
+  const response = buildStaffRosterResponse(businessRecord, {
+    includeRotaWeek: true,
+    weekStart: req.body?.weekStart
+  });
   return res.json({
-    member: nextMember,
-    members: responseMembers,
-    summary: summarizeStaffRoster(responseMembers)
+    member: response.members.find((item) => item.id === id) || null,
+    ...response
   });
 });
 
@@ -4004,7 +4548,7 @@ app.post("/api/staff-roster/:staffId/availability", authRequired, requireRole("s
   }
 
   const all = await readStaffRosterFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const index = members.findIndex((member) => String(member?.id || "") === staffId);
   if (index < 0) return res.status(404).json({ error: "Staff member not found." });
@@ -4026,21 +4570,13 @@ app.post("/api/staff-roster/:staffId/availability", authRequired, requireRole("s
     metadata: { businessId, availability }
   });
 
-  const responseMembers = members
-    .map((item) => ({
-      id: String(item.id),
-      name: String(item.name),
-      role: String(item.role || "staff"),
-      availability: supportedStaffAvailability.has(String(item.availability)) ? String(item.availability) : "off_duty",
-      shiftDays: normalizeShiftDays(item.shiftDays),
-      updatedAt: item.updatedAt || null
-    }))
-    .filter((item) => item.id && item.name);
-
+  const response = buildStaffRosterResponse(businessRecord, {
+    includeRotaWeek: true,
+    weekStart: req.body?.weekStart
+  });
   return res.json({
-    member: responseMembers.find((item) => item.id === staffId) || null,
-    members: responseMembers,
-    summary: summarizeStaffRoster(responseMembers)
+    member: response.members.find((item) => item.id === staffId) || null,
+    ...response
   });
 });
 
@@ -4051,7 +4587,7 @@ app.delete("/api/staff-roster/:staffId", authRequired, requireRole("subscriber",
   if (!staffId) return res.status(400).json({ error: "Staff member id is required." });
 
   const all = await readStaffRosterFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const filtered = members.filter((member) => String(member?.id || "") !== staffId);
   if (filtered.length === members.length) return res.status(404).json({ error: "Staff member not found." });
@@ -4068,21 +4604,121 @@ app.delete("/api/staff-roster/:staffId", authRequired, requireRole("subscriber",
     metadata: { businessId }
   });
 
-  const responseMembers = filtered
-    .map((item) => ({
-      id: String(item.id),
-      name: String(item.name),
-      role: String(item.role || "staff"),
-      availability: supportedStaffAvailability.has(String(item.availability)) ? String(item.availability) : "off_duty",
-      shiftDays: normalizeShiftDays(item.shiftDays),
-      updatedAt: item.updatedAt || null
-    }))
-    .filter((item) => item.id && item.name);
+  if (businessRecord.rotaWeeks && typeof businessRecord.rotaWeeks === "object") {
+    Object.values(businessRecord.rotaWeeks).forEach((week) => {
+      if (!week || typeof week !== "object") return;
+      if (week.cells && typeof week.cells === "object") delete week.cells[staffId];
+      if (Array.isArray(week.sicknessLogs)) {
+        week.sicknessLogs = week.sicknessLogs.filter((entry) => String(entry?.staffId || "") !== staffId);
+      }
+    });
+  }
+  all[businessId] = businessRecord;
+  await writeStaffRosterFile(all);
+  return res.json(
+    buildStaffRosterResponse(businessRecord, {
+      includeRotaWeek: true,
+      weekStart: req.query?.weekStart
+    })
+  );
+});
 
-  return res.json({
-    members: responseMembers,
-    summary: summarizeStaffRoster(responseMembers)
+app.get("/api/staff-roster/rota", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+  const weekStart = normalizeWeekStartKey(req.query?.weekStart) || currentWeekStartKey();
+  const all = await readStaffRosterFile();
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  return res.json(getStaffRotaWeekPayload(businessRecord, weekStart));
+});
+
+app.post("/api/staff-roster/rota/bulk", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+  const weekStart = normalizeWeekStartKey(req.body?.weekStart) || currentWeekStartKey();
+  const updates = Array.isArray(req.body?.updates) ? req.body.updates : [];
+  const appendSicknessLogs = Array.isArray(req.body?.sicknessLogs) ? req.body.sicknessLogs : [];
+
+  const all = await readStaffRosterFile();
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const members = normalizeStaffMembers(businessRecord.members || []);
+  const validIds = new Set(members.map((member) => String(member.id)));
+  if (!businessRecord.rotaWeeks || typeof businessRecord.rotaWeeks !== "object") businessRecord.rotaWeeks = {};
+  const week = normalizeStaffRotaWeek(businessRecord.rotaWeeks[weekStart]);
+  if (!week.cells || typeof week.cells !== "object") week.cells = {};
+  const now = new Date().toISOString();
+
+  let applied = 0;
+  updates.forEach((item) => {
+    const staffId = String(item?.staffId || "").trim();
+    const day = normalizeStaffRotaDayKey(item?.day);
+    if (!staffId || !day || !validIds.has(staffId)) return;
+    if (!week.cells[staffId] || typeof week.cells[staffId] !== "object") week.cells[staffId] = {};
+    week.cells[staffId][day] = {
+      status: normalizeStaffRotaStatus(item?.status),
+      shift: normalizeStaffRotaShift(item?.shift),
+      updatedAt: now,
+      updatedByRole: String(req.auth.role || "")
+    };
+    applied += 1;
   });
+
+  if (appendSicknessLogs.length) {
+    const safeLogs = appendSicknessLogs
+      .map((entry) => ({
+        id: String(entry?.id || "").trim() || randomUUID(),
+        staffId: String(entry?.staffId || "").trim(),
+        staffName: String(entry?.staffName || "").trim(),
+        day: normalizeStaffRotaDayKey(entry?.day),
+        shift: normalizeStaffRotaShift(entry?.shift),
+        replacementMode: String(entry?.replacementMode || "suggest").trim().toLowerCase() === "auto" ? "auto" : "suggest",
+        weekStart,
+        reportedAt: now,
+        actorId: req.auth.sub,
+        actorRole: req.auth.role
+      }))
+      .filter((entry) => entry.staffId && validIds.has(entry.staffId) && entry.day);
+    week.sicknessLogs = [...(Array.isArray(week.sicknessLogs) ? week.sicknessLogs : []), ...safeLogs].slice(-100);
+  }
+
+  week.updatedAt = now;
+  businessRecord.rotaWeeks[weekStart] = week;
+  all[businessId] = businessRecord;
+  await writeStaffRosterFile(all);
+
+  if (applied || appendSicknessLogs.length) {
+    await writeAuditLog({
+      actorId: req.auth.sub,
+      actorRole: req.auth.role,
+      action: "staff.rota_bulk_updated",
+      entityType: "staff_rota",
+      entityId: `${businessId}:${weekStart}`,
+      metadata: { businessId, weekStart, appliedUpdates: applied, sicknessLogs: appendSicknessLogs.length }
+    });
+  }
+
+  return res.json(getStaffRotaWeekPayload(businessRecord, weekStart));
+});
+
+app.post("/api/staff-roster/rota/reset", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+  const weekStart = normalizeWeekStartKey(req.body?.weekStart) || currentWeekStartKey();
+  const all = await readStaffRosterFile();
+  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  if (!businessRecord.rotaWeeks || typeof businessRecord.rotaWeeks !== "object") businessRecord.rotaWeeks = {};
+  delete businessRecord.rotaWeeks[weekStart];
+  all[businessId] = businessRecord;
+  await writeStaffRosterFile(all);
+  await writeAuditLog({
+    actorId: req.auth.sub,
+    actorRole: req.auth.role,
+    action: "staff.rota_week_reset",
+    entityType: "staff_rota",
+    entityId: `${businessId}:${weekStart}`,
+    metadata: { businessId, weekStart }
+  });
+  return res.json(getStaffRotaWeekPayload(businessRecord, weekStart));
 });
 
 app.get("/api/waitlist", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
@@ -4425,6 +5061,22 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       {
         type: "function",
         function: {
+          name: "check_available_slots",
+          description: "Check available booking slots for a business and optionally filter by date.",
+          parameters: {
+            type: "object",
+            properties: {
+              business_id: { type: "string" },
+              date: { type: "string", description: "Optional date in YYYY-MM-DD format." },
+              days_ahead: { type: "number", description: "Optional number of days ahead to search (1-14)." },
+              limit: { type: "number", description: "Optional max number of slots to return (1-12)." }
+            }
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
           name: "create_booking",
           description: "Create a booking when required details are complete.",
           parameters: {
@@ -4448,10 +5100,30 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     const messages = [
       {
         role: "system",
-        content: `You are the AI receptionist for ${business.name}. 
-Ask concise booking follow-ups when missing details.
-Never invent unavailable services.
-Only confirm bookings after calling create_booking.`
+        content: `You are Lexi, the confident and highly knowledgeable AI Salon Receptionist for ${business.name}.
+
+You are an expert in hair salons, barbershops, and beauty businesses, including common services, booking flow, aftercare basics, and product guidance.
+You can:
+- answer service and product questions clearly
+- help customers choose suitable services
+- check available booking slots
+- collect booking details and confirm bookings
+
+Style:
+- warm, confident, professional, and concise
+- ask focused follow-up questions only when needed
+- avoid sounding uncertain unless information is genuinely missing
+- answer like a real receptionist speaking naturally to a customer
+- respond to the user's actual question first before giving extra detail
+- avoid robotic phrases such as "I reviewed" / "the system indicates" / "snapshot"
+
+Rules:
+- never invent unavailable services, prices, or slots
+- use check_available_slots when the user asks about times/availability
+- use create_booking only when required booking details are complete
+- only confirm a booking after create_booking succeeds
+- if a question needs business-specific info not in the profile, say what is missing and ask for a clarification
+- for safety-sensitive beauty/skin/hair concerns, avoid medical claims and suggest consulting a qualified professional when appropriate`
       },
       { role: "system", content: `Business profile:\n${JSON.stringify(mapBusiness(business, { includeSlots: false }), null, 2)}` },
       ...history.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string"),
@@ -4469,6 +5141,34 @@ Only confirm bookings after calling create_booking.`
     const choice = completion.choices?.[0]?.message;
     if (choice?.tool_calls?.length) {
       const call = choice.tool_calls[0];
+      if (call.function?.name === "check_available_slots") {
+        const args = JSON.parse(call.function.arguments || "{}");
+        const targetBusinessId = String(args.business_id || business.id);
+        const target = await prisma.business.findUnique({
+          where: { id: targetBusinessId },
+          include: { services: true }
+        });
+        if (!target) return res.status(404).json({ error: "Selected business not found." });
+        const requestedDate = String(args.date || "").trim();
+        const daysAheadRaw = Number(args.days_ahead);
+        const limitRaw = Number(args.limit);
+        const daysAhead = Number.isFinite(daysAheadRaw) ? Math.min(14, Math.max(1, Math.floor(daysAheadRaw))) : 4;
+        const limit = Number.isFinite(limitRaw) ? Math.min(12, Math.max(1, Math.floor(limitRaw))) : 8;
+        const slots = await getAvailableSlotsForBusiness(target, daysAhead);
+        const filtered = requestedDate
+          ? slots.filter((slot) => String(slot).startsWith(requestedDate))
+          : slots;
+        if (!filtered.length) {
+          const scope = requestedDate ? ` on ${requestedDate}` : "";
+          return res.json({ reply: `I couldn't find any available slots for ${target.name}${scope}. Would you like me to check another date?` });
+        }
+        const slotList = filtered.slice(0, limit).join(", ");
+        return res.json({
+          reply: requestedDate
+            ? `Here are available slots for ${target.name} on ${requestedDate}: ${slotList}.`
+            : `Here are the next available slots for ${target.name}: ${slotList}.`
+        });
+      }
       if (call.function?.name === "create_booking") {
         const args = JSON.parse(call.function.arguments || "{}");
         const targetBusinessId = String(args.business_id || business.id);
