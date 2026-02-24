@@ -3319,7 +3319,7 @@ async function buildAdminCopilotResponse({ question, snapshot }) {
         {
           role: "system",
           content:
-            "You are Lexi, an AI assistant for a salon SaaS admin dashboard. You can answer both: (1) admin/platform/managed-business diagnostics questions using the provided sanitized snapshot, and (2) general salon/barber/beauty/business questions (ChatGPT-style guidance). Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Tone: sound human, natural, and helpful. Answer the user's actual question first in plain language. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user specifically asks for a report."
+            "You are Lexi, an AI assistant for a salon SaaS admin dashboard. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Tone: sound human, natural, and helpful. Answer the user's actual question first in plain language. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user specifically asks for a report."
         },
         {
           role: "user",
@@ -3339,6 +3339,129 @@ async function buildAdminCopilotResponse({ question, snapshot }) {
   }
 }
 
+function isLexiRestrictedDataRequest(question, options = {}) {
+  const q = String(question || "").toLowerCase();
+  if (!q) return false;
+  const role = String(options.role || "public").toLowerCase();
+  const isAdmin = role === "admin";
+  const secretTerms = /(api key|openai key|secret key|token|access token|refresh token|jwt|password|passwd|credentials?|env file|\.env|database url|connection string|stripe secret|paypal secret)/i;
+  const rawDumpTerms = /(dump|export|list|show|give me|send me|reveal|print).*(all )?(users|customers|emails|phone numbers|addresses|bookings|messages|chat logs|payment details|cards?|bank details)/i;
+  const fullPiiTerms = /(all|raw|full).*(customer|user|subscriber).*(email|phone|address|password|dob|date of birth|card|bank|payment|personal data|pii)|(?:customer|user|subscriber).*(password|card|bank|payment credentials?)/i;
+  const internalsTerms = /(server logs|audit logs|internal logs|raw database|db records|admin credentials|system prompt|prompt instructions)/i;
+  if (secretTerms.test(q) || rawDumpTerms.test(q) || fullPiiTerms.test(q) || internalsTerms.test(q)) return true;
+  if (!isAdmin) {
+    const subscriberPiiTerms = /(customer|user|subscriber).*(email|phone|address|personal data|pii)/i;
+    if (subscriberPiiTerms.test(q)) return true;
+  }
+  return false;
+}
+
+function lexiRestrictedDataReply(scopeLabel = "this chat", options = {}) {
+  const role = String(options.role || "public").toLowerCase();
+  if (role === "admin") {
+    return `I can help with admin diagnostics and support guidance, but I can’t share secrets, credentials, raw data dumps, full personal data exports, or internal system prompts/logs in Lexi chat. Ask for summaries, trends, or an authorized support lookup instead.`;
+  }
+  return `I can help with general questions, salon/business guidance, and how to use the app, but I can’t share private ${scopeLabel} data, personal user/customer information, credentials, or internal system details.`;
+}
+
+function nextDateForWeekday(weekdayIndex, fromDate = new Date()) {
+  const base = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+  const diff = (weekdayIndex - base.getDay() + 7) % 7;
+  base.setDate(base.getDate() + diff);
+  return base;
+}
+
+function weekdayFromText(text) {
+  const q = String(text || "").toLowerCase();
+  const map = [
+    ["sunday", 0],
+    ["monday", 1],
+    ["tuesday", 2],
+    ["wednesday", 3],
+    ["thursday", 4],
+    ["friday", 5],
+    ["saturday", 6]
+  ];
+  const hit = map.find(([name]) => q.includes(name));
+  return hit ? hit[1] : null;
+}
+
+async function buildPublicLexiFallbackReply(message, business) {
+  const q = String(message || "").trim();
+  const qLower = q.toLowerCase();
+  const bizName = String(business?.name || "the salon").trim() || "the salon";
+  const services = Array.isArray(business?.services) ? business.services.slice(0, 6) : [];
+  const serviceNames = services.map((s) => String(s?.name || "").trim()).filter(Boolean);
+  const serviceExamples = serviceNames.length ? serviceNames.slice(0, 4).join(", ") : "haircuts, colour, barber services, and beauty treatments";
+
+  if (!q) {
+    return "Hi, I’m Lexi. I can help with bookings, service questions, salon guidance, and how to use the app. What would you like help with?";
+  }
+  if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+    return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
+  }
+  if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
+    const weekday = weekdayFromText(qLower);
+    if (weekday !== null && business?.id) {
+      const target = nextDateForWeekday(weekday);
+      const dateKey = target.toISOString().slice(0, 10);
+      const rows = await prisma.booking.findMany({
+        where: { businessId: business.id, date: dateKey },
+        select: { status: true, time: true, service: true },
+        orderBy: { time: "asc" }
+      });
+      const active = rows.filter((r) => String(r.status || "").toLowerCase() !== "cancelled");
+      const cancelled = rows.length - active.length;
+      const label = target.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+      if (!rows.length) {
+        return `I can’t see any bookings for ${bizName} on ${label} yet. If you want, I can help you check availability or suggest a good time to book.`;
+      }
+      const preview = active.slice(0, 3).map((r) => `${String(r.time || "").slice(0, 5)} ${r.service || "appointment"}`).filter(Boolean).join(", ");
+      return `Yes, ${bizName} has ${rows.length} booking${rows.length === 1 ? "" : "s"} on ${label}${cancelled ? ` (${cancelled} cancelled)` : ""}. ${preview ? `The first bookings I can see are: ${preview}.` : ""}`;
+    }
+  }
+  if (/(available|availability|slots?).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bslots?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
+    const weekday = weekdayFromText(qLower);
+    if (weekday !== null && business?.id) {
+      const target = nextDateForWeekday(weekday);
+      const dateKey = target.toISOString().slice(0, 10);
+      const slots = await getAvailableSlotsForBusiness(business, 14);
+      const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
+      const label = target.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+      if (!filtered.length) {
+        return `I can’t see any available slots for ${bizName} on ${label} right now. If you want, I can check another day.`;
+      }
+      return `Yes, there are available slots for ${bizName} on ${label}. Here are some times: ${filtered.join(", ")}.`;
+    }
+  }
+  if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower)) {
+    return `I can help with that. Tell me the service you want, your preferred date, and roughly what time, and I’ll help you check availability for ${bizName}.`;
+  }
+  if (/(service|services|do you do|what do you offer|treatment)/.test(qLower)) {
+    return `I can help with services. ${bizName} can support bookings and service guidance here. Example services include ${serviceExamples}. If you want, tell me what result you’re looking for and I’ll suggest the best service type.`;
+  }
+  if (/(price|cost|how much|pricing)/.test(qLower)) {
+    return "I can help with pricing guidance, but I won’t guess exact prices if they aren’t available in the current profile. Tell me the service you’re interested in and I’ll guide you on what to ask or what usually affects the price.";
+  }
+  if (/(open|opening hours|hours|closing time|when are you open)/.test(qLower)) {
+    return `I can help with opening-hours questions for ${bizName} if the business profile includes them. If you don’t see the hours listed yet, I can still help you plan the best day/time to book.`;
+  }
+  if (/(shampoo|conditioner|product|aftercare|hair mask|styling product|sulfate|ingredients)/.test(qLower)) {
+    return "Yes, I can help with product and aftercare questions. Tell me your hair type (for example curly, fine, colour-treated, dry, oily scalp) and what you’re trying to improve, and I’ll give practical guidance.";
+  }
+  if (/(skin|allergy|reaction|medical|rash|infection|burn)/.test(qLower)) {
+    return "I can give general beauty and aftercare guidance, but I can’t give medical advice. If you describe the treatment type and what happened, I can suggest safe next steps and when to contact a qualified professional.";
+  }
+  if (/(how does this app work|how to use|dashboard|lexi|subscriber|customer|admin|what can this app do|app features|how does lexi work)/.test(qLower)) {
+    return "I can explain the app. Lexi can answer app questions, help with booking and front-desk support, and assist with business/dashboard workflows depending on your role (customer, subscriber, or admin). I won’t share personal user/customer data, but I can explain features, modules, and how to use them.";
+  }
+  if (/(weather|forecast|temperature)/.test(qLower)) {
+    return "I don’t have live weather lookup in free fallback mode, but if you tell me your city, I can suggest how weather usually affects walk-ins, cancellations, and demand planning for salons and barbershops.";
+  }
+
+  return "I can help with salon and beauty questions, booking guidance, product/aftercare basics, and how to use the app. Ask me anything, and if it’s a booking request, include the service, date, and time you want.";
+}
+
 function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
   const q = String(question || "").trim();
   const qLower = q.toLowerCase();
@@ -3355,6 +3478,23 @@ function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
       answer: "Subscriber Copilot could not detect a business context for this session.",
       findings: ["No business scope is available for the current subscriber session."],
       suggestedActions: ["Sign in again or contact support if your subscriber account is not linked to a business."]
+    };
+  }
+  const looksGeneral = /weather|forecast|temperature|news|trend|marketing idea|product|ingredients|aftercare|shampoo|conditioner|hair type|skin care|beauty advice|how does this app work|how to use/i.test(qLower);
+  const looksBusinessSpecific = /booking|calendar|diary|staff|capacity|waitlist|cancel|revenue|finance|crm|retention|dashboard|business/i.test(qLower);
+  if (looksGeneral && !looksBusinessSpecific) {
+    return {
+      answer: /weather|forecast|temperature/i.test(qLower)
+        ? "I can help with salon and business planning, but I don’t have live weather lookup in fallback mode. If you tell me your city, I can still suggest how weather usually affects bookings, walk-ins, and cancellation patterns."
+        : "Yes, I can help with that. Ask me your salon, barber, beauty, product, aftercare, or app-use question and I’ll answer in plain language. I can also use your business dashboard context when you want business-specific advice.",
+      findings: [
+        `Business context is available for ${business.name || "your business"} if you want advice tailored to your salon.`,
+        "Protected customer and business data is not shared in Lexi chat."
+      ],
+      suggestedActions: [
+        "Ask your question directly in plain language.",
+        "If you want business-specific advice, mention the module or issue (for example bookings, cancellations, staff cover, or growth)."
+      ]
     };
   }
 
@@ -3461,7 +3601,7 @@ async function buildSubscriberCopilotResponse({ question, snapshot }) {
         {
           role: "system",
           content:
-            "You are Lexi, an AI receptionist and business copilot for a salon SaaS dashboard. You can answer both: (1) general salon/barbershop/beauty/business questions (ChatGPT-style guidance), and (2) subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Tone: human, warm, confident, and practical. Answer the user's question first in natural language, then add brief findings/actions only if helpful. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+            "You are Lexi, an AI receptionist and business copilot for a salon SaaS dashboard. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Tone: human, warm, confident, and practical. Answer the user's question first in natural language, then add brief findings/actions only if helpful. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
         },
         {
           role: "user",
@@ -3485,6 +3625,17 @@ app.post("/api/copilot/subscriber", authRequired, requireRole("subscriber", "adm
   const question = String(req.body?.question || "").trim();
   if (!question) return res.status(400).json({ error: "Question is required." });
   if (question.length > 1200) return res.status(400).json({ error: "Question is too long." });
+  if (isLexiRestrictedDataRequest(question, { role: "subscriber" })) {
+    return res.json({
+      answer: lexiRestrictedDataReply("subscriber dashboard", { role: "subscriber" }),
+      findings: ["Private customer/user/business data and secrets are protected."],
+      suggestedActions: [
+        "Ask for a summary, guidance, or operational recommendation instead of raw personal data.",
+        "Use role-based dashboard tools for authorized work without exposing protected data."
+      ],
+      snapshot: null
+    });
+  }
   try {
     const snapshot = await buildSubscriberCopilotSnapshot(req);
     if (!snapshot?.business?.id) {
@@ -3516,6 +3667,17 @@ app.post("/api/admin/copilot", authRequired, requireRole("admin"), async (req, r
   const question = String(req.body?.question || "").trim();
   if (!question) return res.status(400).json({ error: "Question is required." });
   if (question.length > 1200) return res.status(400).json({ error: "Question is too long." });
+  if (isLexiRestrictedDataRequest(question, { role: "admin" })) {
+    return res.json({
+      answer: lexiRestrictedDataReply("admin/platform", { role: "admin" }),
+      findings: ["Protected data, credentials, and internal system details are not disclosed in Lexi chat."],
+      suggestedFixes: [
+        "Ask for diagnostics summaries, trends, or recommended actions instead of raw protected data.",
+        "Use approved admin tools and role-based access workflows for authorized support tasks."
+      ],
+      snapshot: null
+    });
+  }
 
   try {
     const snapshot = await buildAdminCopilotSnapshot(req);
@@ -5037,11 +5199,18 @@ app.post("/api/billing/create-portal-session", authRequired, requireRole("subscr
 });
 
 app.post("/api/chat", chatLimiter, async (req, res) => {
+  let userMessage = "";
+  let business = null;
   try {
-    const userMessage = String(req.body?.message || "").trim();
+    userMessage = String(req.body?.message || "").trim();
     const history = Array.isArray(req.body?.history) ? req.body.history : [];
     const businessId = String(req.body?.businessId || "").trim();
     if (!userMessage) return res.status(400).json({ error: "Message is required." });
+    if (isLexiRestrictedDataRequest(userMessage, { role: "public" })) {
+      return res.json({
+        reply: lexiRestrictedDataReply("app or business", { role: "public" })
+      });
+    }
     const userMessageLower = userMessage.toLowerCase();
     if (/(what('s| is)?\s+(the\s+)?date\b|today'?s date|what day is it)/i.test(userMessageLower)) {
       const now = new Date();
@@ -5061,19 +5230,15 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       });
       return res.json({ reply: `The time is ${formattedTime}.` });
     }
-    if (/(weather|forecast|temperature)/i.test(userMessageLower) && !openai) {
-      return res.json({
-        reply: "I can help with salon planning, but live weather lookup is not available right now because the AI service is offline. If you tell me your city, I can still suggest how weather typically affects bookings and walk-ins."
-      });
-    }
-    if (!openai) return res.json({ reply: "OPENAI_API_KEY missing. AI assistant is currently disabled." });
-
-    const business = await prisma.business.findUnique({
+    business = await prisma.business.findUnique({
       where: { id: businessId || undefined },
       include: { services: true }
     }) || (await prisma.business.findFirst({ include: { services: true } }));
 
     if (!business) return res.status(500).json({ error: "No business configured." });
+    if (!openai) {
+      return res.json({ reply: await buildPublicLexiFallbackReply(userMessage, business), fallback: true });
+    }
     await writeAuditLog({
       actorRole: "anonymous",
       action: "chat.request",
@@ -5127,7 +5292,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         content: `You are Lexi, the confident and highly knowledgeable AI Salon Receptionist for ${business.name}.
 
 You are an expert in hair salons, barbershops, and beauty businesses, including common services, booking flow, aftercare basics, and product guidance.
-You can also answer general salon, barber, beauty, and business questions in a ChatGPT-style conversation.
+You can also answer general salon, barber, beauty, and business questions in a ChatGPT-style conversation, including questions about how the app and Lexi work.
 You can:
 - answer service and product questions clearly
 - help customers choose suitable services
@@ -5151,6 +5316,7 @@ Rules:
 - if a question needs business-specific info not in the profile, say what is missing and ask for a clarification
 - follow GDPR/UK GDPR and data-protection principles (data minimization, least disclosure, purpose limitation)
 - never expose personal customer data or private business data publicly
+- you may explain app features, booking flows, and how Lexi works, but never disclose personal data in chat
 - for safety-sensitive beauty/skin/hair concerns, avoid medical claims and suggest consulting a qualified professional when appropriate`
       },
       { role: "system", content: `Business profile:\n${JSON.stringify(mapBusiness(business, { includeSlots: false }), null, 2)}` },
@@ -5276,13 +5442,31 @@ Rules:
     console.error("Chat error:", status || "", code || "", message || "");
 
     if (status === 429 || code === "insufficient_quota") {
+      if (business) {
+        return res.json({
+          reply: await buildPublicLexiFallbackReply(userMessage, business),
+          fallback: true
+        });
+      }
       return res.status(429).json({
         error: "OpenAI quota exceeded. Please add billing/credits in your OpenAI project."
       });
     }
     if (status === 401) {
+      if (business) {
+        return res.json({
+          reply: await buildPublicLexiFallbackReply(userMessage, business),
+          fallback: true
+        });
+      }
       return res.status(401).json({
         error: "OpenAI authentication failed. Check OPENAI_API_KEY in .env."
+      });
+    }
+    if (business) {
+      return res.json({
+        reply: await buildPublicLexiFallbackReply(userMessage, business),
+        fallback: true
       });
     }
     return res.status(500).json({ error: "Failed to process chat request." });
