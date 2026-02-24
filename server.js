@@ -577,7 +577,17 @@ async function ensureLexiDemoSubscribedBusinesses() {
   const activeCount = await prisma.subscription.count({
     where: { status: { in: ["active", "trialing", "trial", "past_due"] } }
   });
-  if (activeCount > 0 && !forceSeed) return;
+  const searchableSubscribedCount = await prisma.business.count({
+    where: {
+      subscription: {
+        is: { status: { in: ["active", "trialing", "trial", "past_due"] } }
+      }
+    }
+  });
+  if (searchableSubscribedCount >= 3 && !forceSeed) {
+    console.log(`Lexi demo seed skipped (found ${searchableSubscribedCount} subscribed businesses, ${activeCount} active/trial subscriptions).`);
+    return;
+  }
 
   const slhRows = await prisma.business.findMany({
     where: { name: { contains: "slh cuts", mode: "insensitive" } },
@@ -672,7 +682,7 @@ async function ensureLexiDemoSubscribedBusinesses() {
     }
   }
   clearReadCache();
-  console.log(`Lexi demo subscriber seed ready (${seedBusinesses.length} businesses${deletedSlh.count ? `, removed ${deletedSlh.count} SLH Cuts record(s)` : ""}).`);
+  console.log(`Lexi demo subscriber seed ready (${seedBusinesses.length} businesses${deletedSlh.count ? `, removed ${deletedSlh.count} SLH Cuts record(s)` : ""}; previous active/trial subscriptions: ${activeCount}, searchable subscribed businesses: ${searchableSubscribedCount}).`);
 }
 
 function buildAdminRevenueAnalyticsCsv(payload, generatedAtIso = new Date().toISOString()) {
@@ -3642,6 +3652,11 @@ function isLexiPublicAvailabilityQuestion(text) {
   return /(available|availability|slots?|space)/.test(q) && /(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2}|\bnext\b)/.test(q);
 }
 
+function isLexiSalonBeautyQuestion(text) {
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
+  return /(hair|salon|barber|barbershop|beauty|facial|nails?|lash|lashes|brow|brows|fade|beard|blowout|silk press|keratin|brazilian blowout|perm|relaxer|extensions?|balayage|ombre|highlight|color correction|root touch|toner|scalp|deep conditioning|bridal|updo|waxing|makeup|aftercare|shampoo|conditioner|heat protectant|serum|pomade|clay|mousse|gel|texture spray)/.test(q);
+}
+
 function formatCurrencyGBP(amount) {
   return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(Number(amount || 0));
 }
@@ -3765,8 +3780,8 @@ async function buildPublicLexiFallbackReply(message, business) {
   if (/^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
     return `Hi, I’m Lexi. I can help with bookings at ${bizName}, service questions, and general salon or beauty guidance. What would you like help with?`;
   }
-  if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
-    return "I can answer questions about the app and how it works (features, bookings flow, dashboards, Lexi, setup, and business tools), but I can't answer unrelated questions in this chat.";
+  if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !isLexiSalonBeautyQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
+    return "I can help with app questions, salon/barber/beauty service guidance, public business info, and booking availability. I can’t share private or personal data in chat.";
   }
   if (/(find|search|show).*(salon|barber|barbershop|beauty)/.test(qLower)) {
     const locationMatch = q.match(/\b(?:in|near)\s+([a-zA-Z\s'-]{2,40})$/i);
@@ -5719,14 +5734,14 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           reply: `I couldn't find a subscribed business matching "${userMessage}" right now. If you want, tell me the town/city and I’ll search nearby salons, barbers, or beauty businesses.`
         });
       }
-      const looksFinderOrAvailability = /(find|search|salon|barber|beauty|slot|availability|available|free space|book\b|booking)/i.test(userMessageLower);
+      const looksFinderOrAvailability = /(find|search|salon|barber|beauty|slot|availability|available|free space|book\b|booking|appointment)/i.test(userMessageLower);
       if (looksFinderOrAvailability) {
         return res.json({
           reply: "I can help with that. First, tell me the business name (for example SLH Cuts) or the area you want, and I’ll look for subscribed businesses and available slots."
         });
       }
       return res.json({
-        reply: "I can answer app questions and help you find subscribed businesses. Right now I don’t have a business selected, so tell me a business name or location and I’ll search for you."
+        reply: "I can help with app questions and salon/barber/beauty guidance right away. If you want availability or booking help, tell me a business name or location and I’ll search for subscribed businesses."
       });
     }
     if (!openai) {
@@ -5815,9 +5830,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         role: "system",
         content: `You are Lexi, the confident and highly knowledgeable AI Salon Receptionist for ${business.name}.
 
-You are an expert guide for this salon AI receptionist app. Your public chat role is to explain how the app works, help users find subscribed salon/barber/beauty businesses, and help them check slots or book appointments using public business information only.
-You can answer app questions in a ChatGPT-style conversation, but you should not answer unrelated general-world questions in this public chat.
+You are Lexi, a highly professional, confident, and knowledgeable AI Salon Receptionist for a premium hair salon, barbershop, and beauty studio experience.
+Your public chat role is to answer salon/barber/beauty questions, explain how the app works, help users find subscribed salon/barber/beauty businesses, and help them check slots or book appointments using public business information only.
+You can answer salon, barber, beauty, booking, and app questions in a ChatGPT-style conversation.
 You can:
+- answer salon/barber/beauty service and product questions clearly
 - answer app and feature questions clearly
 - help users find subscribed businesses by name/location/service
 - provide public business profile information
@@ -5837,9 +5854,9 @@ Style:
 - if the question is real-time (weather/news/live prices) and you do not have live data, say so clearly and offer a useful alternative
 
 Rules:
-- keep this public chat focused on app information and app workflows
-- you may also help users discover subscribed businesses and book with them using public business info and open availability only
-- if the user asks an unrelated question, politely explain that this chat is for app questions and invite an app-related question
+- you may answer salon/barber/beauty service, product, aftercare, and booking questions, plus app/workflow questions
+- you may help users discover subscribed businesses and book with them using public business info and open availability only
+- if the user asks a non-salon/non-beauty/non-app unrelated question, politely redirect to salon/beauty/app support
 - never invent unavailable services, prices, or slots
 - use search_public_businesses when the user asks to find salons/barbers/beauty businesses
 - use get_business_public_profile when the user asks about a specific business
