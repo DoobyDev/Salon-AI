@@ -1062,18 +1062,22 @@ chatForm.addEventListener("submit", async (event) => {
       body: JSON.stringify({ message, history, businessId: selectedBusinessId })
     });
     const data = await response.json();
+    if (!response.ok) {
+      throw new Error(String(data?.error || "Failed to process chat request."));
+    }
     thinking.remove();
 
-    const reply = data.reply || "I could not answer right now.";
+    const reply = data.reply || data.error || "I could not answer right now.";
     appendMessage("assistant", reply);
     history.push({ role: "assistant", content: reply });
     setAppStatus(data.bookingCreated ? "Booking captured successfully." : "Response received.");
 
     if (data.bookingCreated) await loadBookings();
-  } catch {
+  } catch (error) {
     thinking.remove();
-    appendMessage("assistant", "Network error. Please try again.");
-    setAppStatus("Network error. Please try again.", true);
+    const errorMessage = String(error?.message || "Network error. Please try again.");
+    appendMessage("assistant", errorMessage);
+    setAppStatus(errorMessage, true);
   }
 });
 

@@ -585,6 +585,27 @@ body .page {
   line-height: 1.35;
 }
 
+.hero-lexi-privacy-note {
+  border: 1px solid rgba(124, 234, 216, 0.18);
+  border-radius: 12px;
+  background: rgba(8, 14, 26, 0.6);
+  padding: 0.65rem 0.75rem;
+}
+
+.hero-lexi-privacy-note strong {
+  display: block;
+  color: #d7fff4;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.hero-lexi-privacy-note p {
+  margin: 0.35rem 0 0;
+  color: #b9c8de;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 .hero-chat-demo .chat-shell {
   margin-top: 0;
   display: grid;
