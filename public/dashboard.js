@@ -988,22 +988,17 @@ function refreshDemoModeToggle() {
 }
 
 function loadDashboardDemoFillPreference() {
-  if (isDashboardDemoDataModeActive()) return false;
   if (!(currentRole === "subscriber" || currentRole === "admin")) return false;
   try {
-    return localStorage.getItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`) === "on";
+    localStorage.removeItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`);
   } catch {
-    return false;
+    // Ignore storage errors.
   }
+  return false;
 }
 
 function setDashboardDemoFillPreference(enabled) {
   dashboardDemoFillModeEnabled = Boolean(enabled) && !isMockMode && (currentRole === "subscriber" || currentRole === "admin");
-  try {
-    localStorage.setItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`, dashboardDemoFillModeEnabled ? "on" : "off");
-  } catch {
-    // Ignore storage errors.
-  }
   refreshDemoModeToggle();
 }
 
@@ -10077,8 +10072,8 @@ demoModeToggle?.addEventListener("click", () => {
   const nextEnabled = !dashboardDemoFillModeEnabled;
   if (nextEnabled) {
     setDashboardDemoFillPreference(true);
-    setDashActionStatus("Turning Demo Mode on and loading mock business data...", false, 0);
-    window.location.reload();
+    loadMockDashboard();
+    setDashActionStatus("Demo mode is on. The dashboard layout stays the same and mock data is loaded.", false, 0);
     return;
   }
   setDashboardDemoFillPreference(false);
