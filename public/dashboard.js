@@ -4915,12 +4915,9 @@ function setManageMode(enabled) {
 }
 
 function initializeManageMode() {
-  if (!isDashboardManagerRole()) {
-    if (manageModeToggle) hideSection(manageModeToggle);
-    setManageMode(false);
-    return;
-  }
-  setManageMode(loadManageModePreference());
+  // Edit Mode is disabled across dashboards.
+  if (manageModeToggle) hideSection(manageModeToggle);
+  setManageMode(false);
 }
 
 function ensureManageToastStack() {
