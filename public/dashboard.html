@@ -1616,6 +1616,205 @@
         color: var(--muted);
         line-height: 1.35;
       }
+      .executive-pulse-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+        border: 1px solid rgba(167, 193, 255, 0.16);
+        border-radius: 12px;
+        background: rgba(9, 15, 28, 0.66);
+        padding: 0.55rem 0.6rem;
+      }
+      .executive-pulse-range-tabs {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid rgba(167, 193, 255, 0.14);
+        border-radius: 999px;
+        background: rgba(7, 12, 22, 0.52);
+        padding: 0.22rem;
+      }
+      .executive-pulse-range-tabs button {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.34rem 0.72rem;
+        font-weight: 700;
+        font-size: 0.78rem;
+        cursor: pointer;
+      }
+      .executive-pulse-range-tabs button.is-active {
+        background: rgba(109, 185, 255, 0.15);
+        border-color: rgba(109, 185, 255, 0.34);
+        color: #eef6ff;
+      }
+      .executive-pulse-toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .executive-pulse-range-meta {
+        font-size: 0.78rem;
+        color: var(--muted);
+        border: 1px solid rgba(167, 193, 255, 0.12);
+        border-radius: 999px;
+        padding: 0.28rem 0.55rem;
+        background: rgba(255,255,255,0.02);
+      }
+      .executive-pulse-deep-grid {
+        display: grid;
+        grid-template-columns: 1.45fr 0.95fr;
+        gap: 0.65rem;
+      }
+      .executive-card-finance {
+        border-color: rgba(109, 185, 255, 0.22);
+        background:
+          radial-gradient(circle at 98% -8%, rgba(109, 185, 255, 0.1), transparent 42%),
+          rgba(9, 15, 28, 0.74);
+      }
+      .executive-card-snapshots {
+        border-color: rgba(214, 181, 106, 0.22);
+        background:
+          radial-gradient(circle at 92% -8%, rgba(214, 181, 106, 0.08), transparent 46%),
+          rgba(9, 15, 28, 0.7);
+      }
+      .executive-finance-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      .executive-finance-stat {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.62);
+        padding: 0.58rem;
+        display: grid;
+        gap: 0.16rem;
+      }
+      .executive-finance-stat p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.74rem;
+      }
+      .executive-finance-stat strong {
+        font-size: 1rem;
+      }
+      .executive-finance-stat small {
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+      .executive-finance-stat.negative strong {
+        color: #ffb8bf;
+      }
+      .executive-finance-stat.positive strong {
+        color: #d7fff4;
+      }
+      .executive-mini-charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.55rem;
+      }
+      .executive-mini-chart-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.58);
+        padding: 0.55rem;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .executive-mini-chart-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .executive-mini-chart-head strong {
+        font-size: 0.84rem;
+      }
+      .executive-mini-chart-head small {
+        color: var(--muted);
+      }
+      .executive-mini-bars {
+        min-height: 132px;
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        align-items: end;
+        gap: 0.28rem;
+      }
+      .executive-mini-bar-col {
+        display: grid;
+        gap: 0.22rem;
+        justify-items: center;
+      }
+      .executive-mini-bar {
+        width: min(18px, 100%);
+        min-height: 6px;
+        height: var(--exec-mini-bar-height, 8px);
+        border-radius: 7px 7px 4px 4px;
+        background: linear-gradient(180deg, rgba(109,185,255,0.95), rgba(80,157,255,0.35));
+      }
+      .executive-mini-bars-profit .executive-mini-bar {
+        background: linear-gradient(180deg, rgba(244,125,181,0.95), rgba(244,125,181,0.28));
+      }
+      .executive-mini-bar-col small {
+        color: var(--muted);
+        font-size: 0.66rem;
+        text-align: center;
+      }
+      .executive-snapshot-list {
+        display: grid;
+        gap: 0.45rem;
+        max-height: 255px;
+        overflow: auto;
+        padding-right: 0.15rem;
+      }
+      .executive-snapshot-empty {
+        border: 1px dashed rgba(167, 193, 255, 0.18);
+        border-radius: 10px;
+        padding: 0.7rem;
+        color: var(--muted);
+        background: rgba(255,255,255,0.02);
+      }
+      .executive-snapshot-item {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(9, 15, 28, 0.62);
+        padding: 0.6rem;
+        display: grid;
+        gap: 0.28rem;
+      }
+      .executive-snapshot-item-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .executive-snapshot-item-head strong {
+        font-size: 0.82rem;
+      }
+      .executive-snapshot-item-head small,
+      .executive-snapshot-item p,
+      .executive-snapshot-item ul {
+        color: var(--muted);
+      }
+      .executive-snapshot-item p {
+        margin: 0;
+        font-size: 0.76rem;
+        line-height: 1.35;
+      }
+      .executive-snapshot-item ul {
+        margin: 0;
+        padding-left: 1rem;
+        display: grid;
+        gap: 0.18rem;
+        font-size: 0.74rem;
+      }
       .booking-range-toolbar {
         margin-top: 0.55rem;
         display: flex;
@@ -6040,6 +6239,12 @@
         .executive-pulse-grid {
           grid-template-columns: 1fr;
         }
+        .executive-pulse-deep-grid {
+          grid-template-columns: 1fr;
+        }
+        .executive-finance-stats {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
         .copilot-grid {
           grid-template-columns: 1fr;
         }
@@ -6286,7 +6491,14 @@
         .executive-pulse-grid {
           grid-template-columns: 1fr;
         }
+        .executive-pulse-deep-grid {
+          grid-template-columns: 1fr;
+        }
         .executive-gauge-grid {
+          grid-template-columns: 1fr;
+        }
+        .executive-finance-stats,
+        .executive-mini-charts {
           grid-template-columns: 1fr;
         }
         .copilot-snapshot-grid {
@@ -6893,25 +7105,27 @@
         border-color: rgba(111, 168, 234, 0.35) !important;
         color: #ffffff !important;
       }
+      body.dashboard-light-mode[data-role="subscriber"] .dash > #moduleNavigatorSection,
+      body.dashboard-light-mode[data-role="admin"] .dash > #moduleNavigatorSection,
+      body.dashboard-light-mode[data-role="subscriber"] .dash > .dash-top,
+      body.dashboard-light-mode[data-role="admin"] .dash > .dash-top {
+        border-color: rgba(145, 114, 144, 0.14) !important;
+        background: rgba(255,255,255,0.97) !important;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.9),
+          0 12px 24px rgba(95, 68, 105, 0.08) !important;
+      }
       body.dashboard-light-mode .dash > #subscriberCopilotSection {
         border-color: rgba(145, 114, 144, 0.14) !important;
-        background:
-          radial-gradient(circle at 92% -10%, rgba(157, 195, 255, 0.16), transparent 42%),
-          radial-gradient(circle at 12% -14%, rgba(184, 231, 221, 0.12), transparent 42%),
-          linear-gradient(160deg, rgba(255,255,255,0.97), rgba(246, 249, 255, 0.98)) !important;
+        background: rgba(255,255,255,0.97) !important;
       }
       body.dashboard-light-mode .module-workspace-body > #subscriberCopilotSection {
         border-color: rgba(145, 114, 144, 0.14) !important;
-        background:
-          radial-gradient(circle at 92% -10%, rgba(157, 195, 255, 0.16), transparent 42%),
-          radial-gradient(circle at 12% -14%, rgba(184, 231, 221, 0.12), transparent 42%),
-          linear-gradient(160deg, rgba(255,255,255,0.97), rgba(246, 249, 255, 0.98)) !important;
+        background: rgba(255,255,255,0.97) !important;
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-shell {
         border-color: rgba(145, 114, 144, 0.1) !important;
-        background:
-          radial-gradient(circle at 95% -10%, rgba(157, 195, 255, 0.12), transparent 46%),
-          rgba(255,255,255,0.9) !important;
+        background: rgba(255,255,255,0.92) !important;
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-head {
         border-bottom-color: rgba(145, 114, 144, 0.1) !important;
@@ -6929,9 +7143,7 @@
         background: rgba(255,255,255,0.84) !important;
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-form textarea {
-        background:
-          radial-gradient(circle at 92% -10%, rgba(157, 195, 255, 0.08), transparent 48%),
-          rgba(255,255,255,0.96) !important;
+        background: rgba(255,255,255,0.96) !important;
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-form-actions .btn:not(.btn-ghost) {
         background: linear-gradient(180deg, #8fc2ff 0%, #6fa8ea 100%) !important;
@@ -6945,9 +7157,7 @@
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-result {
         border-color: rgba(145, 114, 144, 0.12) !important;
-        background:
-          radial-gradient(circle at 92% -12%, rgba(157, 195, 255, 0.12), transparent 44%),
-          rgba(255,255,255,0.92) !important;
+        background: rgba(255,255,255,0.92) !important;
       }
       body.dashboard-light-mode #subscriberCopilotSection .copilot-result h3 {
         color: #5a5d84 !important;
@@ -7224,6 +7434,8 @@
       body.dashboard-light-mode .executive-gauge-sub,
       body.dashboard-light-mode .executive-card-head small,
       body.dashboard-light-mode .executive-pulse-subtitle,
+      body.dashboard-light-mode .executive-pulse-range-meta,
+      body.dashboard-light-mode .executive-mini-chart-head small,
       body.dashboard-light-mode .onboarding-summary-head small,
       body.dashboard-light-mode .onboarding-summary-note {
         color: #7a6070 !important;
@@ -7236,6 +7448,36 @@
       body.dashboard-light-mode .executive-action-list li {
         background: rgba(255,255,255,0.84) !important;
         border-color: rgba(220, 175, 197, 0.18) !important;
+      }
+      body.dashboard-light-mode .executive-pulse-toolbar,
+      body.dashboard-light-mode .executive-pulse-range-tabs,
+      body.dashboard-light-mode .executive-finance-stat,
+      body.dashboard-light-mode .executive-mini-chart-card,
+      body.dashboard-light-mode .executive-snapshot-item,
+      body.dashboard-light-mode .executive-snapshot-empty {
+        background:
+          radial-gradient(circle at 92% -10%, rgba(236, 182, 207, 0.1), transparent 46%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,244,249,0.96)) !important;
+        border-color: rgba(220, 175, 197, 0.24) !important;
+        box-shadow: none !important;
+      }
+      body.dashboard-light-mode .executive-pulse-range-tabs button.is-active {
+        background: rgba(255, 206, 225, 0.24) !important;
+        border-color: rgba(219, 137, 170, 0.32) !important;
+        color: #7b3a5b !important;
+      }
+      body.dashboard-light-mode .executive-finance-stat p,
+      body.dashboard-light-mode .executive-finance-stat small,
+      body.dashboard-light-mode .executive-snapshot-item-head small,
+      body.dashboard-light-mode .executive-snapshot-item p,
+      body.dashboard-light-mode .executive-snapshot-item ul,
+      body.dashboard-light-mode .executive-mini-bar-col small {
+        color: #7a6070 !important;
+      }
+      body.dashboard-light-mode .executive-finance-stat strong,
+      body.dashboard-light-mode .executive-mini-chart-head strong,
+      body.dashboard-light-mode .executive-snapshot-item-head strong {
+        color: #352631 !important;
       }
       body.dashboard-light-mode .onboarding-score-pill {
         border-color: rgba(218, 163, 189, 0.32) !important;
@@ -9296,6 +9538,147 @@
         }
       }
     
+      /* Final light-mode background reset for admin/subscriber dashboard panels */
+      body.dashboard-light-mode #subscriberCalendarSection,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-wow-strip,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-stage,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-feature-rail,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-feature-meta,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-feature-stats article,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-selected-day-card,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-selected-day-list li,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-lexi-command-card,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-day,
+      body.dashboard-light-mode #subscriberCopilotSection,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-shell,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-head,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-form,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-form textarea,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-launch-row,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-result,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-card,
+      body.dashboard-light-mode #subscriberCopilotSection .ai-assistant-workspace,
+      body.dashboard-light-mode #subscriberCopilotSection .ai-assistant-context,
+      body.dashboard-light-mode #subscriberCopilotSection .ai-routine-btn,
+      body.dashboard-light-mode #adminCopilotSection,
+      body.dashboard-light-mode #adminCopilotSection .copilot-shell,
+      body.dashboard-light-mode #adminCopilotSection .copilot-head,
+      body.dashboard-light-mode #adminCopilotSection .copilot-form,
+      body.dashboard-light-mode #adminCopilotSection .copilot-form textarea,
+      body.dashboard-light-mode #adminCopilotSection .copilot-launch-row,
+      body.dashboard-light-mode #adminCopilotSection .copilot-result,
+      body.dashboard-light-mode #adminCopilotSection .copilot-card,
+      body.dashboard-light-mode #adminCopilotSection .ai-assistant-workspace,
+      body.dashboard-light-mode #adminCopilotSection .ai-assistant-context,
+      body.dashboard-light-mode #adminCopilotSection .ai-routine-btn,
+      body.dashboard-light-mode #businessSetupHubCard,
+      body.dashboard-light-mode .hub-command-deck,
+      body.dashboard-light-mode .hub-command-panel,
+      body.dashboard-light-mode .hub-command-signal,
+      body.dashboard-light-mode .hub-command-list li,
+      body.dashboard-light-mode .hub-fold,
+      body.dashboard-light-mode .hub-module-shell,
+      body.dashboard-light-mode .module-navigator-inline,
+      body.dashboard-light-mode .module-info,
+      body.dashboard-light-mode .lexi-command-card {
+        background-image: none !important;
+        background-color: rgba(255,255,255,0.95) !important;
+      }
+      body.dashboard-light-mode #customerSearchSection,
+      body.dashboard-light-mode #customerReceptionSection,
+      body.dashboard-light-mode #customerSlotsSection,
+      body.dashboard-light-mode #customerHistorySection,
+      body.dashboard-light-mode #customerAnalyticsSection,
+      body.dashboard-light-mode #customerLexiCalendarSection,
+      body.dashboard-light-mode #customerReceptionSection .customer-chat-shell,
+      body.dashboard-light-mode #customerReceptionSection .customer-chat-box,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-card,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-calendar-panel,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-summary-panel,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-calendar-meta,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-weekdays span,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-day,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-summary-list li {
+        background-image: none !important;
+        background-color: rgba(255,255,255,0.95) !important;
+      }
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-day.empty {
+        background-color: rgba(255,255,255,0.82) !important;
+      }
+      /* Strong no-dark-surfaces reset for light mode across all dashboards */
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-head,
+      body.dashboard-light-mode #adminCopilotSection .copilot-head,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-launch-row,
+      body.dashboard-light-mode #adminCopilotSection .copilot-launch-row,
+      body.dashboard-light-mode #subscriberCopilotSection .live-pill,
+      body.dashboard-light-mode #adminCopilotSection .live-pill,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-guardrail,
+      body.dashboard-light-mode #adminCopilotSection .copilot-guardrail,
+      body.dashboard-light-mode #subscriberCopilotSection .copilot-answer-links .btn,
+      body.dashboard-light-mode #adminCopilotSection .copilot-answer-links .btn,
+      body.dashboard-light-mode #subscriberCopilotSection .ai-scope-chip,
+      body.dashboard-light-mode #adminCopilotSection .ai-scope-chip,
+      body.dashboard-light-mode #subscriberCopilotSection .ai-scope-chip.is-active,
+      body.dashboard-light-mode #adminCopilotSection .ai-scope-chip.is-active,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-wow-strip,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-lexi-badges span,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-spotlight-tag,
+      body.dashboard-light-mode #subscriberCalendarSection .calendar-lexi-action,
+      body.dashboard-light-mode .lexi-command-chip-row span,
+      body.dashboard-light-mode .customer-lexi-chip-row span,
+      body.dashboard-light-mode .customer-lexi-day-signals span,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-view-tabs,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-view-tab,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-view-tab.is-active,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-summary-list li,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-weekdays span {
+        background-image: none !important;
+        background: rgba(255,255,255,0.92) !important;
+      }
+      body.dashboard-light-mode #subscriberCopilotSection .ai-scope-chip.is-active,
+      body.dashboard-light-mode #adminCopilotSection .ai-scope-chip.is-active,
+      body.dashboard-light-mode #customerLexiCalendarSection .customer-lexi-view-tab.is-active {
+        background: rgba(236, 244, 255, 0.96) !important;
+      }
+      /* Exact selector reset for main dashboard section shells (prevents dark desktop gradients winning) */
+      body.dashboard-light-mode {
+        background:
+          radial-gradient(circle at 12% 10%, rgba(255, 150, 201, 0.24), transparent 44%),
+          radial-gradient(circle at 88% 6%, rgba(255, 184, 217, 0.22), transparent 46%),
+          linear-gradient(90deg, #fff0f8 0%, #fff7fc 52%, #ffffff 100%) !important;
+      }
+      body.dashboard-light-mode::before {
+        background-image:
+          linear-gradient(rgba(224, 157, 189, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(224, 157, 189, 0.16) 1px, transparent 1px),
+          radial-gradient(circle at 20% 10%, rgba(255, 206, 225, 0.2), transparent 40%),
+          radial-gradient(circle at 86% 14%, rgba(197, 234, 225, 0.14), transparent 36%) !important;
+        background-size: 38px 38px, 38px 38px, auto, auto !important;
+        background-position: 0 0, 0 0, 0 0, 0 0 !important;
+        opacity: 1 !important;
+      }
+      body.dashboard-light-mode .dash > .dash-top,
+      body.dashboard-light-mode .dash > #dashboardQuickActionsSection,
+      body.dashboard-light-mode .dash > #subscriberCalendarSection,
+      body.dashboard-light-mode .dash > #subscriberCopilotSection,
+      body.dashboard-light-mode .dash > #adminCopilotSection,
+      body.dashboard-light-mode .dash > #businessGrowthSection,
+      body.dashboard-light-mode .dash > #subscriberExecutivePulseSection,
+      body.dashboard-light-mode .dash > #customerSearchSection,
+      body.dashboard-light-mode .dash > #customerReceptionSection,
+      body.dashboard-light-mode .dash > #customerSlotsSection,
+      body.dashboard-light-mode .dash > #customerHistorySection,
+      body.dashboard-light-mode .dash > #customerAnalyticsSection,
+      body.dashboard-light-mode .dash > #customerLexiCalendarSection,
+      body.dashboard-light-mode .dash > #moduleNavigatorSection {
+        background-image: none !important;
+        background-color: rgba(255,255,255,0.96) !important;
+      }
+      body.dashboard-light-mode .dash > .panel,
+      body.dashboard-light-mode .dash > section.panel {
+        background-image: none !important;
+        background-color: rgba(255,255,255,0.96) !important;
+      }
     </style>
   </head>
   <body>
@@ -9340,6 +9723,7 @@
         <div class="calendar-head">
           <h2 style="margin:0;">Booking Diary</h2>
           <div class="calendar-nav">
+            <button type="button" class="btn" data-open-subscriber-lexi="booking_diary">Ask Lexi</button>
             <button id="calendarPrev" class="btn btn-ghost" type="button" aria-label="Previous month">&lt;</button>
             <p id="calendarMonthLabel" class="calendar-label">Month</p>
             <button id="calendarNext" class="btn btn-ghost" type="button" aria-label="Next month">&gt;</button>
@@ -9570,7 +9954,7 @@
                 <label class="sr-only" for="adminCopilotInput">Ask Lexi</label>
                 <textarea id="adminCopilotInput" placeholder="Example: Why are subscriber bookings lower today, or what should a salon do to reduce no-shows?" required></textarea>
                 <div class="copilot-form-actions">
-                  <button id="adminCopilotSend" class="btn" type="submit">Ask Me</button>
+                  <button id="adminCopilotSend" class="btn" type="submit">Ask Lexi</button>
                   <button id="adminCopilotClear" class="btn btn-ghost" type="button">Clear</button>
                   <span class="copilot-guardrail">One Lexi mode: admin diagnostics + general salon/beauty/business guidance.</span>
                 </div>
@@ -9884,6 +10268,7 @@
             <p>Use these shortcuts to get into the main parts of your business quickly.</p>
           </div>
           <div class="workspace-actions-meta">
+            <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
             <button id="workspaceBackToDashboardBtn" class="btn btn-ghost workspace-back-btn" type="button">Back to Dashboard</button>
             <span class="workspace-actions-badge">Top actions</span>
           </div>
@@ -9968,7 +10353,10 @@
             <h2>Your Booking Journey</h2>
             <p>Move through search, chat, available times, and your bookings in a simple order.</p>
           </div>
-          <span class="workspace-actions-badge">Quick steps</span>
+          <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
+            <a class="btn" href="#customerReceptionSection">Ask Lexi</a>
+            <span class="workspace-actions-badge">Quick steps</span>
+          </div>
         </div>
         <div class="customer-journey-grid">
           <a class="customer-journey-link" href="#customerSearchSection">
@@ -10003,7 +10391,20 @@
             </p>
           </div>
           <div class="executive-pulse-badge">
+            <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse">Ask Lexi</button>
             <span class="live-pill"><i class="live-dot"></i> Live dashboard signals</span>
+          </div>
+        </div>
+        <div class="executive-pulse-toolbar" aria-label="Executive pulse controls">
+          <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Executive pulse range">
+            <button type="button" class="is-active" data-exec-range="day" role="tab" aria-selected="true">Day</button>
+            <button type="button" data-exec-range="week" role="tab" aria-selected="false">Week</button>
+            <button type="button" data-exec-range="month" role="tab" aria-selected="false">Month</button>
+            <button type="button" data-exec-range="year" role="tab" aria-selected="false">Year</button>
+          </div>
+          <div class="executive-pulse-toolbar-actions">
+            <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing today</div>
+            <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save Snapshot</button>
           </div>
         </div>
         <div id="executivePulseSignals" class="executive-signal-grid"></div>
@@ -10028,6 +10429,38 @@
               <small>Fast operator focus list</small>
             </div>
             <ul id="executivePulseActions" class="executive-action-list"></ul>
+          </article>
+        </div>
+        <div class="executive-pulse-deep-grid">
+          <article class="executive-card executive-card-finance">
+            <div class="executive-card-head">
+              <h3>Revenue &amp; Profit View</h3>
+              <small id="executivePulseFinanceWindowLabel">Fast performance view</small>
+            </div>
+            <div id="executivePulseFinanceStats" class="executive-finance-stats"></div>
+            <div class="executive-mini-charts">
+              <section class="executive-mini-chart-card">
+                <div class="executive-mini-chart-head">
+                  <strong>Revenue Flow</strong>
+                  <small id="executivePulseRevenueChartNote">Loading…</small>
+                </div>
+                <div id="executivePulseRevenueChart" class="executive-mini-bars" aria-live="polite"></div>
+              </section>
+              <section class="executive-mini-chart-card">
+                <div class="executive-mini-chart-head">
+                  <strong>Profit Signal</strong>
+                  <small id="executivePulseProfitChartNote">Loading…</small>
+                </div>
+                <div id="executivePulseProfitChart" class="executive-mini-bars executive-mini-bars-profit" aria-live="polite"></div>
+              </section>
+            </div>
+          </article>
+          <article class="executive-card executive-card-snapshots">
+            <div class="executive-card-head">
+              <h3>Saved Pulse Snapshots</h3>
+              <small>Keep quick review points for performance check-ins</small>
+            </div>
+            <div id="executivePulseSnapshotList" class="executive-snapshot-list" aria-live="polite"></div>
           </article>
         </div>
       </section>
@@ -10233,7 +10666,7 @@
           <form id="customerReceptionForm" class="customer-chat-form">
             <label class="sr-only" for="customerReceptionInput">Message AI receptionist</label>
             <input id="customerReceptionInput" type="text" placeholder="Ask about services, slots, or contact info..." aria-label="Message AI receptionist" />
-            <button class="btn" type="submit">Send</button>
+             <button class="btn" type="submit">Ask Lexi</button>
           </form>
         </div>
       </section>
@@ -10703,11 +11136,77 @@
         front desk management, customer retention, and business analytics.
       </p>
     </footer>
+    <style id="dashboard-light-hard-reset">
+      body.dashboard-light-mode .dash > .panel,
+      body.dashboard-light-mode .dash > section.panel,
+      body.dashboard-light-mode .dash > #moduleNavigatorSection,
+      body.dashboard-light-mode #subscriberCalendarSection,
+      body.dashboard-light-mode #subscriberCopilotSection,
+      body.dashboard-light-mode #adminCopilotSection,
+      body.dashboard-light-mode #businessGrowthSection,
+      body.dashboard-light-mode #subscriberExecutivePulseSection,
+      body.dashboard-light-mode #customerSearchSection,
+      body.dashboard-light-mode #customerReceptionSection,
+      body.dashboard-light-mode #customerSlotsSection,
+      body.dashboard-light-mode #customerHistorySection,
+      body.dashboard-light-mode #customerAnalyticsSection,
+      body.dashboard-light-mode #customerLexiCalendarSection,
+      body.dashboard-light-mode .copilot-shell,
+      body.dashboard-light-mode .copilot-head,
+      body.dashboard-light-mode .copilot-form,
+      body.dashboard-light-mode .copilot-form textarea,
+      body.dashboard-light-mode .copilot-launch-row,
+      body.dashboard-light-mode .copilot-result,
+      body.dashboard-light-mode .copilot-card,
+      body.dashboard-light-mode .ai-assistant-workspace,
+      body.dashboard-light-mode .ai-assistant-context,
+      body.dashboard-light-mode .ai-routine-btn,
+      body.dashboard-light-mode .calendar-wow-strip,
+      body.dashboard-light-mode .calendar-stage,
+      body.dashboard-light-mode .calendar-feature-rail,
+      body.dashboard-light-mode .calendar-feature-meta,
+      body.dashboard-light-mode .calendar-feature-stats article,
+      body.dashboard-light-mode .calendar-selected-day-card,
+      body.dashboard-light-mode .calendar-selected-day-list li,
+      body.dashboard-light-mode .calendar-lexi-command-card,
+      body.dashboard-light-mode .calendar-day,
+      body.dashboard-light-mode .hub-command-deck,
+      body.dashboard-light-mode .hub-command-panel,
+      body.dashboard-light-mode .hub-command-signal,
+      body.dashboard-light-mode .hub-command-list li,
+      body.dashboard-light-mode .hub-fold,
+      body.dashboard-light-mode .hub-module-shell,
+      body.dashboard-light-mode .module-navigator-inline,
+      body.dashboard-light-mode .module-info,
+      body.dashboard-light-mode .module-card,
+      body.dashboard-light-mode .module-group,
+      body.dashboard-light-mode .lexi-command-card,
+      body.dashboard-light-mode .customer-lexi-card,
+      body.dashboard-light-mode .customer-lexi-calendar-panel,
+      body.dashboard-light-mode .customer-lexi-summary-panel,
+      body.dashboard-light-mode .customer-lexi-calendar-meta,
+      body.dashboard-light-mode .customer-lexi-day,
+      body.dashboard-light-mode .customer-lexi-summary-list li,
+      body.dashboard-light-mode .customer-chat-shell,
+      body.dashboard-light-mode .customer-chat-box {
+        background-image: none !important;
+        background: #ffffff !important;
+      }
+
+      body.dashboard-light-mode .calendar-day.has-bookings,
+      body.dashboard-light-mode .calendar-day.selected,
+      body.dashboard-light-mode .customer-lexi-day.has-booking,
+      body.dashboard-light-mode .customer-lexi-day.has-slots {
+        background-image: none !important;
+        background: #f8fbff !important;
+      }
+
+      body.dashboard-light-mode .calendar-day.empty {
+        background-image: none !important;
+        background: #fbfbfd !important;
+      }
+    </style>
     <script src="/theme-toggle.js"></script>
     <script type="module" src="/dashboard.js?v=20260221"></script>
   </body>
 </html>
-
-
-
-

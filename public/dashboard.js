@@ -139,6 +139,16 @@ const executivePulseSignals = document.getElementById("executivePulseSignals");
 const executivePulseGauges = document.getElementById("executivePulseGauges");
 const executivePulseBars = document.getElementById("executivePulseBars");
 const executivePulseActions = document.getElementById("executivePulseActions");
+const executivePulseRangeTabs = document.getElementById("executivePulseRangeTabs");
+const executivePulseRangeMeta = document.getElementById("executivePulseRangeMeta");
+const executivePulseSaveSnapshotBtn = document.getElementById("executivePulseSaveSnapshotBtn");
+const executivePulseFinanceWindowLabel = document.getElementById("executivePulseFinanceWindowLabel");
+const executivePulseFinanceStats = document.getElementById("executivePulseFinanceStats");
+const executivePulseRevenueChart = document.getElementById("executivePulseRevenueChart");
+const executivePulseRevenueChartNote = document.getElementById("executivePulseRevenueChartNote");
+const executivePulseProfitChart = document.getElementById("executivePulseProfitChart");
+const executivePulseProfitChartNote = document.getElementById("executivePulseProfitChartNote");
+const executivePulseSnapshotList = document.getElementById("executivePulseSnapshotList");
 const subscriberCopilotSection = document.getElementById("subscriberCopilotSection");
 const subscriberCopilotForm = document.getElementById("subscriberCopilotForm");
 const subscriberCopilotInput = document.getElementById("subscriberCopilotInput");
@@ -223,6 +233,8 @@ let bookingDateFilterLabel = "All dates";
 let bookingDateFilterKeys = null;
 let bookingDateFilterPreset = "";
 let selectedCalendarDateKey = "";
+let executivePulseRange = "day";
+let latestExecutivePulseSnapshotDraft = null;
 let accountingRows = [];
 let accountingLivePayload = null;
 let accountingLiveTimerId = null;
@@ -231,6 +243,7 @@ let accountingLiveRangeFrom = "";
 let accountingLiveRangeTo = "";
 let accountingLiveQuickFilter = "";
 let subscriberCommandCenter = null;
+const EXECUTIVE_PULSE_SNAPSHOTS_STORAGE_KEY = "salon_ai_executive_pulse_snapshots";
 let staffRosterRows = [];
 let staffSummary = null;
 let staffRotaSelectedMemberId = "";
@@ -263,8 +276,10 @@ let lexiPendingLastToastAt = 0;
 let activeModuleKey = "";
 let closeModulePopupActive = null;
 let billingSummary = null;
+let dashboardDemoFillModeEnabled = false;
 const MANAGE_MODE_STORAGE_KEY = "salon_ai_manage_mode_v1";
 const DASHBOARD_THEME_MODE_STORAGE_KEY = "salon_ai_dashboard_theme_mode_v1";
+const DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY = "salon_ai_dashboard_demo_fill_mode_v1";
 const SHARED_THEME_STORAGE_KEY = "salonTheme";
 const SUBSCRIPTION_AUTORENEW_PREF_STORAGE_KEY = "salon_ai_subscription_autorenew_pref_v1";
 const CONTACT_ADMIN_MESSAGES_STORAGE_KEY = "salon_ai_contact_admin_messages_v1";
@@ -962,9 +977,38 @@ function setDashActionStatus(message, isError = false, autoClearMs = 4200) {
 
 function refreshDemoModeToggle() {
   if (!demoModeToggle) return;
-  const isSubscriberDashboard = currentRole === "subscriber";
-  demoModeToggle.textContent = `${isSubscriberDashboard ? "Full Demo Mode" : "Demo Mode"}: ${isMockMode ? "On" : "Off"}`;
-  demoModeToggle.setAttribute("aria-pressed", isMockMode ? "true" : "false");
+  if (!(currentRole === "subscriber" || currentRole === "admin")) {
+    hideSection(demoModeToggle);
+    return;
+  }
+  showSection(demoModeToggle);
+  const active = Boolean(isMockMode || dashboardDemoFillModeEnabled);
+  demoModeToggle.textContent = `Demo Mode: ${active ? "On" : "Off"}`;
+  demoModeToggle.setAttribute("aria-pressed", active ? "true" : "false");
+}
+
+function loadDashboardDemoFillPreference() {
+  if (isDashboardDemoDataModeActive()) return false;
+  if (!(currentRole === "subscriber" || currentRole === "admin")) return false;
+  try {
+    return localStorage.getItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`) === "on";
+  } catch {
+    return false;
+  }
+}
+
+function setDashboardDemoFillPreference(enabled) {
+  dashboardDemoFillModeEnabled = Boolean(enabled) && !isMockMode && (currentRole === "subscriber" || currentRole === "admin");
+  try {
+    localStorage.setItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`, dashboardDemoFillModeEnabled ? "on" : "off");
+  } catch {
+    // Ignore storage errors.
+  }
+  refreshDemoModeToggle();
+}
+
+function isDashboardDemoDataModeActive() {
+  return Boolean(isMockMode || dashboardDemoFillModeEnabled);
 }
 
 function navigateWithDemoMode(nextEnabled) {
@@ -1433,20 +1477,16 @@ function setUiDensity(mode) {
   const next = String(mode || "").trim().toLowerCase() === "light" ? "light" : "dark";
   if (document.body) {
     document.body.classList.toggle("dashboard-light-mode", next === "light");
-    // Prevent clashes with the floating theme toggle styles on dashboard pages.
-    if (next === "light") {
-      document.body.classList.remove("theme-vibrant");
-      document.body.dataset.theme = "light";
-    } else if (document.body.dataset.theme === "light") {
-      document.body.dataset.theme = "classic";
-    }
+    // Keep dashboard theme isolated from the shared homepage/site theme system.
+    document.body.classList.remove("theme-vibrant");
+    document.body.removeAttribute("data-theme");
+    document.body.removeAttribute("data-theme-mode");
   }
   if (uiDensityToggle && uiDensityToggle.value !== next) {
     uiDensityToggle.value = next;
   }
   try {
     localStorage.setItem(DASHBOARD_THEME_MODE_STORAGE_KEY, next);
-    localStorage.setItem(SHARED_THEME_STORAGE_KEY, next === "light" ? "classic" : "vibrant");
   } catch {
     // Ignore storage errors.
   }
@@ -1456,9 +1496,10 @@ function initializeUiDensity() {
   setUiDensity(loadUiDensityPreference());
 }
 
+dashboardDemoFillModeEnabled = loadDashboardDemoFillPreference();
 refreshDemoModeToggle();
 renderSubscriberFullDemoModePanel();
-if (isMockMode) {
+if (isDashboardDemoDataModeActive()) {
   setDashActionStatus("Demo mode is on. Data is simulated so you can explore and edit safely.", false, 0);
 }
 
@@ -1880,7 +1921,7 @@ async function queueBusinessReportEmail(recipientEmail, note = "") {
     note: String(note || "").trim(),
     report: payload
   };
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     try {
       const key = "salon_ai_demo_report_emails_v1";
       const rows = JSON.parse(localStorage.getItem(key) || "[]");
@@ -1975,6 +2016,75 @@ function showSection(sectionEl) {
 function renderSubscriberFullDemoModePanel() {
   // Hidden for now; demo mode should focus on showing live-like mock data inside modules/panels.
   hideSection(subscriberFullDemoModeSection);
+}
+
+function enforceDashboardRoleLayoutVisibility() {
+  if (user.role !== "subscriber") {
+    hideSection(contactAdminBtn);
+    if (subscriptionQuickPanel) subscriptionQuickPanel.style.display = "none";
+    hideSection(subscriberSubscriptionSection);
+    hideSection(first7DaysSnapshotSection);
+    if (subscriptionBillingCycle) subscriptionBillingCycle.style.display = "none";
+    if (subscriptionBillingProvider) subscriptionBillingProvider.style.display = "none";
+    if (startBilling) startBilling.style.display = "none";
+    if (manageBilling) manageBilling.style.display = "none";
+  }
+  if (user.role !== "subscriber" && user.role !== "admin") {
+    hideSection(businessGrowthSection);
+    hideSection(subscriberExecutivePulseSection);
+    hideSection(subscriberCopilotSection);
+    hideSection(businessProfileSection);
+    hideSection(socialMediaSection);
+    hideSection(accountingIntegrationsSection);
+    hideSection(subscriberCommandCenterSection);
+    hideSection(staffRosterSection);
+    hideSection(waitlistSection);
+    hideSection(operationsInsightsSection);
+    hideSection(crmSection);
+    hideSection(commercialSection);
+    hideSection(revenueAttributionSection);
+    hideSection(profitabilitySection);
+  }
+  if (user.role !== "customer") {
+    hideSection(customerSearchSection);
+    hideSection(customerReceptionSection);
+    hideSection(customerLexiCalendarSection);
+    hideSection(customerSlotsSection);
+    hideSection(customerHistorySection);
+    hideSection(customerAnalyticsSection);
+  }
+  if (user.role !== "admin") {
+    hideSection(adminCopilotSection);
+    hideSection(accountingPlatformExportBtn);
+  }
+  if (user.role !== "subscriber") {
+    hideSection(subscriberCopilotSection);
+  }
+  if (user.role === "subscriber" || user.role === "admin") {
+    hideSection(metricsGrid);
+  }
+  if (user.role === "customer") {
+    hideSection(dashIdentityBlock);
+    hideSection(frontDeskSection);
+    hideSection(subscriberExecutivePulseSection);
+    hideSection(subscriberCopilotSection);
+    hideSection(subscriberCalendarSection);
+    hideSection(bookingOperationsSection);
+    hideSection(metricsGrid);
+    hideSection(businessProfileSection);
+    hideSection(socialMediaSection);
+    hideSection(accountingIntegrationsSection);
+    hideSection(subscriberCommandCenterSection);
+    hideSection(staffRosterSection);
+    hideSection(waitlistSection);
+    hideSection(revenueAttributionSection);
+    hideSection(profitabilitySection);
+    hideSection(adminBusinessScope);
+    hideSection(adminCopilotSection);
+    hideSection(subscriberSubscriptionSection);
+    hideSection(first7DaysSnapshotSection);
+  }
+  renderSubscriberFullDemoModePanel();
 }
 
 function saveLocalAdminContactMessage(payload) {
@@ -5249,6 +5359,282 @@ function toDateKey(dateValue) {
   return `${dateValue.getFullYear()}-${pad2(dateValue.getMonth() + 1)}-${pad2(dateValue.getDate())}`;
 }
 
+function getExecutivePulseScopeKey() {
+  const safeFrontDeskBusinessId =
+    typeof frontDeskBusiness !== "undefined" && frontDeskBusiness && typeof frontDeskBusiness === "object"
+      ? String(frontDeskBusiness.id || "").trim()
+      : "";
+  const businessId =
+    String(managedBusinessId || businessProfileData?.id || safeFrontDeskBusinessId || "").trim() ||
+    (isMockMode ? "mock-business" : "no-business");
+  return `${String(user.role || "subscriber").toLowerCase()}:${businessId}`;
+}
+
+function getExecutivePulseSnapshotStorageKey() {
+  return `${EXECUTIVE_PULSE_SNAPSHOTS_STORAGE_KEY}:${getExecutivePulseScopeKey()}`;
+}
+
+function readExecutivePulseSnapshots() {
+  try {
+    const rows = JSON.parse(localStorage.getItem(getExecutivePulseSnapshotStorageKey()) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeExecutivePulseSnapshots(rows) {
+  try {
+    localStorage.setItem(getExecutivePulseSnapshotStorageKey(), JSON.stringify(Array.isArray(rows) ? rows.slice(0, 20) : []));
+  } catch {
+    // Ignore localStorage errors.
+  }
+}
+
+function getExecutivePulseRangeConfig(range = "day") {
+  const now = new Date();
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  if (range === "year") {
+    const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+    return { key: "year", label: "This year", chartLabel: "Monthly trend", start, end, groupBy: "month", bucketCount: 12 };
+  }
+  if (range === "month") {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    return { key: "month", label: "This month", chartLabel: "Weekly trend", start, end, groupBy: "week", bucketCount: 8 };
+  }
+  if (range === "week") {
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6, 0, 0, 0, 0);
+    return { key: "week", label: "Last 7 days", chartLabel: "Daily trend", start, end, groupBy: "day", bucketCount: 7 };
+  }
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const workingHours = getExecutivePulseWorkingHoursForDate(start);
+  const hourStartMin = Number.isFinite(workingHours?.startMinutes) ? workingHours.startMinutes : 8 * 60;
+  const hourEndMin = Number.isFinite(workingHours?.endMinutes) ? workingHours.endMinutes : 20 * 60;
+  const bucketCount = Math.max(1, Math.min(16, Math.ceil((hourEndMin - hourStartMin) / 60)));
+  return {
+    key: "day",
+    label: "Today",
+    chartLabel: "Hourly flow",
+    start,
+    end,
+    groupBy: "hour",
+    bucketCount,
+    hourStartMin,
+    hourEndMin
+  };
+}
+
+function getExecutiveRowRevenueEstimate(row) {
+  const candidates = [row?.price, row?.amount, row?.total, row?.estimatedPrice, row?.servicePrice];
+  for (const value of candidates) {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  }
+  return 0;
+}
+
+function parseFlexibleHourTextToMinutes(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return null;
+  const simple24h = raw.match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (simple24h) {
+    const h = Number(simple24h[1]);
+    const m = Number(simple24h[2] || 0);
+    if (Number.isFinite(h) && Number.isFinite(m) && h >= 0 && h <= 23 && m >= 0 && m <= 59) return h * 60 + m;
+  }
+  const ampm = raw.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/);
+  if (ampm) {
+    const baseHour = Number(ampm[1]);
+    const mins = Number(ampm[2] || 0);
+    if (!Number.isFinite(baseHour) || !Number.isFinite(mins) || baseHour < 1 || baseHour > 12 || mins < 0 || mins > 59) return null;
+    const suffix = ampm[3];
+    const h24 = suffix === "pm" ? (baseHour % 12) + 12 : baseHour % 12;
+    return h24 * 60 + mins;
+  }
+  return null;
+}
+
+function parseBusinessHoursRangeToMinutes(value) {
+  const raw = String(value || "").trim();
+  if (!raw || /closed/i.test(raw)) return null;
+  const normalized = raw
+    .replace(/[–—]/g, "-")
+    .replace(/\bto\b/gi, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+  const parts = normalized.split("-").map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  const startMinutes = parseFlexibleHourTextToMinutes(parts[0]);
+  const endMinutes = parseFlexibleHourTextToMinutes(parts[1]);
+  if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes)) return null;
+  if (endMinutes <= startMinutes) return null;
+  return { startMinutes, endMinutes };
+}
+
+function getExecutivePulseWorkingHoursForDate(dateValue) {
+  const dt = dateValue instanceof Date ? dateValue : new Date();
+  const weekdayKeys = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  const dayKey = weekdayKeys[dt.getDay()] || "monday";
+  const safeFrontDeskBusinessHours =
+    typeof frontDeskBusiness !== "undefined" && frontDeskBusiness && typeof frontDeskBusiness === "object"
+      ? frontDeskBusiness.hours
+      : null;
+  const hourSources = [
+    businessProfileData?.hours,
+    safeFrontDeskBusinessHours
+  ];
+  for (const source of hourSources) {
+    if (!source || typeof source !== "object") continue;
+    const parsed = parseBusinessHoursRangeToMinutes(source[dayKey]);
+    if (parsed) return parsed;
+  }
+  const inputMap = {
+    monday: businessHoursMonday,
+    tuesday: businessHoursTuesday,
+    wednesday: businessHoursWednesday,
+    thursday: businessHoursThursday,
+    friday: businessHoursFriday,
+    saturday: businessHoursSaturday,
+    sunday: businessHoursSunday
+  };
+  return parseBusinessHoursRangeToMinutes(inputMap[dayKey]?.value || "");
+}
+
+function parseExecutiveBookingRowTimeMinutes(row) {
+  const raw = String(row?.time || "").trim();
+  if (!raw) return null;
+  const parsed24h = parseTimeToMinutes(raw);
+  if (Number.isFinite(parsed24h)) return parsed24h;
+  const parsedFlexible = parseFlexibleHourTextToMinutes(raw);
+  if (Number.isFinite(parsedFlexible)) return parsedFlexible;
+  const loose = raw.match(/^(\d{1,2})/);
+  if (loose) {
+    const hour = Number(loose[1]);
+    if (Number.isFinite(hour) && hour >= 0 && hour <= 23) return hour * 60;
+  }
+  return null;
+}
+
+function getExecutivePulseBuckets(rows, rangeConfig, profitMarginPct) {
+  const marginFactor = Math.max(0, Math.min(0.95, Number.isFinite(profitMarginPct) ? profitMarginPct / 100 : 0.35));
+  const buckets = [];
+  const map = new Map();
+  const addBucket = (key, label) => {
+    if (!map.has(key)) {
+      const bucket = { key, label, bookings: 0, confirmed: 0, cancelled: 0, revenue: 0, profit: 0 };
+      map.set(key, bucket);
+      buckets.push(bucket);
+    }
+    return map.get(key);
+  };
+
+  if (rangeConfig.groupBy === "hour") {
+    const hourStartMin = Number.isFinite(rangeConfig.hourStartMin) ? rangeConfig.hourStartMin : 8 * 60;
+    const hourEndMin = Number.isFinite(rangeConfig.hourEndMin) ? rangeConfig.hourEndMin : 20 * 60;
+    for (let mins = hourStartMin; mins < hourEndMin; mins += 60) {
+      const hourKey = `h-${Math.floor(mins / 60)}`;
+      const label = formatMinutesToTime(mins).replace(":00 ", "").replace(" AM", "a").replace(" PM", "p");
+      addBucket(hourKey, label);
+    }
+  }
+
+  rows.forEach((row) => {
+    const dt = parseBookingDate(row?.date);
+    if (!dt) return;
+    if (dt < rangeConfig.start || dt > rangeConfig.end) return;
+    let key = "";
+    let label = "";
+    if (rangeConfig.groupBy === "month") {
+      key = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}`;
+      label = dt.toLocaleDateString(undefined, { month: "short" });
+    } else if (rangeConfig.groupBy === "week") {
+      const weekStart = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - dt.getDay());
+      key = `w-${toDateKey(weekStart)}`;
+      label = weekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    } else if (rangeConfig.groupBy === "day") {
+      key = toDateKey(dt);
+      label = dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    } else {
+      const rowMinutes = parseExecutiveBookingRowTimeMinutes(row);
+      const fallbackMinutes = Number.isFinite(rangeConfig.hourStartMin) ? rangeConfig.hourStartMin : 12 * 60;
+      const clampedMinutes = Math.max(
+        Number.isFinite(rangeConfig.hourStartMin) ? rangeConfig.hourStartMin : 0,
+        Math.min(
+          Number.isFinite(rangeConfig.hourEndMin) ? Math.max((rangeConfig.hourEndMin || 60) - 1, 0) : (23 * 60 + 59),
+          Number.isFinite(rowMinutes) ? rowMinutes : fallbackMinutes
+        )
+      );
+      const hourStart = Math.floor(clampedMinutes / 60) * 60;
+      key = `h-${Math.floor(hourStart / 60)}`;
+      label = formatMinutesToTime(hourStart).replace(":00 ", "").replace(" AM", "a").replace(" PM", "p");
+    }
+    const status = String(row?.status || "").toLowerCase();
+    const bucket = addBucket(key, label);
+    bucket.bookings += 1;
+    if (status === "cancelled") bucket.cancelled += 1;
+    if (status === "confirmed" || status === "completed") bucket.confirmed += 1;
+    const revenue = status === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row);
+    bucket.revenue += revenue;
+    bucket.profit += revenue * marginFactor;
+  });
+
+  if (rangeConfig.groupBy !== "hour") {
+    buckets.sort((a, b) => String(a.key).localeCompare(String(b.key)));
+    if (buckets.length > rangeConfig.bucketCount) return buckets.slice(-rangeConfig.bucketCount);
+  }
+  return buckets.slice(0, rangeConfig.bucketCount);
+}
+
+function renderExecutivePulseMiniBars(container, buckets, valueKey, { emptyText = "No data yet" } = {}) {
+  if (!container) return;
+  container.innerHTML = "";
+  if (!Array.isArray(buckets) || !buckets.length) {
+    container.innerHTML = `<small style="color:var(--muted);grid-column:1 / -1;">${escapeHtml(emptyText)}</small>`;
+    return;
+  }
+  const maxValue = Math.max(1, ...buckets.map((b) => Number(b?.[valueKey] || 0)));
+  buckets.forEach((bucket) => {
+    const value = Number(bucket?.[valueKey] || 0);
+    const height = Math.max(6, Math.round((value / maxValue) * 92));
+    const col = document.createElement("div");
+    col.className = "executive-mini-bar-col";
+    col.innerHTML = `
+      <div class="executive-mini-bar" style="--exec-mini-bar-height:${height}px" title="${escapeHtml(bucket.label)}: ${escapeHtml(String(Math.round(value)))}"></div>
+      <small>${escapeHtml(String(bucket.label))}</small>
+    `;
+    container.appendChild(col);
+  });
+}
+
+function renderExecutivePulseSnapshotsList(items) {
+  if (!executivePulseSnapshotList) return;
+  const rows = Array.isArray(items) ? items : [];
+  if (!rows.length) {
+    executivePulseSnapshotList.innerHTML = `<div class="executive-snapshot-empty">Save an Executive Pulse snapshot to keep a quick performance checkpoint for later reviews.</div>`;
+    return;
+  }
+  executivePulseSnapshotList.innerHTML = "";
+  rows.slice(0, 10).forEach((item) => {
+    const wrapper = document.createElement("article");
+    wrapper.className = "executive-snapshot-item";
+    const savedAt = item?.savedAt ? formatDateTime(item.savedAt) : "Unknown";
+    wrapper.innerHTML = `
+      <div class="executive-snapshot-item-head">
+        <strong>${escapeHtml(String(item.rangeLabel || "Snapshot"))}</strong>
+        <small>${escapeHtml(String(savedAt))}</small>
+      </div>
+      <p>${escapeHtml(String(item.headline || "Performance snapshot saved."))}</p>
+      <ul>
+        <li>Revenue: ${escapeHtml(String(item.revenue || "£0.00"))}</li>
+        <li>Profit: ${escapeHtml(String(item.profit || "£0.00"))}</li>
+        <li>Bookings: ${escapeHtml(String(item.bookings || 0))} (${escapeHtml(String(item.confirmed || 0))} confirmed)</li>
+        <li>Cancellations: ${escapeHtml(String(item.cancelled || 0))} (${escapeHtml(String(item.cancelRate || "0%"))})</li>
+      </ul>
+    `;
+    executivePulseSnapshotList.appendChild(wrapper);
+  });
+}
+
 function parseBookingDate(value) {
   const raw = String(value || "").trim();
   if (!raw) return null;
@@ -5346,33 +5732,65 @@ function renderExecutivePulse() {
   const today = command.today || {};
   const next7 = command.next7Days || {};
   const health = command.serviceHealth || {};
-  const bookingCount = bookingRows.length;
-  const confirmedCount = bookingRows.filter((b) => String(b?.status || "").toLowerCase() === "confirmed").length;
-  const cancelledCount = bookingRows.filter((b) => String(b?.status || "").toLowerCase() === "cancelled").length;
-  const completionCount = bookingRows.filter((b) => String(b?.status || "").toLowerCase() === "completed").length;
-  const localCancelRate = bookingCount ? (cancelledCount / bookingCount) * 100 : 0;
-  const cancelRate = Number(health.cancellationRate ?? localCancelRate ?? 0);
   const revenueSummary = revenueAttributionPayload?.summary || {};
   const profitSummary = profitabilityPayload?.summary || {};
   const accountingCards = accountingLivePayload?.cards || {};
   const accountingGauges = accountingLivePayload?.gauges || {};
+  const rangeConfig = getExecutivePulseRangeConfig(executivePulseRange);
+  const allRows = Array.isArray(bookingRows) ? bookingRows : [];
+  const rowsInRange = allRows.filter((row) => {
+    const d = parseBookingDate(row?.date);
+    return d && d >= rangeConfig.start && d <= rangeConfig.end;
+  });
+  const bookingCount = rowsInRange.length;
+  const confirmedCount = rowsInRange.filter((b) => ["confirmed", "completed"].includes(String(b?.status || "").toLowerCase())).length;
+  const cancelledCount = rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "cancelled").length;
+  const completionCount = rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "completed").length;
+  const localCancelRate = bookingCount ? (cancelledCount / bookingCount) * 100 : 0;
+  const cancelRate = Number(health.cancellationRate ?? localCancelRate ?? 0);
+  const profitMarginPct = Number(profitSummary.profitMarginPercent ?? 35);
+  const avgTicket = bookingCount
+    ? rowsInRange.reduce((sum, row) => sum + getExecutiveRowRevenueEstimate(row), 0) / Math.max(1, bookingCount)
+    : 0;
+  const rangeRevenueEstimate = rowsInRange.reduce((sum, row) => {
+    const status = String(row?.status || "").toLowerCase();
+    return sum + (status === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row));
+  }, 0);
+  const rangeProfitEstimate = rangeRevenueEstimate * Math.max(0, Math.min(0.95, profitMarginPct / 100));
+  const buckets = getExecutivePulseBuckets(rowsInRange, rangeConfig, profitMarginPct);
+
+  executivePulseRangeTabs?.querySelectorAll("button[data-exec-range]").forEach((btn) => {
+    const key = String(btn.getAttribute("data-exec-range") || "");
+    const active = key === executivePulseRange;
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  if (executivePulseRangeMeta) {
+    executivePulseRangeMeta.textContent = `${rangeConfig.label} • ${rangeConfig.chartLabel}`;
+  }
+  if (executivePulseFinanceWindowLabel) {
+    executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} performance review`;
+  }
 
   if (executivePulseSubtitle) {
     const roleLabel = user.role === "admin" ? "Admin oversight view" : "Subscriber operator view";
-    executivePulseSubtitle.textContent = `${roleLabel}: live signals blend bookings, calendar demand, billing pulse, and operational priorities.`;
+    executivePulseSubtitle.textContent = `${roleLabel}: quick-view signals for ${rangeConfig.label.toLowerCase()} across bookings, capacity, revenue, profit, and cancellation pressure.`;
   }
 
   const signalCards = [
     {
-      label: "Today Bookings",
-      value: String(today.totalBookings ?? confirmedCount ?? 0),
-      delta: `${Math.max(0, Number(today.confirmedBookings ?? confirmedCount ?? 0))} confirmed`,
+      label: `${rangeConfig.key === "day" ? "Today" : rangeConfig.label} Bookings`,
+      value: String(bookingCount || 0),
+      delta: `${Math.max(0, Number(confirmedCount || 0))} confirmed`,
       down: false
     },
     {
       label: "Revenue Pulse",
-      value: formatMoney(accountingCards.todayRevenue ?? today.estimatedRevenue ?? revenueSummary.totalRevenue ?? 0),
-      delta: formatMoney(accountingCards.lastHourRevenue ?? 0) + " last 60m",
+      value: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate ?? 0) : (rangeRevenueEstimate || revenueSummary.totalRevenue || 0)),
+      delta:
+        rangeConfig.key === "day"
+          ? `${formatMoney(accountingCards.lastHourRevenue ?? 0)} last 60m`
+          : `${formatMoney(avgTicket)} avg ticket`,
       down: false
     },
     {
@@ -5383,9 +5801,9 @@ function renderExecutivePulse() {
     },
     {
       label: "Profit Outlook",
-      value: formatMoney(profitSummary.estimatedProfit ?? 0),
-      delta: profitSummary.breakevenRevenue ? `Break-even ${formatMoney(profitSummary.breakevenRevenue)}` : "Waiting for cost data",
-      down: Number(profitSummary.estimatedProfit || 0) < 0
+      value: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate ?? 0) : (rangeProfitEstimate ?? 0)),
+      delta: profitSummary.breakevenRevenue ? `Break-even ${formatMoney(profitSummary.breakevenRevenue)}` : `${Math.round(profitMarginPct || 0)}% margin target`,
+      down: Number(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate ?? 0) : rangeProfitEstimate) < 0
     }
   ];
   executivePulseSignals.innerHTML = "";
@@ -5398,12 +5816,13 @@ function renderExecutivePulse() {
 
   const targetProgress = Number(accountingGauges.targetProgressPct || 0);
   const loadGauge = bookingCount ? Math.min(100, Math.round((confirmedCount / Math.max(bookingCount, 1)) * 100)) : 0;
-  const nextWeekBookings = Number(next7.confirmedBookings || 0);
-  const nextWeekCapacityGuess = Math.max(nextWeekBookings, Number(staffSummary?.estimatedChairCapacityToday || 0) * 7 || 1);
+  const nextWeekBookings = Number(next7.confirmedBookings || confirmedCount || 0);
+  const multiplier = rangeConfig.key === "year" ? 30 : rangeConfig.key === "month" ? 14 : rangeConfig.key === "week" ? 7 : 1;
+  const nextWeekCapacityGuess = Math.max(nextWeekBookings, Number(staffSummary?.estimatedChairCapacityToday || 0) * multiplier || 1);
   const nextWeekFill = Math.min(100, Math.round((nextWeekBookings / nextWeekCapacityGuess) * 100));
   const gaugeCards = [
     {
-      label: "Daily Revenue Goal",
+      label: rangeConfig.key === "day" ? "Daily Revenue Goal" : "Target Progress",
       value: `${Math.round(targetProgress)}%`,
       progress: Math.min(100, Math.max(0, targetProgress)),
       sub: formatMoney(accountingGauges.dailyTarget || 0)
@@ -5415,7 +5834,7 @@ function renderExecutivePulse() {
       sub: `${completionCount} completed / ${bookingCount || 0} total`
     },
     {
-      label: "Next 7-Day Fill",
+      label: rangeConfig.key === "day" ? "Next 7-Day Fill" : `${rangeConfig.label} Fill`,
       value: `${nextWeekFill}%`,
       progress: nextWeekFill,
       sub: `${nextWeekBookings} confirmed bookings`
@@ -5435,47 +5854,39 @@ function renderExecutivePulse() {
     executivePulseGauges.appendChild(card);
   });
 
-  const trendBuckets = new Map();
-  bookingRows.forEach((row) => {
-    const d = parseBookingDate(row?.date);
-    if (!d) return;
-    const key = toDateKey(d);
-    trendBuckets.set(key, (trendBuckets.get(key) || 0) + 1);
-  });
-  const recentKeys = Array.from(trendBuckets.keys()).sort().slice(-7);
-  const maxBucket = Math.max(1, ...recentKeys.map((k) => Number(trendBuckets.get(k) || 0)));
   executivePulseBars.innerHTML = "";
-  if (!recentKeys.length) {
+  if (!buckets.length) {
     if (isSubscriberCleanSlate()) {
-      const today = new Date();
-      const placeholderKeys = Array.from({ length: 7 }, (_, index) => {
-        const dt = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (6 - index));
-        return toDateKey(dt);
+      const placeholders = Array.from({ length: Math.max(6, rangeConfig.bucketCount || 6) }, (_, index) => {
+        if (rangeConfig.groupBy === "month") {
+          const dt = new Date(new Date().getFullYear(), index, 1);
+          return { label: dt.toLocaleDateString(undefined, { month: "short" }) };
+        }
+        return { label: `P${index + 1}` };
       });
-      placeholderKeys.forEach((key) => {
-        const dt = new Date(`${key}T12:00:00`);
+      placeholders.forEach((item, index) => {
         const col = document.createElement("article");
         col.className = "executive-bar-col";
         col.innerHTML = `
-          <div class="executive-bar" style="--exec-bar-height:8px" title="${escapeHtml(key)}: 0 bookings"></div>
-          <small>${escapeHtml(dt.toLocaleDateString(undefined, { month: "short", day: "numeric" }))}</small>
+          <div class="executive-bar" style="--exec-bar-height:8px" title="${escapeHtml(String(item.label))}: 0 bookings"></div>
+          <small>${escapeHtml(String(item.label || `P${index + 1}`))}</small>
           <small>0</small>
         `;
         executivePulseBars.appendChild(col);
       });
     } else {
-    executivePulseBars.innerHTML = "<small style='color:var(--muted);grid-column:1 / -1;'>Your booking trend bars will fill in as appointments are added.</small>";
+      executivePulseBars.innerHTML = `<small style='color:var(--muted);grid-column:1 / -1;'>Your ${escapeHtml(rangeConfig.chartLabel.toLowerCase())} bars will fill in as bookings are added.</small>`;
     }
   } else {
-    recentKeys.forEach((key) => {
-      const count = Number(trendBuckets.get(key) || 0);
-      const dt = new Date(`${key}T12:00:00`);
+    const maxBucket = Math.max(1, ...buckets.map((b) => Number(b.bookings || 0)));
+    buckets.forEach((bucket) => {
+      const count = Number(bucket.bookings || 0);
       const height = Math.max(8, Math.round((count / maxBucket) * 122));
       const col = document.createElement("article");
       col.className = "executive-bar-col";
       col.innerHTML = `
-        <div class="executive-bar" style="--exec-bar-height:${height}px" title="${escapeHtml(key)}: ${count} bookings"></div>
-        <small>${escapeHtml(dt.toLocaleDateString(undefined, { month: "short", day: "numeric" }))}</small>
+        <div class="executive-bar" style="--exec-bar-height:${height}px" title="${escapeHtml(String(bucket.label))}: ${count} bookings"></div>
+        <small>${escapeHtml(String(bucket.label))}</small>
         <small>${count}</small>
       `;
       executivePulseBars.appendChild(col);
@@ -5498,12 +5909,72 @@ function renderExecutivePulse() {
   if (!actionItems.length) {
     actionItems.push({ title: "Steady day so far", detail: "No urgent issues are showing right now. Focus on service quality and rebooking before clients leave." });
   }
+  if (rangeConfig.key !== "day") {
+    actionItems.unshift({
+      title: `Review ${rangeConfig.label.toLowerCase()} performance`,
+      detail: `Use saved snapshots to compare ${rangeConfig.label.toLowerCase()} revenue, cancellations, and profit signals over time.`
+    });
+  }
   executivePulseActions.innerHTML = "";
   actionItems.slice(0, 4).forEach((item) => {
     const li = document.createElement("li");
     li.innerHTML = `<strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small>`;
     executivePulseActions.appendChild(li);
   });
+
+  if (executivePulseFinanceStats) {
+    const financeCards = [
+      {
+        label: `${rangeConfig.label} Revenue`,
+        value: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate) : rangeRevenueEstimate),
+        meta: `${bookingCount} bookings`,
+        tone: "positive"
+      },
+      {
+        label: `${rangeConfig.label} Profit`,
+        value: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate) : rangeProfitEstimate),
+        meta: `${Math.round(profitMarginPct || 0)}% margin signal`,
+        tone: Number(rangeProfitEstimate || 0) < 0 ? "negative" : "positive"
+      },
+      {
+        label: "Average Ticket",
+        value: formatMoney(avgTicket || 0),
+        meta: `${Math.max(0, confirmedCount)} confirmed`,
+        tone: "neutral"
+      },
+      {
+        label: "Cancellation Cost Risk",
+        value: formatMoney(rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "cancelled").reduce((sum, row) => sum + getExecutiveRowRevenueEstimate(row), 0)),
+        meta: `${cancelledCount} cancelled`,
+        tone: cancelledCount ? "negative" : "neutral"
+      }
+    ];
+    executivePulseFinanceStats.innerHTML = "";
+    financeCards.forEach((card) => {
+      const article = document.createElement("article");
+      article.className = `executive-finance-stat ${card.tone || "neutral"}`;
+      article.innerHTML = `<p>${escapeHtml(card.label)}</p><strong>${escapeHtml(card.value)}</strong><small>${escapeHtml(card.meta)}</small>`;
+      executivePulseFinanceStats.appendChild(article);
+    });
+  }
+
+  if (executivePulseRevenueChartNote) executivePulseRevenueChartNote.textContent = rangeConfig.chartLabel;
+  if (executivePulseProfitChartNote) executivePulseProfitChartNote.textContent = rangeConfig.chartLabel;
+  renderExecutivePulseMiniBars(executivePulseRevenueChart, buckets, "revenue", { emptyText: "No revenue data in this range yet." });
+  renderExecutivePulseMiniBars(executivePulseProfitChart, buckets, "profit", { emptyText: "No profit signal yet." });
+
+  latestExecutivePulseSnapshotDraft = {
+    range: rangeConfig.key,
+    rangeLabel: rangeConfig.label,
+    headline: `${rangeConfig.label} pulse for ${user.role === "admin" ? "admin oversight" : "subscriber operations"}`,
+    revenue: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate) : rangeRevenueEstimate),
+    profit: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate) : rangeProfitEstimate),
+    bookings: bookingCount,
+    confirmed: confirmedCount,
+    cancelled: cancelledCount,
+    cancelRate: `${Number(cancelRate || 0).toFixed(1)}%`
+  };
+  renderExecutivePulseSnapshotsList(readExecutivePulseSnapshots());
 }
 
 function renderSubscriberCalendar() {
@@ -5849,7 +6320,7 @@ function summarizeCalendarDayRevenue(rows = []) {
 }
 
 async function refreshBookingsAfterDayPopupMutation() {
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     applyBookingFilters();
     renderSubscriberCalendar();
     renderExecutivePulse();
@@ -7090,7 +7561,7 @@ function renderAccountingLiveRevenue() {
 }
 
 async function loadAccountingLiveRevenue({ silent = false } = {}) {
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     if (accountingLivePayload && typeof accountingLivePayload === "object") {
       accountingLivePayload.timeframe = accountingLiveRangeFrom && accountingLiveRangeTo ? "custom" : accountingLiveTimeframe;
       accountingLivePayload.range = accountingLiveRangeFrom && accountingLiveRangeTo
@@ -7137,7 +7608,7 @@ function startAccountingLiveStream() {
     accountingLiveTimerId = null;
   }
   if (!isDashboardManagerRole()) return;
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     renderAccountingLiveRevenue();
     return;
   }
@@ -7269,7 +7740,7 @@ function normalizeIncomingRotaWeek(payload) {
 
 async function loadStaffRotaWeek({ silent = false } = {}) {
   const weekKey = getStaffWeekKey();
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     if (!staffRotaOverridesLoaded) loadStaffRotaOverrides();
     if (!staffRotaOverrides[weekKey]) {
       staffRotaOverrides[weekKey] = { cells: {}, sicknessLogs: [], updatedAt: null };
@@ -7320,7 +7791,7 @@ async function persistStaffRotaBulk({ updates = [], sicknessLogs = [] } = {}) {
     }))
     .filter((item) => item.staffId && STAFF_ROTA_DAYS.some((d) => d.key === item.day));
 
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     if (!staffRotaOverridesLoaded) loadStaffRotaOverrides();
     const bucket = getStaffWeekOverridesBucket(true);
     if (bucket) {
@@ -7360,7 +7831,7 @@ async function persistStaffRotaBulk({ updates = [], sicknessLogs = [] } = {}) {
 
 async function resetStaffRotaWeekRemote() {
   const weekStart = getStaffWeekKey();
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     clearStaffWeekOverrides();
     return;
   }
@@ -8295,6 +8766,7 @@ function renderOperationsInsights() {
     operationsInsightsSection.style.display = "none";
     return;
   }
+  showSection(operationsInsightsSection);
 
   const riskRows = Array.isArray(operationsInsights?.noShowRisk) ? operationsInsights.noShowRisk : [];
   const promptRows = Array.isArray(operationsInsights?.rebookingPrompts) ? operationsInsights.rebookingPrompts : [];
@@ -8344,6 +8816,7 @@ function renderCrmSegments() {
     crmSection.style.display = "none";
     return;
   }
+  showSection(crmSection);
 
   const segments = Array.isArray(crmSegmentsPayload?.segments) ? crmSegmentsPayload.segments : [];
   crmSegmentsList.innerHTML = "";
@@ -8411,6 +8884,7 @@ function renderCommercialControls() {
     commercialSection.style.display = "none";
     return;
   }
+  showSection(commercialSection);
 
   const summary = commercialPayload?.summary || {};
   const memberships = Array.isArray(commercialPayload?.memberships) ? commercialPayload.memberships : [];
@@ -8570,6 +9044,7 @@ function renderRevenueAttribution() {
     revenueAttributionSection.style.display = "none";
     return;
   }
+  showSection(revenueAttributionSection);
   const summary = revenueAttributionPayload?.summary || {};
   const channels = Array.isArray(revenueAttributionPayload?.channels) ? revenueAttributionPayload.channels : [];
 
@@ -8663,6 +9138,7 @@ function renderProfitabilitySummary() {
     profitabilitySection.style.display = "none";
     return;
   }
+  showSection(profitabilitySection);
   const summary = profitabilityPayload?.summary || {};
   const payrollEntries = Array.isArray(profitabilityPayload?.payrollEntries) ? profitabilityPayload.payrollEntries : [];
   const fixedCosts = profitabilityPayload?.fixedCosts || {};
@@ -9118,7 +9594,7 @@ function setActiveStatusChip(status) {
 }
 
 async function cancelBooking(bookingId) {
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     bookingRows = bookingRows.map((row) => (row.id === bookingId ? { ...row, status: "cancelled" } : row));
     return;
   }
@@ -9141,7 +9617,7 @@ async function rescheduleBooking(bookingId) {
   });
   if (!values) return;
 
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     bookingRows = bookingRows.map((row) =>
       row.id === bookingId ? { ...row, date: values.date.trim(), time: values.time.trim() } : row
     );
@@ -9431,7 +9907,7 @@ logoutBtn.addEventListener("click", () => {
 });
 
 startBilling.addEventListener("click", async () => {
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     setDashActionStatus("Mock mode: billing checkout is disabled.", true);
     return;
   }
@@ -9444,7 +9920,7 @@ startBilling.addEventListener("click", async () => {
 });
 
 manageBilling.addEventListener("click", async () => {
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     setDashActionStatus("Mock mode: billing portal is disabled.", true);
     return;
   }
@@ -9458,7 +9934,7 @@ manageBilling.addEventListener("click", async () => {
 
 connectStripeBillingBtn?.addEventListener("click", async () => {
   if (user.role !== "subscriber") return;
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     setDashActionStatus("Mock mode: Stripe connect is disabled.", true);
     return;
   }
@@ -9472,7 +9948,7 @@ connectStripeBillingBtn?.addEventListener("click", async () => {
 
 connectPayPalBillingBtn?.addEventListener("click", async () => {
   if (user.role !== "subscriber") return;
-  if (isMockMode) {
+  if (isDashboardDemoDataModeActive()) {
     setDashActionStatus("Mock mode: PayPal connect is disabled.", true);
     return;
   }
@@ -9554,7 +10030,7 @@ bookingsList?.addEventListener("click", async (event) => {
       await rescheduleBooking(bookingId);
       showManageToast("Booking updated.");
     }
-    if (isMockMode) {
+    if (isDashboardDemoDataModeActive()) {
       applyBookingFilters();
       renderSubscriberCalendar();
       return;
@@ -9593,7 +10069,21 @@ manageModeToggle?.addEventListener("click", () => {
 });
 
 demoModeToggle?.addEventListener("click", () => {
-  navigateWithDemoMode(!isMockMode);
+  if (!(currentRole === "subscriber" || currentRole === "admin")) return;
+  if (isMockMode) {
+    setDashActionStatus("URL mock mode is active. Turn off mock=1 in the URL to use in-dashboard Demo Mode.", true);
+    return;
+  }
+  const nextEnabled = !dashboardDemoFillModeEnabled;
+  if (nextEnabled) {
+    setDashboardDemoFillPreference(true);
+    setDashActionStatus("Turning Demo Mode on and loading mock business data...", false, 0);
+    window.location.reload();
+    return;
+  }
+  setDashboardDemoFillPreference(false);
+  setDashActionStatus("Reloading live dashboard data...", false, 0);
+  window.location.reload();
 });
 
 uiDensityToggle?.addEventListener("change", () => {
@@ -10741,6 +11231,26 @@ if (user.role === "subscriber" || user.role === "admin") {
 
 subscriberCopilotOpenPopup?.addEventListener("click", (event) => {
   openBusinessAiChatPopup("subscriber", { trigger: event.currentTarget });
+});
+executivePulseRangeTabs?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLButtonElement)) return;
+  const nextRange = String(target.getAttribute("data-exec-range") || "").trim().toLowerCase();
+  if (!["day", "week", "month", "year"].includes(nextRange)) return;
+  if (executivePulseRange === nextRange) return;
+  executivePulseRange = nextRange;
+  renderExecutivePulse();
+});
+executivePulseSaveSnapshotBtn?.addEventListener("click", () => {
+  if (!latestExecutivePulseSnapshotDraft) {
+    showToast("Executive Pulse is still loading.");
+    return;
+  }
+  const rows = readExecutivePulseSnapshots();
+  const next = [{ ...latestExecutivePulseSnapshotDraft, savedAt: new Date().toISOString() }, ...rows];
+  writeExecutivePulseSnapshots(next);
+  renderExecutivePulseSnapshotsList(next);
+  showToast(`Executive Pulse snapshot saved (${latestExecutivePulseSnapshotDraft.rangeLabel}).`);
 });
 subscriberLexiQuickOpenButtons.forEach((btn) => {
   btn.addEventListener("click", (event) => {
@@ -11962,6 +12472,54 @@ function loadMockDashboard() {
     yearlyDiscountPercent: 16.7,
     autoRenew: true
   };
+  if (user.role === "admin") {
+    const mockAdminBusinessId = String(managedBusinessId || "mock-admin-biz-lumen").trim();
+    managedBusinessId = mockAdminBusinessId;
+    adminBusinessOptions = [
+      {
+        id: mockAdminBusinessId,
+        name: "Lumen Studio",
+        city: "Manchester",
+        country: "United Kingdom"
+      },
+      {
+        id: "mock-admin-biz-north-lane",
+        name: "North Lane Studio",
+        city: "Chester",
+        country: "United Kingdom"
+      },
+      {
+        id: "mock-admin-biz-river-and-rose",
+        name: "River & Rose Salon",
+        city: "Liverpool",
+        country: "United Kingdom"
+      },
+      {
+        id: "mock-admin-biz-crown-barber",
+        name: "Crown Barber Co.",
+        city: "Leeds",
+        country: "United Kingdom"
+      },
+      {
+        id: "mock-admin-biz-atelier-beauty",
+        name: "Atelier Beauty Rooms",
+        city: "Birmingham",
+        country: "United Kingdom"
+      }
+    ];
+    if (adminBusinessSelect) {
+      adminBusinessSelect.innerHTML = "";
+      adminBusinessOptions.forEach((business) => {
+        const option = document.createElement("option");
+        option.value = String(business.id || "");
+        const location = [business.city, business.country].filter(Boolean).join(", ");
+        option.textContent = location ? `${business.name} (${location})` : String(business.name || "Unnamed business");
+        adminBusinessSelect.appendChild(option);
+      });
+      adminBusinessSelect.value = managedBusinessId;
+    }
+    setAdminBusinessStatus(`Viewing ${adminBusinessOptions.find((b) => b.id === managedBusinessId)?.name || "selected business"} (mock data).`);
+  }
   renderSubscriberBillingControls();
 
   setBusinessProfileFormValues({
@@ -12319,10 +12877,10 @@ function loadMockDashboard() {
   renderProfitabilitySummary();
   setProfitabilityStatus("Profitability summary loaded.");
   renderBusinessGrowthPanel();
-  renderSubscriberFullDemoModePanel();
+  enforceDashboardRoleLayoutVisibility();
 }
 
-if (isMockMode) {
+if (isMockMode || dashboardDemoFillModeEnabled) {
   loadMockDashboard();
 } else {
   (async () => {
