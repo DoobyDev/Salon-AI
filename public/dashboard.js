@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
-const isMockMode = params.get("mock") === "1";
+// Dashboard mock/demo mode is disabled to preserve a stable live layout.
+const isMockMode = false;
 const roleParam = String(params.get("role") || "").trim().toLowerCase();
 const adminBusinessParam = String(params.get("businessId") || "").trim();
 
@@ -978,14 +979,7 @@ function setDashActionStatus(message, isError = false, autoClearMs = 4200) {
 
 function refreshDemoModeToggle() {
   if (!demoModeToggle) return;
-  if (!(currentRole === "subscriber" || currentRole === "admin")) {
-    hideSection(demoModeToggle);
-    return;
-  }
-  showSection(demoModeToggle);
-  const active = Boolean(isMockMode || dashboardDemoFillModeEnabled);
-  demoModeToggle.textContent = `Demo Mode: ${active ? "On" : "Off"}`;
-  demoModeToggle.setAttribute("aria-pressed", active ? "true" : "false");
+  hideSection(demoModeToggle);
 }
 
 function loadDashboardDemoFillPreference() {
@@ -10069,21 +10063,7 @@ manageModeToggle?.addEventListener("click", () => {
 });
 
 demoModeToggle?.addEventListener("click", () => {
-  if (!(currentRole === "subscriber" || currentRole === "admin")) return;
-  if (isMockMode) {
-    setDashActionStatus("URL mock mode is active. Turn off mock=1 in the URL to use in-dashboard Demo Mode.", true);
-    return;
-  }
-  const nextEnabled = !dashboardDemoFillModeEnabled;
-  if (nextEnabled) {
-    setDashboardDemoFillPreference(true);
-    setDashActionStatus("Turning Demo Mode on and loading mock data...", false, 0);
-    window.location.reload();
-    return;
-  }
-  setDashboardDemoFillPreference(false);
-  setDashActionStatus("Reloading live dashboard data...", false, 0);
-  window.location.reload();
+  setDashActionStatus("Demo Mode has been removed from dashboards.", true);
 });
 
 uiDensityToggle?.addEventListener("change", () => {
