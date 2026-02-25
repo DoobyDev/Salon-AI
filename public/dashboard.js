@@ -280,6 +280,7 @@ let dashboardDemoFillModeEnabled = false;
 const MANAGE_MODE_STORAGE_KEY = "salon_ai_manage_mode_v1";
 const DASHBOARD_THEME_MODE_STORAGE_KEY = "salon_ai_dashboard_theme_mode_v1";
 const DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY = "salon_ai_dashboard_demo_fill_mode_v1";
+const DASHBOARD_DEMO_FILL_SESSION_KEY = "salon_ai_dashboard_demo_fill_session_v1";
 const SHARED_THEME_STORAGE_KEY = "salonTheme";
 const SUBSCRIPTION_AUTORENEW_PREF_STORAGE_KEY = "salon_ai_subscription_autorenew_pref_v1";
 const CONTACT_ADMIN_MESSAGES_STORAGE_KEY = "salon_ai_contact_admin_messages_v1";
@@ -990,15 +991,22 @@ function refreshDemoModeToggle() {
 function loadDashboardDemoFillPreference() {
   if (!(currentRole === "subscriber" || currentRole === "admin")) return false;
   try {
+    const active = sessionStorage.getItem(`${DASHBOARD_DEMO_FILL_SESSION_KEY}:${currentRole}`) === "on";
     localStorage.removeItem(`${DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY}:${currentRole}`);
+    return active;
   } catch {
     // Ignore storage errors.
+    return false;
   }
-  return false;
 }
 
 function setDashboardDemoFillPreference(enabled) {
   dashboardDemoFillModeEnabled = Boolean(enabled) && !isMockMode && (currentRole === "subscriber" || currentRole === "admin");
+  try {
+    sessionStorage.setItem(`${DASHBOARD_DEMO_FILL_SESSION_KEY}:${currentRole}`, dashboardDemoFillModeEnabled ? "on" : "off");
+  } catch {
+    // Ignore storage errors.
+  }
   refreshDemoModeToggle();
 }
 
@@ -10072,8 +10080,8 @@ demoModeToggle?.addEventListener("click", () => {
   const nextEnabled = !dashboardDemoFillModeEnabled;
   if (nextEnabled) {
     setDashboardDemoFillPreference(true);
-    loadMockDashboard();
-    setDashActionStatus("Demo mode is on. The dashboard layout stays the same and mock data is loaded.", false, 0);
+    setDashActionStatus("Turning Demo Mode on and loading mock data...", false, 0);
+    window.location.reload();
     return;
   }
   setDashboardDemoFillPreference(false);
@@ -12873,6 +12881,7 @@ function loadMockDashboard() {
   setProfitabilityStatus("Profitability summary loaded.");
   renderBusinessGrowthPanel();
   enforceDashboardRoleLayoutVisibility();
+  renderExecutivePulse();
 }
 
 if (isMockMode || dashboardDemoFillModeEnabled) {
