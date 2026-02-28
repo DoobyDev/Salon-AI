@@ -709,12 +709,35 @@ body.home-lexi-popup-open {
   display: grid;
   place-items: center;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .lexi-avatar-figure {
   display: grid;
   justify-items: center;
   gap: 0.8rem;
+  position: relative;
+  z-index: 2;
+}
+
+.lexi-avatar-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  z-index: 1;
+}
+
+.lexi-avatar-video.is-active {
+  display: block;
+}
+
+.lexi-avatar-stage.has-video .lexi-avatar-figure {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lexi-avatar-orb {

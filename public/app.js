@@ -159,6 +159,10 @@ let homeLexiAvatarConfigPromise = null;
 let homeLexiRealtimeSessionPromise = null;
 let homeLexiRealtimeSession = null;
 let homeLexiRealtimeConnection = null;
+let homeLexiAvatarSessionPromise = null;
+let homeLexiAvatarSession = null;
+let homeLexiAvatarRoom = null;
+let homeLexiLivekitScriptPromise = null;
 let lexiBookingGuideState = createLexiBookingGuideState();
 const homeDemoDisplayValues = {
   revenue: 0,
@@ -1447,6 +1451,7 @@ function ensureHomeLexiPopup() {
       <div class="home-lexi-popup-body">
         <section class="lexi-avatar-shell" data-avatar-state="idle" aria-label="Lexi live assistant">
           <div class="lexi-avatar-stage">
+            <video id="homeLexiAvatarVideo" class="lexi-avatar-video" playsinline autoplay muted></video>
             <div class="lexi-avatar-figure">
               <div class="lexi-avatar-orb" aria-hidden="true"></div>
               <div class="lexi-avatar-label">
@@ -1557,6 +1562,100 @@ async function requestHomeLexiRealtimeSession() {
   return homeLexiRealtimeSessionPromise;
 }
 
+function getHomeLexiAvatarVideo() {
+  return homeLexiPopupOverlay?.querySelector("#homeLexiAvatarVideo") || null;
+}
+
+function setHomeLexiAvatarVideoActive(active) {
+  const video = getHomeLexiAvatarVideo();
+  const stage = homeLexiPopupOverlay?.querySelector(".lexi-avatar-stage");
+  if (video instanceof HTMLVideoElement) {
+    video.classList.toggle("is-active", Boolean(active));
+  }
+  if (stage instanceof HTMLElement) {
+    stage.classList.toggle("has-video", Boolean(active));
+  }
+}
+
+async function loadLivekitClient() {
+  if (window.LivekitClient?.Room) return window.LivekitClient;
+  if (homeLexiLivekitScriptPromise) return homeLexiLivekitScriptPromise;
+  homeLexiLivekitScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-livekit-client="true"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.LivekitClient), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Failed to load LiveKit client.")), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js";
+    script.async = true;
+    script.setAttribute("data-livekit-client", "true");
+    script.addEventListener("load", () => resolve(window.LivekitClient), { once: true });
+    script.addEventListener("error", () => reject(new Error("Failed to load LiveKit client.")), { once: true });
+    document.head.appendChild(script);
+  });
+  return homeLexiLivekitScriptPromise;
+}
+
+async function requestHomeLexiAvatarSession() {
+  if (homeLexiAvatarSessionPromise) return homeLexiAvatarSessionPromise;
+  homeLexiAvatarSessionPromise = fetch("/api/lexi/avatar/session", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      scope: "public",
+      businessId: selectedBusinessId || ""
+    })
+  })
+    .then(async (response) => {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(String(data?.error || `Avatar session request failed: ${response.status}`).trim());
+      }
+      homeLexiAvatarSession = data;
+      return data;
+    })
+    .finally(() => {
+      homeLexiAvatarSessionPromise = null;
+    });
+  return homeLexiAvatarSessionPromise;
+}
+
+async function connectHomeLexiAvatarSession() {
+  const config = await loadHomeLexiAvatarConfig();
+  if (config.provider !== "heygen" || !config.avatarSessionReady) return false;
+  const avatarData = await requestHomeLexiAvatarSession();
+  if (!avatarData.sessionReady) {
+    updateHomeLexiTranscript(avatarData.message || "Avatar session is not ready yet.");
+    return false;
+  }
+  const livekit = await loadLivekitClient();
+  if (!livekit?.Room) throw new Error("LiveKit client did not load correctly.");
+  if (homeLexiAvatarRoom) return true;
+
+  const room = new livekit.Room();
+  room.on(livekit.RoomEvent.TrackSubscribed, (track) => {
+    if (track.kind !== "video") return;
+    const video = getHomeLexiAvatarVideo();
+    if (!(video instanceof HTMLVideoElement)) return;
+    track.attach(video);
+    video.muted = true;
+    video.play().catch(() => {});
+    setHomeLexiAvatarVideoActive(true);
+  });
+  room.on(livekit.RoomEvent.Disconnected, () => {
+    setHomeLexiAvatarVideoActive(false);
+    homeLexiAvatarRoom = null;
+  });
+  await room.connect(String(avatarData.session?.livekitUrl || ""), String(avatarData.session?.livekitAccessToken || ""));
+  homeLexiAvatarRoom = room;
+  updateHomeLexiTranscript("Lexi avatar connected. Voice replies will play through the popup audio.");
+  return true;
+}
+
 function extractLexiRealtimeText(response) {
   const outputs = Array.isArray(response?.output) ? response.output : [];
   const content = outputs.flatMap((item) => Array.isArray(item?.content) ? item.content : []);
@@ -1607,6 +1706,34 @@ function cleanupHomeLexiRealtimeConnection() {
     }
   } catch {}
   homeLexiRealtimeConnection = null;
+}
+
+async function cleanupHomeLexiAvatarSession() {
+  try {
+    await homeLexiAvatarRoom?.disconnect?.();
+  } catch {}
+  homeLexiAvatarRoom = null;
+  const video = getHomeLexiAvatarVideo();
+  if (video instanceof HTMLVideoElement) {
+    try {
+      video.pause();
+      video.srcObject = null;
+    } catch {}
+  }
+  setHomeLexiAvatarVideoActive(false);
+  const sessionId = String(homeLexiAvatarSession?.session?.sessionId || "").trim();
+  const sessionToken = String(homeLexiAvatarSession?.session?.sessionToken || "").trim();
+  homeLexiAvatarSession = null;
+  if (!sessionId || !sessionToken) return;
+  try {
+    await fetch("/api/lexi/avatar/session/stop", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ sessionId, sessionToken })
+    });
+  } catch {}
 }
 
 function handleHomeLexiRealtimeEvent(event) {
@@ -1768,6 +1895,7 @@ async function hydrateHomeLexiAvatarPanel() {
 async function startHomeLexiVoicePreparation() {
   if (homeLexiRealtimeConnection) {
     cleanupHomeLexiRealtimeConnection();
+    cleanupHomeLexiAvatarSession();
     resetHomeLexiVoiceControls("Prepare Voice", true);
     setHomeLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
     setAppStatus("Lexi voice disconnected.", false, 2200);
@@ -1801,6 +1929,11 @@ async function startHomeLexiVoicePreparation() {
       return;
     }
     await connectHomeLexiRealtimeSession(data);
+    try {
+      await connectHomeLexiAvatarSession();
+    } catch (avatarError) {
+      updateHomeLexiTranscript(avatarError instanceof Error ? avatarError.message : "Lexi avatar could not connect, but voice is still available.");
+    }
     setHomeLexiAvatarPanelState(
       "thinking",
       data.message || "Lexi voice session updated.",
@@ -1810,6 +1943,7 @@ async function startHomeLexiVoicePreparation() {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to prepare a Lexi voice session right now.";
     cleanupHomeLexiRealtimeConnection();
+    cleanupHomeLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
       voiceBtn.disabled = false;
       voiceBtn.textContent = "Prepare Voice";
@@ -1853,6 +1987,7 @@ function openHomeLexiPopup() {
 function closeHomeLexiPopup() {
   if (!homeLexiPopupOpen) return;
   cleanupHomeLexiRealtimeConnection();
+  cleanupHomeLexiAvatarSession();
   resetHomeLexiVoiceControls("Prepare Voice", true);
   if (homeLexiChatPlaceholder?.parentNode && frontdeskChatShell instanceof HTMLElement) {
     homeLexiChatPlaceholder.parentNode.insertBefore(frontdeskChatShell, homeLexiChatPlaceholder);

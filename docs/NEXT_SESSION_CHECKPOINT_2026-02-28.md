@@ -87,7 +87,9 @@ Recommended rollout order:
   - homepage and customer dashboard popups can now request a live session contract from the server
   - homepage and customer dashboard now also attempt full browser WebRTC + microphone connection using the brokered client secret
   - popup now exposes live voice states, mute, disconnect, and transcript/status updates
-  - next step is reliability polish plus avatar-provider hookup
+  - HeyGen avatar session lifecycle is now wired on the backend
+  - homepage and customer dashboard can now try to attach a HeyGen LiveKit avatar stream into the popup stage
+  - next step is real env configuration and browser validation
 
 ## Next Steps
 
@@ -95,7 +97,6 @@ Recommended rollout order:
 2. Push any remaining light-mode cleanup if still pending locally.
 3. Decide whether to push the latest Lexi popup/human-tone changes if not already pushed.
 4. Connect a real provider stack into the avatar scaffold:
-   - avatar provider session creation
    - improve transcript/rendering reliability across browsers
    - decide whether subscriber popup gets the same live voice path immediately
    - fallback behavior for unsupported/mobile cases

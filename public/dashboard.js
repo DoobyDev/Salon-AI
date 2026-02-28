@@ -292,6 +292,10 @@ let customerLexiAvatarConfigPromise = null;
 let customerLexiRealtimeSessionPromise = null;
 let customerLexiRealtimeSession = null;
 let customerLexiRealtimeConnection = null;
+let customerLexiAvatarSessionPromise = null;
+let customerLexiAvatarSession = null;
+let customerLexiAvatarRoom = null;
+let customerLexiLivekitScriptPromise = null;
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -7285,6 +7289,7 @@ function ensureCustomerLexiPopup() {
       <div class="home-lexi-popup-body">
         <section class="lexi-avatar-shell" data-avatar-state="idle" aria-label="Lexi live assistant">
           <div class="lexi-avatar-stage">
+            <video id="customerLexiAvatarVideo" class="lexi-avatar-video" playsinline autoplay muted></video>
             <div class="lexi-avatar-figure">
               <div class="lexi-avatar-orb" aria-hidden="true"></div>
               <div class="lexi-avatar-label">
@@ -7396,6 +7401,102 @@ async function requestCustomerLexiRealtimeSession() {
   return customerLexiRealtimeSessionPromise;
 }
 
+function getCustomerLexiAvatarVideo() {
+  return customerLexiPopupOverlay?.querySelector("#customerLexiAvatarVideo") || null;
+}
+
+function setCustomerLexiAvatarVideoActive(active) {
+  const video = getCustomerLexiAvatarVideo();
+  const stage = customerLexiPopupOverlay?.querySelector(".lexi-avatar-stage");
+  if (video instanceof HTMLVideoElement) {
+    video.classList.toggle("is-active", Boolean(active));
+  }
+  if (stage instanceof HTMLElement) {
+    stage.classList.toggle("has-video", Boolean(active));
+  }
+}
+
+async function loadCustomerLivekitClient() {
+  if (window.LivekitClient?.Room) return window.LivekitClient;
+  if (customerLexiLivekitScriptPromise) return customerLexiLivekitScriptPromise;
+  customerLexiLivekitScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-livekit-client="true"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.LivekitClient), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Failed to load LiveKit client.")), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js";
+    script.async = true;
+    script.setAttribute("data-livekit-client", "true");
+    script.addEventListener("load", () => resolve(window.LivekitClient), { once: true });
+    script.addEventListener("error", () => reject(new Error("Failed to load LiveKit client.")), { once: true });
+    document.head.appendChild(script);
+  });
+  return customerLexiLivekitScriptPromise;
+}
+
+async function requestCustomerLexiAvatarSession() {
+  if (customerLexiAvatarSessionPromise) return customerLexiAvatarSessionPromise;
+  const requestHeaders = {
+    "Content-Type": "application/json"
+  };
+  if (token) requestHeaders.Authorization = `Bearer ${token}`;
+  customerLexiAvatarSessionPromise = fetch("/api/lexi/avatar/session", {
+    method: "POST",
+    headers: requestHeaders,
+    body: JSON.stringify({
+      scope: "customer",
+      businessId: selectedCustomerSalonId || ""
+    })
+  })
+    .then(async (response) => {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(String(data?.error || `Avatar session request failed: ${response.status}`).trim());
+      }
+      customerLexiAvatarSession = data;
+      return data;
+    })
+    .finally(() => {
+      customerLexiAvatarSessionPromise = null;
+    });
+  return customerLexiAvatarSessionPromise;
+}
+
+async function connectCustomerLexiAvatarSession() {
+  const config = await loadCustomerLexiAvatarConfig();
+  if (config.provider !== "heygen" || !config.avatarSessionReady) return false;
+  const avatarData = await requestCustomerLexiAvatarSession();
+  if (!avatarData.sessionReady) {
+    updateCustomerLexiTranscript(avatarData.message || "Avatar session is not ready yet.");
+    return false;
+  }
+  const livekit = await loadCustomerLivekitClient();
+  if (!livekit?.Room) throw new Error("LiveKit client did not load correctly.");
+  if (customerLexiAvatarRoom) return true;
+
+  const room = new livekit.Room();
+  room.on(livekit.RoomEvent.TrackSubscribed, (track) => {
+    if (track.kind !== "video") return;
+    const video = getCustomerLexiAvatarVideo();
+    if (!(video instanceof HTMLVideoElement)) return;
+    track.attach(video);
+    video.muted = true;
+    video.play().catch(() => {});
+    setCustomerLexiAvatarVideoActive(true);
+  });
+  room.on(livekit.RoomEvent.Disconnected, () => {
+    setCustomerLexiAvatarVideoActive(false);
+    customerLexiAvatarRoom = null;
+  });
+  await room.connect(String(avatarData.session?.livekitUrl || ""), String(avatarData.session?.livekitAccessToken || ""));
+  customerLexiAvatarRoom = room;
+  updateCustomerLexiTranscript("Lexi avatar connected. Voice replies will play through the popup audio.");
+  return true;
+}
+
 function extractCustomerLexiRealtimeText(response) {
   const outputs = Array.isArray(response?.output) ? response.output : [];
   const content = outputs.flatMap((item) => Array.isArray(item?.content) ? item.content : []);
@@ -7446,6 +7547,34 @@ function cleanupCustomerLexiRealtimeConnection() {
     }
   } catch {}
   customerLexiRealtimeConnection = null;
+}
+
+async function cleanupCustomerLexiAvatarSession() {
+  try {
+    await customerLexiAvatarRoom?.disconnect?.();
+  } catch {}
+  customerLexiAvatarRoom = null;
+  const video = getCustomerLexiAvatarVideo();
+  if (video instanceof HTMLVideoElement) {
+    try {
+      video.pause();
+      video.srcObject = null;
+    } catch {}
+  }
+  setCustomerLexiAvatarVideoActive(false);
+  const sessionId = String(customerLexiAvatarSession?.session?.sessionId || "").trim();
+  const sessionToken = String(customerLexiAvatarSession?.session?.sessionToken || "").trim();
+  customerLexiAvatarSession = null;
+  if (!sessionId || !sessionToken) return;
+  try {
+    await fetch("/api/lexi/avatar/session/stop", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ sessionId, sessionToken })
+    });
+  } catch {}
 }
 
 function handleCustomerLexiRealtimeEvent(event) {
@@ -7607,6 +7736,7 @@ async function hydrateCustomerLexiAvatarPanel() {
 async function startCustomerLexiVoicePreparation() {
   if (customerLexiRealtimeConnection) {
     cleanupCustomerLexiRealtimeConnection();
+    cleanupCustomerLexiAvatarSession();
     resetCustomerLexiVoiceControls("Prepare Voice", true);
     setCustomerLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
     setDashActionStatus("Lexi voice disconnected.", false, 2200);
@@ -7640,6 +7770,11 @@ async function startCustomerLexiVoicePreparation() {
       return;
     }
     await connectCustomerLexiRealtimeSession(data);
+    try {
+      await connectCustomerLexiAvatarSession();
+    } catch (avatarError) {
+      updateCustomerLexiTranscript(avatarError instanceof Error ? avatarError.message : "Lexi avatar could not connect, but voice is still available.");
+    }
     setCustomerLexiAvatarPanelState(
       "thinking",
       data.message || "Lexi voice session updated.",
@@ -7649,6 +7784,7 @@ async function startCustomerLexiVoicePreparation() {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to prepare a Lexi voice session right now.";
     cleanupCustomerLexiRealtimeConnection();
+    cleanupCustomerLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
       voiceBtn.disabled = false;
       voiceBtn.textContent = "Prepare Voice";
@@ -7693,6 +7829,7 @@ function openCustomerLexiPopup() {
 function closeCustomerLexiPopup() {
   if (!customerLexiPopupOpen) return;
   cleanupCustomerLexiRealtimeConnection();
+  cleanupCustomerLexiAvatarSession();
   resetCustomerLexiVoiceControls("Prepare Voice", true);
   const customerChatShell = customerReceptionSection?.querySelector(".customer-chat-shell") || null;
   if (customerLexiChatPlaceholder?.parentNode && customerChatShell instanceof HTMLElement) {

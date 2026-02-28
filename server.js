@@ -3426,8 +3426,13 @@ function buildLexiAvatarConfig(scope = "public") {
   const avatarProvider = String(process.env.LEXI_AVATAR_PROVIDER || process.env.HEYGEN_PROVIDER || "pending").trim().toLowerCase() || "pending";
   const voiceProvider = String(process.env.LEXI_VOICE_PROVIDER || (process.env.ELEVENLABS_API_KEY ? "elevenlabs" : openai ? "openai" : "text")).trim().toLowerCase() || "text";
   const realtimeModel = String(process.env.OPENAI_REALTIME_MODEL || "").trim();
+  const heygenApiKey = String(process.env.HEYGEN_API_KEY || "").trim();
+  const heygenAvatarId = String(process.env.HEYGEN_AVATAR_ID || "").trim();
+  const heygenVoiceId = String(process.env.HEYGEN_VOICE_ID || "").trim();
   const openAiReady = Boolean(openai);
-  const avatarReady = avatarProvider !== "pending" && avatarProvider !== "none";
+  const avatarReady = avatarProvider === "heygen"
+    ? Boolean(heygenApiKey && heygenAvatarId)
+    : avatarProvider !== "pending" && avatarProvider !== "none";
   const voiceReady = voiceProvider !== "text";
   const realtimeReady = openAiReady && Boolean(realtimeModel);
 
@@ -3439,15 +3444,115 @@ function buildLexiAvatarConfig(scope = "public") {
     voiceProvider,
     realtimeModel: realtimeModel || null,
     avatarEnabled: avatarReady,
+    avatarSessionReady: avatarProvider === "heygen" ? Boolean(heygenApiKey && heygenAvatarId) : avatarReady,
     voiceEnabled: voiceReady,
     realtimeEnabled: realtimeReady,
     sessionEndpointReady: realtimeReady,
+    avatarDefaults: avatarProvider === "heygen"
+      ? {
+          avatarId: heygenAvatarId || null,
+          voiceId: heygenVoiceId || null
+        }
+      : null,
     transcriptMode: "text_fallback",
     supportMode: normalizedScope === "subscriber" || normalizedScope === "admin" ? "business_assistant" : "booking_assistant",
     notes: avatarReady && realtimeReady
       ? "Lexi popup is ready for provider wiring and client session brokerage."
       : "Lexi popup is ready for avatar wiring. Connect provider keys and realtime session brokerage next."
   };
+}
+
+async function createHeyGenSessionToken() {
+  const heygenApiKey = String(process.env.HEYGEN_API_KEY || "").trim();
+  if (!heygenApiKey) throw new Error("HEYGEN_API_KEY is not configured.");
+  const response = await fetch("https://api.heygen.com/v1/streaming.create_token", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": heygenApiKey,
+      "Content-Type": "application/json"
+    }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(String(data?.error?.message || data?.message || "Unable to create a HeyGen session token.").trim());
+  }
+  const token = String(data?.data?.token || "").trim();
+  if (!token) throw new Error("HeyGen session token missing.");
+  return token;
+}
+
+async function createHeyGenAvatarSession({ business, scope }) {
+  const avatarId = String(process.env.HEYGEN_AVATAR_ID || "").trim();
+  const voiceId = String(process.env.HEYGEN_VOICE_ID || "").trim();
+  if (!avatarId) throw new Error("HEYGEN_AVATAR_ID is not configured.");
+
+  const token = await createHeyGenSessionToken();
+  const businessName = String(business?.name || "Lexi").trim();
+  const openingText = scope === "customer"
+    ? `Hi, I'm Lexi for ${businessName}. Ask me about services, timings, or booking help whenever you're ready.`
+    : `Hi, I'm Lexi. I'm ready to help with bookings, salon questions, and day-to-day support.`;
+  const response = await fetch("https://api.heygen.com/v1/streaming.new", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      quality: "medium",
+      avatar_id: avatarId,
+      version: "v2",
+      video_encoding: "H264",
+      voice: voiceId
+        ? { voice_id: voiceId, rate: 1 }
+        : undefined,
+      activity_idle_timeout: 120,
+      knowledge_base_id: undefined,
+      opening_text: openingText
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(String(data?.error?.message || data?.message || "Unable to create a HeyGen avatar session.").trim());
+  }
+  return {
+    sessionToken: token,
+    data: data?.data || data
+  };
+}
+
+async function startHeyGenAvatarSession({ sessionToken, sessionId }) {
+  const response = await fetch("https://api.heygen.com/v1/streaming.start", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${sessionToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      session_id: sessionId
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(String(data?.error?.message || data?.message || "Unable to start the HeyGen avatar session.").trim());
+  }
+  return data;
+}
+
+async function stopHeyGenAvatarSession({ sessionToken, sessionId }) {
+  const response = await fetch("https://api.heygen.com/v1/streaming.stop", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${sessionToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      session_id: sessionId
+    })
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(String(data?.error?.message || data?.message || "Unable to stop the HeyGen avatar session.").trim());
+  }
 }
 
 function getOptionalAuth(req) {
@@ -3612,6 +3717,67 @@ app.post("/api/lexi/realtime/session", async (req, res) => {
     return res.status(502).json({
       error: error instanceof Error ? error.message : "Unable to create a Lexi realtime session right now.",
       config
+    });
+  }
+});
+
+app.post("/api/lexi/avatar/session", async (req, res) => {
+  const scope = String(req.body?.scope || "public").trim().toLowerCase();
+  const config = buildLexiAvatarConfig(scope);
+  if (config.provider !== "heygen" || !config.avatarSessionReady) {
+    return res.status(202).json({
+      ok: true,
+      sessionReady: false,
+      config,
+      message: "HeyGen avatar mode is not configured yet. Add HEYGEN_API_KEY and HEYGEN_AVATAR_ID to enable the visual avatar layer."
+    });
+  }
+
+  try {
+    const auth = getOptionalAuth(req);
+    const business = await resolveLexiRealtimeBusiness({
+      scope,
+      auth,
+      businessId: req.body?.businessId
+    });
+    const { sessionToken, data } = await createHeyGenAvatarSession({ business, scope });
+    const sessionId = String(data?.session_id || "").trim();
+    if (!sessionId) throw new Error("HeyGen avatar session id missing.");
+    await startHeyGenAvatarSession({ sessionToken, sessionId });
+
+    return res.json({
+      ok: true,
+      sessionReady: true,
+      config,
+      session: {
+        provider: "heygen",
+        sessionId,
+        sessionToken,
+        livekitUrl: String(data?.url || "").trim(),
+        livekitAccessToken: String(data?.access_token || "").trim()
+      },
+      message: "Lexi avatar session is ready. The client can now join the LiveKit room and render the avatar stream."
+    });
+  } catch (error) {
+    return res.status(502).json({
+      error: error instanceof Error ? error.message : "Unable to create a Lexi avatar session right now.",
+      config
+    });
+  }
+});
+
+app.post("/api/lexi/avatar/session/stop", async (req, res) => {
+  const sessionId = String(req.body?.sessionId || "").trim();
+  const sessionToken = String(req.body?.sessionToken || "").trim();
+  if (!sessionId || !sessionToken) {
+    return res.status(400).json({ error: "sessionId and sessionToken are required." });
+  }
+  try {
+    await stopHeyGenAvatarSession({ sessionId, sessionToken });
+    return res.json({ ok: true });
+  } catch (error) {
+    return res.status(502).json({
+      error: error instanceof Error ? error.message : "Unable to stop the Lexi avatar session right now."
     });
   }
 });
