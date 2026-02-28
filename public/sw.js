@@ -1,4 +1,4 @@
-const CACHE_NAME = "salon-ai-v5";
+const CACHE_NAME = "salon-ai-v6";
 const ASSETS = [
   "/",
   "/index.html",
@@ -12,6 +12,7 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -19,11 +20,48 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
-    )
+    Promise.all([
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      ),
+      self.clients.claim()
+    ])
   );
 });
+
+function shouldRefreshFromNetwork(url) {
+  return (
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname === "/styles.css" ||
+    url.pathname === "/app.js" ||
+    url.pathname === "/dashboard.html" ||
+    url.pathname === "/dashboard.js" ||
+    url.pathname === "/auth.html" ||
+    url.pathname === "/auth.js" ||
+    url.pathname === "/theme-toggle.js" ||
+    url.pathname === "/manifest.webmanifest"
+  );
+}
+
+async function networkFirst(request, fallbackPath = null) {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    const response = await fetch(request, { cache: "no-store" });
+    if (response && response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    if (fallbackPath) {
+      const fallback = await caches.match(fallbackPath);
+      if (fallback) return fallback;
+    }
+    throw new Error("offline");
+  }
+}
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
@@ -39,6 +77,11 @@ self.addEventListener("fetch", (event) => {
   if (isApiRequest) return;
   // Only cache navigations and static assets we explicitly recognize.
   if (!isNavigation && !isPrecachedAsset && !isIconAsset && !isStaticFile) return;
+
+  if (isNavigation || shouldRefreshFromNetwork(url)) {
+    event.respondWith(networkFirst(event.request, "/index.html"));
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

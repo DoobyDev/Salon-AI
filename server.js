@@ -3342,7 +3342,36 @@ app.use(
   "/api",
   apiLimiter
 );
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), {
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    const normalizedPath = String(filePath || "").replace(/\\/g, "/");
+    if (
+      normalizedPath.endsWith("/index.html") ||
+      normalizedPath.endsWith("/dashboard.html") ||
+      normalizedPath.endsWith("/auth.html") ||
+      normalizedPath.endsWith("/sw.js") ||
+      normalizedPath.endsWith("/manifest.webmanifest")
+    ) {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      return;
+    }
+
+    if (
+      normalizedPath.endsWith("/styles.css") ||
+      normalizedPath.endsWith("/app.js") ||
+      normalizedPath.endsWith("/dashboard.js") ||
+      normalizedPath.endsWith("/auth.js") ||
+      normalizedPath.endsWith("/theme-toggle.js")
+    ) {
+      res.setHeader("Cache-Control", "no-cache, must-revalidate");
+      return;
+    }
+
+    res.setHeader("Cache-Control", "public, max-age=86400");
+  }
+}));
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
