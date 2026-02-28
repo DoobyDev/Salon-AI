@@ -47,7 +47,9 @@ const customerReceptionSection = document.getElementById("customerReceptionSecti
 const customerReceptionMessages = document.getElementById("customerReceptionMessages");
 const customerReceptionForm = document.getElementById("customerReceptionForm");
 const customerReceptionInput = document.getElementById("customerReceptionInput");
-const customerLexiPromptButtons = Array.from(document.querySelectorAll(".customer-lexi-prompt-btn"));
+const customerChatGuideHint = document.getElementById("customerChatGuideHint");
+const customerLexiLaunchBtn = document.getElementById("customerLexiLaunchBtn");
+const customerLexiLaunchBookingBtn = document.getElementById("customerLexiLaunchBookingBtn");
 const customerLexiCalendarSection = document.getElementById("customerLexiCalendarSection");
 const customerLexiPlannerMeta = document.getElementById("customerLexiPlannerMeta");
 const customerLexiStaffLegend = document.getElementById("customerLexiStaffLegend");
@@ -281,6 +283,11 @@ let customerReceptionTranscript = [];
 let customerLexiCalendarMonthCursor = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 let customerLexiSelectedDateKey = "";
 let customerLexiCalendarView = "day";
+let customerLexiPopupOpen = false;
+let customerLexiPopupOverlay = null;
+let customerLexiPopupContainer = null;
+let customerLexiChatPlaceholder = null;
+let customerLexiPopupLastFocus = null;
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -7150,44 +7157,44 @@ function normalizeCustomerLexiTypos(text) {
 function getReceptionReply(inputText) {
   const message = normalizeCustomerLexiTypos(inputText);
   const salon = getSelectedCustomerSalon();
-  if (!message) return "Please type your question and I'll help.";
+  if (!message) return "Tell me what you're looking for and I'll guide you from there.";
   if (/(password|api key|token|secret|all customers|customer list|phone numbers|emails|addresses|personal data|private data)/.test(message)) {
-    return "I can help with app and booking questions, but I can't share personal data, private account details, or security information.";
+    return "I can help with bookings and app questions, but I can't share private account or personal data.";
   }
   if (/(how does this app work|what can lexi do|what can the app do|dashboard|module|modules|subscriber|admin|customer dashboard|demo mode|booking confirmation|pending booking|notification|notifications|how .*work|gdpr|privacy|data protection|lexi)/.test(message)) {
-    return "Absolutely. I can walk you through how the app works, what each dashboard and module does, how Lexi supports bookings and front desk tasks, and how confirmations and notifications work. I can't share personal data, but I can explain the features clearly.";
+    return "Lexi helps with services, availability, bookings, and front-desk questions, while the app gives salon owners control over the diary, staff, and business side. If you want, I can explain a specific part instead of the whole system.";
   }
   if (/(find|search).*(salon|barber|beauty)|business search/.test(message)) {
-    return "Use the search filters to find salons, barbers, or beauty businesses by name, service, location, rating, or date. Once you pick a business, I can help with slots, services, and booking guidance.";
+    return "Use the search filters to narrow it down by name, service, area, rating, or date. Once you've picked a business, I'll help with services, slots, and the booking.";
   }
   if (message.includes("slot") || message.includes("available") || message.includes("book")) {
-    if (!salon) return "Choose a business first and I'll help you check available slots.";
+    if (!salon) return "Pick a business first and I'll help you check the best slots.";
     if (message.includes("confirm")) {
-      return "You can request a booking from the available slots shown. Some businesses use a pending confirmation step, so the salon confirms the appointment first and then sends your confirmation update.";
+      return "You can request the booking from the slots shown here. Some businesses confirm manually first, so you'll get a confirmation once the salon approves it.";
     }
     const nextSlot = salon.availableSlots[0];
     return nextSlot
-      ? `${salon.name} currently has availability at ${nextSlot}. If you'd like, I can help you choose the best time for your schedule.`
-      : `${salon.name} has no open slots listed right now.`;
+      ? `${salon.name} has availability at ${nextSlot}. If you want, I can help you pick the best time around that.`
+      : `${salon.name} doesn't have any open slots listed right now.`;
   }
   if (message.includes("phone") || message.includes("email") || message.includes("contact")) {
-    if (!salon) return "Choose a business first and I'll show the contact details.";
+    if (!salon) return "Pick a business first and I'll show you the contact details.";
     return `You can reach ${salon.name} at ${salon.phone} or ${salon.email}.`;
   }
   if (message.includes("service")) {
-    if (!salon) return "Choose a business first and I can list the services.";
-    return `${salon.name} offers services including ${salon.services.join(", ")}. If you tell me what result you're looking for, I can suggest the best option.`;
+    if (!salon) return "Pick a business first and I'll run through the services with you.";
+    return `${salon.name} offers ${salon.services.join(", ")}. Tell me the result you want and I'll point you to the best option.`;
   }
   if (/(policy|deposit|late|cancellation|cancelation|no show|no-show)/.test(message)) {
-    return "I can explain booking policies like deposits, late arrivals, cancellations, and no-shows. Tell me which policy you want to check and I'll walk you through it.";
+    return "I can walk you through deposits, late arrivals, cancellations, or no-show policy. Tell me which part you want to check.";
   }
   if (message.includes("calendar") || message.includes("planner")) {
-    return "The Lexi Booking Calendar Planner lets you view Day, Week, and Month availability, compare dates, and ask Lexi for the best time to book.";
+    return "The booking calendar lets you compare day, week, and month availability and work out the best time to book.";
   }
   if (message.includes("bookings") || message.includes("appointment")) {
-    return "I can help with booking questions, available slots, business search, services, contact details, and how booking confirmations work in the app.";
+    return "I can help you with booking questions, open slots, services, contact details, and how confirmation works in the app.";
   }
-  return "I can help with app questions, booking guidance, business search, available slots, services, policies, contact details, and how the booking process works.";
+  return "Ask me about services, open times, booking help, policies, or how the app works, and I'll keep it simple.";
 }
 
 function parseCustomerSlotEntry(value) {
@@ -7235,7 +7242,7 @@ function appendCustomerLexiChat(prompt, fallbackReply = "") {
   const text = String(prompt || "").trim();
   if (!text) return;
   customerReceptionTranscript.push({ role: "user", text });
-  customerReceptionTranscript.push({ role: "ai", text: String(fallbackReply || getReceptionReply(text)).trim() || "I can help you with available slots and booking options." });
+  customerReceptionTranscript.push({ role: "ai", text: String(fallbackReply || getReceptionReply(text)).trim() || "Tell me what you'd like to book and I'll help you narrow it down." });
   renderCustomerReceptionChat();
 }
 
@@ -7244,6 +7251,7 @@ function queueCustomerLexiPrompt(prompt) {
   if (!text) return;
   if (customerReceptionInput) customerReceptionInput.value = text;
   appendCustomerLexiChat(text);
+  updateCustomerChatGuideHint();
 }
 
 function appendCustomerLexiGuidance(text) {
@@ -7251,6 +7259,93 @@ function appendCustomerLexiGuidance(text) {
   if (!message) return;
   customerReceptionTranscript.push({ role: "ai", text: message });
   renderCustomerReceptionChat();
+}
+
+function ensureCustomerLexiPopup() {
+  if (customerLexiPopupOverlay && customerLexiPopupContainer) {
+    return { overlay: customerLexiPopupOverlay, container: customerLexiPopupContainer };
+  }
+  const overlay = document.createElement("div");
+  overlay.className = "home-lexi-popup-overlay";
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.innerHTML = `
+    <section class="home-lexi-popup" role="dialog" aria-modal="true" aria-labelledby="customerLexiPopupTitle">
+      <div class="home-lexi-popup-head">
+        <div>
+          <p class="home-lexi-popup-kicker">Lexi Chat</p>
+          <h3 id="customerLexiPopupTitle">Ask Lexi</h3>
+          <p>Focused booking help, recommendations, and day-to-day customer guidance.</p>
+        </div>
+        <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
+      </div>
+      <div class="home-lexi-popup-body"></div>
+    </section>
+  `;
+  document.body.appendChild(overlay);
+  const container = overlay.querySelector(".home-lexi-popup-body");
+  overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeCustomerLexiPopup();
+  });
+  customerLexiPopupOverlay = overlay;
+  customerLexiPopupContainer = container;
+  return { overlay, container };
+}
+
+function openCustomerLexiPopup() {
+  const customerChatShell = customerReceptionSection?.querySelector(".customer-chat-shell") || null;
+  if (!(customerChatShell instanceof HTMLElement)) {
+    customerReceptionSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+    customerReceptionInput?.focus();
+    return;
+  }
+  const { overlay, container } = ensureCustomerLexiPopup();
+  if (!(container instanceof HTMLElement)) return;
+  if (!customerLexiChatPlaceholder) {
+    customerLexiChatPlaceholder = document.createElement("div");
+    customerLexiChatPlaceholder.className = "home-lexi-chat-placeholder";
+  }
+  if (customerChatShell.parentNode && customerChatShell.parentNode !== container) {
+    customerChatShell.parentNode.insertBefore(customerLexiChatPlaceholder, customerChatShell);
+  }
+  customerChatShell.classList.remove("customer-chat-inline-hidden");
+  customerLexiPopupLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  container.appendChild(customerChatShell);
+  overlay.classList.add("is-open");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("home-lexi-popup-open");
+  customerLexiPopupOpen = true;
+  customerReceptionInput?.focus();
+}
+
+function closeCustomerLexiPopup() {
+  if (!customerLexiPopupOpen) return;
+  const customerChatShell = customerReceptionSection?.querySelector(".customer-chat-shell") || null;
+  if (customerLexiChatPlaceholder?.parentNode && customerChatShell instanceof HTMLElement) {
+    customerLexiChatPlaceholder.parentNode.insertBefore(customerChatShell, customerLexiChatPlaceholder);
+    customerLexiChatPlaceholder.remove();
+  }
+  customerChatShell?.classList.add("customer-chat-inline-hidden");
+  if (customerLexiPopupOverlay) {
+    customerLexiPopupOverlay.classList.remove("is-open");
+    customerLexiPopupOverlay.setAttribute("aria-hidden", "true");
+  }
+  document.body.classList.remove("home-lexi-popup-open");
+  customerLexiPopupOpen = false;
+  if (customerLexiPopupLastFocus instanceof HTMLElement && document.contains(customerLexiPopupLastFocus)) {
+    customerLexiPopupLastFocus.focus();
+  }
+  customerLexiPopupLastFocus = null;
+}
+
+function updateCustomerChatGuideHint() {
+  if (!customerChatGuideHint) return;
+  const salon = getSelectedCustomerSalon();
+  if (!salon) {
+    customerChatGuideHint.textContent = "Choose a business first for more accurate booking guidance.";
+    return;
+  }
+  customerChatGuideHint.textContent = `Lexi is ready to guide bookings, services, and available times for ${salon.name}.`;
 }
 
 function buildCustomerLexiPlannerPrompt(action, payload = {}) {
@@ -10633,6 +10728,7 @@ customerSearchResults?.addEventListener("click", (event) => {
   const salon = getSelectedCustomerSalon();
   if (salon) {
     appendCustomerLexiGuidance(`I've loaded ${salon.name}. Ask me about services, the best time to book, or let me help you choose a slot.`);
+    updateCustomerChatGuideHint();
   }
 });
 
@@ -10643,15 +10739,8 @@ customerReceptionForm?.addEventListener("submit", (event) => {
   customerReceptionTranscript.push({ role: "user", text });
   customerReceptionTranscript.push({ role: "ai", text: getReceptionReply(text) });
   if (customerReceptionInput) customerReceptionInput.value = "";
+  updateCustomerChatGuideHint();
   renderCustomerReceptionChat();
-});
-
-customerLexiPromptButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const prompt = String(button.getAttribute("data-customer-lexi-prompt") || "").trim();
-    if (!prompt) return;
-    queueCustomerLexiPrompt(prompt);
-  });
 });
 
 customerLexiCalendarPrev?.addEventListener("click", () => {
@@ -10690,7 +10779,7 @@ customerLexiAskNextBest?.addEventListener("click", () => {
   const salon = getSelectedCustomerSalon();
   const prompt = buildCustomerLexiPlannerPrompt("next-best", { salonName: salon?.name || "the selected salon" });
   queueCustomerLexiPrompt(prompt);
-  openInteractiveModulePopup("customer_chat");
+  openCustomerLexiPopup();
 });
 
 customerLexiDaySummary?.addEventListener("click", (event) => {
@@ -10709,7 +10798,7 @@ customerLexiDaySummary?.addEventListener("click", (event) => {
   const dateLabel = String(actionButton.getAttribute("data-date-label") || dateKey).trim();
   const prompt = buildCustomerLexiPlannerPrompt(action, { salonName: salon?.name || "the selected salon", dateKey, dateLabel });
   queueCustomerLexiPrompt(prompt);
-  openInteractiveModulePopup("customer_chat");
+  openCustomerLexiPopup();
 });
 
 document.addEventListener("click", async (event) => {
@@ -11610,7 +11699,14 @@ document.addEventListener("click", (event) => {
   if (!(lexiLink instanceof HTMLElement)) return;
   if (user.role !== "customer") return;
   event.preventDefault();
-  openInteractiveModulePopup("customer_chat");
+  openCustomerLexiPopup();
+});
+customerLexiLaunchBtn?.addEventListener("click", () => {
+  openCustomerLexiPopup();
+});
+customerLexiLaunchBookingBtn?.addEventListener("click", () => {
+  queueCustomerLexiPrompt("Help me book this week.");
+  openCustomerLexiPopup();
 });
 subscriberCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("subscriber"));
 subscriberCopilotPopup?.addEventListener("click", (event) => {

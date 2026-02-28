@@ -4928,7 +4928,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     return `Perfect, ${bizName} sounds great. What service would you like, and what day and time would suit you best?`;
   }
   if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !isLexiSalonBeautyQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
-    return "I can help with salon and beauty questions, app help, public business info, and booking availability. I can't share private or personal data in chat, but I can help with anything public-facing.";
+    return "Ask me anything public-facing about salons, services, bookings, or how the app works. I just can't share private or personal data in chat.";
   }
   if (/(find|search|show).*(salon|barber|barbershop|beauty)/.test(qLower)) {
     const locationMatch = q.match(/\b(?:in|near)\s+([a-zA-Z\s'-]{2,40})$/i);
@@ -4973,7 +4973,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       if (found) targetBusiness = found;
     }
     if (!targetBusiness?.id) {
-      return "Absolutely. Tell me the salon, barber, or beauty business name, and I'll check available slots for the day you want.";
+      return "Tell me the salon, barber, or beauty business name and I'll check the best slots for the day you want.";
     }
     const dateKey = resolveLexiDateKeyFromQuestion(qLower);
     if (!dateKey) {
@@ -5044,19 +5044,19 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     return "I can help with today’s revenue/takings, but I need a business context to check booking-based revenue.";
   }
   if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower)) {
-    return `Absolutely. What service would you like to book at ${bizName}, and what day and time would suit you best? Once I have that, I'll check availability and offer the best options.`;
+    return `Lovely. What service would you like at ${bizName}, and what day and time would suit you best? Once I have that, I'll check the best options for you.`;
   }
   if (/(service|services|do you do|what do you offer|treatment)/.test(qLower)) {
-    return `Absolutely. I can help with that. ${bizName} offers services like ${serviceExamples}. Tell me what result you're after, and I'll suggest the best option.`;
+    return `${bizName} offers services like ${serviceExamples}. Tell me the result you're after and I'll point you to the best option.`;
   }
   if (/(price|cost|how much|pricing)/.test(qLower)) {
-    return "Absolutely. I can help with pricing guidance. Prices can vary depending on the service, hair length or density, and time needed, so I won't guess if exact pricing isn't listed. Tell me the service you're considering and I'll explain what usually affects the price.";
+    return "Prices can vary depending on the service, hair length or density, and the time needed, so I won't guess if exact pricing isn't listed. Tell me what you're considering and I'll explain what usually affects the price.";
   }
   if (/(policy|deposit|late|cancellation|cancelation|no show|no-show|grace period)/.test(qLower)) {
-    return "Of course. I can explain booking policies clearly. Most salons have policies for deposits, late arrivals, cancellations, and no-shows. Tell me which one you'd like to check and I'll walk you through it.";
+    return "Most salons have policies around deposits, late arrivals, cancellations, and no-shows. Tell me which one you want to check and I'll walk you through it clearly.";
   }
   if (/(don'?t know what i want|not sure what i want|unsure what i want|recommend.*service|what should i get)/.test(qLower)) {
-    return "Absolutely. I can help you choose. Tell me your goal (for example shape, colour, repair, smoother hair, or lower maintenance), how much upkeep you want, and any recent colour or chemical history, and I'll suggest a few strong options.";
+    return "Let's narrow it down. Tell me your goal, how much upkeep you want, and any recent colour or chemical history, and I'll suggest a few strong options.";
   }
   if (/(open|opening hours|hours|closing time|when are you open)/.test(qLower)) {
     return `I can help with opening-hours questions for ${bizName} if the business profile includes them. If you don’t see the hours listed yet, I can still help you plan the best day/time to book.`;
@@ -5068,13 +5068,13 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     return "I can give general beauty and aftercare guidance, but I can’t give medical advice. If you describe the treatment type and what happened, I can suggest safe next steps and when to contact a qualified professional.";
   }
   if (/(how does this app work|how to use|dashboard|lexi|subscriber|customer|admin|what can this app do|app features|how does lexi work)/.test(qLower)) {
-    return "Absolutely. I can explain the app. Lexi can help with booking support, salon questions, and dashboard workflows depending on your role (customer, subscriber, or admin). I won't share personal customer data, but I can explain features, modules, and how to use them clearly.";
+    return "Lexi handles booking support, salon questions, and front-desk guidance, while the app gives different tools to customers, subscribers, and admins. If you want, tell me which part you want explained and I'll keep it simple.";
   }
   if (/(weather|forecast|temperature)/.test(qLower)) {
     return "I don’t have live weather lookup in free fallback mode, but if you tell me your city, I can suggest how weather usually affects walk-ins, cancellations, and demand planning for salons and barbershops.";
   }
 
-  return "I can help with salon and beauty questions, booking guidance, product and aftercare basics, and how the app works. If you're booking, just tell me the service, date, and time you want.";
+  return "Tell me what you need, and I'll keep it simple. If you're booking, just send the service, date, and time you want.";
 }
 
 async function buildPublicLexiFallbackReplySafe(message, business, history = []) {
@@ -5099,6 +5099,7 @@ Core objectives:
 - greet customers professionally
 - understand what service or result they want
 - answer salon, barber, beauty, and booking questions clearly
+- answer questions about hair salons, barbershops, beauty salons, and specific treatments with practical confidence
 - guide customers toward the best treatment for their needs
 - check live availability using tools
 - offer 2-3 suitable appointment times
@@ -5113,6 +5114,7 @@ Expertise:
 - balayage, ombre, highlights, root work, toner, colour correction
 - keratin, smoothing, blow dries, extensions, bridal styling
 - brows, lashes, waxing, facials, beauty treatments
+- beauty treatment suitability, timing, maintenance, and aftercare
 - face shapes, haircut suitability, maintenance expectations
 - hair textures and curl patterns from 1A to 4C
 - aftercare and premium salon product guidance
@@ -5124,6 +5126,12 @@ Consultation rules:
 - Take control of the booking flow without overwhelming the customer.
 - Answer the user's actual question first, then guide the next step.
 - Avoid robotic wording and avoid saying "I think" or "maybe" unless real uncertainty exists.
+- Write like a real receptionist speaking to one customer, not like a help centre article.
+- Use contractions naturally when they fit.
+- Prefer warm, specific phrasing over generic assistant language.
+- Vary sentence openings so replies do not sound templated.
+- If the customer is casual, match that warmth while staying polished.
+- On simple questions, sound effortless and direct rather than overly structured.
 
 Booking flow protocol:
 - confirm the service first
@@ -5146,6 +5154,7 @@ Edge-case handling:
 - if they ask price, use profile or tool-backed pricing only; if exact pricing is unavailable, explain what affects the final price
 - if they are unsure, guide them with smart consultation questions
 - if they want to cancel or reschedule, explain the next step and any applicable policy
+- if they ask broader salon, barber, beauty, or treatment questions that do not require private data, answer them directly instead of forcing the chat back to booking
 
 Hard constraints:
 - this public Lexi chat may use public business information, open availability, and booking tools only
@@ -5163,7 +5172,9 @@ Voice and tone:
 - speak naturally in short clear sentences
 - sound like a polished salon receptionist and beauty consultant
 - be confident and decisive without sounding robotic or pushy
-- no long preambles and no generic capability dump on simple greetings`;
+- no long preambles and no generic capability dump on simple greetings
+- avoid phrases like "I can help with", "absolutely", "certainly", or "please type your question" unless they genuinely fit
+- when suggesting the next step, make it feel like a natural continuation of the conversation`;
 }
 
 function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
@@ -5306,7 +5317,7 @@ async function buildSubscriberCopilotResponse({ question, snapshot }) {
         {
           role: "system",
           content:
-            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (usually 1-2 short sentences, maximum 4 unless asked for depth), sound like a premium receptionist and experienced salon owner/operator (not a report engine), and ask at most one follow-up question when needed. Use clear everyday language. No long preambles. Do not repeat capability lists in simple greetings. Be strong on pricing/policy explanations and suggest tasteful upsells only when clearly relevant. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and natural. You can answer broad questions like a ChatGPT-style assistant, including hair salon, barbershop, beauty salon, treatment, operations, pricing, staffing, cancellation, finance, and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (usually 1-2 short sentences, maximum 4 unless asked for depth), sound like a premium receptionist and experienced salon owner/operator (not a report engine), and ask at most one follow-up question when needed. Use clear everyday language. No long preambles. Do not repeat capability lists in simple greetings. Be strong on pricing, policy, staffing, revenue, and operational guidance when relevant, and suggest tasteful upsells only when clearly relevant. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
         },
         {
           role: "user",
@@ -6890,7 +6901,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
     if (!business && !canUseOpenAi) {
       return res.json({
-        reply: "I can help with that. Tell me the salon, barber, or beauty business name (or the area), and I’ll look for subscribed businesses and available slots.",
+        reply: "Tell me the salon, barber, or beauty business name, or just send the area you want, and I'll look for subscribed businesses and available slots.",
         fallback: true,
         fallbackMode: isOpenAiQuotaCircuitActive() ? "quota" : "local"
       });
@@ -6903,21 +6914,21 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         if (matches.length) {
           const summary = matches.slice(0, 4).map((row) => `${row.name} (${row.city})`).join(" | ");
           return res.json({
-            reply: `I found ${matches.length} subscribed business${matches.length === 1 ? "" : "es"} matching "${userMessage}": ${summary}. Tell me which one you want and what day/date, and I’ll check available slots.`
+            reply: `I found ${matches.length} subscribed business${matches.length === 1 ? "" : "es"} matching "${userMessage}": ${summary}. Tell me which one you want and what day or date, and I'll check available slots.`
           });
         }
         return res.json({
-          reply: `I couldn't find a subscribed business matching "${userMessage}" right now. If you want, tell me the town/city and I’ll search nearby salons, barbers, or beauty businesses.`
+          reply: `I couldn't find a subscribed business matching "${userMessage}" right now. If you want, tell me the town or city and I'll search nearby salons, barbers, or beauty businesses.`
         });
       }
       const looksFinderOrAvailability = /(find|search|salon|barber|beauty|slot|availability|available|free space|book\b|booking|appointment)/i.test(userMessageLower);
       if (looksFinderOrAvailability) {
         return res.json({
-          reply: "I can help with that. First, tell me the business name (for example SLH Cuts) or the area you want, and I’ll look for subscribed businesses and available slots."
+          reply: "Start with the business name, for example SLH Cuts, or the area you want, and I'll look for subscribed businesses and available slots."
         });
       }
       return res.json({
-        reply: "I can help with app questions and salon/barber/beauty guidance right away. If you want availability or booking help, tell me a business name or location and I’ll search for subscribed businesses."
+        reply: "I can help with app questions and salon, barber, or beauty guidance right away. If you want availability or booking help, tell me a business name or location and I'll search for subscribed businesses."
       });
     }
     if (!canUseOpenAi) {
@@ -7277,5 +7288,6 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log(`Background queues: ${jobRuntime?.enabled ? "enabled (Redis)" : "inline fallback"}`);
   });
 }
+
 
 

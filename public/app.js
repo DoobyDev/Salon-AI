@@ -17,7 +17,9 @@ const heroLexiBookingsCount = document.getElementById("heroLexiBookingsCount");
 const heroLexiBookingsRevenue = document.getElementById("heroLexiBookingsRevenue");
 const heroLexiSuggestedPrompt = document.getElementById("heroLexiSuggestedPrompt");
 const heroLexiPromptHint = document.getElementById("heroLexiPromptHint");
-const lexiPromptButtons = Array.from(document.querySelectorAll(".lexi-prompt-btn"));
+const homeLexiLaunchBtn = document.getElementById("homeLexiLaunchBtn");
+const homeLexiLaunchBookingBtn = document.getElementById("homeLexiLaunchBookingBtn");
+const lexiChatGuideHint = document.getElementById("lexiChatGuideHint");
 const lexiBookingGuideNext = document.getElementById("lexiBookingGuideNext");
 const lexiGuideStepService = document.getElementById("lexiGuideStepService");
 const lexiGuideStepDate = document.getElementById("lexiGuideStepDate");
@@ -160,23 +162,9 @@ const homeDemoDisplayValues = {
   targetPct: 0
 };
 
-const CHATBOT_WELCOME_MESSAGE = "Hi I'm Lexi, how can I help you today?";
+const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi. What are we thinking today: a booking, a service question, or a bit of advice?";
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
-const DEFAULT_LEXI_PROMPTS = [
-  {
-    label: "Book this week",
-    prompt: "I want to book an appointment this week."
-  },
-  {
-    label: "Choose a service",
-    prompt: "What service would you recommend for me?"
-  },
-  {
-    label: "Check times",
-    prompt: "Can you check available times for me?"
-  }
-];
 const GENERIC_SERVICE_KEYWORDS = [
   "haircut",
   "cut and finish",
@@ -631,55 +619,6 @@ function getLexiGuideCurrentStep() {
   return "complete";
 }
 
-function setLexiPromptButton(button, label, prompt) {
-  if (!(button instanceof HTMLElement)) return;
-  button.textContent = label;
-  button.setAttribute("data-lexi-prompt", prompt);
-}
-
-function renderLexiPromptButtons() {
-  const currentBusiness = getSelectedBusinessRecord();
-  const slots = Array.isArray(currentBusiness?.availableSlots) ? currentBusiness.availableSlots : [];
-  const topServices = Array.isArray(currentBusiness?.services) ? currentBusiness.services.slice(0, 3) : [];
-  const step = getLexiGuideCurrentStep();
-  let prompts = DEFAULT_LEXI_PROMPTS;
-
-  if (selectedBusinessId && step === "service" && topServices.length) {
-    prompts = topServices.map((service) => ({
-      label: service.name,
-      prompt: `I want to book ${service.name}.`
-    }));
-  } else if (selectedBusinessId && (step === "date" || step === "time") && slots.length) {
-    prompts = slots.slice(0, 3).map((slot) => ({
-      label: slot,
-      prompt: `Book ${lexiBookingGuideState.service || "an appointment"} on ${slot}.`
-    }));
-  } else if (selectedBusinessId && step === "details") {
-    prompts = [
-      { label: "Share name", prompt: "My name is " },
-      { label: "Share phone", prompt: "My phone number is " },
-      { label: "Share email", prompt: "My email is " }
-    ];
-  } else if (selectedBusinessId && step === "confirm") {
-    prompts = [
-      { label: "Confirm booking", prompt: "Please confirm this booking." },
-      { label: "Repeat details", prompt: "Please repeat my booking details." },
-      { label: "Add recommendation", prompt: "Do you recommend an add-on for this booking?" }
-    ];
-  } else if (selectedBusinessId && step === "complete") {
-    prompts = [
-      { label: "Book again", prompt: "I want to make another booking." },
-      { label: "Aftercare advice", prompt: "Can you give me aftercare advice for my appointment?" },
-      { label: "Change booking", prompt: "I need to change my booking." }
-    ];
-  }
-
-  lexiPromptButtons.forEach((button, index) => {
-    const nextPrompt = prompts[index] || DEFAULT_LEXI_PROMPTS[index] || DEFAULT_LEXI_PROMPTS[0];
-    setLexiPromptButton(button, nextPrompt.label, nextPrompt.prompt);
-  });
-}
-
 function renderLexiBookingGuide() {
   const currentBusiness = getSelectedBusinessRecord();
   const nextStep = getLexiGuideCurrentStep();
@@ -726,6 +665,23 @@ function renderLexiBookingGuide() {
       lexiBookingGuideNext.textContent = "Booking confirmed. Lexi can help with changes, aftercare, or another visit.";
     }
   }
+  if (lexiChatGuideHint) {
+    if (!selectedBusinessId) {
+      lexiChatGuideHint.textContent = "Choose a business first, then Lexi can guide the booking with better recommendations.";
+    } else if (nextStep === "service") {
+      lexiChatGuideHint.textContent = `Tell Lexi the service you want at ${selectedLabel}.`;
+    } else if (nextStep === "date") {
+      lexiChatGuideHint.textContent = "Share the day you want and Lexi will narrow the booking.";
+    } else if (nextStep === "time") {
+      lexiChatGuideHint.textContent = "Tell Lexi the time that suits you, or pick one of the suggested slots.";
+    } else if (nextStep === "details") {
+      lexiChatGuideHint.textContent = "Lexi now needs your name and contact details to finish the request.";
+    } else if (nextStep === "confirm") {
+      lexiChatGuideHint.textContent = "Ask Lexi to confirm the appointment or repeat the booking details.";
+    } else {
+      lexiChatGuideHint.textContent = "Booking complete. Lexi can help with aftercare, changes, or another appointment.";
+    }
+  }
 
   const steps = [
     { key: "service", node: lexiGuideStepService, complete: Boolean(selectedBusinessId && lexiBookingGuideState.service) },
@@ -741,7 +697,6 @@ function renderLexiBookingGuide() {
     node.classList.toggle("is-active", !complete && nextStep === key);
   });
 
-  renderLexiPromptButtons();
 }
 
 function resetLexiBookingGuide(business = null) {
@@ -1515,6 +1470,7 @@ function openHomeLexiPopup() {
   if (frontdeskChatShell.parentNode && frontdeskChatShell.parentNode !== container) {
     frontdeskChatShell.parentNode.insertBefore(homeLexiChatPlaceholder, frontdeskChatShell);
   }
+  frontdeskChatShell.classList.remove("lexi-chat-inline-hidden");
   homeLexiPopupLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   container.appendChild(frontdeskChatShell);
   overlay.classList.add("is-open");
@@ -1530,6 +1486,7 @@ function closeHomeLexiPopup() {
     homeLexiChatPlaceholder.parentNode.insertBefore(frontdeskChatShell, homeLexiChatPlaceholder);
     homeLexiChatPlaceholder.remove();
   }
+  frontdeskChatShell?.classList.add("lexi-chat-inline-hidden");
   if (homeLexiPopupOverlay) {
     homeLexiPopupOverlay.classList.remove("is-open");
     homeLexiPopupOverlay.setAttribute("aria-hidden", "true");
@@ -1581,19 +1538,20 @@ heroLexiAskBtn?.addEventListener("click", () => {
   openHomeLexiPopup();
 });
 
+homeLexiLaunchBtn?.addEventListener("click", () => {
+  openHomeLexiPopup();
+});
+
 heroLexiBookBtn?.addEventListener("click", () => {
   chatInput.value = "I want to book an appointment this week.";
   openHomeLexiPopup();
   setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
 });
 
-lexiPromptButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const prompt = String(button.getAttribute("data-lexi-prompt") || "").trim();
-    if (!prompt || !chatInput) return;
-    chatInput.value = prompt;
-    openHomeLexiPopup();
-  });
+homeLexiLaunchBookingBtn?.addEventListener("click", () => {
+  chatInput.value = "I want to book an appointment this week.";
+  openHomeLexiPopup();
+  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
 });
 
 async function loadBookings() {
@@ -1627,7 +1585,7 @@ chatForm.addEventListener("submit", async (event) => {
 
   const thinking = document.createElement("div");
   thinking.className = "msg assistant";
-  thinking.textContent = "Let me check that for you...";
+  thinking.textContent = "Lexi is checking the best next step...";
   chatWindow.appendChild(thinking);
 
   try {

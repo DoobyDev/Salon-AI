@@ -4811,6 +4811,83 @@ body {
   background: linear-gradient(180deg, rgba(13, 20, 37, 0.92), rgba(9, 15, 28, 0.92));
 }
 
+.lexi-chat-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.lexi-chat-head strong {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.lexi-chat-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7cead8;
+}
+
+.lexi-chat-head small {
+  max-width: 240px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.lexi-launch-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  border: 1px solid rgba(124, 234, 216, 0.18);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(13, 20, 37, 0.92), rgba(9, 15, 28, 0.92));
+}
+
+.lexi-launch-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7cead8;
+}
+
+.lexi-launch-panel strong {
+  display: block;
+  margin-top: 0.16rem;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.lexi-launch-panel small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 54ch;
+}
+
+.lexi-launch-actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.lexi-chat-inline-hidden,
+.customer-chat-inline-hidden {
+  display: none !important;
+}
+
 .chat-window {
   min-height: 320px;
   border-radius: 18px;
@@ -4828,6 +4905,32 @@ body {
   min-height: 52px;
   border-radius: 16px;
   padding-inline: 1rem;
+}
+
+.msg {
+  max-width: min(88%, 560px);
+  border-radius: 18px;
+  padding: 0.8rem 0.9rem;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.msg.user {
+  justify-self: end;
+  background:
+    linear-gradient(180deg, rgba(108, 187, 255, 0.22), rgba(71, 127, 191, 0.18));
+  border: 1px solid rgba(107, 180, 255, 0.42);
+  color: #eff7ff;
+}
+
+.msg.assistant {
+  justify-self: start;
+  border: 1px solid rgba(124, 234, 216, 0.24);
+  background:
+    linear-gradient(180deg, rgba(124, 234, 216, 0.08), rgba(255, 255, 255, 0.02));
+  color: #ecf5ff;
+  box-shadow: none;
 }
 
 .lexi-booking-guide {
@@ -4925,6 +5028,116 @@ body {
   .chat-form {
     grid-template-columns: 1fr;
   }
+
+  .lexi-chat-head {
+    flex-direction: column;
+  }
+
+  .lexi-chat-head small {
+    max-width: none;
+  }
+
+  .lexi-launch-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lexi-launch-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+body[data-theme-mode="light"] {
+  background:
+    radial-gradient(circle at top left, rgba(255, 183, 213, 0.22), transparent 30%) !important,
+    radial-gradient(circle at top right, rgba(181, 232, 220, 0.18), transparent 28%) !important,
+    linear-gradient(180deg, #fff8fc 0%, #fffdfd 48%, #f7fbff 100%) !important;
+  color: #24324a !important;
+}
+
+body[data-theme-mode="light"] .topbar,
+body[data-theme-mode="light"] .hero-copy,
+body[data-theme-mode="light"] .hero-media,
+body[data-theme-mode="light"] .dashboard-showcase,
+body[data-theme-mode="light"] .home-business-modules,
+body[data-theme-mode="light"] .join-roles,
+body[data-theme-mode="light"] .role-cta,
+body[data-theme-mode="light"] .frontdesk-section,
+body[data-theme-mode="light"] .privacy-promise,
+body[data-theme-mode="light"] .selected-business,
+body[data-theme-mode="light"] .finder-grid,
+body[data-theme-mode="light"] .search-form,
+body[data-theme-mode="light"] .finder-results,
+body[data-theme-mode="light"] .hero-lexi-calendar-star,
+body[data-theme-mode="light"] .hero-lexi-sell-card,
+body[data-theme-mode="light"] .hero-chat-status,
+body[data-theme-mode="light"] .hero-lexi-privacy-note,
+body[data-theme-mode="light"] .chat-shell,
+body[data-theme-mode="light"] .lexi-launch-panel,
+body[data-theme-mode="light"] .lexi-booking-guide,
+body[data-theme-mode="light"] .home-module-card,
+body[data-theme-mode="light"] .join-card,
+body[data-theme-mode="light"] .impact-card,
+body[data-theme-mode="light"] .booking-flow-card,
+body[data-theme-mode="light"] .stat-chip,
+body[data-theme-mode="light"] .hero-capabilities article,
+body[data-theme-mode="light"] .salon-item,
+body[data-theme-mode="light"] .msg.assistant,
+body[data-theme-mode="light"] .msg.user,
+body[data-theme-mode="light"] .chat-window {
+  background-image: none !important;
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  color: #24324a !important;
+  border-color: rgba(186, 204, 231, 0.78) !important;
+  box-shadow: 0 14px 34px rgba(141, 155, 179, 0.14) !important;
+}
+
+body[data-theme-mode="light"] .chat-window {
+  background:
+    radial-gradient(circle at top right, rgba(255, 207, 226, 0.22), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 252, 255, 0.98)) !important;
+}
+
+body[data-theme-mode="light"] .msg.user {
+  background: linear-gradient(180deg, rgba(231, 242, 255, 0.98), rgba(220, 236, 255, 0.98)) !important;
+  color: #24405f !important;
+  border-color: rgba(142, 184, 228, 0.58) !important;
+}
+
+body[data-theme-mode="light"] .msg.assistant {
+  background: linear-gradient(180deg, rgba(255, 244, 248, 0.98), rgba(250, 252, 255, 0.98)) !important;
+  color: #3d4c64 !important;
+  border-color: rgba(226, 181, 205, 0.46) !important;
+}
+
+body[data-theme-mode="light"] .chat-form input {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #24324a !important;
+  border-color: rgba(186, 204, 231, 0.78) !important;
+}
+
+body[data-theme-mode="light"] .lexi-chat-kicker,
+body[data-theme-mode="light"] .lexi-launch-kicker {
+  color: #b85c86 !important;
+}
+
+body[data-theme-mode="light"] .lexi-chat-head small,
+body[data-theme-mode="light"] .lexi-launch-panel small,
+body[data-theme-mode="light"] .lexi-booking-guide-head small,
+body[data-theme-mode="light"] .booking-flow-card small {
+  color: #5b6d87 !important;
+}
+
+body[data-theme-mode="light"] .hero-copy h1,
+body[data-theme-mode="light"] .lexi-chat-head strong,
+body[data-theme-mode="light"] .lexi-launch-panel strong,
+body[data-theme-mode="light"] .hero-lexi-sell-head strong,
+body[data-theme-mode="light"] .hero-lexi-calendar-star strong,
+body[data-theme-mode="light"] .hero-chat-status strong,
+body[data-theme-mode="light"] .selected-business h3,
+body[data-theme-mode="light"] .selected-business h4 {
+  color: #24324a !important;
 }
 
 

@@ -38,8 +38,8 @@
         <a class="nav-secondary" href="#footerPolicies">Policy</a>
       </nav>
       <div class="auth-actions">
-        <a class="btn btn-ghost" data-open-login-modal href="/auth">LOGIN</a>
-        <a class="btn btn-ghost" href="#frontdesk">ASK LEXI</a>
+        <a class="btn btn-ghost" data-open-login-modal href="/auth">Login</a>
+        <a class="btn" href="#frontdesk">Ask Lexi</a>
       </div>
     </header>
 
@@ -141,25 +141,38 @@
               </article>
             </div>
           </section>
-          <div class="chat-shell">
+          <section class="lexi-launch-panel" aria-label="Open Lexi popup">
+            <div>
+              <p class="lexi-launch-kicker">Popup Experience</p>
+              <strong>Open Lexi in a focused live assistant window.</strong>
+              <small>Ask questions, get recommendations, and move straight into booking without cluttering the page.</small>
+            </div>
+            <div class="lexi-launch-actions">
+              <button class="btn" type="button" id="homeLexiLaunchBtn">Ask Lexi</button>
+              <button class="btn btn-ghost" type="button" id="homeLexiLaunchBookingBtn">Start Booking</button>
+            </div>
+          </section>
+          <div class="chat-shell lexi-chat-inline-hidden">
+            <div class="lexi-chat-head">
+              <div>
+                <p class="lexi-chat-kicker">Live Lexi Conversation</p>
+                <strong>Ask questions, get recommendations, and move straight into booking.</strong>
+              </div>
+              <small id="lexiChatGuideHint">Lexi works best when you tell her the service, day, or result you want.</small>
+            </div>
             <div id="chatWindow" class="chat-window" aria-live="polite"></div>
             <form id="chatForm" class="chat-form">
               <label class="sr-only" for="chatInput">Message AI receptionist</label>
               <input
                 id="chatInput"
                 type="text"
-                placeholder="Example: Can you check availability for a skin fade tomorrow at 3 PM?"
+                placeholder="Example: I want balayage next Thursday afternoon"
                 autocomplete="off"
                 required
               />
                 <button class="btn" type="submit">Ask Lexi</button>
               <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
             </form>
-            <div class="lexi-quick-prompts" aria-label="Quick Lexi prompts">
-              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="I want to book an appointment this week.">Book this week</button>
-              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="What service would you recommend for me?">Choose a service</button>
-              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="Can you check available times for me?">Check times</button>
-            </div>
             <section class="lexi-booking-guide" aria-label="Guided Lexi booking flow">
               <div class="lexi-booking-guide-head">
                 <div>
