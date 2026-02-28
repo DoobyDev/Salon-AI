@@ -31,6 +31,7 @@ const dashTitle = document.getElementById("dashTitle");
 const dashUser = document.getElementById("dashUser");
 const dashRoleHint = document.getElementById("dashRoleHint");
 const dashActionStatus = document.getElementById("dashActionStatus");
+const dashboardOverviewSection = document.getElementById("dashboardOverviewSection");
 const dashIdentityBlock = dashTitle?.parentElement || null;
 const frontDeskSection = document.getElementById("frontDeskSection");
 const customerSearchSection = document.getElementById("customerSearchSection");
@@ -979,6 +980,7 @@ if (currentRole === "subscriber") {
 }
 
 hideSection(dashIdentityBlock);
+dashboardOverviewSection?.classList.add("actions-only");
 
 function headers() {
   return {
@@ -2078,6 +2080,48 @@ function hideSection(sectionEl) {
 function showSection(sectionEl) {
   if (sectionEl) {
     sectionEl.style.display = "";
+  }
+}
+
+function isPopupOnlyBusinessModuleKey(moduleKey) {
+  return [
+    "operations",
+    "crm",
+    "client_retention",
+    "commercial",
+    "offers_packages",
+    "revenue",
+    "profitability",
+    "finance_targets"
+  ].includes(String(moduleKey || "").trim());
+}
+
+function isPopupMountedBusinessSection(sectionEl) {
+  return sectionEl instanceof HTMLElement && sectionEl.classList.contains("module-popup-mounted");
+}
+
+function renderPopupOnlyBusinessModule(moduleKey) {
+  switch (String(moduleKey || "").trim()) {
+    case "operations":
+      renderOperationsInsights();
+      break;
+    case "crm":
+    case "client_retention":
+      renderCrmSegments();
+      break;
+    case "commercial":
+    case "offers_packages":
+      renderCommercialControls();
+      break;
+    case "revenue":
+      renderRevenueAttribution();
+      break;
+    case "profitability":
+    case "finance_targets":
+      renderProfitabilitySummary();
+      break;
+    default:
+      break;
   }
 }
 
@@ -4631,6 +4675,9 @@ function openInteractiveModulePopup(moduleKey) {
   mod.section.style.display = "";
   mod.section.classList.add("module-popup-mounted");
   body?.appendChild(mod.section);
+  if (isPopupOnlyBusinessModuleKey(mod.key)) {
+    renderPopupOnlyBusinessModule(mod.key);
+  }
 
   const close = () => {
     if (typeof closeModulePopupActive !== "function") return;
@@ -4711,6 +4758,11 @@ function focusModuleByKey(moduleKey) {
   const found = modules.find((mod) => mod.key === key);
   if (!found) return;
   activeModuleKey = found.key;
+  if (isPopupOnlyBusinessModuleKey(found.key)) {
+    applyModuleVisibility();
+    openInteractiveModulePopup(found.key);
+    return;
+  }
   applyModuleVisibility();
   found.section?.classList.remove("panel-focus");
   void found.section?.offsetWidth;
@@ -4956,7 +5008,8 @@ function applyModuleVisibility() {
   const active = sectionModules.find((mod) => mod.key === activeModuleKey) || sectionModules[0];
   activeModuleKey = active.key;
   sectionModules.forEach((mod) => {
-    if (mod.key === active.key || isPinnedBusinessModule(mod)) showSection(mod.section);
+    if (isPopupOnlyBusinessModuleKey(mod.key)) hideSection(mod.section);
+    else if (mod.key === active.key || isPinnedBusinessModule(mod)) showSection(mod.section);
     else hideSection(mod.section);
   });
   renderModuleNavigator();
@@ -9763,8 +9816,8 @@ async function markRebookingPromptSent(payload) {
 
 function renderOperationsInsights() {
   if (!operationsInsightsSection || !noShowRiskList || !rebookingPromptList) return;
-  if (!canManageBusinessModules()) {
-    operationsInsightsSection.style.display = "none";
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(operationsInsightsSection)) {
+    hideSection(operationsInsightsSection);
     return;
   }
   showSection(operationsInsightsSection);
@@ -9813,8 +9866,8 @@ function renderOperationsInsights() {
 
 function renderCrmSegments() {
   if (!crmSection || !crmSegmentsList) return;
-  if (!canManageBusinessModules()) {
-    crmSection.style.display = "none";
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(crmSection)) {
+    hideSection(crmSection);
     return;
   }
   showSection(crmSection);
@@ -9881,8 +9934,8 @@ function setCommercialStatus(message, isError = false) {
 
 function renderCommercialControls() {
   if (!commercialSection || !commercialSummaryCards || !membershipList || !packageList || !giftCardList) return;
-  if (!canManageBusinessModules()) {
-    commercialSection.style.display = "none";
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(commercialSection)) {
+    hideSection(commercialSection);
     return;
   }
   showSection(commercialSection);
@@ -10041,8 +10094,8 @@ function toChannelLabel(channel) {
 
 function renderRevenueAttribution() {
   if (!revenueAttributionSection || !revenueSummaryCards || !revenueChannelList) return;
-  if (!canManageBusinessModules()) {
-    revenueAttributionSection.style.display = "none";
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(revenueAttributionSection)) {
+    hideSection(revenueAttributionSection);
     return;
   }
   showSection(revenueAttributionSection);
@@ -10135,8 +10188,8 @@ function setProfitabilityStatus(message, isError = false) {
 
 function renderProfitabilitySummary() {
   if (!profitabilitySection || !profitSummaryCards || !profitPayrollList) return;
-  if (!canManageBusinessModules()) {
-    profitabilitySection.style.display = "none";
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(profitabilitySection)) {
+    hideSection(profitabilitySection);
     return;
   }
   showSection(profitabilitySection);
