@@ -3450,6 +3450,85 @@ function buildLexiAvatarConfig(scope = "public") {
   };
 }
 
+function getOptionalAuth(req) {
+  const header = String(req.headers.authorization || "");
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (!token) return null;
+  try {
+    return jwt.verify(token, jwtSecret);
+  } catch {
+    return null;
+  }
+}
+
+function buildLexiRealtimeInstructions({ scope, business }) {
+  if (scope === "subscriber" || scope === "admin") {
+    const businessName = String(business?.name || "the salon business").trim();
+    return [
+      `You are Lexi, the live salon business copilot for ${businessName}.`,
+      "Speak like a polished salon manager: warm, concise, practical, and commercially aware.",
+      "Help with pricing, staffing, diary flow, cancellations, finance, customer communication, and daily business decisions.",
+      "Do not reveal private customer data, secrets, payment credentials, or internal security details.",
+      "When the user asks for operational advice, answer directly first and then suggest the clearest next action.",
+      "Keep voice replies short and natural."
+    ].join(" ");
+  }
+  return buildPublicLexiSystemPrompt(business);
+}
+
+async function resolveLexiRealtimeBusiness({ scope, auth, businessId }) {
+  const normalizedScope = ["public", "customer", "subscriber", "admin"].includes(scope) ? scope : "public";
+  const requestedBusinessId = String(businessId || "").trim();
+  let targetBusinessId = "";
+
+  if ((normalizedScope === "subscriber" || normalizedScope === "admin") && auth) {
+    if (auth.role === "subscriber") {
+      targetBusinessId = String(auth.businessId || "").trim();
+    } else if (auth.role === "admin") {
+      targetBusinessId = requestedBusinessId;
+    }
+  } else {
+    targetBusinessId = requestedBusinessId;
+  }
+
+  if (!targetBusinessId) return null;
+  return prisma.business.findFirst({
+    where: {
+      id: targetBusinessId,
+      subscription: { is: { status: { in: ["active", "trialing", "trial", "past_due"] } } }
+    },
+    include: { services: true, subscription: true }
+  });
+}
+
+async function createOpenAiRealtimeClientSecret({ instructions, model, voice }) {
+  const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${openAiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      session: {
+        type: "realtime",
+        model,
+        instructions,
+        audio: {
+          output: {
+            voice
+          }
+        }
+      }
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = String(data?.error?.message || data?.message || "Failed to create OpenAI Realtime client secret.").trim();
+    throw new Error(message);
+  }
+  return data;
+}
+
 app.get("/api/lexi/avatar-config", (_req, res) => {
   const scope = String(_req.query.scope || "public").trim().toLowerCase();
   res.json(buildLexiAvatarConfig(scope));
@@ -3458,15 +3537,65 @@ app.get("/api/lexi/avatar-config", (_req, res) => {
 app.post("/api/lexi/realtime/session", async (req, res) => {
   const scope = String(req.body?.scope || "public").trim().toLowerCase();
   const config = buildLexiAvatarConfig(scope);
-  return res.status(202).json({
-    ok: true,
-    sessionReady: false,
-    config,
-    message: config.sessionEndpointReady
-      ? "Lexi realtime prerequisites are configured. The remaining step is brokering provider sessions and streaming them into the popup."
-      : "Lexi realtime session scaffolding is in place. Connect the provider keys and realtime model to activate live voice and avatar mode.",
-    nextStep: "provider_session_broker"
-  });
+  const auth = getOptionalAuth(req);
+
+  if ((scope === "subscriber" || scope === "admin") && !auth) {
+    return res.status(401).json({ error: "Sign in to start a subscriber Lexi realtime session." });
+  }
+  if (scope === "subscriber" && auth?.role !== "subscriber" && auth?.role !== "admin") {
+    return res.status(403).json({ error: "Subscriber Lexi realtime is only available to subscriber or admin users." });
+  }
+  if (scope === "admin" && auth?.role !== "admin") {
+    return res.status(403).json({ error: "Admin Lexi realtime is only available to admin users." });
+  }
+
+  const realtimeModel = String(process.env.OPENAI_REALTIME_MODEL || "").trim();
+  if (!openai || !realtimeModel) {
+    return res.status(202).json({
+      ok: true,
+      sessionReady: false,
+      config,
+      message: "Realtime voice is not active yet. Add OPENAI_API_KEY and OPENAI_REALTIME_MODEL on the server to mint a live session.",
+      nextStep: "configure_openai_realtime"
+    });
+  }
+
+  try {
+    const business = await resolveLexiRealtimeBusiness({
+      scope,
+      auth,
+      businessId: req.body?.businessId
+    });
+    const voice = String(process.env.LEXI_REALTIME_VOICE || "marin").trim();
+    const instructions = buildLexiRealtimeInstructions({ scope, business });
+    const sessionData = await createOpenAiRealtimeClientSecret({
+      instructions,
+      model: realtimeModel,
+      voice
+    });
+
+    return res.json({
+      ok: true,
+      sessionReady: Boolean(sessionData?.client_secret?.value),
+      config,
+      session: {
+        provider: "openai",
+        type: "realtime",
+        model: realtimeModel,
+        voice,
+        clientSecret: String(sessionData?.client_secret?.value || ""),
+        expiresAt: sessionData?.client_secret?.expires_at || null,
+        sessionId: String(sessionData?.id || "")
+      },
+      message: "Lexi realtime session is ready. The next client step is opening the WebRTC connection and attaching microphone audio.",
+      nextStep: "connect_client_webrtc"
+    });
+  } catch (error) {
+    return res.status(502).json({
+      error: error instanceof Error ? error.message : "Unable to create a Lexi realtime session right now.",
+      config
+    });
+  }
 });
 
 app.post("/api/auth/register/subscriber", authLimiter, async (req, res) => {

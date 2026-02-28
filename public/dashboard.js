@@ -289,6 +289,8 @@ let customerLexiPopupContainer = null;
 let customerLexiChatPlaceholder = null;
 let customerLexiPopupLastFocus = null;
 let customerLexiAvatarConfigPromise = null;
+let customerLexiRealtimeSessionPromise = null;
+let customerLexiRealtimeSession = null;
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -7317,9 +7319,7 @@ function ensureCustomerLexiPopup() {
   document.body.appendChild(overlay);
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
-  overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", () => {
-    setDashboardStatus("Voice avatar mode will activate here once a provider is connected.", false, 2200);
-  });
+  overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", startCustomerLexiVoicePreparation);
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeCustomerLexiPopup();
   });
@@ -7356,6 +7356,34 @@ async function loadCustomerLexiAvatarConfig() {
   return customerLexiAvatarConfigPromise;
 }
 
+async function requestCustomerLexiRealtimeSession() {
+  if (customerLexiRealtimeSessionPromise) return customerLexiRealtimeSessionPromise;
+  const requestHeaders = {
+    "Content-Type": "application/json"
+  };
+  if (token) requestHeaders.Authorization = `Bearer ${token}`;
+  customerLexiRealtimeSessionPromise = fetch("/api/lexi/realtime/session", {
+    method: "POST",
+    headers: requestHeaders,
+    body: JSON.stringify({
+      scope: "customer",
+      businessId: selectedCustomerSalonId || ""
+    })
+  })
+    .then(async (response) => {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(String(data?.error || `Realtime session request failed: ${response.status}`).trim());
+      }
+      customerLexiRealtimeSession = data;
+      return data;
+    })
+    .finally(() => {
+      customerLexiRealtimeSessionPromise = null;
+    });
+  return customerLexiRealtimeSessionPromise;
+}
+
 async function hydrateCustomerLexiAvatarPanel() {
   if (!customerLexiPopupOverlay) return;
   setCustomerLexiAvatarPanelState(
@@ -7377,8 +7405,8 @@ async function hydrateCustomerLexiAvatarPanel() {
   if (modeChip) modeChip.textContent = config.realtimeEnabled ? "Voice + booking" : "Text + booking";
   if (providerChip) providerChip.textContent = `Avatar ${config.providerLabel || config.provider || "pending"}`;
   if (readyChip) {
-    readyChip.textContent = config.avatarEnabled ? "Avatar ready" : "Avatar pending";
-    readyChip.classList.toggle("is-live", Boolean(config.avatarEnabled));
+    readyChip.textContent = config.sessionEndpointReady ? "Realtime ready" : (config.avatarEnabled ? "Avatar ready" : "Avatar pending");
+    readyChip.classList.toggle("is-live", Boolean(config.sessionEndpointReady || config.avatarEnabled));
   }
   if (noteNode) {
     noteNode.textContent = salon
@@ -7386,21 +7414,62 @@ async function hydrateCustomerLexiAvatarPanel() {
       : "Pick a business, then ask about services, timings, recommendations, aftercare, or booking help from this popup.";
   }
   if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !config.avatarEnabled;
-    voiceBtn.textContent = config.avatarEnabled ? "Start Voice" : "Voice Coming Soon";
+    voiceBtn.disabled = !config.sessionEndpointReady;
+    voiceBtn.textContent = config.sessionEndpointReady ? "Prepare Voice" : "Voice Coming Soon";
   }
   if (muteBtn instanceof HTMLButtonElement) {
-    muteBtn.disabled = !config.avatarEnabled;
+    muteBtn.disabled = !config.sessionEndpointReady;
   }
   setCustomerLexiAvatarPanelState(
-    config.avatarEnabled ? "idle" : "speaking",
-    config.avatarEnabled
-      ? "Lexi is ready for live customer conversation and booking guidance."
-      : "Text booking mode is live now. This popup is already prepared for voice and avatar streaming.",
-    config.avatarEnabled
-      ? "Customers will be able to speak naturally with Lexi here and move straight into booking."
-      : "The customer flow stays simple: one popup, one assistant, with voice and avatar added into the same surface later."
+    config.sessionEndpointReady ? "idle" : "speaking",
+    config.sessionEndpointReady
+      ? "Lexi can prepare a live realtime voice session from this popup."
+      : "Text booking mode is live now. Add realtime server config to activate live voice from this popup.",
+    config.sessionEndpointReady
+      ? "Press Prepare Voice and the popup will request a brokered Lexi session for this business context."
+      : "The customer flow stays simple: one popup, one assistant, with voice added into the same surface once the server can mint realtime sessions."
   );
+}
+
+async function startCustomerLexiVoicePreparation() {
+  const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
+  try {
+    if (voiceBtn instanceof HTMLButtonElement) {
+      voiceBtn.disabled = true;
+      voiceBtn.textContent = "Preparing...";
+    }
+    setCustomerLexiAvatarPanelState(
+      "thinking",
+      "Lexi is preparing a realtime voice session.",
+      "Requesting a short-lived client secret from the server."
+    );
+    const data = await requestCustomerLexiRealtimeSession();
+    const readyChip = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarReadyChip");
+    if (readyChip) {
+      readyChip.textContent = data.sessionReady ? "Session ready" : "Session pending";
+      readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
+    }
+    if (voiceBtn instanceof HTMLButtonElement) {
+      voiceBtn.disabled = false;
+      voiceBtn.textContent = data.sessionReady ? "Session Ready" : "Prepare Voice";
+    }
+    setCustomerLexiAvatarPanelState(
+      data.sessionReady ? "listening" : "speaking",
+      data.message || "Lexi voice session updated.",
+      data.sessionReady
+        ? `OpenAI Realtime session ready for ${data.session?.model || "Lexi"} using the ${data.session?.voice || "default"} voice. WebRTC hookup is the next client step.`
+        : "The server responded, but a live session is not ready yet."
+    );
+    setDashActionStatus(data.sessionReady ? "Lexi voice session prepared." : (data.message || "Lexi voice session is not ready yet."), !data.sessionReady, 2600);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to prepare a Lexi voice session right now.";
+    if (voiceBtn instanceof HTMLButtonElement) {
+      voiceBtn.disabled = false;
+      voiceBtn.textContent = "Prepare Voice";
+    }
+    setCustomerLexiAvatarPanelState("speaking", "Lexi could not prepare the voice session.", message);
+    setDashActionStatus(message, true, 3200);
+  }
 }
 
 function openCustomerLexiPopup() {

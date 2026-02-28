@@ -83,8 +83,9 @@ Recommended rollout order:
   - `POST /api/lexi/realtime/session`
 - Current backend behavior is honest scaffolding only:
   - reports provider/realtime readiness
-  - does not fake a live provider session
-  - next real implementation step is provider session brokerage
+  - can now mint an OpenAI Realtime client secret when `OPENAI_API_KEY` and `OPENAI_REALTIME_MODEL` are configured
+  - homepage and customer dashboard popups can now request a live session contract from the server
+  - full client WebRTC/microphone hookup is still the next step
 
 ## Next Steps
 
@@ -92,9 +93,9 @@ Recommended rollout order:
 2. Push any remaining light-mode cleanup if still pending locally.
 3. Decide whether to push the latest Lexi popup/human-tone changes if not already pushed.
 4. Connect a real provider stack into the avatar scaffold:
-   - OpenAI Realtime session brokerage
+   - client-side WebRTC connection to the OpenAI Realtime session
+   - microphone capture and transcript streaming in the popup
    - avatar provider session creation
-   - live mic/transcript handling
    - fallback behavior for unsupported/mobile cases
 
 ## Key Files For Next Session
