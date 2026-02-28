@@ -278,6 +278,8 @@ let adminBusinessOptions = [];
 let customerSalonResults = [];
 let openCopilotPopupRole = "";
 let lastCopilotPopupTrigger = null;
+let businessCopilotPopupHosts = { subscriber: null, admin: null };
+let businessCopilotPopupPlaceholders = { subscriber: null, admin: null };
 let selectedCustomerSalonId = "";
 let customerReceptionTranscript = [];
 let customerLexiCalendarMonthCursor = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -1225,25 +1227,40 @@ function resetCopilotChat(role, introText) {
   appendCopilotChatMessage(role, "assistant", introText);
 }
 
+function ensureBusinessAiPopupHost(role) {
+  const current = businessCopilotPopupHosts[role];
+  if (current instanceof HTMLElement) return current;
+  const host = document.createElement("div");
+  host.className = "copilot-chat-popup-overlay";
+  host.setAttribute("aria-hidden", "true");
+  host.addEventListener("click", (event) => {
+    if (event.target === host) closeBusinessAiChatPopup(role);
+  });
+  businessCopilotPopupHosts[role] = host;
+  return host;
+}
+
 function openBusinessAiChatPopup(role, options = {}) {
   const refs = copilotPopupRefs(role);
   if (!refs.overlay) return;
-  if (refs.overlay.parentElement !== document.body) {
-    document.body.appendChild(refs.overlay);
-  }
-  refs.overlay.hidden = false;
-  refs.overlay.style.setProperty("display", "flex", "important");
-  refs.overlay.style.setProperty("position", "fixed", "important");
-  refs.overlay.style.setProperty("inset", "0", "important");
-  refs.overlay.style.setProperty("z-index", "1400", "important");
-  refs.overlay.style.setProperty("visibility", "visible", "important");
-  refs.overlay.style.setProperty("opacity", "1", "important");
   const popupCard = refs.overlay.querySelector(".copilot-chat-popup");
-  if (popupCard instanceof HTMLElement) {
-    popupCard.style.setProperty("display", "grid", "important");
+  if (!(popupCard instanceof HTMLElement)) return;
+  const host = ensureBusinessAiPopupHost(role);
+  if (!(host instanceof HTMLElement)) return;
+  if (!businessCopilotPopupPlaceholders[role]) {
+    businessCopilotPopupPlaceholders[role] = document.createElement("div");
+    businessCopilotPopupPlaceholders[role].className = "home-lexi-chat-placeholder";
   }
-  refs.overlay.classList.add("is-open");
-  refs.overlay.setAttribute("aria-hidden", "false");
+  const placeholder = businessCopilotPopupPlaceholders[role];
+  if (popupCard.parentNode && popupCard.parentNode !== host) {
+    popupCard.parentNode.insertBefore(placeholder, popupCard);
+  }
+  if (host.parentElement !== document.body) {
+    document.body.appendChild(host);
+  }
+  host.appendChild(popupCard);
+  host.classList.add("is-open");
+  host.setAttribute("aria-hidden", "false");
   document.body.classList.add("home-lexi-popup-open");
   openCopilotPopupRole = role;
   if (options.trigger instanceof HTMLElement) {
@@ -1261,17 +1278,17 @@ function openBusinessAiChatPopup(role, options = {}) {
 function closeBusinessAiChatPopup(role) {
   const refs = copilotPopupRefs(role);
   if (!refs.overlay) return;
-  refs.overlay.classList.remove("is-open");
-  refs.overlay.setAttribute("aria-hidden", "true");
-  refs.overlay.style.removeProperty("display");
-  refs.overlay.style.removeProperty("position");
-  refs.overlay.style.removeProperty("inset");
-  refs.overlay.style.removeProperty("z-index");
-  refs.overlay.style.removeProperty("visibility");
-  refs.overlay.style.removeProperty("opacity");
-  const popupCard = refs.overlay.querySelector(".copilot-chat-popup");
-  if (popupCard instanceof HTMLElement) {
-    popupCard.style.removeProperty("display");
+  const host = businessCopilotPopupHosts[role];
+  const popupCard = (host instanceof HTMLElement ? host.querySelector(".copilot-chat-popup") : null)
+    || refs.overlay.querySelector(".copilot-chat-popup");
+  const placeholder = businessCopilotPopupPlaceholders[role];
+  if (host instanceof HTMLElement) {
+    host.classList.remove("is-open");
+    host.setAttribute("aria-hidden", "true");
+  }
+  if (popupCard instanceof HTMLElement && placeholder?.parentNode) {
+    placeholder.parentNode.insertBefore(popupCard, placeholder);
+    placeholder.remove();
   }
   document.body.classList.remove("home-lexi-popup-open");
   if (openCopilotPopupRole === role) {
