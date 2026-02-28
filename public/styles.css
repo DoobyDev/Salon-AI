@@ -4669,6 +4669,264 @@ body[data-theme-mode="light"] .nav a {
   color: #24324a !important;
 }
 
+/* 2026 product redesign: homepage control-room styling */
+body {
+  background:
+    radial-gradient(circle at top left, rgba(28, 190, 170, 0.14), transparent 32%),
+    radial-gradient(circle at top right, rgba(255, 150, 198, 0.12), transparent 28%),
+    linear-gradient(180deg, #04060b 0%, #09111d 40%, #08101a 100%);
+}
+
+.topbar {
+  width: min(1320px, calc(100vw - 2rem));
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(169, 198, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(7, 12, 21, 0.74);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
+}
+
+.brand {
+  font-family: "Sora", "Manrope", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.nav a,
+.auth-actions a {
+  font-weight: 600;
+}
+
+.control-room-home {
+  width: min(1320px, calc(100vw - 2rem));
+  margin: 1.1rem auto 3rem;
+  gap: 1.15rem;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  gap: 1.1rem;
+  align-items: stretch;
+}
+
+.hero-copy,
+.hero-media,
+.dashboard-showcase,
+.home-business-modules,
+.join-roles,
+.role-cta,
+.frontdesk-section,
+.privacy-promise,
+.selected-business {
+  border-radius: 24px;
+  border: 1px solid rgba(169, 198, 255, 0.12);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+}
+
+.hero-copy {
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(28, 190, 170, 0.12), transparent 34%),
+    radial-gradient(circle at 0% 0%, rgba(255, 150, 198, 0.14), transparent 30%),
+    linear-gradient(165deg, rgba(9, 16, 29, 0.96), rgba(7, 12, 21, 0.92));
+}
+
+.hero-copy h1 {
+  max-width: 12ch;
+  font-size: clamp(2.9rem, 5vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+
+.hero-text {
+  max-width: 58ch;
+  font-size: 1.03rem;
+  line-height: 1.7;
+}
+
+.cta-proof,
+.hero-operator-note,
+.hero-capabilities article,
+.stat-chip {
+  border-radius: 18px;
+}
+
+.hero-capabilities {
+  gap: 0.7rem;
+}
+
+.hero-capabilities article {
+  min-height: 112px;
+  padding: 0.8rem;
+  background: linear-gradient(180deg, rgba(15, 24, 40, 0.92), rgba(11, 18, 31, 0.88));
+}
+
+.hero-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.stat-chip {
+  padding: 0.95rem 1rem;
+  background: linear-gradient(180deg, rgba(16, 24, 40, 0.92), rgba(11, 18, 31, 0.88));
+}
+
+.hero-media {
+  padding: 1.15rem;
+  background:
+    radial-gradient(circle at top right, rgba(124, 234, 216, 0.14), transparent 30%),
+    radial-gradient(circle at top left, rgba(255, 162, 205, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(10, 18, 31, 0.98), rgba(8, 13, 24, 0.94));
+}
+
+.hero-chat-demo .section-header h2 {
+  font-size: 1.65rem;
+  letter-spacing: -0.04em;
+}
+
+.hero-lexi-calendar-star,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.chat-shell {
+  border-radius: 20px;
+}
+
+.hero-lexi-calendar-star {
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(14, 22, 38, 0.92), rgba(9, 15, 28, 0.9));
+}
+
+.hero-lexi-calendar-star-grid article {
+  min-height: 112px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.chat-shell {
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(13, 20, 37, 0.92), rgba(9, 15, 28, 0.92));
+}
+
+.chat-window {
+  min-height: 320px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(124, 234, 216, 0.05), transparent 28%),
+    linear-gradient(180deg, rgba(12, 19, 33, 0.96), rgba(8, 13, 24, 0.94));
+}
+
+.chat-form {
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+}
+
+.chat-form input {
+  min-height: 52px;
+  border-radius: 16px;
+  padding-inline: 1rem;
+}
+
+.lexi-booking-guide {
+  padding: 1rem;
+  border-radius: 20px;
+}
+
+.frontdesk-section {
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 150, 198, 0.1), transparent 24%),
+    linear-gradient(180deg, rgba(10, 17, 30, 0.94), rgba(8, 13, 24, 0.92));
+}
+
+.booking-flow-card {
+  min-height: 92px;
+  padding: 0.9rem;
+  border-radius: 18px;
+}
+
+.finder-grid {
+  padding: 0.95rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(11, 18, 31, 0.88), rgba(8, 13, 24, 0.9));
+}
+
+.search-form,
+.finder-results {
+  border-radius: 20px;
+}
+
+.search-form {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.finder-results {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.salon-item,
+.selected-business {
+  border-radius: 18px;
+}
+
+.selected-business {
+  padding: 1rem 1.05rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(11, 18, 31, 0.92), rgba(8, 13, 24, 0.9));
+}
+
+.dashboard-showcase,
+.home-business-modules,
+.join-roles,
+.role-cta,
+.policy,
+.privacy-promise {
+  padding: 1.25rem;
+  background: linear-gradient(180deg, rgba(10, 17, 30, 0.94), rgba(8, 13, 24, 0.92));
+}
+
+.home-module-grid,
+.join-grid,
+.impact-grid {
+  gap: 0.85rem;
+}
+
+.home-module-card,
+.join-card,
+.impact-card {
+  border-radius: 20px;
+  padding: 1.05rem;
+  background: linear-gradient(180deg, rgba(15, 24, 40, 0.88), rgba(9, 15, 28, 0.88));
+}
+
+.home-module-card {
+  min-height: 180px;
+}
+
+.join-card {
+  min-height: 230px;
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-copy h1 {
+    max-width: none;
+  }
+
+  .chat-form {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 

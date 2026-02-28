@@ -9907,6 +9907,241 @@
         background-image: none !important;
         background-color: rgba(255,255,255,0.96) !important;
       }
+      /* 2026 redesign: unified Lexi operating system */
+      body {
+        background:
+          radial-gradient(circle at top left, rgba(26, 201, 176, 0.14), transparent 30%),
+          radial-gradient(circle at top right, rgba(255, 159, 205, 0.12), transparent 26%),
+          linear-gradient(180deg, #05070d 0%, #08111d 38%, #08101a 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 32px 32px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 75%);
+        opacity: 0.22;
+      }
+
+      .dash {
+        width: min(1320px, calc(100vw - 2rem));
+        margin: 1rem auto 2rem;
+        gap: 1rem;
+      }
+
+      .panel,
+      .module-workspace-body > .panel,
+      .module-card,
+      .module-group,
+      .customer-lexi-card,
+      .customer-lexi-calendar-panel,
+      .customer-lexi-summary-panel,
+      .customer-chat-shell,
+      .workspace-star-panel,
+      .subscription-quick-panel,
+      .hub-command-panel {
+        border-radius: 22px !important;
+        border: 1px solid rgba(164, 196, 255, 0.12) !important;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 36%),
+          linear-gradient(180deg, rgba(12, 19, 33, 0.96), rgba(8, 13, 24, 0.92)) !important;
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
+      }
+
+      .dash-top {
+        padding: 1.25rem 1.3rem !important;
+        border-radius: 26px !important;
+        border: 1px solid rgba(164, 196, 255, 0.14) !important;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.12), transparent 34%),
+          radial-gradient(circle at 0% 0%, rgba(255, 159, 205, 0.1), transparent 26%),
+          linear-gradient(165deg, rgba(11, 18, 31, 0.98), rgba(7, 12, 21, 0.94)) !important;
+      }
+
+      .dash-top h1 {
+        font-family: "Sora", "Manrope", sans-serif;
+        font-size: clamp(2rem, 3vw, 3rem) !important;
+        letter-spacing: -0.05em;
+        line-height: 0.96;
+        max-width: 10ch;
+      }
+
+      .dash-role-hint,
+      #dashUser,
+      #dashActionStatus {
+        max-width: 64ch;
+      }
+
+      .billing-actions {
+        padding: 0.35rem;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .billing-actions .btn,
+      .billing-actions select {
+        border-radius: 14px !important;
+      }
+
+      .workspace-actions {
+        padding: 1.1rem !important;
+      }
+
+      .workspace-actions-head h2,
+      #customerSearchSection h2,
+      #customerReceptionSection h2,
+      #customerLexiCalendarSection h2,
+      #customerSlotsSection h2,
+      #customerHistorySection h2,
+      #customerAnalyticsSection h2 {
+        font-family: "Sora", "Manrope", sans-serif;
+        letter-spacing: -0.035em;
+      }
+
+      .workspace-star-panel {
+        padding: 1rem;
+      }
+
+      .workspace-star-head h3 {
+        font-size: 1.25rem;
+      }
+
+      .workspace-star-grid,
+      .workspace-actions-grid {
+        gap: 0.7rem;
+      }
+
+      .workspace-star-card,
+      .workspace-action-btn {
+        border-radius: 18px;
+      }
+
+      .workspace-star-card {
+        min-height: 120px;
+        padding: 0.85rem;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .workspace-action-btn {
+        min-height: 110px;
+        padding: 0.95rem;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(101, 182, 255, 0.1), transparent 40%),
+          rgba(9, 15, 28, 0.78);
+      }
+
+      .workspace-action-btn strong {
+        font-size: 0.98rem;
+      }
+
+      #moduleNavigatorSection .module-group-grid,
+      #moduleNavigatorSection .module-grid {
+        gap: 0.8rem !important;
+      }
+
+      .module-card {
+        min-height: 170px;
+        padding: 1rem !important;
+      }
+
+      .module-card strong {
+        font-size: 1rem !important;
+        letter-spacing: -0.02em;
+      }
+
+      .module-card .module-card-summary,
+      .module-card small {
+        font-size: 0.8rem !important;
+        line-height: 1.45;
+      }
+
+      .module-card:hover,
+      .workspace-action-btn:hover {
+        transform: translateY(-3px);
+      }
+
+      #customerReceptionSection .customer-chat-shell {
+        padding: 1rem;
+      }
+
+      .customer-chat-box {
+        min-height: 260px;
+        border-radius: 18px;
+      }
+
+      .customer-chat-form input {
+        min-height: 48px;
+        border-radius: 15px;
+      }
+
+      #customerLexiCalendarSection .customer-lexi-calendar-shell {
+        gap: 0.85rem;
+      }
+
+      #customerLexiCalendarSection .customer-lexi-card,
+      #customerLexiCalendarSection .customer-lexi-calendar-panel,
+      #customerLexiCalendarSection .customer-lexi-summary-panel {
+        padding: 1rem;
+      }
+
+      #customerLexiCalendarSection .customer-lexi-card h3 {
+        font-size: 1.4rem;
+        letter-spacing: -0.04em;
+      }
+
+      #customerLexiCalendarSection .customer-lexi-day,
+      #subscriberCalendarSection .calendar-day {
+        border-radius: 16px;
+      }
+
+      #customerSearchSection,
+      #customerReceptionSection,
+      #customerLexiCalendarSection,
+      #customerSlotsSection,
+      #customerHistorySection,
+      #customerAnalyticsSection,
+      #subscriberCalendarSection,
+      #subscriberCopilotSection,
+      #adminCopilotSection,
+      #businessGrowthSection,
+      #subscriberExecutivePulseSection,
+      #moduleNavigatorSection,
+      #subscriberCommandCenterSection,
+      #bookingOperationsSection,
+      #staffRosterSection,
+      #waitlistSection,
+      #profitabilitySection,
+      #revenueAttributionSection,
+      #commercialSection,
+      #crmSection,
+      #operationsInsightsSection,
+      #businessProfileSection,
+      #accountingIntegrationsSection,
+      #socialMediaSection,
+      #subscriberSubscriptionSection {
+        padding: 1.15rem !important;
+      }
+
+      @media (max-width: 900px) {
+        .dash-top h1 {
+          max-width: none;
+        }
+
+        .billing-actions {
+          width: 100%;
+        }
+
+        .workspace-action-btn,
+        .module-card {
+          min-height: auto;
+        }
+      }
     </style>
   </head>
   <body>
@@ -10467,7 +10702,7 @@
 
       <section class="panel dash-top" id="dashboardOverviewSection">
         <div>
-          <h1 id="dashTitle" style="margin:0;">Salon Control Center</h1>
+          <h1 id="dashTitle" style="margin:0;">Lexi Salon Operating System</h1>
           <p id="dashUser" style="margin:0.3rem 0 0;color:var(--muted);"></p>
           <p id="dashRoleHint" class="dash-role-hint"></p>
           <p id="dashActionStatus" class="dash-action-status" aria-live="polite"></p>
@@ -10490,8 +10725,8 @@
       <section class="panel workspace-actions" id="dashboardQuickActionsSection" aria-label="Top workspace actions">
         <div class="workspace-actions-head">
           <div>
-            <h2>Control Center</h2>
-            <p>Open the main parts of the salon fast and keep the day moving.</p>
+            <h2>Business Control</h2>
+            <p>Run the salon from one place with Lexi, the diary, and the business hub working together.</p>
           </div>
           <div class="workspace-actions-meta">
             <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
@@ -10503,8 +10738,8 @@
           <div class="workspace-star-head">
             <div>
               <p class="workspace-star-kicker">Start Here</p>
-              <h3>Diary + Lexi</h3>
-              <p id="workspaceStarSummary">Check the diary, then ask Lexi what needs attention first.</p>
+              <h3>Lexi + Booking Calendar</h3>
+              <p id="workspaceStarSummary">Check the diary, then let Lexi tell you what needs attention, who needs follow-up, and where revenue is exposed.</p>
             </div>
             <div class="workspace-star-actions">
               <button type="button" class="btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
