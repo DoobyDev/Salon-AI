@@ -1231,11 +1231,16 @@ function openBusinessAiChatPopup(role, options = {}) {
   if (refs.overlay.parentElement !== document.body) {
     document.body.appendChild(refs.overlay);
   }
+  refs.overlay.style.display = "flex";
   refs.overlay.classList.add("is-open");
   refs.overlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("home-lexi-popup-open");
   openCopilotPopupRole = role;
   if (options.trigger instanceof HTMLElement) {
     lastCopilotPopupTrigger = options.trigger;
+  }
+  if (typeof options.prompt === "string" && options.prompt.trim()) {
+    setBusinessAiPrompt(role, options.prompt);
   }
   ensureCopilotChatSeed(role);
   if (options.focusInput !== false) {
@@ -1248,6 +1253,8 @@ function closeBusinessAiChatPopup(role) {
   if (!refs.overlay) return;
   refs.overlay.classList.remove("is-open");
   refs.overlay.setAttribute("aria-hidden", "true");
+  refs.overlay.style.display = "";
+  document.body.classList.remove("home-lexi-popup-open");
   if (openCopilotPopupRole === role) {
     openCopilotPopupRole = "";
     if (lastCopilotPopupTrigger instanceof HTMLElement) {
@@ -6240,6 +6247,26 @@ function renderWorkspaceStarPanel() {
       ? `Calendar day filter is active for ${selectedCalendarDateKey}. Ask Lexi for quick actions, rebooking priorities or confirmation follow-up.`
       : "Start with the diary, then ask Lexi for the shortest action plan for bookings, cancellations and confirmations.";
   }
+}
+
+function dashboardLexiPromptForSource(source) {
+  const key = String(source || "").trim().toLowerCase();
+  if (key === "booking_diary") return "Review my booking diary and tell me what needs attention first.";
+  if (key === "daily_workspace") return "What should I focus on today in the business?";
+  if (key === "executive_pulse") return "Give me a simple executive summary for today, this week, and this month.";
+  if (key === "hub_setup") return "Walk me through the most important business setup tasks next.";
+  if (key === "business_modules") return "Which business module should I use next and why?";
+  return "";
+}
+
+function openDashboardLexiForCurrentRole(trigger, source = "") {
+  if (!(user.role === "subscriber" || user.role === "admin")) return;
+  const lexiRole = user.role === "admin" ? "admin" : "subscriber";
+  openBusinessAiChatPopup(lexiRole, {
+    trigger: trigger instanceof HTMLElement ? trigger : null,
+    focusInput: true,
+    prompt: dashboardLexiPromptForSource(source)
+  });
 }
 
 function renderSubscriberCalendar() {
@@ -12165,8 +12192,7 @@ if (user.role === "subscriber" || user.role === "admin") {
 }
 
 workspaceStarAskLexiBtn?.addEventListener("click", (event) => {
-  const lexiRole = user.role === "admin" ? "admin" : "subscriber";
-  openBusinessAiChatPopup(lexiRole, { trigger: event.currentTarget, focusInput: true });
+  openDashboardLexiForCurrentRole(event.currentTarget, "daily_workspace");
 });
 
 workspaceStarOpenCalendarBtn?.addEventListener("click", () => {
@@ -12174,7 +12200,7 @@ workspaceStarOpenCalendarBtn?.addEventListener("click", () => {
 });
 
 subscriberCopilotOpenPopup?.addEventListener("click", (event) => {
-  openBusinessAiChatPopup("subscriber", { trigger: event.currentTarget });
+  openDashboardLexiForCurrentRole(event.currentTarget, "daily_workspace");
 });
 executivePulseRangeTabs?.addEventListener("click", (event) => {
   const target = event.target;
@@ -12198,14 +12224,22 @@ executivePulseSaveSnapshotBtn?.addEventListener("click", () => {
 });
 subscriberLexiQuickOpenButtons.forEach((btn) => {
   btn.addEventListener("click", (event) => {
-    if (!(user.role === "subscriber" || user.role === "admin")) return;
-    const lexiRole = user.role === "admin" ? "admin" : "subscriber";
-    openBusinessAiChatPopup(lexiRole, { trigger: event.currentTarget });
+    const source = String(btn.getAttribute("data-open-subscriber-lexi") || "").trim();
+    openDashboardLexiForCurrentRole(event.currentTarget, source);
   });
 });
 document.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
+  const dashboardLexiButton = target.closest("[data-open-subscriber-lexi], #subscriberCopilotOpenPopup, #adminCopilotOpenPopup, #workspaceStarAskLexiBtn");
+  if (dashboardLexiButton instanceof HTMLElement) {
+    const source = String(dashboardLexiButton.getAttribute("data-open-subscriber-lexi") || "daily_workspace").trim();
+    if (user.role === "subscriber" || user.role === "admin") {
+      event.preventDefault();
+      openDashboardLexiForCurrentRole(dashboardLexiButton, source);
+      return;
+    }
+  }
   const lexiLink = target.closest('a[href="#customerReceptionSection"]');
   if (!(lexiLink instanceof HTMLElement)) return;
   if (user.role !== "customer") return;
@@ -12225,7 +12259,7 @@ subscriberCopilotPopup?.addEventListener("click", (event) => {
 });
 
 adminCopilotOpenPopup?.addEventListener("click", (event) => {
-  openBusinessAiChatPopup("admin", { trigger: event.currentTarget });
+  openDashboardLexiForCurrentRole(event.currentTarget, "daily_workspace");
 });
 adminCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("admin"));
 adminCopilotPopup?.addEventListener("click", (event) => {
