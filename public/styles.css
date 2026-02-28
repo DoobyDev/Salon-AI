@@ -690,8 +690,165 @@ body.home-lexi-popup-open {
   overflow: auto;
 }
 
+.lexi-avatar-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.lexi-avatar-stage {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 1rem;
+  min-height: 220px;
+  background:
+    radial-gradient(circle at top, rgba(109, 185, 255, 0.16), transparent 34%),
+    radial-gradient(circle at bottom, rgba(124, 234, 216, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(14, 21, 35, 0.98), rgba(8, 12, 22, 0.96));
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.lexi-avatar-figure {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+}
+
+.lexi-avatar-orb {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.96), rgba(171, 225, 255, 0.74) 20%, rgba(76, 142, 214, 0.6) 48%, rgba(12, 24, 48, 0.92) 100%);
+  box-shadow:
+    0 0 0 10px rgba(109, 185, 255, 0.06),
+    0 22px 46px rgba(0,0,0,0.34);
+  position: relative;
+  overflow: hidden;
+}
+
+.lexi-avatar-orb::after {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  opacity: 0.8;
+}
+
+.lexi-avatar-shell[data-avatar-state="listening"] .lexi-avatar-orb,
+.lexi-avatar-shell[data-avatar-state="speaking"] .lexi-avatar-orb {
+  animation: lexiAvatarPulse 1.8s ease-in-out infinite;
+}
+
+.lexi-avatar-shell[data-avatar-state="thinking"] .lexi-avatar-orb {
+  animation: lexiAvatarFloat 2.4s ease-in-out infinite;
+}
+
+.lexi-avatar-label strong {
+  display: block;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+.lexi-avatar-label small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.lexi-avatar-meta {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.lexi-avatar-chip-row {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.lexi-avatar-chip {
+  padding: 0.34rem 0.58rem;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 234, 216, 0.18);
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lexi-avatar-chip.is-live {
+  border-color: rgba(109, 185, 255, 0.34);
+  color: #d9eeff;
+}
+
+.lexi-avatar-note,
+.lexi-avatar-transcript {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 0.8rem 0.9rem;
+  background: rgba(255,255,255,0.03);
+}
+
+.lexi-avatar-note strong,
+.lexi-avatar-transcript strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.92rem;
+}
+
+.lexi-avatar-note p,
+.lexi-avatar-transcript p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.lexi-avatar-actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.lexi-avatar-actions .btn[disabled] {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
 .home-lexi-popup-body .chat-shell {
   margin: 0;
+}
+
+@keyframes lexiAvatarPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 10px rgba(109, 185, 255, 0.06),
+      0 22px 46px rgba(0,0,0,0.34);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow:
+      0 0 0 18px rgba(109, 185, 255, 0.08),
+      0 26px 54px rgba(0,0,0,0.38);
+  }
+}
+
+@keyframes lexiAvatarFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .hero-lexi-sell-card {
@@ -2989,6 +3146,27 @@ body[data-theme-mode="light"] .home-lexi-popup-close {
   color: #3a2e3f;
 }
 
+body[data-theme-mode="light"] .lexi-avatar-stage,
+body[data-theme-mode="light"] .lexi-avatar-note,
+body[data-theme-mode="light"] .lexi-avatar-transcript,
+body[data-theme-mode="light"] .lexi-avatar-chip {
+  background-image: none;
+  background-color: rgba(255,255,255,0.96);
+  border-color: rgba(186, 204, 231, 0.74);
+  color: #24324a;
+}
+
+body[data-theme-mode="light"] .lexi-avatar-label small,
+body[data-theme-mode="light"] .lexi-avatar-note p,
+body[data-theme-mode="light"] .lexi-avatar-transcript p {
+  color: #5b6d87;
+}
+
+body[data-theme-mode="light"] .lexi-avatar-chip.is-live {
+  color: #24405f;
+  border-color: rgba(142, 184, 228, 0.58);
+}
+
 body[data-theme-mode="light"] .chat-form input,
 body[data-theme-mode="light"] .chat-form textarea,
 body[data-theme-mode="light"] input,
@@ -3138,6 +3316,10 @@ body[data-theme-mode="light"] .command-deck-card-accent {
     width: min(96vw, 96vw);
     max-height: 92vh;
     padding: 0.65rem;
+  }
+
+  .lexi-avatar-shell {
+    grid-template-columns: 1fr;
   }
 
   .policy-grid {

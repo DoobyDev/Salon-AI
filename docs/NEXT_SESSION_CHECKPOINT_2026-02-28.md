@@ -69,15 +69,33 @@ Recommended rollout order:
 3. Voice/avatar provider integration
 4. Subscriber settings for Lexi voice/avatar behavior
 
+## Avatar Scaffold Now Added
+
+- Homepage Lexi popup now includes an avatar-ready stage:
+  - avatar area
+  - live-status panel
+  - provider readiness chips
+  - voice/mute controls placeholder
+  - existing text chat remains as fallback in the same popup
+- Customer dashboard Lexi popup now uses the same avatar-ready shell.
+- Backend endpoints now exist:
+  - `GET /api/lexi/avatar-config`
+  - `POST /api/lexi/realtime/session`
+- Current backend behavior is honest scaffolding only:
+  - reports provider/realtime readiness
+  - does not fake a live provider session
+  - next real implementation step is provider session brokerage
+
 ## Next Steps
 
 1. Review the latest homepage/dashboard/mobile UI in both dark and light mode.
 2. Push any remaining light-mode cleanup if still pending locally.
 3. Decide whether to push the latest Lexi popup/human-tone changes if not already pushed.
-4. Start the avatar-ready Lexi popup architecture:
-   - frontend popup structure
-   - backend realtime session route
-   - provider/env planning
+4. Connect a real provider stack into the avatar scaffold:
+   - OpenAI Realtime session brokerage
+   - avatar provider session creation
+   - live mic/transcript handling
+   - fallback behavior for unsupported/mobile cases
 
 ## Key Files For Next Session
 
@@ -88,4 +106,3 @@ Recommended rollout order:
 - `public/dashboard.js`
 - `server.js`
 - `public/sw.js`
-

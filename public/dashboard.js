@@ -288,6 +288,7 @@ let customerLexiPopupOverlay = null;
 let customerLexiPopupContainer = null;
 let customerLexiChatPlaceholder = null;
 let customerLexiPopupLastFocus = null;
+let customerLexiAvatarConfigPromise = null;
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -7278,18 +7279,128 @@ function ensureCustomerLexiPopup() {
         </div>
         <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
       </div>
-      <div class="home-lexi-popup-body"></div>
+      <div class="home-lexi-popup-body">
+        <section class="lexi-avatar-shell" data-avatar-state="idle" aria-label="Lexi live assistant">
+          <div class="lexi-avatar-stage">
+            <div class="lexi-avatar-figure">
+              <div class="lexi-avatar-orb" aria-hidden="true"></div>
+              <div class="lexi-avatar-label">
+                <strong id="customerLexiAvatarTitle">Lexi live assistant</strong>
+                <small id="customerLexiAvatarStatus">Customer booking mode is ready. Voice avatar can be connected here next.</small>
+              </div>
+            </div>
+          </div>
+          <div class="lexi-avatar-meta">
+            <div class="lexi-avatar-chip-row">
+              <span class="lexi-avatar-chip" id="customerLexiAvatarModeChip">Text + booking</span>
+              <span class="lexi-avatar-chip" id="customerLexiAvatarProviderChip">Provider pending</span>
+              <span class="lexi-avatar-chip" id="customerLexiAvatarReadyChip">Avatar offline</span>
+            </div>
+            <div class="lexi-avatar-note">
+              <strong>Lexi focus</strong>
+              <p id="customerLexiAvatarNote">Ask about services, timings, recommendations, aftercare, and move into booking from this one popup.</p>
+            </div>
+            <div class="lexi-avatar-transcript">
+              <strong>Live status</strong>
+              <p id="customerLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can be connected here without changing the customer journey.</p>
+            </div>
+            <div class="lexi-avatar-actions">
+              <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Voice Coming Soon</button>
+              <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Mute</button>
+            </div>
+          </div>
+        </section>
+        <div class="home-lexi-popup-chat-slot"></div>
+      </div>
     </section>
   `;
   document.body.appendChild(overlay);
-  const container = overlay.querySelector(".home-lexi-popup-body");
+  const container = overlay.querySelector(".home-lexi-popup-chat-slot");
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
+  overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", () => {
+    setDashboardStatus("Voice avatar mode will activate here once a provider is connected.", false, 2200);
+  });
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeCustomerLexiPopup();
   });
   customerLexiPopupOverlay = overlay;
   customerLexiPopupContainer = container;
   return { overlay, container };
+}
+
+function setCustomerLexiAvatarPanelState(state, status, transcript) {
+  const shell = customerLexiPopupOverlay?.querySelector(".lexi-avatar-shell");
+  if (shell instanceof HTMLElement) shell.setAttribute("data-avatar-state", state);
+  const statusNode = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarStatus");
+  const transcriptNode = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarTranscript");
+  if (statusNode) statusNode.textContent = status;
+  if (transcriptNode) transcriptNode.textContent = transcript;
+}
+
+async function loadCustomerLexiAvatarConfig() {
+  if (customerLexiAvatarConfigPromise) return customerLexiAvatarConfigPromise;
+  customerLexiAvatarConfigPromise = fetch("/api/lexi/avatar-config?scope=customer")
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Avatar config request failed: ${response.status}`);
+      return response.json();
+    })
+    .catch(() => ({
+      avatarEnabled: false,
+      realtimeEnabled: false,
+      provider: "pending",
+      voiceProvider: "text",
+      displayName: "Lexi",
+      supportMode: "customer",
+      transcriptMode: "text_fallback"
+    }));
+  return customerLexiAvatarConfigPromise;
+}
+
+async function hydrateCustomerLexiAvatarPanel() {
+  if (!customerLexiPopupOverlay) return;
+  setCustomerLexiAvatarPanelState(
+    "thinking",
+    "Lexi is loading her live assistant profile.",
+    "Checking avatar, voice, and realtime readiness for customer guidance."
+  );
+  const config = await loadCustomerLexiAvatarConfig();
+  const titleNode = customerLexiPopupOverlay.querySelector("#customerLexiAvatarTitle");
+  const modeChip = customerLexiPopupOverlay.querySelector("#customerLexiAvatarModeChip");
+  const providerChip = customerLexiPopupOverlay.querySelector("#customerLexiAvatarProviderChip");
+  const readyChip = customerLexiPopupOverlay.querySelector("#customerLexiAvatarReadyChip");
+  const noteNode = customerLexiPopupOverlay.querySelector("#customerLexiAvatarNote");
+  const voiceBtn = customerLexiPopupOverlay.querySelector("#customerLexiVoiceBtn");
+  const muteBtn = customerLexiPopupOverlay.querySelector("#customerLexiMuteBtn");
+  const salon = getSelectedCustomerSalon();
+
+  if (titleNode) titleNode.textContent = `${config.displayName || "Lexi"} live assistant`;
+  if (modeChip) modeChip.textContent = config.realtimeEnabled ? "Voice + booking" : "Text + booking";
+  if (providerChip) providerChip.textContent = `Avatar ${config.providerLabel || config.provider || "pending"}`;
+  if (readyChip) {
+    readyChip.textContent = config.avatarEnabled ? "Avatar ready" : "Avatar pending";
+    readyChip.classList.toggle("is-live", Boolean(config.avatarEnabled));
+  }
+  if (noteNode) {
+    noteNode.textContent = salon
+      ? `Ask about services, timings, availability, or aftercare for ${salon.name}, and Lexi can guide the booking from here.`
+      : "Pick a business, then ask about services, timings, recommendations, aftercare, or booking help from this popup.";
+  }
+  if (voiceBtn instanceof HTMLButtonElement) {
+    voiceBtn.disabled = !config.avatarEnabled;
+    voiceBtn.textContent = config.avatarEnabled ? "Start Voice" : "Voice Coming Soon";
+  }
+  if (muteBtn instanceof HTMLButtonElement) {
+    muteBtn.disabled = !config.avatarEnabled;
+  }
+  setCustomerLexiAvatarPanelState(
+    config.avatarEnabled ? "idle" : "speaking",
+    config.avatarEnabled
+      ? "Lexi is ready for live customer conversation and booking guidance."
+      : "Text booking mode is live now. This popup is already prepared for voice and avatar streaming.",
+    config.avatarEnabled
+      ? "Customers will be able to speak naturally with Lexi here and move straight into booking."
+      : "The customer flow stays simple: one popup, one assistant, with voice and avatar added into the same surface later."
+  );
 }
 
 function openCustomerLexiPopup() {
@@ -7315,6 +7426,7 @@ function openCustomerLexiPopup() {
   overlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("home-lexi-popup-open");
   customerLexiPopupOpen = true;
+  hydrateCustomerLexiAvatarPanel();
   customerReceptionInput?.focus();
 }
 

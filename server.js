@@ -3421,6 +3421,54 @@ app.get("/api/config", async (_req, res) => {
   res.json(payload);
 });
 
+function buildLexiAvatarConfig(scope = "public") {
+  const normalizedScope = ["public", "customer", "subscriber", "admin"].includes(scope) ? scope : "public";
+  const avatarProvider = String(process.env.LEXI_AVATAR_PROVIDER || process.env.HEYGEN_PROVIDER || "pending").trim().toLowerCase() || "pending";
+  const voiceProvider = String(process.env.LEXI_VOICE_PROVIDER || (process.env.ELEVENLABS_API_KEY ? "elevenlabs" : openai ? "openai" : "text")).trim().toLowerCase() || "text";
+  const realtimeModel = String(process.env.OPENAI_REALTIME_MODEL || "").trim();
+  const openAiReady = Boolean(openai);
+  const avatarReady = avatarProvider !== "pending" && avatarProvider !== "none";
+  const voiceReady = voiceProvider !== "text";
+  const realtimeReady = openAiReady && Boolean(realtimeModel);
+
+  return {
+    displayName: "Lexi",
+    scope: normalizedScope,
+    provider: avatarProvider,
+    providerLabel: avatarProvider === "pending" ? "pending" : avatarProvider,
+    voiceProvider,
+    realtimeModel: realtimeModel || null,
+    avatarEnabled: avatarReady,
+    voiceEnabled: voiceReady,
+    realtimeEnabled: realtimeReady,
+    sessionEndpointReady: realtimeReady,
+    transcriptMode: "text_fallback",
+    supportMode: normalizedScope === "subscriber" || normalizedScope === "admin" ? "business_assistant" : "booking_assistant",
+    notes: avatarReady && realtimeReady
+      ? "Lexi popup is ready for provider wiring and client session brokerage."
+      : "Lexi popup is ready for avatar wiring. Connect provider keys and realtime session brokerage next."
+  };
+}
+
+app.get("/api/lexi/avatar-config", (_req, res) => {
+  const scope = String(_req.query.scope || "public").trim().toLowerCase();
+  res.json(buildLexiAvatarConfig(scope));
+});
+
+app.post("/api/lexi/realtime/session", async (req, res) => {
+  const scope = String(req.body?.scope || "public").trim().toLowerCase();
+  const config = buildLexiAvatarConfig(scope);
+  return res.status(202).json({
+    ok: true,
+    sessionReady: false,
+    config,
+    message: config.sessionEndpointReady
+      ? "Lexi realtime prerequisites are configured. The remaining step is brokering provider sessions and streaming them into the popup."
+      : "Lexi realtime session scaffolding is in place. Connect the provider keys and realtime model to activate live voice and avatar mode.",
+    nextStep: "provider_session_broker"
+  });
+});
+
 app.post("/api/auth/register/subscriber", authLimiter, async (req, res) => {
   const payload = req.body || {};
   const name = String(payload.name || "").trim();
