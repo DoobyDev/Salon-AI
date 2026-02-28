@@ -11199,12 +11199,35 @@ if (user.role !== "customer") {
   hideSection(customerHistorySection);
   hideSection(customerAnalyticsSection);
 }
+if (user.role === "subscriber" || user.role === "admin") {
+  hideSection(frontDeskSection);
+}
 if (user.role !== "admin") {
   hideSection(adminCopilotSection);
   hideSection(accountingPlatformExportBtn);
 }
 if (user.role !== "subscriber") {
   hideSection(subscriberCopilotSection);
+}
+if (user.role === "admin") {
+  hideSection(subscriberCalendarSection);
+  hideSection(businessGrowthSection);
+  hideSection(subscriberExecutivePulseSection);
+  hideSection(businessProfileSection);
+  hideSection(socialMediaSection);
+  hideSection(accountingIntegrationsSection);
+  hideSection(subscriberCommandCenterSection);
+  hideSection(staffRosterSection);
+  hideSection(waitlistSection);
+  hideSection(operationsInsightsSection);
+  hideSection(crmSection);
+  hideSection(commercialSection);
+  hideSection(revenueAttributionSection);
+  hideSection(profitabilitySection);
+  hideSection(subscriberSubscriptionSection);
+  hideSection(first7DaysSnapshotSection);
+  hideSection(bookingOperationsSection);
+  hideSection(contactAdminBtn);
 }
 if (user.role === "subscriber" || user.role === "admin") {
   hideSection(metricsGrid);
