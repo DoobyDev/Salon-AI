@@ -10208,7 +10208,7 @@
         <div class="calendar-head">
           <h2 style="margin:0;">Booking Diary</h2>
           <div class="calendar-nav">
-            <button type="button" class="btn" data-open-subscriber-lexi="booking_diary">Ask Lexi</button>
+            <button type="button" class="btn" data-open-subscriber-lexi="booking_diary" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','booking_diary', this.id || '')">Ask Lexi</button>
             <button id="calendarPrev" class="btn btn-ghost" type="button" aria-label="Previous month">&lt;</button>
             <p id="calendarMonthLabel" class="calendar-label">Month</p>
             <button id="calendarNext" class="btn btn-ghost" type="button" aria-label="Next month">&gt;</button>
@@ -10330,7 +10330,7 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="subscriberCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
+            <button id="subscriberCopilotOpenPopup" class="btn" type="button" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('subscriber','daily_workspace','subscriberCopilotOpenPopup')">Ask Lexi</button>
             <span class="copilot-guardrail">Lexi can answer salon and beauty questions and use your salon dashboard context when it helps. This chat does not run platform admin checks.</span>
           </div>
           <div id="subscriberCopilotPopup" class="copilot-chat-popup-overlay" aria-hidden="true">
@@ -10422,7 +10422,7 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="adminCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
+            <button id="adminCopilotOpenPopup" class="btn" type="button" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('admin','daily_workspace','adminCopilotOpenPopup')">Ask Lexi</button>
             <span class="copilot-guardrail">Lexi can answer salon/beauty questions and use admin/managed-business context when relevant. No auto-fix actions.</span>
           </div>
           <div id="adminCopilotPopup" class="copilot-chat-popup-overlay" aria-hidden="true">
@@ -10751,7 +10751,7 @@
             <p>Run the salon from one place with Lexi, the diary, and the business hub working together.</p>
           </div>
           <div class="workspace-actions-meta">
-            <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
+            <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','daily_workspace', this.id || '')">Ask Lexi</button>
             <button id="workspaceBackToDashboardBtn" class="btn btn-ghost workspace-back-btn" type="button">Back to Dashboard</button>
             <span class="workspace-actions-badge">Fast actions</span>
           </div>
@@ -10764,7 +10764,7 @@
               <p id="workspaceStarSummary">Check the diary, then let Lexi tell you what needs attention, who needs follow-up, and where revenue is exposed.</p>
             </div>
             <div class="workspace-star-actions">
-              <button type="button" class="btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
+              <button type="button" class="btn" id="workspaceStarAskLexiBtn" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','daily_workspace','workspaceStarAskLexiBtn')">Ask Lexi</button>
               <button type="button" class="btn btn-ghost" id="workspaceStarOpenCalendarBtn">Open Calendar</button>
             </div>
           </div>
@@ -10904,7 +10904,7 @@
             </p>
           </div>
           <div class="executive-pulse-badge">
-            <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse">Ask Lexi</button>
+            <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','executive_pulse', this.id || '')">Ask Lexi</button>
             <span class="live-pill"><i class="live-dot"></i> Live</span>
           </div>
         </div>
@@ -10973,7 +10973,7 @@
             <h3>Business Hub</h3>
             <p style="margin:0;color:var(--muted);">Run setup, updates and business controls from one place.</p>
             <div style="display:flex;justify-content:flex-end;margin-top:0.45rem;">
-              <button type="button" class="btn" data-open-subscriber-lexi="hub_setup">Ask Lexi</button>
+              <button type="button" class="btn" data-open-subscriber-lexi="hub_setup" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','hub_setup', this.id || '')">Ask Lexi</button>
             </div>
             <section class="hub-command-deck" aria-label="AI Business Command Deck">
               <div class="hub-command-head">
@@ -11058,7 +11058,7 @@
                   <p>Open the part of the business you want to work on now.</p>
                 </div>
                 <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
-                  <button type="button" class="btn" data-open-subscriber-lexi="business_modules">Ask Lexi</button>
+                  <button type="button" class="btn" data-open-subscriber-lexi="business_modules" onclick="window.openDashboardLexiForRole && window.openDashboardLexiForRole('current','business_modules', this.id || '')">Ask Lexi</button>
                   <span class="hub-module-badge">Main workspace</span>
                 </div>
               </div>

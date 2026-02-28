@@ -6305,6 +6305,25 @@ function openDashboardLexiForCurrentRole(trigger, source = "") {
   });
 }
 
+function openDashboardLexiForRole(role, source = "", trigger = null) {
+  const requestedRole = String(role || "").trim().toLowerCase();
+  const normalizedRole = requestedRole === "current"
+    ? (user.role === "admin" ? "admin" : "subscriber")
+    : (requestedRole === "admin" ? "admin" : "subscriber");
+  if (normalizedRole === "admin" && user.role !== "admin") return;
+  if (normalizedRole === "subscriber" && !(user.role === "subscriber" || user.role === "admin")) return;
+  openBusinessAiChatPopup(normalizedRole, {
+    trigger: trigger instanceof HTMLElement ? trigger : null,
+    focusInput: true,
+    prompt: dashboardLexiPromptForSource(source)
+  });
+}
+
+window.openDashboardLexiForRole = (role, source = "", triggerId = "") => {
+  const trigger = triggerId ? document.getElementById(String(triggerId || "").trim()) : null;
+  openDashboardLexiForRole(role, source, trigger);
+};
+
 function renderSubscriberCalendar() {
   if (!bookingCalendarGrid || !calendarMonthLabel || !calendarLegend) return;
 
