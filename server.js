@@ -3502,6 +3502,8 @@ async function resolveLexiRealtimeBusiness({ scope, auth, businessId }) {
 }
 
 async function createOpenAiRealtimeClientSecret({ instructions, model, voice }) {
+  const transcriptModel = String(process.env.LEXI_REALTIME_TRANSCRIBE_MODEL || "gpt-4o-mini-transcribe").trim();
+  const transcriptLanguage = String(process.env.LEXI_REALTIME_TRANSCRIBE_LANGUAGE || "en").trim();
   const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
     method: "POST",
     headers: {
@@ -3514,10 +3516,26 @@ async function createOpenAiRealtimeClientSecret({ instructions, model, voice }) 
         model,
         instructions,
         audio: {
+          input: {
+            transcription: {
+              model: transcriptModel,
+              language: transcriptLanguage
+            },
+            turn_detection: {
+              type: "server_vad",
+              create_response: true,
+              interrupt_response: true,
+              silence_duration_ms: 450,
+              prefix_padding_ms: 300
+            }
+          },
           output: {
             voice
           }
-        }
+        },
+        include: [
+          "item.input_audio_transcription.logprobs"
+        ]
       }
     })
   });

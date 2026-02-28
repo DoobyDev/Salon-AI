@@ -291,6 +291,7 @@ let customerLexiPopupLastFocus = null;
 let customerLexiAvatarConfigPromise = null;
 let customerLexiRealtimeSessionPromise = null;
 let customerLexiRealtimeSession = null;
+let customerLexiRealtimeConnection = null;
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -7320,6 +7321,17 @@ function ensureCustomerLexiPopup() {
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
   overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", startCustomerLexiVoicePreparation);
+  overlay.querySelector("#customerLexiMuteBtn")?.addEventListener("click", () => {
+    const connection = customerLexiRealtimeConnection;
+    if (!connection) return;
+    connection.muted = !connection.muted;
+    connection.audioElement.muted = connection.muted;
+    const muteBtn = overlay.querySelector("#customerLexiMuteBtn");
+    if (muteBtn instanceof HTMLButtonElement) {
+      muteBtn.textContent = connection.muted ? "Unmute" : "Mute";
+    }
+    updateCustomerLexiTranscript(connection.muted ? "Lexi audio muted for this popup." : "Lexi audio unmuted.");
+  });
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeCustomerLexiPopup();
   });
@@ -7384,6 +7396,167 @@ async function requestCustomerLexiRealtimeSession() {
   return customerLexiRealtimeSessionPromise;
 }
 
+function extractCustomerLexiRealtimeText(response) {
+  const outputs = Array.isArray(response?.output) ? response.output : [];
+  const content = outputs.flatMap((item) => Array.isArray(item?.content) ? item.content : []);
+  for (const part of content) {
+    const transcript = String(part?.transcript || part?.text || "").trim();
+    if (transcript) return transcript;
+  }
+  return "";
+}
+
+function updateCustomerLexiTranscript(text) {
+  const transcriptNode = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarTranscript");
+  if (transcriptNode) transcriptNode.textContent = text;
+}
+
+function resetCustomerLexiVoiceControls(label = "Prepare Voice", enabled = true) {
+  const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
+  const muteBtn = customerLexiPopupOverlay?.querySelector("#customerLexiMuteBtn");
+  if (voiceBtn instanceof HTMLButtonElement) {
+    voiceBtn.disabled = !enabled;
+    voiceBtn.textContent = label;
+  }
+  if (muteBtn instanceof HTMLButtonElement) {
+    muteBtn.disabled = !enabled;
+    muteBtn.textContent = "Mute";
+  }
+}
+
+function cleanupCustomerLexiRealtimeConnection() {
+  const connection = customerLexiRealtimeConnection;
+  if (!connection) return;
+  try {
+    connection.dataChannel?.close();
+  } catch {}
+  try {
+    connection.peerConnection?.getSenders()?.forEach((sender) => sender.track?.stop());
+  } catch {}
+  try {
+    connection.mediaStream?.getTracks()?.forEach((track) => track.stop());
+  } catch {}
+  try {
+    connection.peerConnection?.close();
+  } catch {}
+  try {
+    if (connection.audioElement) {
+      connection.audioElement.pause();
+      connection.audioElement.srcObject = null;
+    }
+  } catch {}
+  customerLexiRealtimeConnection = null;
+}
+
+function handleCustomerLexiRealtimeEvent(event) {
+  const eventType = String(event?.type || "").trim();
+  if (!eventType) return;
+
+  if (eventType === "input_audio_buffer.speech_started") {
+    setCustomerLexiAvatarPanelState("listening", "Lexi is listening.", "Speak naturally. Lexi will respond as soon as you finish.");
+    return;
+  }
+  if (eventType === "input_audio_buffer.speech_stopped") {
+    setCustomerLexiAvatarPanelState("thinking", "Lexi is thinking.", "Your request is being turned into Lexi's next reply.");
+    return;
+  }
+  if (eventType === "conversation.item.input_audio_transcription.completed") {
+    const transcript = String(event?.transcript || "").trim();
+    if (transcript) updateCustomerLexiTranscript(`You: ${transcript}`);
+    return;
+  }
+  if (eventType === "response.created") {
+    setCustomerLexiAvatarPanelState("thinking", "Lexi is preparing her reply.", "Lexi is turning what she heard into the next step.");
+    return;
+  }
+  if (eventType === "response.done") {
+    const text = extractCustomerLexiRealtimeText(event?.response);
+    if (text) {
+      setCustomerLexiAvatarPanelState("speaking", "Lexi is replying live.", `Lexi: ${text}`);
+      return;
+    }
+  }
+  if (eventType === "error") {
+    const message = String(event?.error?.message || "Realtime session error.").trim();
+    setCustomerLexiAvatarPanelState("speaking", "Lexi hit a realtime error.", message);
+    setDashActionStatus(message, true, 3200);
+  }
+}
+
+async function connectCustomerLexiRealtimeSession(sessionPayload) {
+  const session = sessionPayload?.session || {};
+  const clientSecret = String(session.clientSecret || "").trim();
+  const model = String(session.model || "").trim();
+  if (!clientSecret || !model) {
+    throw new Error("Realtime session details are incomplete.");
+  }
+  if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === "undefined") {
+    throw new Error("This browser does not support live Lexi voice mode.");
+  }
+
+  cleanupCustomerLexiRealtimeConnection();
+
+  const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const peerConnection = new RTCPeerConnection();
+  const audioElement = new Audio();
+  audioElement.autoplay = true;
+  audioElement.playsInline = true;
+
+  peerConnection.ontrack = (event) => {
+    const [remoteStream] = event.streams;
+    if (remoteStream) {
+      audioElement.srcObject = remoteStream;
+    }
+  };
+  peerConnection.onconnectionstatechange = () => {
+    const state = String(peerConnection.connectionState || "").trim();
+    if (state === "connected") {
+      setCustomerLexiAvatarPanelState("listening", "Lexi is live and listening.", "Talk naturally. Lexi will answer out loud and keep the booking moving.");
+      resetCustomerLexiVoiceControls("End Voice", true);
+      setDashActionStatus("Lexi voice is live.", false, 2200);
+    } else if (state === "failed" || state === "disconnected" || state === "closed") {
+      cleanupCustomerLexiRealtimeConnection();
+      resetCustomerLexiVoiceControls("Prepare Voice", true);
+      setCustomerLexiAvatarPanelState("speaking", "Lexi voice session ended.", "Text chat is still available in this popup.");
+    }
+  };
+
+  mediaStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, mediaStream);
+  });
+
+  const dataChannel = peerConnection.createDataChannel("oai-events");
+  dataChannel.addEventListener("message", (event) => {
+    try {
+      handleCustomerLexiRealtimeEvent(JSON.parse(String(event.data || "{}")));
+    } catch {}
+  });
+
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+  const response = await fetch(`https://api.openai.com/v1/realtime/calls?model=${encodeURIComponent(model)}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${clientSecret}`,
+      "Content-Type": "application/sdp"
+    },
+    body: offer.sdp || ""
+  });
+  const answerSdp = await response.text();
+  if (!response.ok) {
+    throw new Error(answerSdp || "Unable to complete the Lexi realtime connection.");
+  }
+  await peerConnection.setRemoteDescription({ type: "answer", sdp: answerSdp });
+
+  customerLexiRealtimeConnection = {
+    peerConnection,
+    dataChannel,
+    mediaStream,
+    audioElement,
+    muted: false
+  };
+}
+
 async function hydrateCustomerLexiAvatarPanel() {
   if (!customerLexiPopupOverlay) return;
   setCustomerLexiAvatarPanelState(
@@ -7432,6 +7605,13 @@ async function hydrateCustomerLexiAvatarPanel() {
 }
 
 async function startCustomerLexiVoicePreparation() {
+  if (customerLexiRealtimeConnection) {
+    cleanupCustomerLexiRealtimeConnection();
+    resetCustomerLexiVoiceControls("Prepare Voice", true);
+    setCustomerLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
+    setDashActionStatus("Lexi voice disconnected.", false, 2200);
+    return;
+  }
   const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
   try {
     if (voiceBtn instanceof HTMLButtonElement) {
@@ -7449,23 +7629,34 @@ async function startCustomerLexiVoicePreparation() {
       readyChip.textContent = data.sessionReady ? "Session ready" : "Session pending";
       readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
     }
-    if (voiceBtn instanceof HTMLButtonElement) {
-      voiceBtn.disabled = false;
-      voiceBtn.textContent = data.sessionReady ? "Session Ready" : "Prepare Voice";
+    if (!data.sessionReady) {
+      resetCustomerLexiVoiceControls("Prepare Voice", true);
+      setCustomerLexiAvatarPanelState(
+        "speaking",
+        data.message || "Lexi voice session updated.",
+        "The server responded, but a live session is not ready yet."
+      );
+      setDashActionStatus(data.message || "Lexi voice session is not ready yet.", true, 2600);
+      return;
     }
+    await connectCustomerLexiRealtimeSession(data);
     setCustomerLexiAvatarPanelState(
-      data.sessionReady ? "listening" : "speaking",
+      "thinking",
       data.message || "Lexi voice session updated.",
-      data.sessionReady
-        ? `OpenAI Realtime session ready for ${data.session?.model || "Lexi"} using the ${data.session?.voice || "default"} voice. WebRTC hookup is the next client step.`
-        : "The server responded, but a live session is not ready yet."
+      `OpenAI Realtime session ready for ${data.session?.model || "Lexi"} using the ${data.session?.voice || "default"} voice. Establishing the live connection now.`
     );
-    setDashActionStatus(data.sessionReady ? "Lexi voice session prepared." : (data.message || "Lexi voice session is not ready yet."), !data.sessionReady, 2600);
+    setDashActionStatus("Lexi voice session prepared.", false, 2200);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to prepare a Lexi voice session right now.";
+    cleanupCustomerLexiRealtimeConnection();
     if (voiceBtn instanceof HTMLButtonElement) {
       voiceBtn.disabled = false;
       voiceBtn.textContent = "Prepare Voice";
+    }
+    const readyChip = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarReadyChip");
+    if (readyChip) {
+      readyChip.textContent = "Session error";
+      readyChip.classList.remove("is-live");
     }
     setCustomerLexiAvatarPanelState("speaking", "Lexi could not prepare the voice session.", message);
     setDashActionStatus(message, true, 3200);
@@ -7501,6 +7692,8 @@ function openCustomerLexiPopup() {
 
 function closeCustomerLexiPopup() {
   if (!customerLexiPopupOpen) return;
+  cleanupCustomerLexiRealtimeConnection();
+  resetCustomerLexiVoiceControls("Prepare Voice", true);
   const customerChatShell = customerReceptionSection?.querySelector(".customer-chat-shell") || null;
   if (customerLexiChatPlaceholder?.parentNode && customerChatShell instanceof HTMLElement) {
     customerLexiChatPlaceholder.parentNode.insertBefore(customerChatShell, customerLexiChatPlaceholder);
