@@ -5712,7 +5712,7 @@ function getExecutivePulseScopeKey() {
       ? String(frontDeskBusiness.id || "").trim()
       : "";
   const businessId =
-    String(managedBusinessId || businessProfileData?.id || safeFrontDeskBusinessId || "").trim() ||
+    String(managedBusinessId || safeFrontDeskBusinessId || "").trim() ||
     (isMockMode ? "mock-business" : "no-business");
   return `${String(user.role || "subscriber").toLowerCase()}:${businessId}`;
 }
@@ -5827,7 +5827,6 @@ function getExecutivePulseWorkingHoursForDate(dateValue) {
       ? frontDeskBusiness.hours
       : null;
   const hourSources = [
-    businessProfileData?.hours,
     safeFrontDeskBusinessHours
   ];
   for (const source of hourSources) {
