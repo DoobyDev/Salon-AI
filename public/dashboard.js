@@ -945,11 +945,11 @@ businessProfileApplyTemplate?.addEventListener("click", async () => {
   }
 });
 if (currentRole === "subscriber") {
-  dashTitle.textContent = "Salon Owner Dashboard";
+  dashTitle.textContent = "Subscriber Dashboard";
 } else if (currentRole === "admin") {
-  dashTitle.textContent = "Platform Admin Dashboard";
+  dashTitle.textContent = "Admin Dashboard";
 } else if (currentRole === "customer") {
-  dashTitle.textContent = "Client Dashboard";
+  dashTitle.textContent = "Customer Dashboard";
 } else {
   dashTitle.textContent = `${String(currentRole || "user").toUpperCase()} Dashboard`;
 }
