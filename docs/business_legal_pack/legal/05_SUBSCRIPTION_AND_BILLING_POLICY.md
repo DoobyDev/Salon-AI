@@ -5,8 +5,8 @@ Effective date: [PLACEHOLDER: DATE]
 ## 1. Plans
 
 Standard subscriber pricing:
-- Monthly: GBP 29.99
-- Yearly: GBP 299.99
+- Monthly: GBP 9.99
+- Yearly: GBP 99.99 (save 16.7%)
 
 ## 2. Payment Providers
 

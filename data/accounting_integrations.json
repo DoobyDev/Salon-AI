@@ -1,0 +1,240 @@
+{
+  "biz_acc_1772022342995": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-25T12:25:43.049Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772022354100": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-25T12:25:54.160Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772034091754": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-25T15:41:31.825Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772034756841": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-25T15:52:36.911Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772273805745": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-28T10:16:45.813Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772275945557": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-28T10:52:25.635Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  },
+  "biz_acc_1772276200106": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-02-28T10:56:40.167Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
+  }
+}

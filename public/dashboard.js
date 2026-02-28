@@ -118,6 +118,16 @@ const subscriberDemoCustomerAccounts = document.getElementById("subscriberDemoCu
 const subscriberDemoSubscriberAccounts = document.getElementById("subscriberDemoSubscriberAccounts");
 const subscriberFullDemoLaunchers = document.getElementById("subscriberFullDemoLaunchers");
 const workspaceBackToDashboardBtn = document.getElementById("workspaceBackToDashboardBtn");
+const workspaceStarPanel = document.getElementById("workspaceStarPanel");
+const workspaceStarSummary = document.getElementById("workspaceStarSummary");
+const workspaceStarAskLexiBtn = document.getElementById("workspaceStarAskLexiBtn");
+const workspaceStarOpenCalendarBtn = document.getElementById("workspaceStarOpenCalendarBtn");
+const workspaceStarCalendarFocus = document.getElementById("workspaceStarCalendarFocus");
+const workspaceStarCalendarNote = document.getElementById("workspaceStarCalendarNote");
+const workspaceStarTodayCount = document.getElementById("workspaceStarTodayCount");
+const workspaceStarTodayRevenue = document.getElementById("workspaceStarTodayRevenue");
+const workspaceStarLexiPrompt = document.getElementById("workspaceStarLexiPrompt");
+const workspaceStarLexiHint = document.getElementById("workspaceStarLexiHint");
 const mobileBottomNav = document.getElementById("mobileBottomNav");
 const mobileQuickSheetOverlay = document.getElementById("mobileQuickSheetOverlay");
 const mobileQuickSheetClose = document.getElementById("mobileQuickSheetClose");
@@ -567,7 +577,7 @@ function renderFrontDeskMock() {
   frontDeskMock.services.forEach((svc) => {
     const div = document.createElement("div");
     div.style = "background:rgba(124,234,216,0.08);border-radius:10px;padding:0.6rem;display:flex;align-items:center;gap:0.5rem;min-width:120px;";
-    div.innerHTML = `<img src='${svc.image}' alt='' style='width:32px;height:32px;border-radius:8px;background:#fff;' /> <span style='font-weight:600;color:var(--ink);'>${svc.name}</span> <span style='color:var(--muted);'>${svc.price} | ${svc.duration}</span>`;
+    div.innerHTML = `<img src='${svc.image}' alt='' style='width:32px;height:32px;border-radius:8px;background:#fff;' /> <span style='font-weight:600;color:var(--ink);'>${svc.name}</span> <span style='color:var(--muted);'>${svc.price} ? ${svc.duration}</span>`;
     services.appendChild(div);
   });
   const reviews = document.getElementById("frontDeskReviews");
@@ -744,7 +754,7 @@ function parseServiceEditorText(value) {
   const services = lines.map((line) => {
     const parts = line.split("|").map((part) => part.trim());
     if (parts.length < 3) {
-      throw new Error("Service format must be: Name | DurationMin | Price");
+      throw new Error("Service format must be: Name ? DurationMin ? Price");
     }
     const [name, durationRaw, priceRaw] = parts;
     const durationMin = Number(durationRaw);
@@ -805,7 +815,7 @@ function setBusinessProfileFormValues(profile) {
     (Array.isArray(business.services) ? business.services : []).slice(0, 6).forEach((svc) => {
       const div = document.createElement("div");
       div.style = "background:rgba(124,234,216,0.08);border-radius:10px;padding:0.6rem;display:flex;align-items:center;gap:0.5rem;min-width:120px;";
-      div.innerHTML = `<span style='font-weight:600;color:var(--ink);'>${escapeHtml(svc.name || "Service")}</span> <span style='color:var(--muted);'>£${Number(svc.price || 0)} | ${Number(svc.durationMin || 0)}min</span>`;
+      div.innerHTML = `<span style='font-weight:600;color:var(--ink);'>${escapeHtml(svc.name || "Service")}</span> <span style='color:var(--muted);'>£${Number(svc.price || 0)} ? ${Number(svc.durationMin || 0)}min</span>`;
       serviceShell.appendChild(div);
     });
   }
@@ -1263,7 +1273,7 @@ function selectedCalendarDateSummary() {
   const staff = getStaffWorkingForDate(date);
   return {
     dateKey,
-    label: date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }),
+    label: date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
     bookings: rows.length,
     cancelled,
     completed,
@@ -1843,7 +1853,7 @@ function buildBusinessReportHtml(payload) {
       </div>
       <div style="text-align:right">
         <p><strong style="font-size:13px;color:#1f2430;">Generated</strong></p>
-        <p>${escapeHtml(new Date(p.generatedAt || Date.now()).toLocaleString())}</p>
+        <p>${escapeHtml(new Date(p.generatedAt || Date.now()).toLocaleString("en-GB"))}</p>
         <p class="muted">Role: ${escapeHtml(String(p.role || ""))}</p>
       </div>
     </div>
@@ -1969,7 +1979,7 @@ async function openBusinessReportEmailFlow() {
       hubReportStatusPill.classList.add("muted");
     }
     if (hubReportStatusText) {
-      hubReportStatusText.textContent = `${queueMsg} Recipient: ${recipientEmail}. ${data?.queuedAt ? `Queued ${new Date(data.queuedAt).toLocaleString()}.` : ""}`;
+      hubReportStatusText.textContent = `${queueMsg} Recipient: ${recipientEmail}. ${data?.queuedAt ? `Queued ${new Date(data.queuedAt).toLocaleString("en-GB")}.` : ""}`;
     }
     setDashActionStatus(`Business report ${data?.deliveryMode === "smtp" ? "sent" : "queued"} for email delivery.`);
     showManageToast(data?.deliveryMode === "smtp" ? "Business report sent." : "Business report queued.");
@@ -2116,7 +2126,7 @@ function openContactAdminModal() {
         <h3 id="contactAdminModalTitle">Emergency Admin Contact</h3>
         <p>Use this only for urgent issues that need admin support (for example access problems or a critical dashboard issue).</p>
       </div>
-      <button type="button" class="module-info-close" aria-label="Close contact admin window">✕</button>
+      <button type="button" class="module-info-close" aria-label="Close contact admin window">x</button>
     </div>
     <p class="contact-admin-note">Urgent messages only. We usually reply within 24 hours.</p>
     <form class="contact-admin-form" novalidate>
@@ -2214,7 +2224,7 @@ function formatDateShort(value) {
   if (!value) return "N/A";
   const dt = new Date(value);
   if (Number.isNaN(dt.getTime())) return "N/A";
-  return dt.toLocaleDateString();
+  return dt.toLocaleDateString("en-GB");
 }
 
 function normalizeModuleConfig(mod) {
@@ -2760,13 +2770,19 @@ function renderModuleNavigator() {
       btn.setAttribute("data-module-key", mod.key);
       const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || "").trim();
       const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
+      const jobProfile = moduleBusinessJobProfile(mod);
+      const status = moduleOperationalStatus(mod);
+      const usage = moduleUsageSummary(mod);
       btn.innerHTML = `
         <strong>${mod.label}${isPinned ? " (Pinned)" : ""}</strong>
+        <small class="module-card-job">${escapeHtml(jobProfile.job)}</small>
         <small class="module-card-summary">${escapeHtml(summaryText)}</small>
         <div class="module-card-meta">
           ${mod.startHere ? '<span class="module-card-pill accent">Start here</span>' : ""}
           <span class="module-card-pill ${cadenceClass.includes("weekly") ? "soft" : ""}">${escapeHtml(mod.cadence || "Use daily")}</span>
+          ${renderModuleStatusPill(status, { compact: true })}
         </div>
+        <small class="module-card-summary">${escapeHtml(usage.label)}</small>
       `;
       grid.appendChild(btn);
     });
@@ -2794,6 +2810,273 @@ function moduleUsesInteractivePopup(mod) {
 function moduleUsesInfoPopup(mod) {
   if (!mod) return false;
   return String(mod.popupMode || "info").toLowerCase() === "info";
+}
+
+function moduleUsageStorageKey() {
+  return `dashboard:module-usage:v1:${String(user?.role || "guest")}`;
+}
+
+function loadModuleUsageMap() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(moduleUsageStorageKey()) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveModuleUsageMap(map) {
+  try {
+    localStorage.setItem(moduleUsageStorageKey(), JSON.stringify(map || {}));
+  } catch {
+    // Ignore localStorage errors.
+  }
+}
+
+function markModuleUsed(moduleKey, mode = "open") {
+  const key = String(moduleKey || "").trim();
+  if (!key) return;
+  const map = loadModuleUsageMap();
+  const prev = map[key] && typeof map[key] === "object" ? map[key] : {};
+  map[key] = {
+    opens: Math.max(0, Number(prev.opens || 0)) + (mode === "open" ? 1 : 0),
+    focuses: Math.max(0, Number(prev.focuses || 0)) + (mode === "focus" ? 1 : 0),
+    lastMode: mode,
+    lastUsedAt: new Date().toISOString()
+  };
+  saveModuleUsageMap(map);
+}
+
+function moduleUsageSummary(mod) {
+  const key = String(mod?.key || "").trim();
+  const row = loadModuleUsageMap()[key];
+  if (!row || !row.lastUsedAt) {
+    return { label: "Not used yet", detail: "Open this popup to start using it today." };
+  }
+  const ts = new Date(row.lastUsedAt);
+  const timeLabel = Number.isFinite(ts.getTime()) ? ts.toLocaleString("en-GB") : "Recently";
+  const opens = Number(row.opens || 0);
+  return {
+    label: opens > 0 ? `${opens} popup open${opens === 1 ? "" : "s"}` : "Viewed in dashboard",
+    detail: `Last used ${timeLabel}`
+  };
+}
+
+function moduleBusinessJobProfile(mod) {
+  const key = String(mod?.key || "").trim();
+  const label = String(mod?.label || "Module").trim();
+  const byKey = {
+    home: {
+      job: "Run the day from one control view",
+      outcome: "Priorities, pressure points, and next actions stay visible.",
+      requiredAction: "Review the top priority cards before opening other modules."
+    },
+    owner_summary: {
+      job: "Give the owner a fast business read",
+      outcome: "The owner can decide what needs attention in under 2 minutes.",
+      requiredAction: "Check the top 3 priorities and delegate one action."
+    },
+    command_center: {
+      job: "Turn signals into actions",
+      outcome: "The team gets a ranked action queue instead of guessing.",
+      requiredAction: "Work from the first action card and clear blockers."
+    },
+    booking_ops: {
+      job: "Manage bookings and booking statuses",
+      outcome: "The diary stays accurate and clients get the right updates.",
+      requiredAction: "Confirm pending bookings and resolve status changes."
+    },
+    calendar: {
+      job: "Control the diary and daily schedule",
+      outcome: "Appointments are visible, organized, and easy to adjust.",
+      requiredAction: "Review today/tomorrow capacity and resolve clashes."
+    },
+    waitlist: {
+      job: "Recover cancelled slots",
+      outcome: "Empty gaps are turned into rebooked revenue opportunities.",
+      requiredAction: "Contact the best-fit waitlist clients when a slot opens."
+    },
+    staff: {
+      job: "Manage staff availability and rota cover",
+      outcome: "Booking capacity reflects who is actually working.",
+      requiredAction: "Confirm on-duty coverage for peak booking periods."
+    },
+    commercial: {
+      job: "Control memberships, packages, and gift cards",
+      outcome: "Recurring and prepaid revenue products stay usable and accurate.",
+      requiredAction: "Keep offers active and balances/statuses up to date."
+    },
+    revenue: {
+      job: "Track channel performance",
+      outcome: "You can see which channels produce bookings and revenue.",
+      requiredAction: "Review spend and adjust low-performing channels."
+    },
+    profitability: {
+      job: "Protect margins",
+      outcome: "Payroll, costs, and revenue can be reviewed together.",
+      requiredAction: "Update payroll/cost inputs before reading profit signals."
+    },
+    accounting: {
+      job: "Connect and reconcile finance systems",
+      outcome: "Takings and exports are easier to reconcile accurately.",
+      requiredAction: "Connect a provider or run an export/reconciliation check."
+    },
+    social: {
+      job: "Keep social presence current",
+      outcome: "Clients see up-to-date links and branding touchpoints.",
+      requiredAction: "Add or review social links and profile media."
+    },
+    frontdesk: {
+      job: "Polish the public-facing profile",
+      outcome: "Clients get a clearer, more trustworthy booking experience.",
+      requiredAction: "Review services, contact details, and profile presentation."
+    },
+    business_profile: {
+      job: "Complete business setup",
+      outcome: "The salon is ready for bookings with accurate core details.",
+      requiredAction: "Finish contact details, services, and opening hours."
+    },
+    subscriber_copilot: {
+      job: "Use Lexi for owner-side decisions",
+      outcome: "You get fast guidance on bookings, ops, growth, and risks.",
+      requiredAction: "Ask Lexi for the next best actions for today."
+    },
+    admin_copilot: {
+      job: "Use Lexi for platform diagnostics",
+      outcome: "Admin checks become faster with guided troubleshooting.",
+      requiredAction: "Ask Lexi a specific diagnostics question."
+    }
+  };
+  if (byKey[key]) return byKey[key];
+  if (/lexi|copilot|chat/i.test(`${key} ${label}`)) {
+    return {
+      job: "Guide the user to the next action",
+      outcome: "Questions turn into clear actions without leaving the workflow.",
+      requiredAction: "Ask one focused question and apply the answer."
+    };
+  }
+  if (/calendar|booking|waitlist|reschedule|operations/i.test(`${key} ${label}`)) {
+    return {
+      job: "Keep front-desk operations flowing",
+      outcome: "Bookings and follow-up actions stay organized and current.",
+      requiredAction: "Review exceptions first, then complete routine updates."
+    };
+  }
+  if (/revenue|profit|account|cash|finance/i.test(`${key} ${label}`)) {
+    return {
+      job: "Turn numbers into decisions",
+      outcome: "Finance signals are visible and easier to act on.",
+      requiredAction: "Update missing inputs and review the latest summary."
+    };
+  }
+  return {
+    job: `Manage ${label}`,
+    outcome: "This part of the business stays maintained and usable.",
+    requiredAction: "Review the current status and complete the main action."
+  };
+}
+
+function moduleOperationalStatus(mod) {
+  const key = String(mod?.key || "").trim();
+  const profileName = String(businessProfileName?.value || "").trim();
+  const servicesCount = String(businessProfileServices?.value || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean).length;
+  const socialCount = [facebookInput, instagramInput, twitterInput, linkedinInput, tiktokInput, customSocialInput]
+    .filter((input) => Boolean(String(input?.value || "").trim())).length;
+  const bookingCount = Array.isArray(bookingRows) ? bookingRows.length : 0;
+  const pendingBookings = Array.isArray(bookingRows)
+    ? bookingRows.filter((row) => ["pending", "pending_confirmation", "awaiting_confirmation"].includes(String(row?.status || "").toLowerCase())).length
+    : 0;
+  const connectedAccounting = Array.isArray(accountingRows)
+    ? accountingRows.filter((row) => String(row?.status || "").toLowerCase() === "connected" || row?.connected === true).length
+    : 0;
+
+  const ready = (label, note) => ({ label, note, tone: "good" });
+  const attention = (label, note) => ({ label, note, tone: "attention" });
+  const setup = (label, note) => ({ label, note, tone: "setup" });
+
+  switch (key) {
+    case "business_profile":
+      return profileName && servicesCount > 0
+        ? ready("Configured", `${servicesCount} services listed and profile details present.`)
+        : setup("Needs Setup", "Add business details and services to improve booking conversion.");
+    case "staff":
+      return Array.isArray(staffRosterRows) && staffRosterRows.length
+        ? ready("Live", `${staffRosterRows.length} staff records available for capacity planning.`)
+        : setup("Needs Setup", "Add staff and rota coverage so booking capacity reflects reality.");
+    case "waitlist":
+      return Array.isArray(waitlistRows) && waitlistRows.length
+        ? ready("Live", `${waitlistRows.length} waitlist entries are ready for slot recovery.`)
+        : setup("Ready To Set Up", "Add waitlist clients so cancellations can be recovered quickly.");
+    case "accounting":
+      return connectedAccounting > 0
+        ? ready("Connected", `${connectedAccounting} accounting integration${connectedAccounting === 1 ? "" : "s"} connected.`)
+        : attention("Needs Connection", "Connect accounting to reduce manual reconciliation work.");
+    case "commercial":
+      return commercialPayload
+        ? ready("Live", "Memberships/packages/gift cards are available in this module.")
+        : setup("Needs Setup", "Create memberships, packages, or gift cards before selling them.");
+    case "revenue":
+      return revenueAttributionPayload
+        ? ready("Live", `Revenue attribution is using ${bookingCount} booking${bookingCount === 1 ? "" : "s"} of context.`)
+        : setup("Needs Data", "Add spend tracking to compare channels properly.");
+    case "profitability":
+      return profitabilityPayload
+        ? ready("Live", "Profitability summary is available with current inputs.")
+        : setup("Needs Inputs", "Add payroll and costs to make profit signals meaningful.");
+    case "social":
+      return socialCount > 0
+        ? ready("Configured", `${socialCount} social link${socialCount === 1 ? "" : "s"} configured.`)
+        : setup("Needs Setup", "Add social links and profile media for trust and discovery.");
+    case "booking_ops":
+      return pendingBookings > 0
+        ? attention("Action Needed", `${pendingBookings} booking confirmation${pendingBookings === 1 ? "" : "s"} need attention.`)
+        : ready("Live", `${bookingCount} booking${bookingCount === 1 ? "" : "s"} loaded.`);
+    case "calendar":
+      return ready("Live", `${bookingCount} booking${bookingCount === 1 ? "" : "s"} mapped to calendar context.`);
+    case "subscriber_copilot":
+    case "admin_copilot":
+      return ready("Ready", "Lexi is available for guided actions and module help.");
+    default:
+      if (mod?.startHere) return ready("Start Here", "Use this first to decide what to work on next.");
+      return ready("Available", "Module is ready to use.");
+  }
+}
+
+function renderModuleStatusPill(status, options = {}) {
+  const s = status || {};
+  const compact = options.compact === true;
+  const cls = s.tone === "good" ? "is-good" : s.tone === "attention" ? "is-attention" : s.tone === "setup" ? "is-setup" : "";
+  return `<span class="module-card-status ${cls}${compact ? " is-compact" : ""}">${escapeHtml(String(s.label || "Available"))}</span>`;
+}
+
+function renderModulePurposeStrip(mod) {
+  const job = moduleBusinessJobProfile(mod);
+  const status = moduleOperationalStatus(mod);
+  const usage = moduleUsageSummary(mod);
+  return `
+    <section class="module-purpose-strip" aria-label="Module purpose and status">
+      <div class="module-purpose-grid">
+        <article class="module-purpose-item">
+          <p>Module Job</p>
+          <strong>${escapeHtml(job.job)}</strong>
+          <small>${escapeHtml(job.outcome)}</small>
+        </article>
+        <article class="module-purpose-item">
+          <p>Status</p>
+          <strong>${escapeHtml(status.label || "Available")}</strong>
+          <small>${escapeHtml(status.note || "Module is ready to use.")}</small>
+        </article>
+        <article class="module-purpose-item">
+          <p>Required Action</p>
+          <strong>${escapeHtml(job.requiredAction)}</strong>
+          <small>${escapeHtml(usage.detail || usage.label || "Use this module regularly to keep data current.")}</small>
+        </article>
+      </div>
+    </section>
+  `;
 }
 
 function modulePopupSnapshotItems(mod) {
@@ -2891,9 +3174,9 @@ function modulePopupSnapshotItems(mod) {
         const cancelRate = bookings ? Math.round((cancelled / bookings) * 100) : 0;
         const avgTicket = completed > 0 ? revenue / completed : bookings > cancelled ? revenue / Math.max(1, bookings - cancelled) : 0;
         return [
-          `Last 7 days: ${bookings} bookings | ${completed} completed | ${cancelled} cancelled`,
-          `Rates: ${completionRate}% completion | ${cancelRate}% cancellation`,
-          `Revenue snapshot: ${formatMoney(revenue)} total | Avg ticket ${formatMoney(avgTicket)}`
+          `Last 7 days: ${bookings} bookings ? ${completed} completed ? ${cancelled} cancelled`,
+          `Rates: ${completionRate}% completion ? ${cancelRate}% cancellation`,
+          `Revenue snapshot: ${formatMoney(revenue)} total ? Avg ticket ${formatMoney(avgTicket)}`
         ];
       }
     case "command_center":
@@ -2913,7 +3196,7 @@ function modulePopupSnapshotItems(mod) {
     case "booking_ops":
       return [
         `Bookings loaded: ${baseBookingCounts.total}`,
-        `Pending confirmations: ${pendingConfirmationCount} | Cancelled: ${baseBookingCounts.cancelled}`,
+        `Pending confirmations: ${pendingConfirmationCount} ? Cancelled: ${baseBookingCounts.cancelled}`,
         `Active date filter: ${bookingDateFilterLabel || "All dates"}`
       ];
     case "reschedules_changes":
@@ -2926,7 +3209,7 @@ function modulePopupSnapshotItems(mod) {
       return [
         `Viewing month: ${String(calendarMonthLabel?.textContent || "Current month").trim()}`,
         `Busy days this month: ${thisMonthBusyDays}`,
-        `Selected day: ${selectedCalendarDateKey || "None"} | Bookings mapped: ${baseBookingCounts.total}`
+        `Selected day: ${selectedCalendarDateKey || "None"} ? Bookings mapped: ${baseBookingCounts.total}`
       ];
     case "accounting":
       return [
@@ -2949,7 +3232,7 @@ function modulePopupSnapshotItems(mod) {
     case "daily_takings":
       return [
         `Today bookings in diary: ${todayBookings.length}`,
-        `Today takings snapshot: ${formatMoney(todayTakings)} | Completed: ${todayCompletedCount}`,
+        `Today takings snapshot: ${formatMoney(todayTakings)} ? Completed: ${todayCompletedCount}`,
         `Awaiting confirmation today: ${todayPendingCount}`
       ];
     case "operations":
@@ -3434,7 +3717,7 @@ function moduleLexiAssistQuestion(mod, blueprint) {
   const parts = [
     `Review my ${mod.label} module for today.`,
     focus ? `Focus on: ${focus}` : "",
-    snapshots.length ? `Current signals: ${snapshots.join(" | ")}` : "",
+    snapshots.length ? `Current signals: ${snapshots.join(" ? ")}` : "",
     nextStep ? `Give me the best next actions and quick wins, starting with: ${nextStep}` : "Give me the best next actions and quick wins."
   ].filter(Boolean);
   return parts.join(" ");
@@ -3477,7 +3760,7 @@ function buildModuleLexiBriefModel(mod, blueprint) {
       ...(Array.isArray(customNarrative?.lexiNow) && customNarrative.lexiNow.length
         ? customNarrative.lexiNow.slice(0, 1)
         : [blueprint?.focus ? `Priority focus: ${blueprint.focus}` : `Priority focus: Keep ${mod.label} moving with exception-first review.`]),
-      `Automation: Monitor ${monitorOn ? "On" : "Off"} | Prep ${prepOn ? "On" : "Off"} | Report ${reportOn ? "On" : "Off"}`,
+      `Automation: Monitor ${monitorOn ? "On" : "Off"} ? Prep ${prepOn ? "On" : "Off"} ? Report ${reportOn ? "On" : "Off"}`,
       ...(Array.isArray(customNarrative?.lexiNow) && customNarrative.lexiNow.length > 1
         ? customNarrative.lexiNow.slice(1, 3)
         : [nextSteps[0] ? `Next task: ${nextSteps[0]}` : `Next task: Open the workspace and complete the highest-impact action first.`])
@@ -3508,7 +3791,7 @@ function renderModuleLexiBriefPanel(mod, blueprint, options = {}) {
     <section class="module-lexi-brief${compact ? " is-compact" : ""}" aria-label="Lexi module brief">
       <div class="module-lexi-brief-head">
         <div>
-          <p class="module-lexi-kicker">Lexi | ${escapeHtml(compact ? "Module Assist" : "Business Module Brief")}</p>
+          <p class="module-lexi-kicker">Lexi ? ${escapeHtml(compact ? "Module Assist" : "Business Module Brief")}</p>
           <h4>${escapeHtml(mod.label)}</h4>
           <p>${escapeHtml(compact
             ? "Lexi is embedded in this module so you can get fast guidance, AI routines, and focused next steps without leaving the popup."
@@ -4019,6 +4302,7 @@ function renderModuleWorkboardPanel(mod, blueprint) {
 function openModuleInfoModal(moduleKey) {
   const mod = moduleDefinitionByKey(moduleKey);
   if (!mod) return;
+  markModuleUsed(mod.key, "open");
   if (typeof closeModulePopupActive === "function") {
     closeModulePopupActive();
   }
@@ -4043,6 +4327,7 @@ function openModuleInfoModal(moduleKey) {
   const isPinned = isPinnedBusinessModule(mod);
   const isActive = mod.key === activeModuleKey;
   const roleLabel = user.role === "admin" ? "Admin area" : user.role === "subscriber" ? "Salon owner area" : "Customer area";
+  const moduleStatus = moduleOperationalStatus(mod);
   const operator = moduleOperatorBlueprint(mod);
   const isCustomerMinimal = user.role === "customer";
   const operatorActionButtons = (Array.isArray(operator?.quickActions) ? operator.quickActions : [])
@@ -4085,6 +4370,7 @@ function openModuleInfoModal(moduleKey) {
     : "";
   const workboardPanelHtml = renderModuleWorkboardPanel(mod, operator);
   const lexiBriefPanelHtml = renderModuleLexiBriefPanel(mod, operator);
+  const purposeStripHtml = renderModulePurposeStrip(mod);
 
   shell.innerHTML = `
     <div class="module-info-modal-head">
@@ -4093,11 +4379,13 @@ function openModuleInfoModal(moduleKey) {
         <div class="module-info-modal-meta">
           <span class="module-chip">${escapeHtml(roleLabel)}</span>
           ${isPinned ? '<span class="module-chip">Pinned</span>' : ""}
+          <span class="module-chip module-chip-status ${moduleStatus.tone === "good" ? "is-good" : moduleStatus.tone === "attention" ? "is-attention" : "is-setup"}">${escapeHtml(moduleStatus.label || "Available")}</span>
           <span class="module-chip muted">${isActive ? "Currently active" : "Preview mode"}</span>
         </div>
       </div>
-      <button type="button" class="module-info-close" aria-label="Close module information">✕</button>
+      <button type="button" class="module-info-close" aria-label="Close module information">x</button>
     </div>
+    ${purposeStripHtml}
     <section class="module-operator-hero${isCustomerMinimal ? " is-minimal" : ""}">
       <div class="module-operator-headline">
         <p class="module-operator-label">${isCustomerMinimal ? "AI Guide" : "AI Operator"}</p>
@@ -4221,6 +4509,7 @@ function openModuleInfoModal(moduleKey) {
 function openInteractiveModulePopup(moduleKey) {
   const mod = moduleDefinitionByKey(moduleKey);
   if (!mod) return;
+  markModuleUsed(mod.key, "open");
   if (!(mod.section instanceof HTMLElement)) {
     openModuleInfoModal(moduleKey);
     return;
@@ -4241,8 +4530,10 @@ function openInteractiveModulePopup(moduleKey) {
 
   const isPinned = isPinnedBusinessModule(mod);
   const roleLabel = user.role === "admin" ? "Admin area" : "Salon owner area";
+  const moduleStatus = moduleOperationalStatus(mod);
   const operator = moduleOperatorBlueprint(mod);
   const lexiWorkspaceBriefHtml = renderModuleLexiBriefPanel(mod, operator, { compact: true });
+  const purposeStripHtml = renderModulePurposeStrip(mod);
   shell.innerHTML = `
     <div class="module-workspace-head">
       <div>
@@ -4250,13 +4541,14 @@ function openInteractiveModulePopup(moduleKey) {
         <div class="module-info-modal-meta">
           <span class="module-chip">${escapeHtml(roleLabel)}</span>
           ${isPinned ? '<span class="module-chip">Pinned</span>' : ""}
+          <span class="module-chip module-chip-status ${moduleStatus.tone === "good" ? "is-good" : moduleStatus.tone === "attention" ? "is-attention" : "is-setup"}">${escapeHtml(moduleStatus.label || "Available")}</span>
           <span class="module-chip muted">Quick working view</span>
         </div>
         <p class="module-workspace-summary">${escapeHtml(mod.howItWorks || mod.howItHelps || "Use this module in a focused pop-up view.")}</p>
       </div>
-      <button type="button" class="module-info-close" aria-label="Close module popup">✕</button>
+      <button type="button" class="module-info-close" aria-label="Close module popup">x</button>
     </div>
-    <div class="module-workspace-body">${lexiWorkspaceBriefHtml}</div>
+    <div class="module-workspace-body">${purposeStripHtml}${lexiWorkspaceBriefHtml}</div>
     <div class="module-workspace-actions">
       <small class="module-info-hint">Press Esc or click outside to close.</small>
       <button type="button" class="btn btn-ghost module-workspace-dashboard-btn">Back to Dashboard</button>
@@ -4353,6 +4645,7 @@ function openInteractiveModulePopup(moduleKey) {
 function focusModuleByKey(moduleKey) {
   const key = String(moduleKey || "").trim();
   if (!key) return;
+  markModuleUsed(key, "focus");
   const modules = moduleDefinitionsForRole().filter((mod) => Boolean(mod.section));
   const found = modules.find((mod) => mod.key === key);
   if (!found) return;
@@ -4660,8 +4953,8 @@ function renderBusinessGrowthPanel() {
     billingLiveMeta.textContent = renewal;
   }
   if (yearlySavingsLine) {
-    const pct = Number(billingSummary?.yearlyDiscountPercent || 16.6).toFixed(1);
-    const savePerYear = Number((Number(billingSummary?.monthlyFee || 29.99) * 12 - Number(billingSummary?.yearlyFee || 299.99)).toFixed(2));
+    const pct = Number(billingSummary?.yearlyDiscountPercent || 16.7).toFixed(1);
+    const savePerYear = Number((Number(billingSummary?.monthlyFee || 9.99) * 12 - Number(billingSummary?.yearlyFee || 99.99)).toFixed(2));
     yearlySavingsLine.textContent = `Yearly billing saves £${savePerYear} per year (${pct}% off).`;
   }
 
@@ -5540,14 +5833,14 @@ function getExecutivePulseBuckets(rows, rangeConfig, profitMarginPct) {
     let label = "";
     if (rangeConfig.groupBy === "month") {
       key = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}`;
-      label = dt.toLocaleDateString(undefined, { month: "short" });
+      label = dt.toLocaleDateString("en-GB", { month: "short" });
     } else if (rangeConfig.groupBy === "week") {
       const weekStart = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - dt.getDay());
       key = `w-${toDateKey(weekStart)}`;
-      label = weekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      label = weekStart.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     } else if (rangeConfig.groupBy === "day") {
       key = toDateKey(dt);
-      label = dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      label = dt.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     } else {
       const rowMinutes = parseExecutiveBookingRowTimeMinutes(row);
       const fallbackMinutes = Number.isFinite(rangeConfig.hourStartMin) ? rangeConfig.hourStartMin : 12 * 60;
@@ -5722,36 +6015,31 @@ function renderExecutivePulse() {
   }
   showSection(subscriberExecutivePulseSection);
 
-  const command = subscriberCommandCenter || {};
-  const today = command.today || {};
-  const next7 = command.next7Days || {};
-  const health = command.serviceHealth || {};
-  const revenueSummary = revenueAttributionPayload?.summary || {};
-  const profitSummary = profitabilityPayload?.summary || {};
-  const accountingCards = accountingLivePayload?.cards || {};
-  const accountingGauges = accountingLivePayload?.gauges || {};
   const rangeConfig = getExecutivePulseRangeConfig(executivePulseRange);
   const allRows = Array.isArray(bookingRows) ? bookingRows : [];
   const rowsInRange = allRows.filter((row) => {
     const d = parseBookingDate(row?.date);
     return d && d >= rangeConfig.start && d <= rangeConfig.end;
   });
+  const statusOf = (row) => String(row?.status || "").toLowerCase();
   const bookingCount = rowsInRange.length;
-  const confirmedCount = rowsInRange.filter((b) => ["confirmed", "completed"].includes(String(b?.status || "").toLowerCase())).length;
-  const cancelledCount = rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "cancelled").length;
-  const completionCount = rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "completed").length;
-  const localCancelRate = bookingCount ? (cancelledCount / bookingCount) * 100 : 0;
-  const cancelRate = Number(health.cancellationRate ?? localCancelRate ?? 0);
-  const profitMarginPct = Number(profitSummary.profitMarginPercent ?? 35);
-  const avgTicket = bookingCount
-    ? rowsInRange.reduce((sum, row) => sum + getExecutiveRowRevenueEstimate(row), 0) / Math.max(1, bookingCount)
-    : 0;
-  const rangeRevenueEstimate = rowsInRange.reduce((sum, row) => {
-    const status = String(row?.status || "").toLowerCase();
-    return sum + (status === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row));
-  }, 0);
-  const rangeProfitEstimate = rangeRevenueEstimate * Math.max(0, Math.min(0.95, profitMarginPct / 100));
-  const buckets = getExecutivePulseBuckets(rowsInRange, rangeConfig, profitMarginPct);
+  const confirmedCount = rowsInRange.filter((row) => ["confirmed", "completed"].includes(statusOf(row))).length;
+  const completedCount = rowsInRange.filter((row) => statusOf(row) === "completed").length;
+  const cancelledCount = rowsInRange.filter((row) => statusOf(row) === "cancelled").length;
+  const pendingCount = rowsInRange.filter((row) => isPendingConfirmationStatus(row?.status)).length;
+  const cancelRate = bookingCount ? (cancelledCount / bookingCount) * 100 : 0;
+  const revenue = rowsInRange.reduce((sum, row) => sum + (statusOf(row) === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row)), 0);
+  const avgTicket = bookingCount ? revenue / Math.max(1, confirmedCount || bookingCount - cancelledCount || 1) : 0;
+  const cancellationValue = rowsInRange
+    .filter((row) => statusOf(row) === "cancelled")
+    .reduce((sum, row) => sum + getExecutiveRowRevenueEstimate(row), 0);
+  const marginPct = Number(profitabilityPayload?.summary?.profitMarginPercent || 35);
+  const estimatedProfit = revenue * Math.max(0, Math.min(0.95, marginPct / 100));
+  const todayKey = toDateKey(new Date());
+  const todayRows = allRows.filter((row) => String(row?.date || "").trim() === todayKey);
+  const todayRevenue = todayRows.reduce((sum, row) => sum + (statusOf(row) === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row)), 0);
+  const selectedRows = selectedCalendarDateKey ? allRows.filter((row) => String(row?.date || "").trim() === selectedCalendarDateKey) : [];
+  const buckets = getExecutivePulseBuckets(rowsInRange, rangeConfig, marginPct);
 
   executivePulseRangeTabs?.querySelectorAll("button[data-exec-range]").forEach((btn) => {
     const key = String(btn.getAttribute("data-exec-range") || "");
@@ -5759,46 +6047,18 @@ function renderExecutivePulse() {
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-selected", active ? "true" : "false");
   });
-  if (executivePulseRangeMeta) {
-    executivePulseRangeMeta.textContent = `${rangeConfig.label} • ${rangeConfig.chartLabel}`;
-  }
-  if (executivePulseFinanceWindowLabel) {
-    executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} performance review`;
-  }
-
+  if (executivePulseRangeMeta) executivePulseRangeMeta.textContent = `${rangeConfig.label} | ${bookingCount} bookings`;
   if (executivePulseSubtitle) {
-    const roleLabel = user.role === "admin" ? "Admin oversight view" : "Subscriber operator view";
-    executivePulseSubtitle.textContent = `${roleLabel}: quick-view signals for ${rangeConfig.label.toLowerCase()} across bookings, capacity, revenue, profit, and cancellation pressure.`;
+    const roleLabel = user.role === "admin" ? "Admin view" : "Owner view";
+    executivePulseSubtitle.textContent = `${roleLabel}: fast operational readout for ${rangeConfig.label.toLowerCase()} with bookings, cancellations, revenue, and next actions.`;
   }
+  if (executivePulseFinanceWindowLabel) executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} finance + booking summary`;
 
   const signalCards = [
-    {
-      label: `${rangeConfig.key === "day" ? "Today" : rangeConfig.label} Bookings`,
-      value: String(bookingCount || 0),
-      delta: `${Math.max(0, Number(confirmedCount || 0))} confirmed`,
-      down: false
-    },
-    {
-      label: "Revenue Pulse",
-      value: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate ?? 0) : (rangeRevenueEstimate || revenueSummary.totalRevenue || 0)),
-      delta:
-        rangeConfig.key === "day"
-          ? `${formatMoney(accountingCards.lastHourRevenue ?? 0)} last 60m`
-          : `${formatMoney(avgTicket)} avg ticket`,
-      down: false
-    },
-    {
-      label: "Cancellation Signal",
-      value: `${Number(cancelRate || 0).toFixed(1)}%`,
-      delta: `${cancelledCount} cancelled bookings`,
-      down: Number(cancelRate || 0) >= 12
-    },
-    {
-      label: "Profit Outlook",
-      value: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate ?? 0) : (rangeProfitEstimate ?? 0)),
-      delta: profitSummary.breakevenRevenue ? `Break-even ${formatMoney(profitSummary.breakevenRevenue)}` : `${Math.round(profitMarginPct || 0)}% margin target`,
-      down: Number(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate ?? 0) : rangeProfitEstimate) < 0
-    }
+    { label: rangeConfig.key === "day" ? "Today Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
+    { label: "Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg ticket`, down: false },
+    { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
+    { label: "Pending Confirmations", value: String(pendingCount), delta: pendingCount ? "Front desk follow-up needed" : "No pending confirmations", down: pendingCount > 0 }
   ];
   executivePulseSignals.innerHTML = "";
   signalCards.forEach((card) => {
@@ -5808,31 +6068,13 @@ function renderExecutivePulse() {
     executivePulseSignals.appendChild(el);
   });
 
-  const targetProgress = Number(accountingGauges.targetProgressPct || 0);
-  const loadGauge = bookingCount ? Math.min(100, Math.round((confirmedCount / Math.max(bookingCount, 1)) * 100)) : 0;
-  const nextWeekBookings = Number(next7.confirmedBookings || confirmedCount || 0);
-  const multiplier = rangeConfig.key === "year" ? 30 : rangeConfig.key === "month" ? 14 : rangeConfig.key === "week" ? 7 : 1;
-  const nextWeekCapacityGuess = Math.max(nextWeekBookings, Number(staffSummary?.estimatedChairCapacityToday || 0) * multiplier || 1);
-  const nextWeekFill = Math.min(100, Math.round((nextWeekBookings / nextWeekCapacityGuess) * 100));
+  const completionPct = bookingCount ? Math.round((completedCount / bookingCount) * 100) : 0;
+  const confirmationPct = bookingCount ? Math.round((confirmedCount / bookingCount) * 100) : 0;
+  const cancelPct = bookingCount ? Math.round((cancelledCount / bookingCount) * 100) : 0;
   const gaugeCards = [
-    {
-      label: rangeConfig.key === "day" ? "Daily Revenue Goal" : "Target Progress",
-      value: `${Math.round(targetProgress)}%`,
-      progress: Math.min(100, Math.max(0, targetProgress)),
-      sub: formatMoney(accountingGauges.dailyTarget || 0)
-    },
-    {
-      label: "Booking Completion Mix",
-      value: `${loadGauge}%`,
-      progress: loadGauge,
-      sub: `${completionCount} completed / ${bookingCount || 0} total`
-    },
-    {
-      label: rangeConfig.key === "day" ? "Next 7-Day Fill" : `${rangeConfig.label} Fill`,
-      value: `${nextWeekFill}%`,
-      progress: nextWeekFill,
-      sub: `${nextWeekBookings} confirmed bookings`
-    }
+    { label: "Completed", value: `${completionPct}%`, progress: completionPct, sub: `${completedCount} completed` },
+    { label: "Confirmed Mix", value: `${confirmationPct}%`, progress: confirmationPct, sub: `${confirmedCount} confirmed/completed` },
+    { label: "Cancellation Pressure", value: `${cancelPct}%`, progress: cancelPct, sub: `${formatMoney(cancellationValue)} at risk` }
   ];
   executivePulseGauges.innerHTML = "";
   gaugeCards.forEach((g) => {
@@ -5850,32 +6092,12 @@ function renderExecutivePulse() {
 
   executivePulseBars.innerHTML = "";
   if (!buckets.length) {
-    if (isSubscriberCleanSlate()) {
-      const placeholders = Array.from({ length: Math.max(6, rangeConfig.bucketCount || 6) }, (_, index) => {
-        if (rangeConfig.groupBy === "month") {
-          const dt = new Date(new Date().getFullYear(), index, 1);
-          return { label: dt.toLocaleDateString(undefined, { month: "short" }) };
-        }
-        return { label: `P${index + 1}` };
-      });
-      placeholders.forEach((item, index) => {
-        const col = document.createElement("article");
-        col.className = "executive-bar-col";
-        col.innerHTML = `
-          <div class="executive-bar" style="--exec-bar-height:8px" title="${escapeHtml(String(item.label))}: 0 bookings"></div>
-          <small>${escapeHtml(String(item.label || `P${index + 1}`))}</small>
-          <small>0</small>
-        `;
-        executivePulseBars.appendChild(col);
-      });
-    } else {
-      executivePulseBars.innerHTML = `<small style='color:var(--muted);grid-column:1 / -1;'>Your ${escapeHtml(rangeConfig.chartLabel.toLowerCase())} bars will fill in as bookings are added.</small>`;
-    }
+    executivePulseBars.innerHTML = `<small style="color:var(--muted);grid-column:1 / -1;">No booking activity in ${escapeHtml(rangeConfig.label.toLowerCase())} yet.</small>`;
   } else {
     const maxBucket = Math.max(1, ...buckets.map((b) => Number(b.bookings || 0)));
     buckets.forEach((bucket) => {
       const count = Number(bucket.bookings || 0);
-      const height = Math.max(8, Math.round((count / maxBucket) * 122));
+      const height = Math.max(10, Math.round((count / maxBucket) * 110));
       const col = document.createElement("article");
       col.className = "executive-bar-col";
       col.innerHTML = `
@@ -5888,27 +6110,14 @@ function renderExecutivePulse() {
   }
 
   const actionItems = [];
-  if (Array.isArray(command.recommendedActions) && command.recommendedActions.length) {
-    actionItems.push(...command.recommendedActions.slice(0, 3).map((item) => ({
-      title: item.label || "Recommended action",
-      detail: item.detail || "Review this area."
-    })));
+  if (pendingCount > 0) actionItems.push({ title: "Confirm pending bookings", detail: `${pendingCount} booking${pendingCount === 1 ? "" : "s"} need confirmation or a callback.` });
+  if (cancelRate >= 10) actionItems.push({ title: "Protect cancellations", detail: "Use Waitlist Recovery and reminder follow-up to refill lost slots quickly." });
+  if (selectedCalendarDateKey) {
+    actionItems.push({ title: "Work selected calendar day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} bookings). Ask Lexi for a short action plan.` });
+  } else {
+    actionItems.push({ title: "Pick a calendar day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
   }
-  if (cancelRate >= 10) {
-    actionItems.push({ title: "Review cancellation pressure", detail: `Cancellation rate is ${cancelRate.toFixed(1)}%. Use waitlist + reminder workflows.` });
-  }
-  if (Number(profitSummary.estimatedProfit || 0) < 0) {
-    actionItems.push({ title: "Profitability warning", detail: "Costs exceed current revenue projection. Review payroll and pricing inputs." });
-  }
-  if (!actionItems.length) {
-    actionItems.push({ title: "Steady day so far", detail: "No urgent issues are showing right now. Focus on service quality and rebooking before clients leave." });
-  }
-  if (rangeConfig.key !== "day") {
-    actionItems.unshift({
-      title: `Review ${rangeConfig.label.toLowerCase()} performance`,
-      detail: `Use saved snapshots to compare ${rangeConfig.label.toLowerCase()} revenue, cancellations, and profit signals over time.`
-    });
-  }
+  if (!actionItems.length) actionItems.push({ title: "Steady day", detail: "No urgent issues. Focus on service quality, rebooking, and filling quiet windows." });
   executivePulseActions.innerHTML = "";
   actionItems.slice(0, 4).forEach((item) => {
     const li = document.createElement("li");
@@ -5917,34 +6126,14 @@ function renderExecutivePulse() {
   });
 
   if (executivePulseFinanceStats) {
-    const financeCards = [
-      {
-        label: `${rangeConfig.label} Revenue`,
-        value: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate) : rangeRevenueEstimate),
-        meta: `${bookingCount} bookings`,
-        tone: "positive"
-      },
-      {
-        label: `${rangeConfig.label} Profit`,
-        value: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate) : rangeProfitEstimate),
-        meta: `${Math.round(profitMarginPct || 0)}% margin signal`,
-        tone: Number(rangeProfitEstimate || 0) < 0 ? "negative" : "positive"
-      },
-      {
-        label: "Average Ticket",
-        value: formatMoney(avgTicket || 0),
-        meta: `${Math.max(0, confirmedCount)} confirmed`,
-        tone: "neutral"
-      },
-      {
-        label: "Cancellation Cost Risk",
-        value: formatMoney(rowsInRange.filter((b) => String(b?.status || "").toLowerCase() === "cancelled").reduce((sum, row) => sum + getExecutiveRowRevenueEstimate(row), 0)),
-        meta: `${cancelledCount} cancelled`,
-        tone: cancelledCount ? "negative" : "neutral"
-      }
+    const cards = [
+      { label: `${rangeConfig.label} Revenue`, value: formatMoney(revenue), meta: `${bookingCount} bookings`, tone: "positive" },
+      { label: "Estimated Profit", value: formatMoney(estimatedProfit), meta: `${Math.round(marginPct)}% margin signal`, tone: estimatedProfit < 0 ? "negative" : "neutral" },
+      { label: "Today Revenue", value: formatMoney(todayRevenue), meta: `${todayRows.length} today bookings`, tone: "neutral" },
+      { label: "Cancellation Risk", value: formatMoney(cancellationValue), meta: `${cancelledCount} cancelled in range`, tone: cancelledCount ? "negative" : "neutral" }
     ];
     executivePulseFinanceStats.innerHTML = "";
-    financeCards.forEach((card) => {
+    cards.forEach((card) => {
       const article = document.createElement("article");
       article.className = `executive-finance-stat ${card.tone || "neutral"}`;
       article.innerHTML = `<p>${escapeHtml(card.label)}</p><strong>${escapeHtml(card.value)}</strong><small>${escapeHtml(card.meta)}</small>`;
@@ -5960,15 +6149,68 @@ function renderExecutivePulse() {
   latestExecutivePulseSnapshotDraft = {
     range: rangeConfig.key,
     rangeLabel: rangeConfig.label,
-    headline: `${rangeConfig.label} pulse for ${user.role === "admin" ? "admin oversight" : "subscriber operations"}`,
-    revenue: formatMoney(rangeConfig.key === "day" ? (accountingCards.todayRevenue ?? today.estimatedRevenue ?? rangeRevenueEstimate) : rangeRevenueEstimate),
-    profit: formatMoney(rangeConfig.key === "day" ? (profitSummary.estimatedProfit ?? rangeProfitEstimate) : rangeProfitEstimate),
+    headline: `${rangeConfig.label} pulse summary`,
+    revenue: formatMoney(revenue),
+    profit: formatMoney(estimatedProfit),
     bookings: bookingCount,
     confirmed: confirmedCount,
     cancelled: cancelledCount,
-    cancelRate: `${Number(cancelRate || 0).toFixed(1)}%`
+    cancelRate: `${cancelRate.toFixed(1)}%`
   };
   renderExecutivePulseSnapshotsList(readExecutivePulseSnapshots());
+}
+function renderWorkspaceStarPanel() {
+  if (!workspaceStarPanel) return;
+  const isBizRole = user.role === "subscriber" || user.role === "admin";
+  workspaceStarPanel.style.display = isBizRole ? "" : "none";
+  if (!isBizRole) return;
+
+  const todayKey = toDateKey(new Date());
+  const todayRows = bookingRows.filter((row) => String(row?.date || "").trim() === todayKey);
+  const todayRevenue = todayRows
+    .filter((row) => String(row?.status || "").toLowerCase() !== "cancelled")
+    .reduce((sum, row) => sum + Number(row?.price || 0), 0);
+  const selectedRows = selectedCalendarDateKey
+    ? bookingRows.filter((row) => String(row?.date || "").trim() === selectedCalendarDateKey)
+    : [];
+  const pendingCount = bookingRows.filter((row) => isPendingConfirmationStatus(row?.status)).length;
+  const selectedCount = selectedRows.length;
+  const selectedRevenue = selectedRows
+    .filter((row) => String(row?.status || "").toLowerCase() !== "cancelled")
+    .reduce((sum, row) => sum + Number(row?.price || 0), 0);
+  const monthLabel = String(calendarMonthLabel?.textContent || "Current month").trim();
+
+  if (workspaceStarCalendarFocus) {
+    workspaceStarCalendarFocus.textContent = selectedCalendarDateKey
+      ? `${selectedCalendarDateKey} selected`
+      : `${monthLabel} diary view`;
+  }
+  if (workspaceStarCalendarNote) {
+    workspaceStarCalendarNote.textContent = selectedCalendarDateKey
+      ? `${selectedCount} booking${selectedCount === 1 ? "" : "s"} ? ${formatMoney(selectedRevenue)} revenue view`
+      : "Pick a day in the calendar to sync Booking Operations and Lexi guidance.";
+  }
+  if (workspaceStarTodayCount) {
+    workspaceStarTodayCount.textContent = `${todayRows.length} booking${todayRows.length === 1 ? "" : "s"} today`;
+  }
+  if (workspaceStarTodayRevenue) {
+    workspaceStarTodayRevenue.textContent = `Revenue snapshot: ${formatMoney(todayRevenue)}`;
+  }
+  if (workspaceStarLexiPrompt) {
+    workspaceStarLexiPrompt.textContent = selectedCalendarDateKey
+      ? `Review ${selectedCalendarDateKey} and tell me what needs attention first.`
+      : "Review today’s diary and tell me the next 3 front-desk actions.";
+  }
+  if (workspaceStarLexiHint) {
+    workspaceStarLexiHint.textContent = pendingCount > 0
+      ? `${pendingCount} pending confirmation${pendingCount === 1 ? "" : "s"} detected.`
+      : "Short, direct actions for the front desk.";
+  }
+  if (workspaceStarSummary) {
+    workspaceStarSummary.textContent = selectedCalendarDateKey
+      ? `Calendar day filter is active for ${selectedCalendarDateKey}. Ask Lexi for quick actions, rebooking priorities, or confirmation follow-up.`
+      : "Start with the diary, then ask Lexi for the shortest action plan for bookings, cancellations, and confirmations.";
+  }
 }
 
 function renderSubscriberCalendar() {
@@ -6082,6 +6324,7 @@ function renderSubscriberCalendar() {
   updateBookingRangeControls();
   renderBusinessAiWorkspace("subscriber");
   renderBusinessAiWorkspace("admin");
+  renderWorkspaceStarPanel();
 }
 
 function scheduleCalendarTodayRefresh() {
@@ -6179,7 +6422,7 @@ function statusChipClass(status) {
 function formatCalendarDayTitle(dateKey) {
   const dt = parseDateKeyToDate(dateKey);
   if (!dt) return dateKey;
-  return dt.toLocaleDateString(undefined, {
+  return dt.toLocaleDateString("en-GB", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -6423,6 +6666,7 @@ async function openCalendarDayWorkspace(dateKey) {
           const service = String(row?.service || "Service").trim() || "Service";
           const bookingId = String(row?.id || "");
           const canEditThis = canManage && bookingId && !normalizeText(status).includes("cancel");
+          const canRecoverThis = canManage && bookingId && normalizeText(status).includes("cancel");
           const contactBits = [String(row?.customerPhone || "").trim(), String(row?.customerEmail || "").trim()].filter(Boolean);
           const businessName = String(row?.businessName || "").trim();
           return `
@@ -6435,7 +6679,7 @@ async function openCalendarDayWorkspace(dateKey) {
                 <span class="calendar-day-booking-chip ${chipClass}">${escapeHtml(status)}</span>
               </div>
               <div class="calendar-day-booking-meta">
-                ${contactBits.length ? `<span>${escapeHtml(contactBits.join(" | "))}</span>` : "<span>No customer contact saved.</span>"}
+                ${contactBits.length ? `<span>${escapeHtml(contactBits.join(" ? "))}</span>` : "<span>No customer contact saved.</span>"}
                 ${businessName ? `<span>${escapeHtml(businessName)}</span>` : ""}
                 ${row?.createdAt ? `<span>Created ${escapeHtml(formatDateTime(row.createdAt))}</span>` : ""}
               </div>
@@ -6443,6 +6687,7 @@ async function openCalendarDayWorkspace(dateKey) {
                 <button class="btn btn-ghost" type="button" data-day-popup-action="open-bookings">Open Booking Operations</button>
                 <button class="btn btn-ghost" type="button" data-day-popup-action="edit-booking" data-booking-id="${escapeHtml(bookingId)}" ${canEditThis ? "" : "disabled"}>Edit</button>
                 <button class="btn btn-ghost" type="button" data-day-popup-action="delete-booking" data-booking-id="${escapeHtml(bookingId)}" ${canEditThis ? "" : "disabled"}>Delete</button>
+                ${canRecoverThis ? `<button class="btn btn-ghost" type="button" data-day-popup-action="recover-slot" data-booking-id="${escapeHtml(bookingId)}">Recover Slot</button>` : ""}
               </div>
             </li>
           `;
@@ -6468,7 +6713,7 @@ async function openCalendarDayWorkspace(dateKey) {
         value: formatMoney(revenueDisplay.total),
         meterClass: "",
         widthPct: revenueDisplay.progressPct,
-        meta: `${revenueDisplay.progressPct}% of day target (${formatMoney(revenueDisplay.target)})${useRevenuePreview ? " • preview" : ""}`
+        meta: `${revenueDisplay.progressPct}% of day target (${formatMoney(revenueDisplay.target)})${useRevenuePreview ? " ? preview" : ""}`
       },
       {
         label: "Confirmed / Pending Value",
@@ -6518,7 +6763,7 @@ async function openCalendarDayWorkspace(dateKey) {
             ${selectedCalendarDateKey === safeDateKey ? '<span class="module-chip muted">Day filter active</span>' : ""}
           </div>
         </div>
-        <button type="button" class="module-info-close" aria-label="Close day workspace">✕</button>
+        <button type="button" class="module-info-close" aria-label="Close day workspace">x</button>
       </div>
       <div class="calendar-day-modal-body">
         <section class="calendar-day-summary-grid" aria-label="Day summary">
@@ -6625,6 +6870,15 @@ async function openCalendarDayWorkspace(dateKey) {
           if (action === "open-waitlist") {
             close();
             focusModuleByKey("waitlist");
+            setWaitlistStatus(`Waitlist recovery view opened for ${safeDateKey}. Review cancellations and contact best-fit clients.`);
+            return;
+          }
+          if (action === "recover-slot" && bookingId) {
+            const booking = rows.find((row) => String(row?.id || "").trim() === bookingId);
+            close();
+            if (stageWaitlistRecoveryFromBooking(booking)) {
+              showManageToast("Waitlist recovery form pre-filled from cancelled booking.");
+            }
             return;
           }
           if (action === "clear-filter") {
@@ -7051,7 +7305,7 @@ function renderCustomerLexiDaySummary(dataset) {
   const slotsForDay = dataset.slotsByDate.get(dateKey) || [];
   const dateObj = parseBookingDate(dateKey);
   const dateLabel = dateObj
-    ? dateObj.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })
+    ? dateObj.toLocaleDateString("en-GB", { weekday: "short", month: "short", day: "numeric", year: "numeric" })
     : dateKey;
   const salonName = dataset.salon?.name || "Selected salon";
   if (customerLexiCalendarView === "week") {
@@ -7062,7 +7316,7 @@ function renderCustomerLexiDaySummary(dataset) {
           const key = toDateKey(d);
           return {
             key,
-            label: d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }),
+            label: d.toLocaleDateString("en-GB", { weekday: "short", month: "short", day: "numeric" }),
             bookings: (dataset.bookingsByDate.get(key) || []).length,
             slots: (dataset.slotsByDate.get(key) || []).length
           };
@@ -7154,7 +7408,7 @@ function renderCustomerLexiCalendar() {
   const monthDate = new Date(customerLexiCalendarMonthCursor.getFullYear(), customerLexiCalendarMonthCursor.getMonth(), 1);
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();
-  customerLexiCalendarMonth.textContent = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  customerLexiCalendarMonth.textContent = monthDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
   const monthStartWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -7252,7 +7506,7 @@ function renderCustomerBookingHistory(rows = []) {
     const li = document.createElement("li");
     li.innerHTML = `
       <strong>${row.businessName || "Business"} | ${row.service || "Service"}</strong><br />
-      <small>${row.date || "N/A"} at ${row.time || "N/A"} | ${row.status || "unknown"} | ${isPast ? "Past visit" : "Upcoming booking"}</small>
+      <small>${row.date || "N/A"} at ${row.time || "N/A"} ? ${row.status || "unknown"} ? ${isPast ? "Past visit" : "Upcoming booking"}</small>
     `;
     customerBookingHistory.appendChild(li);
   });
@@ -7326,7 +7580,7 @@ function formatDateTime(value) {
   if (!value) return "N/A";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "N/A";
-  return parsed.toLocaleString();
+  return parsed.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 function setAccountingStatus(message, isError = false) {
@@ -7674,7 +7928,7 @@ function getStaffWeekMeta() {
       ...day,
       date,
       dateLabel: `${date.getDate()}/${date.getMonth() + 1}`,
-      longLabel: date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })
+      longLabel: date.toLocaleDateString("en-GB", { weekday: "short", month: "short", day: "numeric" })
     };
   });
 }
@@ -7685,8 +7939,8 @@ function formatStaffWeekRange() {
   const end = days[6]?.date;
   if (!start || !end) return "This Week";
   const sameMonth = start.getMonth() === end.getMonth();
-  const startLabel = start.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  const endLabel = end.toLocaleDateString(undefined, { month: sameMonth ? undefined : "short", day: "numeric" });
+  const startLabel = start.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
+  const endLabel = end.toLocaleDateString("en-GB", { month: sameMonth ? undefined : "short", day: "numeric" });
   return `${startLabel} - ${endLabel}`;
 }
 
@@ -8639,6 +8893,42 @@ function parseWaitlistDateTime(raw) {
   return { preferredDate: `${yyyy}-${mm}-${dd}`, preferredTime: `${hh}:${min}` };
 }
 
+function buildWaitlistRecoveryPrefillDateTime(booking) {
+  const date = String(booking?.date || "").trim();
+  const time = String(booking?.time || "").trim();
+  if (!date) return "";
+  return time ? `${date} ${time}` : date;
+}
+
+function stageWaitlistRecoveryFromBooking(sourceBooking, options = {}) {
+  const booking = sourceBooking && typeof sourceBooking === "object"
+    ? sourceBooking
+    : bookingRows.find((row) => String(row?.id || "").trim() === String(sourceBooking || "").trim());
+  if (!booking) {
+    setWaitlistStatus("Could not find that booking to stage waitlist recovery.", true);
+    return false;
+  }
+  if (waitlistNameInput) waitlistNameInput.value = String(booking.customerName || "").trim();
+  if (waitlistPhoneInput) waitlistPhoneInput.value = String(booking.customerPhone || "").trim();
+  if (waitlistEmailInput) waitlistEmailInput.value = String(booking.customerEmail || "").trim().toLowerCase();
+  if (waitlistServiceInput) waitlistServiceInput.value = String(booking.service || "").trim();
+  if (waitlistDateInput) waitlistDateInput.value = buildWaitlistRecoveryPrefillDateTime(booking);
+  const wasCancelled = normalizeText(booking?.status).includes("cancel");
+  setWaitlistStatus(
+    wasCancelled
+      ? "Waitlist recovery pre-filled from the cancelled booking. Review and save to start outreach."
+      : "Waitlist form pre-filled from the selected booking. Review and save if this customer wants another slot."
+  );
+  if (options.focusModule !== false) {
+    focusModuleByKey("waitlist");
+    waitlistSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      if (waitlistNameInput instanceof HTMLElement) waitlistNameInput.focus();
+    }, 140);
+  }
+  return true;
+}
+
 function renderWaitlistSummary() {
   if (!waitlistSummaryCards) return;
   const summary = waitlistSummary || { totalEntries: 0, waitingCount: 0, contactedCount: 0, bookedCount: 0 };
@@ -8774,7 +9064,7 @@ function renderOperationsInsights() {
       const reasonText = Array.isArray(row.reasons) ? row.reasons.join(" ") : "";
       item.innerHTML = `
         <strong>${row.customerName} - ${row.service}</strong>
-        <small>${row.date} ${row.time} | Risk: ${row.riskLevel} (${row.riskScore})</small>
+        <small>${row.date} ${row.time} ? Risk: ${row.riskLevel} (${row.riskScore})</small>
         <small>${reasonText}</small>
         <div class="ops-actions">
           <button class="btn btn-ghost ops-send-reminder" type="button" data-booking-id="${row.bookingId}" data-customer-name="${row.customerName}" data-service="${row.service}">Mark Reminder Sent</button>
@@ -8924,7 +9214,7 @@ function renderCommercialControls() {
         const li = document.createElement("li");
         li.innerHTML = `
           <strong>${item.name}</strong>
-          <small>${formatMoney(item.price)} | Sessions: ${item.remainingSessions}/${item.sessionCount}</small>
+          <small>${formatMoney(item.price)} ? Sessions: ${item.remainingSessions}/${item.sessionCount}</small>
           <small>Status: ${item.status}</small>
           <div class="commercial-actions manage-only">
             <button class="btn btn-ghost commercial-edit-package" type="button" data-package-id="${item.id}">Edit</button>
@@ -8944,7 +9234,7 @@ function renderCommercialControls() {
       li.innerHTML = `
         <strong>${gift.code} - ${gift.recipientName}</strong>
         <small>Balance: ${formatMoney(gift.remainingBalance)} / ${formatMoney(gift.initialBalance)} (${gift.status})</small>
-        <small>Issued: ${formatDateTime(gift.issuedAt)} | Expires: ${gift.expiresAt ? formatDateTime(gift.expiresAt) : "Not set"}</small>
+        <small>Issued: ${formatDateTime(gift.issuedAt)} ? Expires: ${gift.expiresAt ? formatDateTime(gift.expiresAt) : "Not set"}</small>
         <div class="commercial-actions">
           <button class="btn btn-ghost commercial-redeem-gift" type="button" data-gift-card-id="${gift.id}" ${
         gift.status === "active" ? "" : "disabled"
@@ -9064,8 +9354,8 @@ function renderRevenueAttribution() {
       const li = document.createElement("li");
       li.innerHTML = `
         <strong>${label}</strong>
-        <small>Bookings: 0 | Revenue: ${formatMoney(0)} | Spend: ${formatMoney(0)}</small>
-        <small>ROI: 0% | Share: 0% | Cancelled: 0</small>
+        <small>Bookings: 0 ? Revenue: ${formatMoney(0)} ? Spend: ${formatMoney(0)}</small>
+        <small>ROI: 0% ? Share: 0% ? Cancelled: 0</small>
         <div class="commercial-actions manage-only">
           <button class="btn btn-ghost" type="button" data-module-jump="revenue">Open</button>
         </div>
@@ -9084,8 +9374,8 @@ function renderRevenueAttribution() {
     const li = document.createElement("li");
     li.innerHTML = `
       <strong>${row.label || toChannelLabel(row.channel)}</strong>
-      <small>Bookings: ${row.bookings} | Revenue: ${formatMoney(row.revenue)} | Spend: ${formatMoney(row.spend)}</small>
-      <small>ROI: ${roiText} | Share: ${row.sharePercent}% | Cancelled: ${row.cancelledBookings || 0}</small>
+      <small>Bookings: ${row.bookings} ? Revenue: ${formatMoney(row.revenue)} ? Spend: ${formatMoney(row.spend)}</small>
+      <small>ROI: ${roiText} ? Share: ${row.sharePercent}% ? Cancelled: ${row.cancelledBookings || 0}</small>
       <div class="commercial-actions manage-only">
         <button class="btn btn-ghost revenue-edit-spend" type="button" data-channel="${row.channel}" data-spend="${row.spend}">Edit</button>
         <button class="btn btn-ghost revenue-delete-spend" type="button" data-channel="${row.channel}">Delete</button>
@@ -9458,6 +9748,7 @@ function renderBookings(bookings) {
   bookings.forEach((b) => {
     const pendingConfirmation = isPendingConfirmationStatus(b?.status);
     const statusLabel = formatBookingStatusLabel(b?.status);
+    const isCancelled = normalizeText(b?.status) === "cancelled";
     const li = document.createElement("li");
     if (pendingConfirmation) li.classList.add("booking-row-pending");
     li.innerHTML = `
@@ -9469,9 +9760,10 @@ function renderBookings(bookings) {
         <span class="booking-status-badge ${pendingConfirmation ? "pending" : ""}">${escapeHtml(statusLabel)}</span>
       </div>
       ${pendingConfirmation ? '<div class="booking-pending-note">Subscriber action required: confirm or contact the customer with an alternative slot.</div>' : ""}
-      <div style="margin-top:0.4rem;display:flex;gap:0.4rem;">
+      <div style="margin-top:0.4rem;display:flex;gap:0.4rem;flex-wrap:wrap;">
         <button class="btn btn-ghost manage-only cancel-booking" data-id="${b.id}" ${b.status === "cancelled" ? "disabled" : ""}>Delete</button>
         <button class="btn btn-ghost manage-only reschedule-booking" data-id="${b.id}" ${b.status === "cancelled" ? "disabled" : ""}>Edit</button>
+        ${isCancelled ? `<button class="btn btn-ghost manage-only recover-booking-slot" data-id="${b.id}">Recover Slot</button>` : ""}
       </div>
     `;
     bookingsList.appendChild(li);
@@ -9753,6 +10045,15 @@ function inferBillingCycleFromSummary(summary) {
   return String(subscriptionBillingCycle?.value || "monthly").trim().toLowerCase() || "monthly";
 }
 
+function inferBillingProviderFromSummary(summary) {
+  const explicit = String(summary?.provider || "").trim().toLowerCase();
+  if (explicit === "stripe" || explicit === "paypal") return explicit;
+  if (summary?.hasStripeCustomer || summary?.hasStripeSubscription) return "stripe";
+  const status = String(summary?.status || "").trim().toLowerCase();
+  if (status === "active" || status === "trialing" || status === "past_due") return "paypal";
+  return String(subscriptionBillingProvider?.value || "stripe").trim().toLowerCase() || "stripe";
+}
+
 function getAutoRenewFromSummary(summary) {
   if (typeof summary?.autoRenew === "boolean") return summary.autoRenew;
   if (typeof summary?.cancelAtPeriodEnd === "boolean") return !summary.cancelAtPeriodEnd;
@@ -9785,6 +10086,12 @@ function renderSubscriberBillingControls() {
     const inferredCycle = inferBillingCycleFromSummary(billingSummary);
     if (inferredCycle === "monthly" || inferredCycle === "yearly") {
       subscriptionBillingCycle.value = inferredCycle;
+    }
+  }
+  if (subscriptionBillingProvider) {
+    const inferredProvider = inferBillingProviderFromSummary(billingSummary);
+    if (inferredProvider === "stripe" || inferredProvider === "paypal") {
+      subscriptionBillingProvider.value = inferredProvider;
     }
   }
   if (startBilling) {
@@ -10010,6 +10317,13 @@ bookingsList?.addEventListener("click", async (event) => {
   if (!isDashboardManagerRole() || !manageModeEnabled) return;
 
   try {
+    if (target.classList.contains("recover-booking-slot")) {
+      const booking = bookingRows.find((row) => String(row?.id || "") === String(bookingId || ""));
+      if (stageWaitlistRecoveryFromBooking(booking)) {
+        showManageToast("Waitlist recovery form pre-filled.");
+      }
+      return;
+    }
     if (target.classList.contains("cancel-booking")) {
       const confirmed = await openManageConfirm({
         title: "Delete Booking",
@@ -10336,7 +10650,7 @@ customerLexiAskNextBest?.addEventListener("click", () => {
   const salon = getSelectedCustomerSalon();
   const prompt = buildCustomerLexiPlannerPrompt("next-best", { salonName: salon?.name || "the selected salon" });
   appendCustomerLexiChat(prompt);
-  customerReceptionSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  openInteractiveModulePopup("customer_chat");
 });
 
 customerLexiDaySummary?.addEventListener("click", (event) => {
@@ -10355,7 +10669,7 @@ customerLexiDaySummary?.addEventListener("click", (event) => {
   const dateLabel = String(actionButton.getAttribute("data-date-label") || dateKey).trim();
   const prompt = buildCustomerLexiPlannerPrompt(action, { salonName: salon?.name || "the selected salon", dateKey, dateLabel });
   appendCustomerLexiChat(prompt);
-  customerReceptionSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  openInteractiveModulePopup("customer_chat");
 });
 
 document.addEventListener("click", async (event) => {
@@ -11207,7 +11521,17 @@ if (user.role === "subscriber" || user.role === "admin") {
   renderBusinessAiWorkspace("admin");
   scheduleCalendarTodayRefresh();
   renderExecutivePulse();
+  renderWorkspaceStarPanel();
 }
+
+workspaceStarAskLexiBtn?.addEventListener("click", (event) => {
+  const lexiRole = user.role === "admin" ? "admin" : "subscriber";
+  openBusinessAiChatPopup(lexiRole, { trigger: event.currentTarget, focusInput: true });
+});
+
+workspaceStarOpenCalendarBtn?.addEventListener("click", () => {
+  focusModuleByKey("calendar");
+});
 
 subscriberCopilotOpenPopup?.addEventListener("click", (event) => {
   openBusinessAiChatPopup("subscriber", { trigger: event.currentTarget });
@@ -11238,6 +11562,15 @@ subscriberLexiQuickOpenButtons.forEach((btn) => {
     const lexiRole = user.role === "admin" ? "admin" : "subscriber";
     openBusinessAiChatPopup(lexiRole, { trigger: event.currentTarget });
   });
+});
+document.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const lexiLink = target.closest('a[href="#customerReceptionSection"]');
+  if (!(lexiLink instanceof HTMLElement)) return;
+  if (user.role !== "customer") return;
+  event.preventDefault();
+  openInteractiveModulePopup("customer_chat");
 });
 subscriberCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("subscriber"));
 subscriberCopilotPopup?.addEventListener("click", (event) => {
@@ -12938,6 +13271,11 @@ if (isMockMode || dashboardDemoFillModeEnabled) {
     }
   })();
 }
+
+
+
+
+
 
 
 

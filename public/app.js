@@ -2,10 +2,21 @@ const chatWindow = document.getElementById("chatWindow");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const chatClear = document.getElementById("chatClear");
+const frontdeskSection = document.getElementById("frontdesk");
+const frontdeskChatShell = frontdeskSection?.querySelector(".chat-shell") || null;
 const salonMeta = document.getElementById("salonMeta");
 const heroSalonMeta = document.getElementById("heroSalonMeta");
 const bookingsList = document.getElementById("bookingsList");
 const liveBookingSummary = document.getElementById("liveBookingSummary");
+const heroLexiCalendarSummary = document.getElementById("heroLexiCalendarSummary");
+const heroLexiAskBtn = document.getElementById("heroLexiAskBtn");
+const heroLexiBookBtn = document.getElementById("heroLexiBookBtn");
+const heroLexiCalendarFocus = document.getElementById("heroLexiCalendarFocus");
+const heroLexiCalendarNote = document.getElementById("heroLexiCalendarNote");
+const heroLexiBookingsCount = document.getElementById("heroLexiBookingsCount");
+const heroLexiBookingsRevenue = document.getElementById("heroLexiBookingsRevenue");
+const heroLexiSuggestedPrompt = document.getElementById("heroLexiSuggestedPrompt");
+const heroLexiPromptHint = document.getElementById("heroLexiPromptHint");
 
 const searchForm = document.getElementById("searchForm");
 const clearFiltersBtn = document.getElementById("clearFilters");
@@ -53,6 +64,11 @@ const homeTrialBusinessCity = document.getElementById("homeTrialBusinessCity");
 const homeTrialBusinessCountry = document.getElementById("homeTrialBusinessCountry");
 const homeTrialBusinessPostcode = document.getElementById("homeTrialBusinessPostcode");
 const homeTrialBusinessPhone = document.getElementById("homeTrialBusinessPhone");
+const homeTrialBusinessWebsite = document.getElementById("homeTrialBusinessWebsite");
+const homeTrialTeamSize = document.getElementById("homeTrialTeamSize");
+const homeTrialPrimaryGoal = document.getElementById("homeTrialPrimaryGoal");
+const homeTrialSetupNotes = document.getElementById("homeTrialSetupNotes");
+const homeTrialPaymentConsent = document.getElementById("homeTrialPaymentConsent");
 const homeTrialTemplatePreview = document.getElementById("homeTrialTemplatePreview");
 const homeTrialTriggers = Array.from(document.querySelectorAll("[data-open-trial-modal]"));
 const homeSubscriberSigninModal = document.getElementById("homeSubscriberSigninModal");
@@ -62,6 +78,11 @@ const homeSubscriberSigninEmail = document.getElementById("homeSubscriberSigninE
 const homeSubscriberSigninPassword = document.getElementById("homeSubscriberSigninPassword");
 const homeSubscriberSigninSubmit = document.getElementById("homeSubscriberSigninSubmit");
 const homeSubscriberSigninMsg = document.getElementById("homeSubscriberSigninMsg");
+const homeSubscriberModeSignin = document.getElementById("homeSubscriberModeSignin");
+const homeSubscriberModeAdmin = document.getElementById("homeSubscriberModeAdmin");
+const homeSubscriberSigninPanel = document.getElementById("homeSubscriberSigninPanel");
+const homeAdminSigninPanel = document.getElementById("homeAdminSigninPanel");
+const homeSubscriberModeSwitchers = Array.from(document.querySelectorAll("[data-home-subscriber-mode]"));
 const homeSubscriberSigninTriggers = Array.from(document.querySelectorAll("[data-open-subscriber-signin-modal]"));
 const homeAdminSigninModal = document.getElementById("homeAdminSigninModal");
 const homeAdminSigninClose = document.getElementById("homeAdminSigninClose");
@@ -87,6 +108,13 @@ const homeCustomerSignupForm = document.getElementById("homeCustomerSignupForm")
 const homeCustomerSignupName = document.getElementById("homeCustomerSignupName");
 const homeCustomerSignupEmail = document.getElementById("homeCustomerSignupEmail");
 const homeCustomerSignupPassword = document.getElementById("homeCustomerSignupPassword");
+const homeCustomerSignupPhone = document.getElementById("homeCustomerSignupPhone");
+const homeCustomerSignupCity = document.getElementById("homeCustomerSignupCity");
+const homeCustomerSignupService = document.getElementById("homeCustomerSignupService");
+const homeCustomerSignupNotes = document.getElementById("homeCustomerSignupNotes");
+const homeCustomerPaymentConsent = document.getElementById("homeCustomerPaymentConsent");
+const homeCustomerSignupTerms = document.getElementById("homeCustomerSignupTerms");
+const homeCustomerSignupUpdates = document.getElementById("homeCustomerSignupUpdates");
 const homeCustomerSignupSubmit = document.getElementById("homeCustomerSignupSubmit");
 const homeCustomerSignupMsg = document.getElementById("homeCustomerSignupMsg");
 const homeCustomerModeSwitchers = Array.from(document.querySelectorAll("[data-home-customer-mode]"));
@@ -100,6 +128,12 @@ let homeDemoTimeframe = "today";
 let homeDemoQuickFilter = "";
 let homeDemoCustomRange = null;
 let homeDemoLiveTick = 0;
+let latestPublicDemoBookings = [];
+let homeLexiPopupOpen = false;
+let homeLexiPopupOverlay = null;
+let homeLexiPopupContainer = null;
+let homeLexiChatPlaceholder = null;
+let homeLexiPopupLastFocus = null;
 const homeDemoDisplayValues = {
   revenue: 0,
   cancels: 0,
@@ -229,6 +263,7 @@ let lastHomeTrialTrigger = null;
 let lastHomeSubscriberSigninTrigger = null;
 let lastHomeAdminSigninTrigger = null;
 let lastHomeCustomerAccessTrigger = null;
+let homeSubscriberAccessMode = "subscriber";
 let homeCustomerAccessMode = "signin";
 function openHomeTrialModal(trigger = null) {
   if (!homeTrialModal) return;
@@ -259,7 +294,24 @@ function setHomeSubscriberSigninMessage(text, state = "") {
   if (state) homeSubscriberSigninMsg.classList.add(state);
 }
 
-function openHomeSubscriberSigninModal(trigger = null) {
+function setHomeSubscriberAccessMode(mode) {
+  const nextMode = mode === "admin" ? "admin" : "subscriber";
+  homeSubscriberAccessMode = nextMode;
+  homeSubscriberModeSignin?.classList.toggle("is-active", nextMode === "subscriber");
+  homeSubscriberModeAdmin?.classList.toggle("is-active", nextMode === "admin");
+  homeSubscriberModeSignin?.setAttribute("aria-selected", nextMode === "subscriber" ? "true" : "false");
+  homeSubscriberModeAdmin?.setAttribute("aria-selected", nextMode === "admin" ? "true" : "false");
+  if (homeSubscriberSigninPanel) {
+    homeSubscriberSigninPanel.classList.toggle("is-active", nextMode === "subscriber");
+    homeSubscriberSigninPanel.hidden = nextMode !== "subscriber";
+  }
+  if (homeAdminSigninPanel) {
+    homeAdminSigninPanel.classList.toggle("is-active", nextMode === "admin");
+    homeAdminSigninPanel.hidden = nextMode !== "admin";
+  }
+}
+
+function openHomeSubscriberSigninModal(trigger = null, mode = "subscriber") {
   if (!homeSubscriberSigninModal) return;
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
@@ -269,7 +321,15 @@ function openHomeSubscriberSigninModal(trigger = null) {
   homeSubscriberSigninModal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   setHomeSubscriberSigninMessage("");
-  window.requestAnimationFrame(() => homeSubscriberSigninEmail?.focus());
+  setHomeAdminSigninMessage("");
+  setHomeSubscriberAccessMode(mode);
+  window.requestAnimationFrame(() => {
+    if (homeSubscriberAccessMode === "admin") {
+      homeAdminSigninEmail?.focus();
+      return;
+    }
+    homeSubscriberSigninEmail?.focus();
+  });
 }
 
 function closeHomeSubscriberSigninModal() {
@@ -288,6 +348,11 @@ function setHomeAdminSigninMessage(text, state = "") {
 }
 
 function openHomeAdminSigninModal(trigger = null) {
+  if (!homeAdminSigninModal && homeSubscriberSigninModal) {
+    if (trigger instanceof HTMLElement) lastHomeAdminSigninTrigger = trigger;
+    openHomeSubscriberSigninModal(trigger, "admin");
+    return;
+  }
   if (!homeAdminSigninModal) return;
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
@@ -390,7 +455,7 @@ function openHomeModuleModal(moduleKey) {
             <span class="home-module-chip soft">Homepage quick view</span>
           </div>
         </div>
-        <button type="button" class="home-module-close" aria-label="Close">Ã¢Å“â€¢</button>
+        <button type="button" class="home-module-close" aria-label="Close">x</button>
       </div>
       <section class="home-module-pane">
         <h4>What this helps with</h4>
@@ -451,8 +516,8 @@ function setAppStatus(message, isError = false, autoClearMs = 4200) {
 
 function formatMoney(value) {
   const num = Number(value || 0);
-  if (!Number.isFinite(num)) return "Ã‚Â£0";
-  return `Ã‚Â£${Math.round(num).toLocaleString("en-GB")}`;
+  if (!Number.isFinite(num)) return "GBP 0";
+  return `GBP ${Math.round(num).toLocaleString("en-GB")}`;
 }
 
 function formatRelativeTime(iso) {
@@ -464,6 +529,17 @@ function formatRelativeTime(iso) {
   const mins = Math.floor(diffSec / 60);
   if (mins < 60) return `${mins}m ago`;
   return `${Math.floor(mins / 60)}h ago`;
+}
+
+function formatDisplayDate(value) {
+  if (!value) return "";
+  const parsed = new Date(`${String(value).trim()}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    const fallback = new Date(String(value));
+    if (Number.isNaN(fallback.getTime())) return String(value);
+    return fallback.toLocaleDateString("en-GB");
+  }
+  return parsed.toLocaleDateString("en-GB");
 }
 
 function timeframeLabel(key) {
@@ -659,7 +735,7 @@ function renderHomeDemoDashboard() {
   const mode = homeDemoCustomRange ? "custom" : homeDemoTimeframe;
   const model = buildHomeDemoDataset(mode);
   const periodText = mode === "custom" && homeDemoCustomRange
-    ? `${homeDemoCustomRange.from} to ${homeDemoCustomRange.to}`
+    ? `${formatDisplayDate(homeDemoCustomRange.from)} to ${formatDisplayDate(homeDemoCustomRange.to)}`
     : timeframeLabel(mode);
 
   homeDemoCards.innerHTML = "";
@@ -832,7 +908,7 @@ function animateCounters() {
   counters.forEach((counter) => {
     const target = Number(counter.getAttribute("data-target") || "0");
     const hasPercent = counter.textContent.includes("%");
-    const hasCurrency = counter.textContent.includes("$");
+    const hasCurrency = counter.textContent.includes("$") || counter.textContent.includes("£");
     const duration = 1200;
     const startTime = performance.now();
 
@@ -842,7 +918,7 @@ function animateCounters() {
       const value = Math.round(target * eased);
 
       if (hasCurrency) {
-        counter.textContent = `$${value.toLocaleString()}`;
+        counter.textContent = `£${value.toLocaleString("en-GB")}`;
       } else if (hasPercent) {
         counter.textContent = `${value}%`;
       } else {
@@ -876,21 +952,69 @@ function setupRevealAnimations() {
 }
 
 function renderBookings(bookings) {
+  latestPublicDemoBookings = Array.isArray(bookings) ? bookings.slice() : [];
   bookingsList.innerHTML = "";
   if (!bookings.length) {
     const item = document.createElement("li");
     item.className = "booking-item";
     item.textContent = "No live bookings yet. Your first booking will appear here.";
     bookingsList.appendChild(item);
+    renderHeroLexiCalendarStar();
     return;
   }
 
   bookings.forEach((b) => {
     const item = document.createElement("li");
     item.className = "booking-item";
-    item.textContent = `${b.customerName || b.guest_name}: ${b.service} on ${b.date} at ${b.time} (${b.businessName || b.stylist || "Front Desk"})`;
+    item.textContent = `${b.customerName || b.guest_name}: ${b.service} on ${formatDisplayDate(b.date)} at ${b.time} (${b.businessName || b.stylist || "Front Desk"})`;
     bookingsList.appendChild(item);
   });
+  renderHeroLexiCalendarStar();
+}
+
+function renderHeroLexiCalendarStar() {
+  if (!heroLexiBookingsCount) return;
+  const rows = Array.isArray(latestPublicDemoBookings) ? latestPublicDemoBookings : [];
+  const countsByDate = new Map();
+  rows.forEach((row) => {
+    const key = String(row?.date || "").trim();
+    if (!key) return;
+    countsByDate.set(key, (countsByDate.get(key) || 0) + 1);
+  });
+  const sortedDates = Array.from(countsByDate.keys()).sort();
+  const nextDate = sortedDates[0] || "";
+  const nextCount = nextDate ? countsByDate.get(nextDate) || 0 : 0;
+  const activeBookings = rows.filter((row) => String(row?.status || "").toLowerCase() !== "cancelled");
+  const revenue = activeBookings.reduce((sum, row) => sum + Number(row?.price || 0), 0);
+  const featuredBusinessHint = selectedBusinessId ? "selected business" : "featured business";
+
+  heroLexiBookingsCount.textContent = `${rows.length} live booking${rows.length === 1 ? "" : "s"}`;
+  if (heroLexiBookingsRevenue) {
+    heroLexiBookingsRevenue.textContent = `Demo revenue snapshot: GBP ${Number(revenue || 0).toFixed(0)}`;
+  }
+  if (heroLexiCalendarFocus) {
+    heroLexiCalendarFocus.textContent = nextDate
+      ? `${formatDisplayDate(nextDate)} | ${nextCount} booking${nextCount === 1 ? "" : "s"}`
+      : "No booking dates yet";
+  }
+  if (heroLexiCalendarNote) {
+    heroLexiCalendarNote.textContent = nextDate
+      ? `Ask Lexi to check availability around ${formatDisplayDate(nextDate)} or suggest another time.`
+      : "Lexi can still answer service questions and start a booking request.";
+  }
+  if (heroLexiSuggestedPrompt) {
+    heroLexiSuggestedPrompt.textContent = nextDate
+      ? `Can you check availability around ${formatDisplayDate(nextDate)} for me?`
+      : "Can you help me book an appointment this week?";
+  }
+  if (heroLexiPromptHint) {
+    heroLexiPromptHint.textContent = `Lexi gives short, human replies and moves the booking forward for the ${featuredBusinessHint}.`;
+  }
+  if (heroLexiCalendarSummary) {
+    heroLexiCalendarSummary.textContent = nextDate
+      ? `Live booking activity is loaded. Ask Lexi for the best time on ${formatDisplayDate(nextDate)} or to start a booking request now.`
+      : "See live booking movement and ask Lexi the next best question in one view.";
+  }
 }
 
 function getFilters() {
@@ -911,7 +1035,7 @@ function updateLiveSummary(results, location) {
 
 function renderBusinessDetails(business) {
   const serviceRows = business.services
-    .map((s) => `<li>${escapeHtml(s.name)} - ${s.duration} mins - $${s.price}</li>`)
+      .map((s) => `<li>${escapeHtml(s.name)} - ${s.duration} mins - £${s.price}</li>`)
     .join("");
 
   const slots = business.availableSlots.map((slot) => `<li>${escapeHtml(slot)}</li>`).join("");
@@ -946,7 +1070,7 @@ function renderBusinessResults(results) {
     item.innerHTML = `
       <h4>${escapeHtml(business.name)}</h4>
       <p>${escapeHtml(business.location.city)}, ${escapeHtml(business.location.country)} | ${escapeHtml(business.location.postcode)}</p>
-      <p>${escapeHtml(business.phone)} | Rating: ${business.rating} | slots shown in profile</p>
+      <p>${escapeHtml(business.phone)} ? Rating: ${business.rating} ? slots shown in profile</p>
       <p>Services: ${escapeHtml(business.services.map((s) => s.name).join(", "))}</p>
       <div class="salon-actions">
         <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">View Profile</button>
@@ -983,8 +1107,79 @@ function quickBookBusiness(business) {
   const slot = business.availableSlots[0] || "tomorrow 2:00 PM";
   const defaultService = business.services[0]?.name || "Signature Service";
   chatInput.value = `Book ${defaultService} at ${business.name} on ${slot}. My name is `;
-  chatInput.focus();
-  document.querySelector(".receptionist-live").scrollIntoView({ behavior: "smooth" });
+  openHomeLexiPopup();
+}
+
+function ensureHomeLexiPopup() {
+  if (homeLexiPopupOverlay && homeLexiPopupContainer) return { overlay: homeLexiPopupOverlay, container: homeLexiPopupContainer };
+  const overlay = document.createElement("div");
+  overlay.className = "home-lexi-popup-overlay";
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.innerHTML = `
+    <section class="home-lexi-popup" role="dialog" aria-modal="true" aria-labelledby="homeLexiPopupTitle">
+      <div class="home-lexi-popup-head">
+        <div>
+          <p class="home-lexi-popup-kicker">Lexi Chat</p>
+          <h3 id="homeLexiPopupTitle">Ask Lexi</h3>
+          <p>Short, direct booking help in a focused popup.</p>
+        </div>
+        <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
+      </div>
+      <div class="home-lexi-popup-body"></div>
+    </section>
+  `;
+  document.body.appendChild(overlay);
+  const container = overlay.querySelector(".home-lexi-popup-body");
+  const closeBtn = overlay.querySelector(".home-lexi-popup-close");
+  closeBtn?.addEventListener("click", closeHomeLexiPopup);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeHomeLexiPopup();
+  });
+  homeLexiPopupOverlay = overlay;
+  homeLexiPopupContainer = container;
+  return { overlay, container };
+}
+
+function openHomeLexiPopup() {
+  if (!(frontdeskChatShell instanceof HTMLElement)) {
+    document.querySelector(".receptionist-live")?.scrollIntoView({ behavior: "smooth" });
+    chatInput?.focus();
+    return;
+  }
+  const { overlay, container } = ensureHomeLexiPopup();
+  if (!(container instanceof HTMLElement)) return;
+  if (!homeLexiChatPlaceholder) {
+    homeLexiChatPlaceholder = document.createElement("div");
+    homeLexiChatPlaceholder.className = "home-lexi-chat-placeholder";
+  }
+  if (frontdeskChatShell.parentNode && frontdeskChatShell.parentNode !== container) {
+    frontdeskChatShell.parentNode.insertBefore(homeLexiChatPlaceholder, frontdeskChatShell);
+  }
+  homeLexiPopupLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  container.appendChild(frontdeskChatShell);
+  overlay.classList.add("is-open");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("home-lexi-popup-open");
+  homeLexiPopupOpen = true;
+  chatInput?.focus();
+}
+
+function closeHomeLexiPopup() {
+  if (!homeLexiPopupOpen) return;
+  if (homeLexiChatPlaceholder?.parentNode && frontdeskChatShell instanceof HTMLElement) {
+    homeLexiChatPlaceholder.parentNode.insertBefore(frontdeskChatShell, homeLexiChatPlaceholder);
+    homeLexiChatPlaceholder.remove();
+  }
+  if (homeLexiPopupOverlay) {
+    homeLexiPopupOverlay.classList.remove("is-open");
+    homeLexiPopupOverlay.setAttribute("aria-hidden", "true");
+  }
+  document.body.classList.remove("home-lexi-popup-open");
+  homeLexiPopupOpen = false;
+  if (homeLexiPopupLastFocus instanceof HTMLElement && document.contains(homeLexiPopupLastFocus)) {
+    homeLexiPopupLastFocus.focus();
+  }
+  homeLexiPopupLastFocus = null;
 }
 
 async function loadConfig() {
@@ -995,7 +1190,7 @@ async function loadConfig() {
   const policyText = config?.cancellationPolicy?.feeRule || "Cancellation policy unavailable.";
 
   if (featured) {
-    const featuredMeta = `${featured.name} | ${featured.phone} | ${featured.location.address}, ${featured.location.city} | Cancellation: ${policyText}`;
+    const featuredMeta = `${featured.name} ? ${featured.phone} ? ${featured.location.address}, ${featured.location.city} ? Cancellation: ${policyText}`;
     salonMeta.textContent = featuredMeta;
     if (heroSalonMeta) {
       heroSalonMeta.textContent = "Lexi can answer service questions, check available slots, and start booking requests using your business profile, services, and front desk details.";
@@ -1010,6 +1205,7 @@ async function loadConfig() {
     liveBookingSummary.textContent = "No live availability is showing yet. Add businesses to display slots.";
     selectedBusinessId = "";
   }
+  renderHeroLexiCalendarStar();
 
   if (!llmEnabled) {
     appendMessage(
@@ -1020,6 +1216,16 @@ async function loadConfig() {
     appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
   }
 }
+
+heroLexiAskBtn?.addEventListener("click", () => {
+  openHomeLexiPopup();
+});
+
+heroLexiBookBtn?.addEventListener("click", () => {
+  chatInput.value = "I want to book an appointment this week.";
+  openHomeLexiPopup();
+  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+});
 
 async function loadBookings() {
   try {
@@ -1176,12 +1382,29 @@ homeTrialBusinessType?.addEventListener("change", renderHomeTrialTemplatePreview
 homeSubscriberSigninTriggers.forEach((trigger) => {
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
-    openHomeSubscriberSigninModal(trigger);
+    openHomeSubscriberSigninModal(trigger, "subscriber");
   });
 });
 homeSubscriberSigninClose?.addEventListener("click", closeHomeSubscriberSigninModal);
 homeSubscriberSigninModal?.addEventListener("click", (event) => {
   if (event.target === homeSubscriberSigninModal) closeHomeSubscriberSigninModal();
+});
+homeSubscriberModeSwitchers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLElement)) return;
+    const mode = String(target.getAttribute("data-home-subscriber-mode") || "").trim().toLowerCase();
+    if (mode !== "subscriber" && mode !== "admin") return;
+    event.preventDefault();
+    setHomeSubscriberAccessMode(mode);
+    window.requestAnimationFrame(() => {
+      if (mode === "admin") {
+        homeAdminSigninEmail?.focus();
+      } else {
+        homeSubscriberSigninEmail?.focus();
+      }
+    });
+  });
 });
 
 homeAdminSigninTriggers.forEach((trigger) => {
@@ -1216,8 +1439,18 @@ homeCustomerModeSwitchers.forEach((trigger) => {
   });
 });
 
+document.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const lexiLink = target.closest('a[href="#frontdesk"]');
+  if (!(lexiLink instanceof HTMLAnchorElement)) return;
+  event.preventDefault();
+  openHomeLexiPopup();
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
+  if (homeLexiPopupOpen) closeHomeLexiPopup();
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
@@ -1240,7 +1473,12 @@ homeTrialForm?.addEventListener("submit", async (event) => {
     city: homeTrialBusinessCity.value.trim(),
     country: homeTrialBusinessCountry.value.trim(),
     postcode: homeTrialBusinessPostcode.value.trim(),
-    phone: homeTrialBusinessPhone.value.trim()
+    phone: homeTrialBusinessPhone.value.trim(),
+    websiteUrl: String(homeTrialBusinessWebsite?.value || "").trim(),
+    teamSize: String(homeTrialTeamSize?.value || "").trim(),
+    primaryGoal: String(homeTrialPrimaryGoal?.value || "").trim(),
+    setupNotes: String(homeTrialSetupNotes?.value || "").trim(),
+    paymentConsentAccepted: Boolean(homeTrialPaymentConsent?.checked)
   };
 
   setHomeTrialMessage("Creating your subscriber workspace...", "");
@@ -1359,6 +1597,10 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
   const name = String(homeCustomerSignupName?.value || "").trim();
   const email = String(homeCustomerSignupEmail?.value || "").trim();
   const password = String(homeCustomerSignupPassword?.value || "");
+  const phone = String(homeCustomerSignupPhone?.value || "").trim();
+  const city = String(homeCustomerSignupCity?.value || "").trim();
+  const preferredService = String(homeCustomerSignupService?.value || "").trim();
+  const notes = String(homeCustomerSignupNotes?.value || "").trim();
   if (!name || !email || !password) return;
 
   setHomeCustomerSignupMessage("Creating customer account...", "");
@@ -1367,7 +1609,18 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
     const response = await fetch("/api/auth/register/customer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        phone,
+        city,
+        preferredService,
+        notes,
+        paymentConsentAccepted: Boolean(homeCustomerPaymentConsent?.checked),
+        termsAccepted: Boolean(homeCustomerSignupTerms?.checked),
+        updatesOptIn: Boolean(homeCustomerSignupUpdates?.checked)
+      })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Registration failed.");
@@ -1399,5 +1652,6 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
+
 
 

@@ -17,3 +17,32 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run test
+
+  compose-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create optional env file placeholder
+        run: touch .env
+      - name: Build and start Docker Compose stack
+        run: docker compose up -d --build
+      - name: Wait for /readyz
+        run: |
+          for i in $(seq 1 36); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/readyz || true)
+            if [ "$code" = "200" ]; then
+              echo "/readyz healthy"
+              exit 0
+            fi
+            echo "Attempt $i: /readyz returned ${code:-none}"
+            sleep 5
+          done
+          echo "Compose stack failed readiness check"
+          docker compose ps
+          exit 1
+      - name: Docker Compose logs (failure)
+        if: failure()
+        run: docker compose logs --no-color --tail=200
+      - name: Shutdown Docker Compose stack
+        if: always()
+        run: docker compose down -v

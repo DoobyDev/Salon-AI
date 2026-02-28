@@ -1,0 +1,10 @@
+ALTER TABLE "Business"
+  ADD COLUMN IF NOT EXISTS "websiteUrl" TEXT,
+  ADD COLUMN IF NOT EXISTS "websiteTitle" TEXT,
+  ADD COLUMN IF NOT EXISTS "websiteSummary" TEXT,
+  ADD COLUMN IF NOT EXISTS "websiteImageUrl" TEXT,
+  ADD COLUMN IF NOT EXISTS "socialFacebook" TEXT,
+  ADD COLUMN IF NOT EXISTS "socialInstagram" TEXT,
+  ADD COLUMN IF NOT EXISTS "socialTwitter" TEXT,
+  ADD COLUMN IF NOT EXISTS "socialLinkedin" TEXT,
+  ADD COLUMN IF NOT EXISTS "socialTiktok" TEXT;

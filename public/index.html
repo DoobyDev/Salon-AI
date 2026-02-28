@@ -31,6 +31,7 @@
         <span class="brand-dot"></span>
         AI Salon Receptionist
       </a>
+      <a class="btn btn-ghost nav-admin-only nav-admin-side" data-open-admin-signin-modal href="/auth">ADMIN ONLY</a>
       <nav class="nav">
         <a data-open-trial-modal href="/auth?role=subscriber&mode=register">Join</a>
         <a href="#dashboards">Demo</a>
@@ -40,7 +41,7 @@
       <div class="auth-actions">
         <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">CUSTOMERS</a>
         <a class="btn btn-ghost" data-open-subscriber-signin-modal href="/auth?role=subscriber">SUBSCRIBERS</a>
-        <a class="btn btn-ghost nav-admin-only" data-open-admin-signin-modal href="/auth">ADMIN ONLY</a>
+        <a class="btn btn-ghost" href="#frontdesk">ASK LEXI</a>
       </div>
     </header>
 
@@ -61,8 +62,8 @@
           <p class="hero-cta-note">Take a look around first, then start your free trial when you're ready.</p>
           <div class="cta-proof">
             <strong>free trial to all new subscribers</strong>
-            <span>Then plans start from £29.99/month</span>
-            <span>or £299.99/year (save 16.6%)</span>
+            <span>Then plans start from £9.99/month</span>
+            <span>or £99.99/year (save 16.7%)</span>
             <span>No long setup project needed</span>
           </div>
           <div class="hero-operator-note">
@@ -113,6 +114,36 @@
             <h2>Meet Lexi | Your AI Receptionist</h2>
             <p>Lexi handles booking questions, service enquiries, and front desk support so your team can stay focused on clients.</p>
           </div>
+          <section class="hero-lexi-calendar-star" aria-label="Lexi and booking calendar first view">
+            <div class="hero-lexi-calendar-star-head">
+              <div>
+                <p class="hero-lexi-calendar-star-kicker">Star Feature</p>
+                <h3>Lexi + Booking Calendar</h3>
+                <p id="heroLexiCalendarSummary">See live booking movement and ask Lexi the next best question in one view.</p>
+              </div>
+              <div class="hero-lexi-calendar-star-actions">
+                <button class="btn" type="button" id="heroLexiAskBtn">Ask Lexi</button>
+                <button class="btn btn-ghost" type="button" id="heroLexiBookBtn">Start Booking</button>
+              </div>
+            </div>
+            <div class="hero-lexi-calendar-star-grid">
+              <article>
+                <p>Calendar Snapshot</p>
+                <strong id="heroLexiCalendarFocus">Loading booking activity...</strong>
+                <small id="heroLexiCalendarNote">Lexi uses booking activity to guide the next action.</small>
+              </article>
+              <article>
+                <p>Live Bookings</p>
+                <strong id="heroLexiBookingsCount">Loading...</strong>
+                <small id="heroLexiBookingsRevenue">Demo feed updates from public booking activity.</small>
+              </article>
+              <article>
+                <p>Lexi Prompt</p>
+                <strong id="heroLexiSuggestedPrompt">Can you help me book an appointment this week?</strong>
+                <small id="heroLexiPromptHint">Short, human answers that move the booking forward.</small>
+              </article>
+            </div>
+          </section>
           <div class="chat-shell">
             <div id="chatWindow" class="chat-window" aria-live="polite"></div>
             <form id="chatForm" class="chat-form">
@@ -124,7 +155,7 @@
                 autocomplete="off"
                 required
               />
-              <button class="btn" type="submit">Send</button>
+                <button class="btn" type="submit">Ask Lexi</button>
               <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
             </form>
           </div>
@@ -371,6 +402,9 @@
             Data is only used to run your bookings, dashboards, billing, and approved service integrations.
           </p>
         </div>
+        <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
+          <a class="btn" href="#frontdesk">Ask Lexi</a>
+        </div>
         <div class="privacy-promise-grid">
           <article>
             <h3>Private by Default</h3>
@@ -399,6 +433,7 @@
         </div>
 
         <div class="dashboard-actions">
+          <a class="btn" href="#frontdesk">Ask Lexi</a>
           <a class="btn" href="/dashboard?mock=1&role=subscriber">Open Subscriber Demo</a>
           <a class="btn btn-ghost" href="/dashboard?role=subscriber">Open Subscriber Dashboard</a>
           <a class="btn btn-ghost" href="/dashboard?role=customer">Open Customer Dashboard</a>
@@ -497,6 +532,9 @@
           <h2>Join as a Salon Owner or Customer</h2>
           <p>Choose the right access for you. Salon owners get the business dashboard and tools, and customers get a simple booking experience. All new subscribers start with a free trial.</p>
         </div>
+        <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
+          <a class="btn" href="#frontdesk">Ask Lexi</a>
+        </div>
         <div class="join-grid">
           <article class="join-card">
             <p class="join-tag">For salon owners &amp; teams • Free Trial available</p>
@@ -532,6 +570,7 @@
           </p>
         <div class="cta-row">
           <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+          <a class="btn" href="#frontdesk">Ask Lexi</a>
           <a class="btn btn-ghost" href="#dashboards">Review Dashboard Demo</a>
           <a class="btn btn-ghost" href="#frontdesk">Test AI Receptionist</a>
         </div>
@@ -600,6 +639,9 @@
             Search availability by business name, town/city, postcode, or phone number.
             Then pick a business to view its front desk details and available slots.
           </p>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
+          <a class="btn" href="#frontdesk">Ask Lexi</a>
         </div>
 
         <div class="finder-grid">
@@ -854,25 +896,57 @@
           <div>
             <p class="eyebrow">Subscribers</p>
             <h2 id="homeSubscriberSigninTitle">Subscriber Sign In</h2>
-            <p>Sign in to your workspace to manage bookings, daily operations, waitlist recovery, and business performance.</p>
+            <p>Sign in to your workspace to manage bookings, daily operations, waitlist recovery, and business performance. Admin access is also inside this popup.</p>
           </div>
           <button id="homeSubscriberSigninClose" class="btn btn-ghost" type="button" aria-label="Close subscriber sign in">Close</button>
         </div>
-        <form id="homeSubscriberSigninForm" class="home-access-form" autocomplete="off">
-          <label>
-            Email
-            <input id="homeSubscriberSigninEmail" type="email" placeholder="Email" required />
-          </label>
-          <label>
-            Password
-            <input id="homeSubscriberSigninPassword" type="password" placeholder="Password" required />
-          </label>
-          <div class="home-access-form-actions">
-            <button id="homeSubscriberSigninSubmit" class="btn" type="submit">Sign In</button>
-            <a class="btn btn-ghost" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
-            <span id="homeSubscriberSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+        <div class="home-customer-mode-tabs" role="tablist" aria-label="Subscriber and admin access options">
+          <button id="homeSubscriberModeSignin" class="home-customer-mode-tab is-active" type="button" role="tab" aria-selected="true" data-home-subscriber-mode="subscriber">
+            Subscriber
+          </button>
+          <button id="homeSubscriberModeAdmin" class="home-customer-mode-tab" type="button" role="tab" aria-selected="false" data-home-subscriber-mode="admin">
+            Admin Only
+          </button>
+        </div>
+        <div id="homeSubscriberSigninPanel" class="home-customer-panel is-active" role="tabpanel" aria-labelledby="homeSubscriberModeSignin">
+          <form id="homeSubscriberSigninForm" class="home-access-form" autocomplete="off">
+            <label>
+              Email
+              <input id="homeSubscriberSigninEmail" type="email" placeholder="Email" required />
+            </label>
+            <label>
+              Password
+              <input id="homeSubscriberSigninPassword" type="password" placeholder="Password" required />
+            </label>
+            <div class="home-access-form-actions">
+              <button id="homeSubscriberSigninSubmit" class="btn" type="submit">Sign In</button>
+              <a class="btn btn-ghost" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+              <button class="btn btn-ghost" type="button" data-home-subscriber-mode="admin">Admin Only</button>
+              <span id="homeSubscriberSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+        <div id="homeAdminSigninPanel" class="home-customer-panel" role="tabpanel" aria-labelledby="homeSubscriberModeAdmin" hidden>
+          <div class="home-admin-warning">
+            <strong>Restricted Area</strong>
+            <p>Use this sign-in only for platform owner, developer, and maintenance tasks.</p>
           </div>
-        </form>
+          <form id="homeAdminSigninForm" class="home-access-form" autocomplete="off">
+            <label>
+              Admin Email
+              <input id="homeAdminSigninEmail" type="email" placeholder="Admin email" required />
+            </label>
+            <label>
+              Password
+              <input id="homeAdminSigninPassword" type="password" placeholder="Password" required />
+            </label>
+            <div class="home-access-form-actions">
+              <button id="homeAdminSigninSubmit" class="btn" type="submit">Admin Sign In</button>
+              <button class="btn btn-ghost" type="button" data-home-subscriber-mode="subscriber">Back to Subscriber</button>
+              <span id="homeAdminSigninMsg" class="home-trial-msg" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
       </section>
     </div>
 
@@ -1000,37 +1074,6 @@
       </section>
     </div>
 
-    <div id="homeAdminSigninModal" class="home-trial-overlay" aria-hidden="true">
-      <section class="home-trial-modal home-access-modal" role="dialog" aria-modal="true" aria-labelledby="homeAdminSigninTitle">
-        <div class="home-trial-modal-head">
-          <div>
-            <p class="eyebrow">Admin Only</p>
-            <h2 id="homeAdminSigninTitle">Developer &amp; App Maintenance Only</h2>
-            <p>This area is restricted to the developer and app maintenance access only. Unauthorized access is not permitted.</p>
-          </div>
-          <button id="homeAdminSigninClose" class="btn btn-ghost" type="button" aria-label="Close admin sign in">Close</button>
-        </div>
-        <div class="home-admin-warning">
-          <strong>Restricted Area</strong>
-          <p>Use this sign-in only for platform owner, developer, and maintenance tasks.</p>
-        </div>
-        <form id="homeAdminSigninForm" class="home-access-form" autocomplete="off">
-          <label>
-            Admin Email
-            <input id="homeAdminSigninEmail" type="email" placeholder="Admin email" required />
-          </label>
-          <label>
-            Password
-            <input id="homeAdminSigninPassword" type="password" placeholder="Password" required />
-          </label>
-          <div class="home-access-form-actions">
-            <button id="homeAdminSigninSubmit" class="btn" type="submit">Admin Sign In</button>
-            <span id="homeAdminSigninMsg" class="home-trial-msg" aria-live="polite"></span>
-          </div>
-        </form>
-      </section>
-    </div>
-
     <footer class="footer">
       <div id="footerPolicies" class="footer-links" aria-label="Legal links">
         <a href="/legal.html#privacy">Privacy Policy</a>
@@ -1045,6 +1088,304 @@
         front desk management, customer retention, and business analytics.
       </p>
     </footer>
+    <style id="homepage-light-hard-reset">
+      body[data-theme-mode="light"] {
+        background:
+          radial-gradient(circle at 12% 10%, rgba(255, 150, 201, 0.24), transparent 44%),
+          radial-gradient(circle at 88% 6%, rgba(255, 184, 217, 0.22), transparent 46%),
+          linear-gradient(90deg, #fff0f8 0%, #fff7fc 52%, #ffffff 100%) !important;
+      }
+
+      body[data-theme-mode="light"]::before {
+        opacity: 1 !important;
+        background-image:
+          linear-gradient(rgba(224, 157, 189, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(224, 157, 189, 0.16) 1px, transparent 1px),
+          radial-gradient(circle at 20% 10%, rgba(255, 206, 225, 0.2), transparent 40%),
+          radial-gradient(circle at 86% 14%, rgba(197, 234, 225, 0.14), transparent 36%) !important;
+        background-size: 38px 38px, 38px 38px, auto, auto !important;
+        background-position: 0 0, 0 0, 0 0, 0 0 !important;
+      }
+
+      body[data-theme-mode="light"] .hero,
+      body[data-theme-mode="light"] .hero-chat-demo,
+      body[data-theme-mode="light"] .hero-operator-note,
+      body[data-theme-mode="light"] .hero-capabilities article,
+      body[data-theme-mode="light"] .hero-lexi-sell-card,
+      body[data-theme-mode="light"] .hero-chat-status,
+      body[data-theme-mode="light"] .hero-lexi-privacy-note,
+      body[data-theme-mode="light"] .hero-badges span,
+      body[data-theme-mode="light"] .cta-proof strong,
+      body[data-theme-mode="light"] .cta-proof span,
+      body[data-theme-mode="light"] .stat-chip,
+      body[data-theme-mode="light"] .trust-strip,
+      body[data-theme-mode="light"] .trust-strip li,
+      body[data-theme-mode="light"] .command-deck,
+      body[data-theme-mode="light"] .command-deck-card,
+      body[data-theme-mode="light"] .homepage-flow-grid,
+      body[data-theme-mode="light"] .homepage-command-rail,
+      body[data-theme-mode="light"] .homepage-command-proof,
+      body[data-theme-mode="light"] .control-room-frame,
+      body[data-theme-mode="light"] .control-room-frame-head,
+      body[data-theme-mode="light"] .control-room-sidebar-panel,
+      body[data-theme-mode="light"] .home-business-modules,
+      body[data-theme-mode="light"] .privacy-promise,
+      body[data-theme-mode="light"] .privacy-promise-grid article,
+      body[data-theme-mode="light"] .dashboard-showcase,
+      body[data-theme-mode="light"] .home-live-panel,
+      body[data-theme-mode="light"] .join-roles,
+      body[data-theme-mode="light"] .join-card,
+      body[data-theme-mode="light"] .join-card-benefits,
+      body[data-theme-mode="light"] .impact-card,
+      body[data-theme-mode="light"] .storyline,
+      body[data-theme-mode="light"] .storyline article,
+      body[data-theme-mode="light"] .frontdesk-section,
+      body[data-theme-mode="light"] .policy,
+      body[data-theme-mode="light"] .policy-card,
+      body[data-theme-mode="light"] .policy-card-accent,
+      body[data-theme-mode="light"] .search-form,
+      body[data-theme-mode="light"] .finder-results,
+      body[data-theme-mode="light"] .salon-item,
+      body[data-theme-mode="light"] .selected-business,
+      body[data-theme-mode="light"] .booking-item,
+      body[data-theme-mode="light"] .metric-card,
+      body[data-theme-mode="light"] .live-cards article,
+      body[data-theme-mode="light"] .gauge-card,
+      body[data-theme-mode="light"] .live-chart {
+        background: rgba(255, 255, 255, 0.96) !important;
+        background-image: none !important;
+        border-color: rgba(186, 204, 231, 0.78) !important;
+        box-shadow: none !important;
+      }
+
+      body[data-theme-mode="light"] .hero-operator-note,
+      body[data-theme-mode="light"] .hero-capabilities article,
+      body[data-theme-mode="light"] .hero-badges span {
+        background: linear-gradient(160deg, rgba(255, 233, 244, 0.95), rgba(255, 245, 251, 0.96)) !important;
+        background-image: none !important;
+        border-color: rgba(235, 170, 203, 0.55) !important;
+      }
+
+      body[data-theme-mode="light"] .hero-capabilities article {
+        background: #ffffff !important;
+        background-image: none !important;
+        border-color: rgba(235, 170, 203, 0.48) !important;
+      }
+
+      body[data-theme-mode="light"] .hero-chat-demo .chat-window {
+        background-color: rgba(255, 255, 255, 0.18) !important;
+        background-image:
+          radial-gradient(circle at 22% 14%, rgba(255,255,255,0.16), transparent 42%),
+          url("/Salon_AI_IMG.png") !important;
+        background-position: center 18% !important;
+        background-size: cover, cover !important;
+        background-repeat: no-repeat, no-repeat !important;
+        background-blend-mode: screen, normal !important;
+        border-color: rgba(186, 204, 231, 0.78) !important;
+      }
+
+      body[data-theme-mode="light"] .hero-lexi-value-pills span {
+        background:
+          radial-gradient(circle at 90% -10%, rgba(255, 191, 222, 0.2), transparent 52%),
+          linear-gradient(160deg, rgba(255, 235, 246, 0.96), rgba(255, 247, 252, 0.98)) !important;
+        border-color: rgba(235, 170, 203, 0.5) !important;
+        color: #7b3b60 !important;
+      }
+
+      body[data-theme-mode="light"] .hero-badges span {
+        color: #7b3b60 !important;
+      }
+
+      body[data-theme-mode="light"] .hero-badges span:first-child {
+        background:
+          radial-gradient(circle at 90% -10%, rgba(255, 191, 222, 0.2), transparent 52%),
+          linear-gradient(160deg, rgba(255, 235, 246, 0.96), rgba(255, 247, 252, 0.98)) !important;
+        border-color: rgba(235, 170, 203, 0.5) !important;
+        color: #7b3b60 !important;
+      }
+
+      body[data-theme-mode="light"] .cta-proof strong {
+        background:
+          radial-gradient(circle at 90% -10%, rgba(255, 191, 222, 0.2), transparent 52%),
+          linear-gradient(160deg, rgba(255, 235, 246, 0.96), rgba(255, 247, 252, 0.98)) !important;
+        border-color: rgba(235, 170, 203, 0.5) !important;
+        color: #7b3b60 !important;
+      }
+
+      body[data-theme-mode="light"] .search-form input,
+      body[data-theme-mode="light"] .search-form select,
+      body[data-theme-mode="light"] .chat-form input,
+      body[data-theme-mode="light"] .timeframe-switch,
+      body[data-theme-mode="light"] .quick-filter-custom input {
+        background: rgba(255, 255, 255, 0.94) !important;
+        background-image: none !important;
+        border-color: rgba(186, 204, 231, 0.78) !important;
+        color: #24324a !important;
+      }
+
+      body[data-theme-mode="light"] .home-module-modal-actions {
+        background: #fff !important;
+        background-image: none !important;
+        border-top: 1px solid rgba(186, 204, 231, 0.78) !important;
+      }
+
+      body[data-theme-mode="light"] .gauge-ring::before {
+        background: #fff !important;
+        border-color: rgba(186, 204, 231, 0.78) !important;
+      }
+
+      body[data-theme-mode="light"] .sparkline-wrap,
+      body[data-theme-mode="light"] .sparkline-wrap.cancel,
+      body[data-theme-mode="light"] .slot-list li {
+        background: rgba(242, 247, 255, 0.95) !important;
+        background-image: none !important;
+      }
+
+      body[data-theme-mode="light"] .slot-list li {
+        border-color: rgba(126, 180, 255, 0.6) !important;
+        color: #245189 !important;
+      }
+
+      body[data-theme-mode="light"] .hero,
+      body[data-theme-mode="light"] .command-deck,
+      body[data-theme-mode="light"] .homepage-flow-grid,
+      body[data-theme-mode="light"] .control-room-frame,
+      body[data-theme-mode="light"] .home-live-panel,
+      body[data-theme-mode="light"] .join-card:hover,
+      body[data-theme-mode="light"] .impact-card:hover,
+      body[data-theme-mode="light"] .salon-item:hover,
+      body[data-theme-mode="light"] .home-quick-path-card:hover,
+      body[data-theme-mode="light"] .home-module-card:hover {
+        box-shadow: none !important;
+      }
+
+      body[data-theme-mode="light"] .section-header p,
+      body[data-theme-mode="light"] .hero-text,
+      body[data-theme-mode="light"] .join-card p,
+      body[data-theme-mode="light"] .impact-card ul,
+      body[data-theme-mode="light"] .storyline p,
+      body[data-theme-mode="light"] .policy p,
+      body[data-theme-mode="light"] .selected-business p,
+      body[data-theme-mode="light"] .privacy-promise-grid p,
+      body[data-theme-mode="light"] .trust-strip li,
+      body[data-theme-mode="light"] .metric-card p,
+      body[data-theme-mode="light"] .search-form label,
+      body[data-theme-mode="light"] .live-label,
+      body[data-theme-mode="light"] .highlights,
+      body[data-theme-mode="light"] .homepage-command-proof p,
+      body[data-theme-mode="light"] .homepage-command-steps li {
+        color: #3f516d !important;
+      }
+
+      body[data-theme-mode="light"] .hero-copy h1,
+      body[data-theme-mode="light"] .hero-copy,
+      body[data-theme-mode="light"] .hero-copy *:not(.eyebrow),
+      body[data-theme-mode="light"] .section-header h2,
+      body[data-theme-mode="light"] .section-header h3,
+      body[data-theme-mode="light"] .panel h2,
+      body[data-theme-mode="light"] .panel h3,
+      body[data-theme-mode="light"] .join-card h3,
+      body[data-theme-mode="light"] .impact-card h2,
+      body[data-theme-mode="light"] .privacy-promise-grid h3,
+      body[data-theme-mode="light"] .metric-card strong,
+      body[data-theme-mode="light"] .storyline h3,
+      body[data-theme-mode="light"] .selected-business h3,
+      body[data-theme-mode="light"] .selected-business h4,
+      body[data-theme-mode="light"] .homepage-command-steps a,
+      body[data-theme-mode="light"] .control-room-sidebar-panel a {
+        color: #121a27 !important;
+      }
+
+      body[data-theme-mode="light"] .panel,
+      body[data-theme-mode="light"] .panel *,
+      body[data-theme-mode="light"] .hero *,
+      body[data-theme-mode="light"] .command-deck *,
+      body[data-theme-mode="light"] .homepage-flow-grid *,
+      body[data-theme-mode="light"] .control-room-frame *,
+      body[data-theme-mode="light"] .join-roles *,
+      body[data-theme-mode="light"] .impact-grid *,
+      body[data-theme-mode="light"] .storyline *,
+      body[data-theme-mode="light"] .frontdesk-section *,
+      body[data-theme-mode="light"] .policy * {
+        color: inherit;
+      }
+
+      body[data-theme-mode="light"] .panel,
+      body[data-theme-mode="light"] .hero,
+      body[data-theme-mode="light"] .command-deck,
+      body[data-theme-mode="light"] .homepage-flow-grid,
+      body[data-theme-mode="light"] .control-room-frame,
+      body[data-theme-mode="light"] .join-roles,
+      body[data-theme-mode="light"] .impact-grid,
+      body[data-theme-mode="light"] .storyline,
+      body[data-theme-mode="light"] .frontdesk-section,
+      body[data-theme-mode="light"] .policy {
+        color: #121a27 !important;
+      }
+
+      body[data-theme-mode="light"] .btn,
+      body[data-theme-mode="light"] .btn-ghost {
+        color: inherit;
+      }
+
+      body[data-theme-mode="light"] .btn:not(.btn-ghost) {
+        background: linear-gradient(180deg, #ff9dc9 0%, #f47db5 100%) !important;
+        border-color: rgba(226, 102, 166, 0.55) !important;
+        color: #2a1320 !important;
+        box-shadow: none !important;
+      }
+
+      body[data-theme-mode="light"] .btn:not(.btn-ghost):hover {
+        background: linear-gradient(180deg, #ffacd2 0%, #f78abc 100%) !important;
+        border-color: rgba(226, 102, 166, 0.62) !important;
+      }
+
+      body[data-theme-mode="light"] .nav-admin-only.btn-ghost {
+        background: linear-gradient(180deg, #ff9dc9 0%, #f47db5 100%) !important;
+        border-color: rgba(226, 102, 166, 0.55) !important;
+        color: #2a1320 !important;
+      }
+
+      body[data-theme-mode="light"] .nav-admin-only.btn-ghost:hover {
+        background: linear-gradient(180deg, #ffacd2 0%, #f78abc 100%) !important;
+        border-color: rgba(226, 102, 166, 0.62) !important;
+      }
+
+      body[data-theme-mode="light"] .timeframe-switch button.active,
+      body[data-theme-mode="light"] .quick-filter-group .btn.active,
+      body[data-theme-mode="light"] .quick-filter-custom .btn.active {
+        background: rgba(244, 125, 181, 0.14) !important;
+        border-color: rgba(226, 102, 166, 0.42) !important;
+        color: #8e2f66 !important;
+      }
+
+      body[data-theme-mode="light"] .join-tag {
+        color: #5c6f8d !important;
+      }
+
+      body[data-theme-mode="light"] .join-tag-gold {
+        color: #936f24 !important;
+      }
+
+      body[data-theme-mode="light"] .eyebrow,
+      body[data-theme-mode="light"] .live-pill,
+      body[data-theme-mode="light"] .trend.up,
+      body[data-theme-mode="light"] .hero-note-label,
+      body[data-theme-mode="light"] .hero-lexi-sell-head p,
+      body[data-theme-mode="light"] .hero-lexi-privacy-note strong {
+        color: #b63f7f !important;
+      }
+
+      body[data-theme-mode="light"] .live-pill {
+        background: rgba(244, 125, 181, 0.12) !important;
+        border-color: rgba(226, 102, 166, 0.35) !important;
+      }
+
+      body[data-theme-mode="light"] .live-dot,
+      body[data-theme-mode="light"] .finder-results .live-label::before {
+        background: #f27fb7 !important;
+      }
+    </style>
     <script src="/theme-toggle.js"></script>
     <script type="module" src="/app.js"></script>
   </body>

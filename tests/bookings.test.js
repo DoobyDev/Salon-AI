@@ -28,6 +28,15 @@ function allDayHoursJson() {
   });
 }
 
+function futureDate(daysAhead = 30) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 beforeEach(() => {
   prisma.booking = {
     findMany: vi.fn(),
@@ -117,13 +126,15 @@ describe("booking lifecycle", () => {
   });
 
   it("rejects conflicting reschedule slots", async () => {
+    const currentDate = futureDate(7);
+    const nextDate = futureDate(8);
     const businessId = `biz_conflict_${Date.now()}`;
     prisma.booking.findUnique.mockResolvedValue({
       id: "b1",
       businessId,
       customerEmail: "customer@example.com",
       service: "Haircut",
-      date: "2026-02-21",
+      date: currentDate,
       time: "14:00",
       status: "confirmed"
     });
@@ -141,7 +152,7 @@ describe("booking lifecycle", () => {
     const res = await request(app)
       .patch("/api/bookings/b1/reschedule")
       .set("Authorization", `Bearer ${token}`)
-      .send({ date: "2026-02-22", time: "10:00" });
+      .send({ date: nextDate, time: "10:00" });
 
     expect([400, 409]).toContain(res.status);
   });
@@ -149,6 +160,7 @@ describe("booking lifecycle", () => {
 
 describe("booking guardrails", () => {
   it("rejects booking when service is not offered", async () => {
+    const bookingDate = futureDate(7);
     prisma.business.findUnique.mockResolvedValue({
       id: "biz_1",
       name: "Glow",
@@ -161,7 +173,7 @@ describe("booking guardrails", () => {
       customerName: "Alex",
       customerPhone: "+12025550111",
       service: "Haircut",
-      date: "2026-02-22",
+      date: bookingDate,
       time: "10:00"
     });
 
@@ -170,6 +182,7 @@ describe("booking guardrails", () => {
   });
 
   it("rejects booking outside business hours for service duration", async () => {
+    const bookingDate = futureDate(7);
     prisma.business.findUnique.mockResolvedValue({
       id: "biz_1",
       name: "Glow",
@@ -190,11 +203,71 @@ describe("booking guardrails", () => {
       customerName: "Alex",
       customerPhone: "+12025550111",
       service: "Haircut",
-      date: "2026-02-22",
+      date: bookingDate,
       time: "23:00"
     });
 
     expect(res.status).toBe(400);
     expect(String(res.body.error || "").toLowerCase()).toContain("outside operating hours");
+  });
+
+  it("rejects booking in the past", async () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yyyy = yesterday.getFullYear();
+    const mm = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const dd = String(yesterday.getDate()).padStart(2, "0");
+    const res = await request(app).post("/api/bookings").send({
+      businessId: "biz_1",
+      customerName: "Alex",
+      customerPhone: "+12025550111",
+      service: "Haircut",
+      date: `${yyyy}-${mm}-${dd}`,
+      time: "10:00"
+    });
+
+    expect(res.status).toBe(400);
+    expect(String(res.body.error || "").toLowerCase()).toContain("future");
+  });
+
+  it("rejects no-op reschedule requests", async () => {
+    const sameDate = futureDate(7);
+    prisma.booking.findUnique.mockResolvedValue({
+      id: "b1",
+      businessId: "biz_1",
+      customerEmail: "customer@example.com",
+      service: "Haircut",
+      date: sameDate,
+      time: "14:00",
+      status: "confirmed"
+    });
+
+    const token = makeToken({ email: "customer@example.com", role: "customer" });
+    const res = await request(app)
+      .patch("/api/bookings/b1/reschedule")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ date: sameDate, time: "14:00" });
+
+    expect(res.status).toBe(400);
+    expect(String(res.body.error || "").toLowerCase()).toContain("already scheduled");
+  });
+
+  it("rejects cancelling completed bookings", async () => {
+    prisma.booking.findUnique.mockResolvedValue({
+      id: "b1",
+      businessId: "biz_1",
+      customerEmail: "customer@example.com",
+      date: futureDate(1),
+      time: "14:00",
+      status: "completed"
+    });
+
+    const token = makeToken({ email: "customer@example.com", role: "customer" });
+    const res = await request(app)
+      .patch("/api/bookings/b1/cancel")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(400);
+    expect(String(res.body.error || "").toLowerCase()).toContain("completed");
   });
 });

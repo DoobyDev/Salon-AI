@@ -396,15 +396,16 @@ const cancellationPolicy = {
   hoursWindow: 24,
   feeRule: "Fee applies only if cancelled within 24 hours of appointment time."
 };
+
 const adminPlanPriceMap = {
-  starter: 29.99,
-  pro: 29.99,
-  enterprise: 29.99,
-  monthly: 29.99,
-  yearly: 299.99
+  starter: 9.99,
+  pro: 9.99,
+  enterprise: 9.99,
+  monthly: 9.99,
+  yearly: 99.99
 };
-const subscriberMonthlyFeeGbp = 29.99;
-const subscriberYearlyFeeGbp = 299.99;
+const subscriberMonthlyFeeGbp = 9.99;
+const subscriberYearlyFeeGbp = 99.99;
 const yearlyDiscountPercent = Number((((subscriberMonthlyFeeGbp * 12 - subscriberYearlyFeeGbp) / (subscriberMonthlyFeeGbp * 12)) * 100).toFixed(1));
 
 function toCsvCell(value) {
@@ -853,7 +854,7 @@ async function computeBusinessLiveRevenueSnapshot(businessId, timeframe = "today
     const key = d.toISOString().slice(0, 10);
     dailyMap.set(key, {
       date: key,
-      label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit" }),
       revenue: 0,
       cancellations: 0,
       bookings: 0
@@ -1335,6 +1336,32 @@ function slotLabel(date, time) {
   return `${date} ${toUserTimeDisplay(time)}`;
 }
 
+function formatDisplayDateGb(value, options = {}) {
+  if (!value) return "";
+  const raw = String(value || "").trim();
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T12:00:00`)
+    : new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+  return parsed.toLocaleDateString("en-GB", options);
+}
+
+function formatDisplayDateWithWeekdayGb(value) {
+  return formatDisplayDateGb(value, {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
+function formatLexiSlotLabelForDisplay(slot) {
+  const raw = String(slot || "").trim();
+  const match = raw.match(/^(\d{4}-\d{2}-\d{2})\s+(.+)$/);
+  if (!match) return raw;
+  return `${formatDisplayDateGb(match[1], { day: "2-digit", month: "2-digit", year: "numeric" })} ${match[2]}`;
+}
+
 function assertSecureRuntimeSettings() {
   if (process.env.NODE_ENV !== "production") return;
   if (!jwtSecret || jwtSecret === insecureJwtSecret) {
@@ -1369,6 +1396,23 @@ function canMutateBooking(req, booking) {
   if (req.auth.role === "subscriber" && req.auth.businessId && req.auth.businessId === booking.businessId) return true;
   if (req.auth.role === "customer" && req.auth.email && req.auth.email === booking.customerEmail) return true;
   return false;
+}
+
+function bookingStartsAtMs(date, time) {
+  const normalized = normalizeBookingDateTime(date, time);
+  if (!normalized) return null;
+  const parsed = new Date(`${normalized.date}T${normalized.time}:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getTime();
+}
+
+function isBookingSlotInPast(date, time, graceMinutes = 2) {
+  const startsAt = bookingStartsAtMs(date, time);
+  if (!Number.isFinite(startsAt)) return false;
+  return startsAt < (Date.now() - Math.max(0, Number(graceMinutes || 0)) * 60_000);
+}
+
+function normalizeBookingStatusValue(status) {
+  return String(status || "").trim().toLowerCase();
 }
 
 async function getAvailableSlotsForBusiness(business, daysAhead = 4) {
@@ -1635,9 +1679,130 @@ async function writeBusinessReportQueueFile(payload) {
   await writeFile(businessReportQueueFile, JSON.stringify(payload, null, 2), "utf8");
 }
 
+function isPrismaBusinessReportQueueStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("businessreport") || msg.includes("business report");
+}
+
+async function enqueueBusinessReportEmailRequest(item) {
+  const model = prisma?.businessReportEmailQueueItem;
+  if (
+    model &&
+    typeof model.create === "function" &&
+    typeof model.findMany === "function" &&
+    typeof model.deleteMany === "function"
+  ) {
+    try {
+      await model.create({
+        data: {
+          id: item.id,
+          businessId: item.businessId,
+          recipientEmail: item.recipientEmail,
+          subject: item.subject,
+          note: item.note || "",
+          report: item.report || {},
+          queuedAt: new Date(item.queuedAt),
+          status: item.status || "queued",
+          requestedBy: item.requestedBy || {}
+        }
+      });
+
+      const rows = await model.findMany({
+        where: { businessId: item.businessId },
+        orderBy: [{ queuedAt: "desc" }, { createdAt: "desc" }, { id: "desc" }],
+        select: { id: true },
+        skip: 100
+      });
+      if (rows.length) {
+        await model.deleteMany({ where: { id: { in: rows.map((row) => row.id) } } });
+      }
+      return;
+    } catch (error) {
+      if (!isPrismaBusinessReportQueueStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const queue = await readBusinessReportQueueFile();
+  const businessQueue = Array.isArray(queue?.[item.businessId]) ? queue[item.businessId] : [];
+  queue[item.businessId] = [item, ...businessQueue].slice(0, 100);
+  await writeBusinessReportQueueFile(queue);
+}
+
 async function writeSocialMediaFile(payload) {
   await mkdir(path.dirname(socialMediaFile), { recursive: true });
   await writeFile(socialMediaFile, JSON.stringify(payload, null, 2), "utf8");
+}
+
+function isPrismaSocialMediaStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("social");
+}
+
+async function loadSocialMediaExtras(businessId) {
+  const model = prisma?.socialMediaProfile;
+  if (model && typeof model.findUnique === "function") {
+    try {
+      const row = await model.findUnique({ where: { businessId } });
+      if (row) {
+        return {
+          customSocial: String(row.customSocial || ""),
+          socialImageUrl: String(row.socialImageUrl || "")
+        };
+      }
+      return { customSocial: "", socialImageUrl: "" };
+    } catch (error) {
+      if (!isPrismaSocialMediaStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readSocialMediaFile();
+  const scoped = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  return {
+    customSocial: String(scoped.customSocial || ""),
+    socialImageUrl: String(scoped.socialImageUrl || "")
+  };
+}
+
+async function saveSocialMediaExtras(businessId, payload) {
+  const next = {
+    customSocial: String(payload?.customSocial || "").trim(),
+    socialImageUrl: String(payload?.socialImageUrl || "").trim()
+  };
+
+  const model = prisma?.socialMediaProfile;
+  if (model && typeof model.upsert === "function") {
+    try {
+      await model.upsert({
+        where: { businessId },
+        update: {
+          customSocial: next.customSocial || "",
+          socialImageUrl: next.socialImageUrl || ""
+        },
+        create: {
+          businessId,
+          customSocial: next.customSocial || "",
+          socialImageUrl: next.socialImageUrl || ""
+        }
+      });
+      return next;
+    } catch (error) {
+      if (!isPrismaSocialMediaStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readSocialMediaFile();
+  all[businessId] = {
+    ...next,
+    updatedAt: new Date().toISOString()
+  };
+  await writeSocialMediaFile(all);
+  return next;
 }
 
 function isValidOptionalHttpUrl(value) {
@@ -1834,6 +1999,167 @@ function computeProfitabilitySummary(bookings, record) {
   };
 }
 
+function isPrismaRevenueProfitabilityStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("revenue") || msg.includes("profitability");
+}
+
+async function loadRevenueSpendRecordFromPrisma(businessId) {
+  const model = prisma?.revenueSpendChannel;
+  if (!model || typeof model.findMany !== "function") return null;
+  try {
+    const rows = await model.findMany({
+      where: { businessId },
+      orderBy: [{ channel: "asc" }]
+    });
+    const record = {};
+    rows.forEach((row) => {
+      const channel = normalizeRevenueChannel(row?.channel);
+      if (!channel) return;
+      record[channel] = Number(Number(row?.spend || 0).toFixed(2));
+    });
+    return normalizeRevenueSpendRecord(record);
+  } catch (error) {
+    if (isPrismaRevenueProfitabilityStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function loadRevenueSpendRecord(businessId) {
+  const dbRecord = await loadRevenueSpendRecordFromPrisma(businessId);
+  if (dbRecord) return dbRecord;
+  const all = await readRevenueSpendFile();
+  return normalizeRevenueSpendRecord(all?.[businessId]);
+}
+
+async function saveRevenueSpendRecord(businessId, record) {
+  const normalized = normalizeRevenueSpendRecord(record);
+  const model = prisma?.revenueSpendChannel;
+  if (model && typeof model.deleteMany === "function" && typeof model.createMany === "function") {
+    try {
+      await model.deleteMany({ where: { businessId } });
+      const rows = Object.entries(normalized).map(([channel, spend]) => ({
+        id: `${businessId}:${channel}`,
+        businessId,
+        channel,
+        spend: Number(spend || 0)
+      }));
+      if (rows.length) {
+        await model.createMany({ data: rows });
+      }
+      return normalized;
+    } catch (error) {
+      if (!isPrismaRevenueProfitabilityStorageUnavailable(error)) throw error;
+    }
+  }
+  const all = await readRevenueSpendFile();
+  all[businessId] = normalized;
+  await writeRevenueSpendFile(all);
+  return normalized;
+}
+
+async function loadProfitabilityRecordFromPrisma(businessId) {
+  const payrollModel = prisma?.profitabilityPayrollEntry;
+  const configModel = prisma?.profitabilityConfig;
+  if (!payrollModel || !configModel || typeof payrollModel.findMany !== "function" || typeof configModel.findUnique !== "function") {
+    return null;
+  }
+  try {
+    const [payrollRows, config] = await Promise.all([
+      payrollModel.findMany({ where: { businessId }, orderBy: [{ updatedAt: "asc" }, { id: "asc" }] }),
+      configModel.findUnique({ where: { businessId } })
+    ]);
+    return normalizeProfitabilityRecord({
+      payrollEntries: payrollRows.map((row) => ({
+        id: String(row?.id || "").trim(),
+        staffName: String(row?.staffName || "").trim(),
+        role: String(row?.role || "").trim(),
+        hours: Number(row?.hours || 0),
+        hourlyRate: Number(row?.hourlyRate || 0),
+        bonus: Number(row?.bonus || 0),
+        updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+      })),
+      fixedCosts: {
+        rent: Number(config?.rent || 0),
+        utilities: Number(config?.utilities || 0),
+        software: Number(config?.software || 0),
+        other: Number(config?.other || 0)
+      },
+      cogsPercent: Number(config?.cogsPercent || 0)
+    });
+  } catch (error) {
+    if (isPrismaRevenueProfitabilityStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function loadProfitabilityRecord(businessId) {
+  const dbRecord = await loadProfitabilityRecordFromPrisma(businessId);
+  if (dbRecord) return dbRecord;
+  const all = await readProfitabilityInputsFile();
+  return normalizeProfitabilityRecord(all?.[businessId]);
+}
+
+async function saveProfitabilityRecord(businessId, record) {
+  const normalized = normalizeProfitabilityRecord(record);
+  const payrollModel = prisma?.profitabilityPayrollEntry;
+  const configModel = prisma?.profitabilityConfig;
+  if (
+    payrollModel &&
+    configModel &&
+    typeof payrollModel.deleteMany === "function" &&
+    typeof payrollModel.createMany === "function" &&
+    typeof configModel.upsert === "function"
+  ) {
+    try {
+      await payrollModel.deleteMany({ where: { businessId } });
+      if (normalized.payrollEntries.length) {
+        await payrollModel.createMany({
+          data: normalized.payrollEntries.map((entry) => ({
+            id: entry.id,
+            businessId,
+            staffName: entry.staffName,
+            role: entry.role || "",
+            hours: Number(entry.hours || 0),
+            hourlyRate: Number(entry.hourlyRate || 0),
+            bonus: Number(entry.bonus || 0)
+          }))
+        });
+      }
+
+      await configModel.upsert({
+        where: { businessId },
+        update: {
+          rent: Number(normalized.fixedCosts.rent || 0),
+          utilities: Number(normalized.fixedCosts.utilities || 0),
+          software: Number(normalized.fixedCosts.software || 0),
+          other: Number(normalized.fixedCosts.other || 0),
+          cogsPercent: Number(normalized.cogsPercent || 0)
+        },
+        create: {
+          businessId,
+          rent: Number(normalized.fixedCosts.rent || 0),
+          utilities: Number(normalized.fixedCosts.utilities || 0),
+          software: Number(normalized.fixedCosts.software || 0),
+          other: Number(normalized.fixedCosts.other || 0),
+          cogsPercent: Number(normalized.cogsPercent || 0)
+        }
+      });
+      return normalized;
+    } catch (error) {
+      if (!isPrismaRevenueProfitabilityStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readProfitabilityInputsFile();
+  all[businessId] = normalized;
+  await writeProfitabilityInputsFile(all);
+  return normalized;
+}
+
 function normalizeCommercialRecord(record) {
   const source = record && typeof record === "object" ? record : {};
   const memberships = (Array.isArray(source.memberships) ? source.memberships : [])
@@ -1915,6 +2241,161 @@ function summarizeCommercialRecord(record) {
   };
 }
 
+function hasPrismaCommercialControlModels() {
+  return Boolean(
+    prisma?.commercialMembership &&
+    prisma?.commercialPackage &&
+    prisma?.commercialGiftCard &&
+    typeof prisma.commercialMembership.findMany === "function" &&
+    typeof prisma.commercialMembership.deleteMany === "function" &&
+    typeof prisma.commercialMembership.createMany === "function" &&
+    typeof prisma.commercialPackage.findMany === "function" &&
+    typeof prisma.commercialPackage.deleteMany === "function" &&
+    typeof prisma.commercialPackage.createMany === "function" &&
+    typeof prisma.commercialGiftCard.findMany === "function" &&
+    typeof prisma.commercialGiftCard.deleteMany === "function" &&
+    typeof prisma.commercialGiftCard.createMany === "function"
+  );
+}
+
+function isPrismaCommercialStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("commercial");
+}
+
+function mapCommercialMembershipDbRow(row) {
+  return {
+    id: String(row?.id || "").trim(),
+    name: String(row?.name || "").trim(),
+    price: Number(Number(row?.price || 0).toFixed(2)),
+    billingCycle: String(row?.billingCycle || "monthly").trim().toLowerCase(),
+    status: String(row?.status || "active").trim().toLowerCase(),
+    benefits: String(row?.benefits || "").trim(),
+    updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+  };
+}
+
+function mapCommercialPackageDbRow(row) {
+  return {
+    id: String(row?.id || "").trim(),
+    name: String(row?.name || "").trim(),
+    price: Number(Number(row?.price || 0).toFixed(2)),
+    sessionCount: Math.floor(Number(row?.sessionCount || 1)),
+    remainingSessions: Math.floor(Number(row?.remainingSessions || 0)),
+    status: String(row?.status || "active").trim().toLowerCase(),
+    updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+  };
+}
+
+function mapCommercialGiftCardDbRow(row) {
+  return {
+    id: String(row?.id || "").trim(),
+    code: String(row?.code || "").trim(),
+    purchaserName: String(row?.purchaserName || "").trim(),
+    recipientName: String(row?.recipientName || "").trim(),
+    initialBalance: Number(Number(row?.initialBalance || 0).toFixed(2)),
+    remainingBalance: Number(Number(row?.remainingBalance || 0).toFixed(2)),
+    status: String(row?.status || "active").trim().toLowerCase(),
+    issuedAt: row?.issuedAt ? new Date(row.issuedAt).toISOString() : null,
+    expiresAt: row?.expiresAt ? new Date(row.expiresAt).toISOString() : null,
+    updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+  };
+}
+
+async function loadCommercialRecordFromPrisma(businessId) {
+  if (!hasPrismaCommercialControlModels()) return null;
+  try {
+    const [memberships, packages, giftCards] = await Promise.all([
+      prisma.commercialMembership.findMany({ where: { businessId }, orderBy: [{ updatedAt: "asc" }, { id: "asc" }] }),
+      prisma.commercialPackage.findMany({ where: { businessId }, orderBy: [{ updatedAt: "asc" }, { id: "asc" }] }),
+      prisma.commercialGiftCard.findMany({ where: { businessId }, orderBy: [{ issuedAt: "asc" }, { id: "asc" }] })
+    ]);
+    return normalizeCommercialRecord({
+      memberships: memberships.map(mapCommercialMembershipDbRow),
+      packages: packages.map(mapCommercialPackageDbRow),
+      giftCards: giftCards.map(mapCommercialGiftCardDbRow)
+    });
+  } catch (error) {
+    if (isPrismaCommercialStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function loadCommercialRecord(businessId) {
+  const dbRecord = await loadCommercialRecordFromPrisma(businessId);
+  if (dbRecord) return dbRecord;
+  const all = await readCommercialControlsFile();
+  return normalizeCommercialRecord(all?.[businessId]);
+}
+
+async function saveCommercialRecord(businessId, record) {
+  const normalized = normalizeCommercialRecord(record);
+
+  if (hasPrismaCommercialControlModels()) {
+    try {
+      await prisma.commercialMembership.deleteMany({ where: { businessId } });
+      if (normalized.memberships.length) {
+        await prisma.commercialMembership.createMany({
+          data: normalized.memberships.map((row) => ({
+            id: row.id,
+            businessId,
+            name: row.name,
+            price: Number(row.price || 0),
+            billingCycle: row.billingCycle,
+            status: row.status,
+            benefits: row.benefits || ""
+          }))
+        });
+      }
+
+      await prisma.commercialPackage.deleteMany({ where: { businessId } });
+      if (normalized.packages.length) {
+        await prisma.commercialPackage.createMany({
+          data: normalized.packages.map((row) => ({
+            id: row.id,
+            businessId,
+            name: row.name,
+            price: Number(row.price || 0),
+            sessionCount: Math.floor(Number(row.sessionCount || 1)),
+            remainingSessions: Math.floor(Number(row.remainingSessions || 0)),
+            status: row.status
+          }))
+        });
+      }
+
+      await prisma.commercialGiftCard.deleteMany({ where: { businessId } });
+      if (normalized.giftCards.length) {
+        await prisma.commercialGiftCard.createMany({
+          data: normalized.giftCards.map((row) => ({
+            id: row.id,
+            businessId,
+            code: row.code,
+            purchaserName: row.purchaserName,
+            recipientName: row.recipientName,
+            initialBalance: Number(row.initialBalance || 0),
+            remainingBalance: Number(row.remainingBalance || 0),
+            status: row.status,
+            issuedAt: row.issuedAt ? new Date(row.issuedAt) : new Date(),
+            expiresAt: row.expiresAt ? new Date(row.expiresAt) : null
+          }))
+        });
+      }
+
+      return normalized;
+    } catch (error) {
+      if (!isPrismaCommercialStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readCommercialControlsFile();
+  all[businessId] = normalized;
+  await writeCommercialControlsFile(all);
+  return normalized;
+}
+
 function normalizeWaitlistRows(rows) {
   const source = Array.isArray(rows) ? rows : [];
   return source
@@ -1946,6 +2427,207 @@ function summarizeWaitlist(rows) {
     contactedCount: contacted,
     bookedCount: booked
   };
+}
+
+function hasPrismaWaitlistModel() {
+  const model = prisma?.waitlistEntry;
+  return Boolean(
+    model &&
+    typeof model.findMany === "function" &&
+    typeof model.findUnique === "function" &&
+    typeof model.create === "function" &&
+    typeof model.update === "function" &&
+    typeof model.delete === "function"
+  );
+}
+
+function isPrismaWaitlistStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("waitlist") && (msg.includes("does not exist") || msg.includes("unknown") || msg.includes("table"));
+}
+
+function mapWaitlistDbRow(row) {
+  if (!row || typeof row !== "object") return null;
+  return {
+    id: String(row.id || "").trim(),
+    customerName: String(row.customerName || "").trim(),
+    customerPhone: String(row.customerPhone || "").trim(),
+    customerEmail: String(row.customerEmail || "").trim().toLowerCase(),
+    service: String(row.service || "").trim(),
+    preferredDate: String(row.preferredDate || "").trim(),
+    preferredTime: String(row.preferredTime || "").trim(),
+    status: supportedWaitlistStatus.has(String(row.status || "").trim()) ? String(row.status) : "waiting",
+    notes: String(row.notes || "").trim(),
+    createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : null,
+    updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : null,
+    lastActionAt: row.lastActionAt ? new Date(row.lastActionAt).toISOString() : null
+  };
+}
+
+async function listWaitlistEntriesForBusiness(businessId) {
+  if (!hasPrismaWaitlistModel()) return null;
+  try {
+    const rows = await prisma.waitlistEntry.findMany({
+      where: { businessId },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }]
+    });
+    return normalizeWaitlistRows(rows.map(mapWaitlistDbRow));
+  } catch (error) {
+    if (isPrismaWaitlistStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function getWaitlistEntriesForBusiness(businessId) {
+  const dbRows = await listWaitlistEntriesForBusiness(businessId);
+  if (dbRows) return dbRows;
+  const all = await readWaitlistFile();
+  return normalizeWaitlistRows(all?.[businessId]?.entries || []);
+}
+
+async function upsertWaitlistEntryForBusiness(businessId, payload) {
+  if (hasPrismaWaitlistModel()) {
+    try {
+      const existing = await prisma.waitlistEntry.findUnique({ where: { id: payload.id } });
+      if (existing && existing.businessId !== businessId) {
+        throw Object.assign(new Error("Waitlist entry not found."), { statusCode: 404 });
+      }
+      const row = existing
+        ? await prisma.waitlistEntry.update({
+          where: { id: payload.id },
+          data: {
+            customerName: payload.customerName,
+            customerPhone: payload.customerPhone || "",
+            customerEmail: payload.customerEmail || null,
+            service: payload.service || "",
+            preferredDate: payload.preferredDate || null,
+            preferredTime: payload.preferredTime || null,
+            notes: payload.notes || null,
+            status: "waiting"
+          }
+        })
+        : await prisma.waitlistEntry.create({
+          data: {
+            id: payload.id,
+            businessId,
+            customerName: payload.customerName,
+            customerPhone: payload.customerPhone || "",
+            customerEmail: payload.customerEmail || null,
+            service: payload.service || "",
+            preferredDate: payload.preferredDate || null,
+            preferredTime: payload.preferredTime || null,
+            notes: payload.notes || null,
+            status: "waiting",
+            lastActionAt: null
+          }
+        });
+      const entries = await listWaitlistEntriesForBusiness(businessId);
+      return { entry: mapWaitlistDbRow(row), entries: entries || [] };
+    } catch (error) {
+      if (error?.statusCode) throw error;
+      if (!isPrismaWaitlistStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readWaitlistFile();
+  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const entries = normalizeWaitlistRows(businessRecord.entries || []);
+  const index = entries.findIndex((item) => item.id === payload.id);
+  const now = new Date().toISOString();
+  const next = {
+    id: payload.id,
+    customerName: payload.customerName,
+    customerPhone: payload.customerPhone,
+    customerEmail: payload.customerEmail,
+    service: payload.service,
+    preferredDate: payload.preferredDate,
+    preferredTime: payload.preferredTime,
+    notes: payload.notes,
+    status: "waiting",
+    createdAt: index >= 0 ? entries[index].createdAt || now : now,
+    updatedAt: now,
+    lastActionAt: index >= 0 ? entries[index].lastActionAt || null : null
+  };
+  if (index >= 0) entries[index] = next;
+  else entries.push(next);
+  businessRecord.entries = entries;
+  all[businessId] = businessRecord;
+  await writeWaitlistFile(all);
+  return { entry: next, entries };
+}
+
+async function markWaitlistEntryContactedForBusiness(businessId, entryId) {
+  if (hasPrismaWaitlistModel()) {
+    try {
+      const existing = await prisma.waitlistEntry.findUnique({ where: { id: entryId } });
+      if (!existing || existing.businessId !== businessId) {
+        throw Object.assign(new Error("Waitlist entry not found."), { statusCode: 404 });
+      }
+      const row = await prisma.waitlistEntry.update({
+        where: { id: entryId },
+        data: {
+          status: "contacted",
+          lastActionAt: new Date()
+        }
+      });
+      const entries = await listWaitlistEntriesForBusiness(businessId);
+      return { entry: mapWaitlistDbRow(row), entries: entries || [] };
+    } catch (error) {
+      if (error?.statusCode) throw error;
+      if (!isPrismaWaitlistStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readWaitlistFile();
+  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const entries = normalizeWaitlistRows(businessRecord.entries || []);
+  const index = entries.findIndex((item) => item.id === entryId);
+  if (index < 0) {
+    throw Object.assign(new Error("Waitlist entry not found."), { statusCode: 404 });
+  }
+  const now = new Date().toISOString();
+  entries[index] = {
+    ...entries[index],
+    status: "contacted",
+    updatedAt: now,
+    lastActionAt: now
+  };
+  businessRecord.entries = entries;
+  all[businessId] = businessRecord;
+  await writeWaitlistFile(all);
+  return { entry: entries[index], entries };
+}
+
+async function deleteWaitlistEntryForBusiness(businessId, entryId) {
+  if (hasPrismaWaitlistModel()) {
+    try {
+      const existing = await prisma.waitlistEntry.findUnique({ where: { id: entryId } });
+      if (!existing || existing.businessId !== businessId) {
+        throw Object.assign(new Error("Waitlist entry not found."), { statusCode: 404 });
+      }
+      await prisma.waitlistEntry.delete({ where: { id: entryId } });
+      const entries = await listWaitlistEntriesForBusiness(businessId);
+      return { entries: entries || [] };
+    } catch (error) {
+      if (error?.statusCode) throw error;
+      if (!isPrismaWaitlistStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readWaitlistFile();
+  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const entries = normalizeWaitlistRows(businessRecord.entries || []);
+  const filtered = entries.filter((item) => item.id !== entryId);
+  if (filtered.length === entries.length) {
+    throw Object.assign(new Error("Waitlist entry not found."), { statusCode: 404 });
+  }
+  businessRecord.entries = filtered;
+  all[businessId] = businessRecord;
+  await writeWaitlistFile(all);
+  return { entries: filtered };
 }
 
 function customerKeyFromBooking(booking) {
@@ -2225,6 +2907,132 @@ function buildStaffRosterResponse(businessRecord, options = {}) {
   return response;
 }
 
+function hasPrismaStaffRosterModels() {
+  const memberModel = prisma?.staffRosterMember;
+  const weekModel = prisma?.staffRotaWeek;
+  return Boolean(
+    memberModel &&
+    weekModel &&
+    typeof memberModel.findMany === "function" &&
+    typeof memberModel.deleteMany === "function" &&
+    typeof memberModel.createMany === "function" &&
+    typeof weekModel.findMany === "function" &&
+    typeof weekModel.deleteMany === "function" &&
+    typeof weekModel.createMany === "function"
+  );
+}
+
+function isPrismaStaffRosterStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("staffroster") || msg.includes("staff rota") || msg.includes("staffrosta") || msg.includes("staffrota");
+}
+
+function mapStaffRosterMemberDbRow(row) {
+  return {
+    id: String(row?.id || "").trim(),
+    name: String(row?.name || "").trim(),
+    role: String(row?.role || "staff").trim(),
+    availability: String(row?.availability || "off_duty").trim().toLowerCase(),
+    shiftDays: Array.isArray(row?.shiftDays) ? row.shiftDays : [],
+    updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+  };
+}
+
+function mapStaffRotaWeekDbRow(row) {
+  return {
+    cells: row?.cells && typeof row.cells === "object" ? row.cells : {},
+    sicknessLogs: Array.isArray(row?.sicknessLogs) ? row.sicknessLogs : [],
+    updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+  };
+}
+
+async function loadStaffBusinessRecordFromPrisma(businessId) {
+  if (!hasPrismaStaffRosterModels()) return null;
+  try {
+    const [memberRows, weekRows] = await Promise.all([
+      prisma.staffRosterMember.findMany({
+        where: { businessId },
+        orderBy: [{ updatedAt: "asc" }, { id: "asc" }]
+      }),
+      prisma.staffRotaWeek.findMany({
+        where: { businessId },
+        orderBy: [{ weekStart: "asc" }]
+      })
+    ]);
+    const rotaWeeks = {};
+    weekRows.forEach((row) => {
+      const key = normalizeWeekStartKey(row?.weekStart);
+      if (!key) return;
+      rotaWeeks[key] = normalizeStaffRotaWeek(mapStaffRotaWeekDbRow(row));
+    });
+    return {
+      members: normalizeStaffMembers(memberRows.map(mapStaffRosterMemberDbRow)),
+      rotaWeeks
+    };
+  } catch (error) {
+    if (isPrismaStaffRosterStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function loadStaffBusinessRecord(businessId) {
+  const dbRecord = await loadStaffBusinessRecordFromPrisma(businessId);
+  if (dbRecord) return dbRecord;
+  const all = await readStaffRosterFile();
+  return getNormalizedStaffBusinessRecord(all, businessId);
+}
+
+async function saveStaffBusinessRecord(businessId, businessRecord) {
+  const normalized = {
+    members: normalizeStaffMembers(businessRecord?.members || []),
+    rotaWeeks:
+      businessRecord?.rotaWeeks && typeof businessRecord.rotaWeeks === "object"
+        ? Object.fromEntries(
+          Object.entries(businessRecord.rotaWeeks)
+            .map(([weekKey, week]) => [normalizeWeekStartKey(weekKey), normalizeStaffRotaWeek(week)])
+            .filter(([weekKey]) => Boolean(weekKey))
+        )
+        : {}
+  };
+
+  if (hasPrismaStaffRosterModels()) {
+    try {
+      const memberData = normalized.members.map((member) => ({
+        id: member.id,
+        businessId,
+        name: member.name,
+        role: member.role || "staff",
+        availability: member.availability || "off_duty",
+        shiftDays: member.shiftDays || []
+      }));
+      const weekData = Object.entries(normalized.rotaWeeks).map(([weekStart, week]) => ({
+        id: randomUUID(),
+        businessId,
+        weekStart,
+        cells: week?.cells && typeof week.cells === "object" ? week.cells : {},
+        sicknessLogs: Array.isArray(week?.sicknessLogs) ? week.sicknessLogs : []
+      }));
+
+      await prisma.staffRosterMember.deleteMany({ where: { businessId } });
+      if (memberData.length) await prisma.staffRosterMember.createMany({ data: memberData });
+
+      await prisma.staffRotaWeek.deleteMany({ where: { businessId } });
+      if (weekData.length) await prisma.staffRotaWeek.createMany({ data: weekData });
+      return normalized;
+    } catch (error) {
+      if (!isPrismaStaffRosterStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readStaffRosterFile();
+  all[businessId] = normalized;
+  await writeStaffRosterFile(all);
+  return normalized;
+}
+
 function isSlotWithinBusinessHours(business, date, time, durationMin = 45) {
   const dateObj = new Date(`${date}T12:00:00`);
   if (Number.isNaN(dateObj.getTime())) return false;
@@ -2239,8 +3047,8 @@ function isSlotWithinBusinessHours(business, date, time, durationMin = 45) {
 
 async function getSlotCapacityForBusinessDate(businessId, date) {
   if (!businessId || !date) return 1;
-  const all = await readStaffRosterFile();
-  const members = normalizeStaffMembers(all?.[businessId]?.members || []);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
+  const members = normalizeStaffMembers(businessRecord?.members || []);
   if (!members.length) return 1;
   const dateObj = new Date(`${date}T12:00:00`);
   const dayKey = Number.isNaN(dateObj.getTime()) ? null : dayKeyFromDate(dateObj);
@@ -2292,6 +3100,90 @@ function summarizeBusinessAccountingIntegrations(businessRecord = {}) {
       updatedAt: item?.updatedAt || null
     };
   });
+}
+
+function isPrismaAccountingIntegrationsStorageUnavailable(error) {
+  const code = String(error?.code || "").trim();
+  if (code === "P2021" || code === "P2022") return true;
+  const msg = String(error?.message || "").toLowerCase();
+  if (msg.includes("prisma is not initialized")) return true;
+  return msg.includes("accounting") || msg.includes("integration");
+}
+
+async function loadAccountingIntegrationsRecordFromPrisma(businessId) {
+  const model = prisma?.accountingIntegration;
+  if (!model || typeof model.findMany !== "function") return null;
+  try {
+    const rows = await model.findMany({
+      where: { businessId },
+      orderBy: [{ provider: "asc" }]
+    });
+    const record = {};
+    rows.forEach((row) => {
+      const provider = normalizeAccountingProvider(row?.provider);
+      if (!provider) return;
+      record[provider] = {
+        provider,
+        status: String(row?.status || "not_connected"),
+        accountLabel: String(row?.accountLabel || ""),
+        syncMode: String(row?.syncMode || "daily"),
+        connectedAt: row?.connectedAt ? new Date(row.connectedAt).toISOString() : null,
+        updatedAt: row?.updatedAt ? new Date(row.updatedAt).toISOString() : null
+      };
+    });
+    return record;
+  } catch (error) {
+    if (isPrismaAccountingIntegrationsStorageUnavailable(error)) return null;
+    throw error;
+  }
+}
+
+async function loadAccountingIntegrationsRecord(businessId) {
+  const dbRecord = await loadAccountingIntegrationsRecordFromPrisma(businessId);
+  if (dbRecord) return dbRecord;
+  const all = await readAccountingIntegrationsFile();
+  return all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+}
+
+async function saveAccountingIntegrationsRecord(businessId, record) {
+  const normalized = {};
+  summarizeBusinessAccountingIntegrations(record).forEach((row) => {
+    normalized[row.provider] = {
+      provider: row.provider,
+      status: row.status,
+      accountLabel: row.accountLabel,
+      syncMode: row.syncMode,
+      connectedAt: row.connectedAt,
+      updatedAt: row.updatedAt
+    };
+  });
+
+  const model = prisma?.accountingIntegration;
+  if (model && typeof model.deleteMany === "function" && typeof model.createMany === "function") {
+    try {
+      await model.deleteMany({ where: { businessId } });
+      const rows = Object.values(normalized).map((row) => ({
+        id: `${businessId}:${row.provider}`,
+        businessId,
+        provider: row.provider,
+        status: String(row.status || "not_connected"),
+        accountLabel: String(row.accountLabel || ""),
+        syncMode: String(row.syncMode || "daily"),
+        connectedAt: row.connectedAt ? new Date(row.connectedAt) : null
+      }));
+      if (rows.length) {
+        await model.createMany({ data: rows });
+      }
+      return normalized;
+    } catch (error) {
+      if (!isPrismaAccountingIntegrationsStorageUnavailable(error)) throw error;
+    }
+  }
+
+  const all = await readAccountingIntegrationsFile();
+  all[businessId] = normalized;
+  await writeAccountingIntegrationsFile(all);
+  return normalized;
 }
 
 async function processBillingEvent(event) {
@@ -2456,6 +3348,34 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+app.get("/readyz", async (_req, res) => {
+  let prismaReady = false;
+  let prismaError = "";
+
+  try {
+    await prisma.user.findFirst({ select: { id: true } });
+    prismaReady = true;
+  } catch (error) {
+    prismaError = String(error?.message || "prisma unavailable");
+  }
+
+  const payload = {
+    status: prismaReady ? "ready" : "degraded",
+    timestamp: new Date().toISOString(),
+    checks: {
+      prisma: prismaReady,
+      redis: isRedisEnabled(),
+      queues: jobRuntime ? (jobRuntime.enabled ? "redis" : "inline") : "not_initialized"
+    }
+  };
+
+  if (!prismaReady && prismaError) {
+    payload.checks.prismaError = prismaError;
+  }
+
+  return res.status(prismaReady ? 200 : 503).json(payload);
+});
+
 app.get("/api/config", async (_req, res) => {
   const cacheKey = "config:v1";
   const cached = await getCached(cacheKey);
@@ -2483,12 +3403,18 @@ app.post("/api/auth/register/subscriber", authLimiter, async (req, res) => {
   const postcode = String(payload.postcode || "").trim();
   const phone = String(payload.phone || "").trim();
   const businessType = normalizeBusinessType(payload.businessType);
+  const websiteUrl = String(payload.websiteUrl || "").trim();
+  const teamSize = String(payload.teamSize || "").trim();
+  const primaryGoal = String(payload.primaryGoal || "").trim();
+  const setupNotes = String(payload.setupNotes || "").trim();
+  const paymentConsentAccepted = Boolean(payload.paymentConsentAccepted);
 
   if (!name || !email || !password || !businessName || !city || !country || !postcode || !phone) {
     return res.status(400).json({ error: "Missing required fields." });
   }
   if (!isValidEmail(email)) return res.status(400).json({ error: "Invalid email format." });
   if (!isValidPhone(phone)) return res.status(400).json({ error: "Invalid phone format." });
+  if (!isValidOptionalHttpUrl(websiteUrl)) return res.status(400).json({ error: "Invalid website URL." });
   if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters." });
 
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -2500,19 +3426,19 @@ app.post("/api/auth/register/subscriber", authLimiter, async (req, res) => {
       type: businessType,
       phone,
       email,
-      city,
-      country,
-      postcode,
-      address: `${city} City Centre`,
-      description: defaultDescriptionByBusinessType(businessType, businessName),
-      websiteUrl: payload.websiteUrl || null,
-      websiteTitle: payload.websiteTitle || null,
-      websiteSummary: payload.websiteSummary || null,
-      websiteImageUrl: payload.websiteImageUrl || null,
-      hoursJson: JSON.stringify(defaultHoursByBusinessType(businessType)),
-      services: {
-        create: defaultServicesByBusinessType(businessType)
-      }
+        city,
+        country,
+        postcode,
+        address: `${city} City Centre`,
+        description: defaultDescriptionByBusinessType(businessType, businessName),
+        websiteUrl: websiteUrl || null,
+        websiteTitle: payload.websiteTitle || null,
+        websiteSummary: payload.websiteSummary || null,
+        websiteImageUrl: payload.websiteImageUrl || null,
+        hoursJson: JSON.stringify(defaultHoursByBusinessType(businessType)),
+        services: {
+          create: defaultServicesByBusinessType(businessType)
+        }
     }
   });
 
@@ -2534,7 +3460,16 @@ app.post("/api/auth/register/subscriber", authLimiter, async (req, res) => {
     action: "auth.register_subscriber",
     entityType: "user",
     entityId: user.id,
-    metadata: { businessId: business.id }
+    metadata: {
+      businessId: business.id,
+      onboarding: {
+        websiteUrl: websiteUrl || null,
+        teamSize: teamSize || null,
+        primaryGoal: primaryGoal || null,
+        setupNotes: setupNotes || null,
+        paymentConsentAccepted
+      }
+    }
   });
   return res.status(201).json({ token, user: { id: user.id, role: user.role, email: user.email } });
 });
@@ -2543,8 +3478,16 @@ app.post("/api/auth/register/customer", authLimiter, async (req, res) => {
   const name = String(req.body?.name || "").trim();
   const email = String(req.body?.email || "").trim().toLowerCase();
   const password = String(req.body?.password || "");
+  const phone = String(req.body?.phone || "").trim();
+  const city = String(req.body?.city || "").trim();
+  const preferredService = String(req.body?.preferredService || "").trim();
+  const notes = String(req.body?.notes || "").trim();
+  const paymentConsentAccepted = Boolean(req.body?.paymentConsentAccepted);
+  const termsAccepted = Boolean(req.body?.termsAccepted);
+  const updatesOptIn = Boolean(req.body?.updatesOptIn);
   if (!name || !email || !password) return res.status(400).json({ error: "Missing required fields." });
   if (!isValidEmail(email)) return res.status(400).json({ error: "Invalid email format." });
+  if (phone && !isValidPhone(phone)) return res.status(400).json({ error: "Invalid phone format." });
   if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters." });
 
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -2566,7 +3509,18 @@ app.post("/api/auth/register/customer", authLimiter, async (req, res) => {
     actorRole: user.role,
     action: "auth.register_customer",
     entityType: "user",
-    entityId: user.id
+    entityId: user.id,
+    metadata: {
+      onboarding: {
+        phone: phone || null,
+        city: city || null,
+        preferredService: preferredService || null,
+        notes: notes || null,
+        paymentConsentAccepted,
+        termsAccepted,
+        updatesOptIn
+      }
+    }
   });
   return res.status(201).json({ token, user: { id: user.id, role: user.role, email: user.email } });
 });
@@ -2975,16 +3929,15 @@ app.get("/api/businesses/me/social-media", authRequired, requireRole("subscriber
   });
   if (!business) return res.status(404).json({ error: "Business not found." });
 
-  const all = await readSocialMediaFile();
-  const scoped = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const scoped = await loadSocialMediaExtras(businessId);
   return res.json({
     socialFacebook: String(business.socialFacebook || ""),
     socialInstagram: String(business.socialInstagram || ""),
     socialTwitter: String(business.socialTwitter || ""),
     socialLinkedin: String(business.socialLinkedin || ""),
     socialTiktok: String(business.socialTiktok || ""),
-    customSocial: String(scoped.customSocial || ""),
-    socialImageUrl: String(scoped.socialImageUrl || "")
+    customSocial: scoped.customSocial,
+    socialImageUrl: scoped.socialImageUrl
   });
 });
 
@@ -3025,13 +3978,7 @@ app.post("/api/businesses/me/social-media", authRequired, requireRole("subscribe
     }
   });
 
-  const all = await readSocialMediaFile();
-  all[businessId] = {
-    customSocial,
-    socialImageUrl,
-    updatedAt: new Date().toISOString()
-  };
-  await writeSocialMediaFile(all);
+  await saveSocialMediaExtras(businessId, { customSocial, socialImageUrl });
   clearReadCache();
 
   await writeAuditLog({
@@ -3071,6 +4018,9 @@ app.post("/api/bookings", bookingLimiter, async (req, res) => {
 
   const normalized = normalizeBookingDateTime(date, time);
   if (!normalized) return res.status(400).json({ error: "Invalid date/time format." });
+  if (isBookingSlotInPast(normalized.date, normalized.time)) {
+    return res.status(400).json({ error: "Bookings must be scheduled for a future time." });
+  }
 
   const business = await prisma.business.findUnique({ where: { id: businessId }, include: { services: true } });
   if (!business) return res.status(404).json({ error: "Business not found." });
@@ -3256,7 +4206,9 @@ app.patch("/api/bookings/:bookingId/cancel", authRequired, bookingLimiter, async
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
   if (!booking) return res.status(404).json({ error: "Booking not found." });
   if (!canMutateBooking(req, booking)) return res.status(403).json({ error: "Forbidden." });
-  if (booking.status === "cancelled") return res.status(400).json({ error: "Booking is already cancelled." });
+  const bookingStatus = normalizeBookingStatusValue(booking.status);
+  if (bookingStatus === "cancelled") return res.status(400).json({ error: "Booking is already cancelled." });
+  if (bookingStatus === "completed") return res.status(400).json({ error: "Completed bookings cannot be cancelled." });
 
   const normalized = normalizeBookingDateTime(booking.date, booking.time);
   const now = Date.now();
@@ -3299,7 +4251,9 @@ app.patch("/api/bookings/:bookingId/reschedule", authRequired, bookingLimiter, a
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
   if (!booking) return res.status(404).json({ error: "Booking not found." });
   if (!canMutateBooking(req, booking)) return res.status(403).json({ error: "Forbidden." });
-  if (booking.status === "cancelled") return res.status(400).json({ error: "Cancelled bookings cannot be rescheduled." });
+  const bookingStatus = normalizeBookingStatusValue(booking.status);
+  if (bookingStatus === "cancelled") return res.status(400).json({ error: "Cancelled bookings cannot be rescheduled." });
+  if (bookingStatus === "completed") return res.status(400).json({ error: "Completed bookings cannot be rescheduled." });
   const business = await prisma.business.findUnique({
     where: { id: booking.businessId },
     include: { services: true }
@@ -3308,6 +4262,12 @@ app.patch("/api/bookings/:bookingId/reschedule", authRequired, bookingLimiter, a
 
   const normalized = normalizeBookingDateTime(date, time);
   if (!normalized) return res.status(400).json({ error: "Invalid date/time format." });
+  if (normalized.date === String(booking.date || "").trim() && normalized.time === String(booking.time || "").trim()) {
+    return res.status(400).json({ error: "Booking is already scheduled for that date and time." });
+  }
+  if (isBookingSlotInPast(normalized.date, normalized.time)) {
+    return res.status(400).json({ error: "Rescheduled time must be in the future." });
+  }
   const svc = business.services.find((serviceRow) => serviceRow.name.toLowerCase() === String(booking.service || "").toLowerCase());
   const durationMin = Math.max(5, Number(svc?.durationMin || 45));
   if (!isSlotWithinBusinessHours(business, normalized.date, normalized.time, durationMin)) {
@@ -3551,17 +4511,17 @@ async function buildAdminCopilotSnapshot(req) {
 
 async function buildAdminCopilotResponse({ question, snapshot }) {
   const base = buildAdminCopilotHeuristicResponse(question, snapshot);
-  if (!openai) return base;
+  if (!openai) return { ...base, answer: normalizeLexiReplyText(base.answer, { maxSentences: 2, maxChars: 320 }) };
   try {
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       temperature: 0.2,
-      max_tokens: 450,
+      max_tokens: 280,
       messages: [
         {
           role: "system",
           content:
-            "You are Lexi, the lead AI receptionist and operations assistant for a salon SaaS admin dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and easy to talk to. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Style rules: answer the user's question immediately in the first sentence, keep answers tight by default (1-4 short sentences unless they ask for detail), use plain language, and ask at most one follow-up question when needed. Sound like a calm, experienced salon owner or front-desk manager who knows the business inside out. Be premium, reassuring, and solution-oriented. Do not list everything you can do in greetings unless the user asks. When discussing bookings, policies, pricing, or client experience, be structured and professional. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user explicitly asks for a report."
+            "You are Lexi, the lead AI receptionist and operations assistant for a salon SaaS admin dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and easy to talk to. You can answer broad questions like a ChatGPT-style assistant, including salon/barber/beauty/business guidance and app how-to questions, and you can also answer admin/platform/managed-business diagnostics questions using the provided sanitized snapshot. Use the snapshot only when relevant. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not request or reveal secrets, personal data, payment credentials, tokens, or security-sensitive details. Never share business data publicly or present internal dashboard data as public information. You may explain app features, modules, workflows, and how the platform works, but do not disclose personal user/customer/subscriber data in chat. If the question is general and not about the admin dashboard or a managed business, answer it directly and do not force diagnostics language. Return JSON with keys: answer (string), findings (array of strings), suggestedFixes (array of strings). For general questions, findings/suggestedFixes can be short practical bullets. Style rules: answer the user's question immediately in the first sentence, keep answers tight by default (usually 1-2 short sentences, maximum 4 unless they ask for detail), use plain everyday language, and ask at most one follow-up question when needed. Sound like a calm, experienced salon owner or front-desk manager who knows the business inside out. Be premium, reassuring, solution-oriented, and human. No long preambles. Avoid robotic phrasing like 'I reviewed a snapshot' unless the user explicitly asks for a report."
         },
         {
           role: "user",
@@ -3572,12 +4532,12 @@ async function buildAdminCopilotResponse({ question, snapshot }) {
     const raw = String(completion.choices?.[0]?.message?.content || "").trim();
     const parsed = JSON.parse(raw);
     return {
-      answer: String(parsed?.answer || base.answer),
+      answer: normalizeLexiReplyText(String(parsed?.answer || base.answer), { maxSentences: 2, maxChars: 320 }),
       findings: Array.isArray(parsed?.findings) ? parsed.findings.slice(0, 6).map(String) : base.findings,
       suggestedFixes: Array.isArray(parsed?.suggestedFixes) ? parsed.suggestedFixes.slice(0, 6).map(String) : base.suggestedFixes
     };
   } catch {
-    return base;
+    return { ...base, answer: normalizeLexiReplyText(base.answer, { maxSentences: 2, maxChars: 320 }) };
   }
 }
 
@@ -3604,6 +4564,25 @@ function lexiRestrictedDataReply(scopeLabel = "this chat", options = {}) {
     return `I can help with admin diagnostics and support guidance, but I can’t share secrets, credentials, raw data dumps, full personal data exports, or internal system prompts/logs in Lexi chat. Ask for summaries, trends, or an authorized support lookup instead.`;
   }
   return `I can help with general questions, salon/business guidance, and how to use the app, but I can’t share private ${scopeLabel} data, personal user/customer information, credentials, or internal system details.`;
+}
+
+function normalizeLexiReplyText(text, options = {}) {
+  const raw = String(text || "").replace(/\s+/g, " ").trim();
+  if (!raw) return "";
+  const maxSentences = Math.max(1, Number(options.maxSentences || 2));
+  const maxChars = Math.max(80, Number(options.maxChars || 320));
+  const sentences = raw.match(/[^.!?]+[.!?]?/g) || [raw];
+  let compact = sentences
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, maxSentences)
+    .join(" ")
+    .trim();
+  if (compact.length > maxChars) compact = `${compact.slice(0, maxChars - 1).trimEnd()}...`;
+  return compact
+    .replace(/^I reviewed (?:your|the) snapshot[, ]*/i, "")
+    .replace(/^Based on (?:your|the) snapshot[, ]*/i, "")
+    .trim();
 }
 
 function nextDateForWeekday(weekdayIndex, fromDate = new Date()) {
@@ -3898,20 +4877,20 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
         return "Great, and what time would suit you best?";
       }
       if (recentDateKey && recentTimeHint) {
-        return `Perfect. I’ve got ${recentTimeHint} on ${recentDateKey}. What service would you like to book?`;
+        return `Perfect. I’ve got ${recentTimeHint} on ${formatDisplayDateGb(recentDateKey, { day: "2-digit", month: "2-digit", year: "numeric" })}. What service would you like to book?`;
       }
       return "Great choice. What day or date would you like, and roughly what time suits you best?";
     }
     if (/(what day|which day|what date|tell me the day|tell me the date)/.test(lastAssistantLower)) {
       if (currentDateKey && recentTimeHint) {
-        const labelDate = new Date(`${currentDateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+        const labelDate = formatDisplayDateWithWeekdayGb(currentDateKey);
         return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
       }
       return "Perfect. What time would suit you best? I’ll check the best options for you.";
     }
     if (/(what time|which time|what time suits you best|tell me the time)/.test(lastAssistantLower)) {
       if (recentTimeHint && recentDateKey) {
-        const labelDate = new Date(`${recentDateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+        const labelDate = formatDisplayDateWithWeekdayGb(recentDateKey);
         return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
       }
     }
@@ -3973,11 +4952,12 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     }
     const slots = await getAvailableSlotsForBusiness(targetBusiness, 14);
     const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
-    const labelDate = new Date(`${dateKey}T00:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+    const labelDate = formatDisplayDateWithWeekdayGb(dateKey);
+    const filteredDisplay = filtered.map(formatLexiSlotLabelForDisplay);
     if (!filtered.length) {
       return `I can’t see any available slots for ${targetBusiness.name} on ${labelDate}. If you want, I can check another day or help you find another subscribed business.`;
     }
-    return `Yes, you can book at ${targetBusiness.name} on ${labelDate}. Available slots I can see are: ${filtered.join(", ")}. Tell me your service and preferred time, and I can help you book it.`;
+    return `Yes, you can book at ${targetBusiness.name} on ${labelDate}. Available slots I can see are: ${filteredDisplay.join(", ")}. Tell me your service and preferred time, and I can help you book it.`;
   }
   if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
@@ -3991,7 +4971,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       });
       const active = rows.filter((r) => String(r.status || "").toLowerCase() !== "cancelled");
       const cancelled = rows.length - active.length;
-      const label = target.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+      const label = formatDisplayDateWithWeekdayGb(dateKey);
       if (!rows.length) {
         return `I can’t see any bookings for ${bizName} on ${label} yet. If you want, I can help you check availability or suggest a good time to book.`;
       }
@@ -4006,11 +4986,12 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       const dateKey = target.toISOString().slice(0, 10);
       const slots = await getAvailableSlotsForBusiness(business, 14);
       const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
-      const label = target.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+      const label = formatDisplayDateWithWeekdayGb(dateKey);
+      const filteredDisplay = filtered.map(formatLexiSlotLabelForDisplay);
       if (!filtered.length) {
         return `I can’t see any available slots for ${bizName} on ${label} right now. If you want, I can check another day.`;
       }
-      return `Yes, there are available slots for ${bizName} on ${label}. Here are some times: ${filtered.join(", ")}.`;
+      return `Yes, there are available slots for ${bizName} on ${label}. Here are some times: ${filteredDisplay.join(", ")}.`;
     }
   }
   if (/(today'?s|today).*(revenue|renenue|takings|sales)|\b(revenue|renenue|takings|sales)\b.*\btoday\b/.test(qLower)) {
@@ -4069,10 +5050,10 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
 
 async function buildPublicLexiFallbackReplySafe(message, business, history = []) {
   try {
-    return await buildPublicLexiFallbackReply(message, business, history);
+    return normalizeLexiReplyText(await buildPublicLexiFallbackReply(message, business, history), { maxSentences: 2, maxChars: 320 });
   } catch (error) {
     console.error("Lexi fallback reply error:", error?.message || error);
-    return "I can still help, but I hit a temporary issue while checking that. Try asking again, or tell me the service and date you want and I’ll help step by step.";
+    return "I can still help. I hit a temporary issue just now, so ask again or tell me the service and date you want.";
   }
 }
 
@@ -4206,17 +5187,17 @@ async function buildSubscriberCopilotSnapshot(req) {
 
 async function buildSubscriberCopilotResponse({ question, snapshot }) {
   const base = buildSubscriberCopilotHeuristicResponse(question, snapshot);
-  if (!openai) return base;
+  if (!openai) return { ...base, answer: normalizeLexiReplyText(base.answer, { maxSentences: 2, maxChars: 320 }) };
   try {
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       temperature: 0.2,
-      max_tokens: 450,
+      max_tokens: 280,
       messages: [
         {
           role: "system",
           content:
-            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (1-4 short sentences unless asked for depth), sound like a premium receptionist and experienced salon owner/operator (not a report engine), and ask at most one follow-up question when needed. Use clear everyday language. Do not repeat capability lists in simple greetings. Be strong on pricing/policy explanations and suggest tasteful upsells only when clearly relevant. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
+            "You are Lexi, the lead AI receptionist and business copilot for a salon SaaS dashboard. You are the star front-desk assistant in this product: fast, accurate, confident, polished, and natural. You can answer broad questions like a ChatGPT-style assistant, including salon/barbershop/beauty/business guidance and app how-to questions, and you can also answer subscriber business/dashboard questions using the provided sanitized snapshot. Use the snapshot only when it is relevant to the user's question. Follow GDPR/UK GDPR and data-protection principles: data minimization, least disclosure, and purpose limitation. Do not reveal personal customer data, payment credentials, auth/security secrets, or platform-internal sensitive details. Never share subscriber business data publicly or treat internal dashboard data as public information. You may explain app features, modules, workflows, booking logic, and how Lexi works, but do not disclose personal data in chat. If the question is general and not about the subscriber's business, answer it directly and do not force dashboard analysis. Return JSON with keys: answer (string), findings (array of strings), suggestedActions (array of strings). For general questions, findings/suggestedActions can still be short practical bullets. Style rules: answer first, keep it concise by default (usually 1-2 short sentences, maximum 4 unless asked for depth), sound like a premium receptionist and experienced salon owner/operator (not a report engine), and ask at most one follow-up question when needed. Use clear everyday language. No long preambles. Do not repeat capability lists in simple greetings. Be strong on pricing/policy explanations and suggest tasteful upsells only when clearly relevant. Avoid robotic phrases like 'I reviewed your snapshot' unless the user asks for an analysis/report."
         },
         {
           role: "user",
@@ -4227,12 +5208,12 @@ async function buildSubscriberCopilotResponse({ question, snapshot }) {
     const raw = String(completion.choices?.[0]?.message?.content || "").trim();
     const parsed = JSON.parse(raw);
     return {
-      answer: String(parsed?.answer || base.answer),
+      answer: normalizeLexiReplyText(String(parsed?.answer || base.answer), { maxSentences: 2, maxChars: 320 }),
       findings: Array.isArray(parsed?.findings) ? parsed.findings.slice(0, 6).map(String) : base.findings,
       suggestedActions: Array.isArray(parsed?.suggestedActions) ? parsed.suggestedActions.slice(0, 6).map(String) : base.suggestedActions
     };
   } catch {
-    return base;
+    return { ...base, answer: normalizeLexiReplyText(base.answer, { maxSentences: 2, maxChars: 320 }) };
   }
 }
 
@@ -4605,8 +5586,7 @@ app.get("/api/commercial-controls", authRequired, requireRole("subscriber", "adm
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
-  const all = await readCommercialControlsFile();
-  const record = normalizeCommercialRecord(all?.[businessId]);
+  const record = await loadCommercialRecord(businessId);
   return res.json({
     ...record,
     summary: summarizeCommercialRecord(record)
@@ -4628,8 +5608,7 @@ app.post("/api/commercial-controls/memberships/upsert", authRequired, requireRol
   if (!supportedMembershipCycles.has(billingCycle)) return res.status(400).json({ error: "Unsupported billing cycle." });
   if (!supportedCommercialStatus.has(status)) return res.status(400).json({ error: "Unsupported membership status." });
 
-  const all = await readCommercialControlsFile();
-  const record = normalizeCommercialRecord(all?.[businessId]);
+  const record = await loadCommercialRecord(businessId);
   const rows = Array.isArray(record.memberships) ? record.memberships : [];
   const index = rows.findIndex((item) => item.id === id);
   const next = {
@@ -4644,8 +5623,7 @@ app.post("/api/commercial-controls/memberships/upsert", authRequired, requireRol
   if (index >= 0) rows[index] = next;
   else rows.push(next);
   record.memberships = rows;
-  all[businessId] = record;
-  await writeCommercialControlsFile(all);
+  await saveCommercialRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4685,8 +5663,7 @@ app.post("/api/commercial-controls/packages/upsert", authRequired, requireRole("
   }
   if (!supportedCommercialStatus.has(status)) return res.status(400).json({ error: "Unsupported package status." });
 
-  const all = await readCommercialControlsFile();
-  const record = normalizeCommercialRecord(all?.[businessId]);
+  const record = await loadCommercialRecord(businessId);
   const rows = Array.isArray(record.packages) ? record.packages : [];
   const index = rows.findIndex((item) => item.id === id);
   const next = {
@@ -4701,8 +5678,7 @@ app.post("/api/commercial-controls/packages/upsert", authRequired, requireRole("
   if (index >= 0) rows[index] = next;
   else rows.push(next);
   record.packages = rows;
-  all[businessId] = record;
-  await writeCommercialControlsFile(all);
+  await saveCommercialRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4738,8 +5714,7 @@ app.post("/api/commercial-controls/gift-cards/issue", authRequired, requireRole(
     return res.status(400).json({ error: "Gift card expiry date is invalid." });
   }
 
-  const all = await readCommercialControlsFile();
-  const record = normalizeCommercialRecord(all?.[businessId]);
+  const record = await loadCommercialRecord(businessId);
   const rows = Array.isArray(record.giftCards) ? record.giftCards : [];
   const code = codeInput || `GIFT-${randomUUID().slice(0, 8).toUpperCase()}`;
   const id = randomUUID();
@@ -4758,8 +5733,7 @@ app.post("/api/commercial-controls/gift-cards/issue", authRequired, requireRole(
   };
   rows.push(giftCard);
   record.giftCards = rows;
-  all[businessId] = record;
-  await writeCommercialControlsFile(all);
+  await saveCommercialRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4792,8 +5766,7 @@ app.post(
       return res.status(400).json({ error: "Redeem amount must be greater than zero." });
     }
 
-    const all = await readCommercialControlsFile();
-    const record = normalizeCommercialRecord(all?.[businessId]);
+    const record = await loadCommercialRecord(businessId);
     const rows = Array.isArray(record.giftCards) ? record.giftCards : [];
     const index = rows.findIndex((item) => item.id === giftCardId);
     if (index < 0) return res.status(404).json({ error: "Gift card not found." });
@@ -4812,8 +5785,7 @@ app.post(
       updatedAt: new Date().toISOString()
     };
     record.giftCards = rows;
-    all[businessId] = record;
-    await writeCommercialControlsFile(all);
+    await saveCommercialRecord(businessId, record);
 
     await writeAuditLog({
       actorId: req.auth.sub,
@@ -4836,11 +5808,10 @@ app.get("/api/revenue-attribution", authRequired, requireRole("subscriber", "adm
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
-  const [bookings, spendAll] = await Promise.all([
+  const [bookings, spendRecord] = await Promise.all([
     prisma.booking.findMany({ where: { businessId } }),
-    readRevenueSpendFile()
+    loadRevenueSpendRecord(businessId)
   ]);
-  const spendRecord = normalizeRevenueSpendRecord(spendAll?.[businessId]);
   return res.json(computeRevenueAttribution(bookings, spendRecord));
 });
 
@@ -4853,11 +5824,9 @@ app.post("/api/revenue-attribution/spend", authRequired, requireRole("subscriber
   if (!channel) return res.status(400).json({ error: "Channel is required." });
   if (!Number.isFinite(spend) || spend < 0) return res.status(400).json({ error: "Spend must be a valid number >= 0." });
 
-  const all = await readRevenueSpendFile();
-  const businessRecord = normalizeRevenueSpendRecord(all?.[businessId]);
+  const businessRecord = await loadRevenueSpendRecord(businessId);
   businessRecord[channel] = Number(spend.toFixed(2));
-  all[businessId] = businessRecord;
-  await writeRevenueSpendFile(all);
+  await saveRevenueSpendRecord(businessId, businessRecord);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4876,11 +5845,10 @@ app.get("/api/profitability-summary", authRequired, requireRole("subscriber", "a
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
-  const [bookings, allInputs] = await Promise.all([
+  const [bookings, record] = await Promise.all([
     prisma.booking.findMany({ where: { businessId } }),
-    readProfitabilityInputsFile()
+    loadProfitabilityRecord(businessId)
   ]);
-  const record = normalizeProfitabilityRecord(allInputs?.[businessId]);
   return res.json(computeProfitabilitySummary(bookings, record));
 });
 
@@ -4901,8 +5869,7 @@ app.post("/api/profitability/payroll/upsert", authRequired, requireRole("subscri
   }
   if (!Number.isFinite(bonus) || bonus < 0) return res.status(400).json({ error: "Bonus must be a valid number >= 0." });
 
-  const allInputs = await readProfitabilityInputsFile();
-  const record = normalizeProfitabilityRecord(allInputs?.[businessId]);
+  const record = await loadProfitabilityRecord(businessId);
   const rows = Array.isArray(record.payrollEntries) ? record.payrollEntries : [];
   const index = rows.findIndex((entry) => entry.id === id);
   const next = {
@@ -4917,8 +5884,7 @@ app.post("/api/profitability/payroll/upsert", authRequired, requireRole("subscri
   if (index >= 0) rows[index] = next;
   else rows.push(next);
   record.payrollEntries = rows;
-  allInputs[businessId] = record;
-  await writeProfitabilityInputsFile(allInputs);
+  await saveProfitabilityRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4943,14 +5909,12 @@ app.delete("/api/profitability/payroll/:entryId", authRequired, requireRole("sub
   const entryId = String(req.params.entryId || "").trim();
   if (!entryId) return res.status(400).json({ error: "Payroll entry id is required." });
 
-  const allInputs = await readProfitabilityInputsFile();
-  const record = normalizeProfitabilityRecord(allInputs?.[businessId]);
+  const record = await loadProfitabilityRecord(businessId);
   const rows = Array.isArray(record.payrollEntries) ? record.payrollEntries : [];
   const filtered = rows.filter((entry) => entry.id !== entryId);
   if (filtered.length === rows.length) return res.status(404).json({ error: "Payroll entry not found." });
   record.payrollEntries = filtered;
-  allInputs[businessId] = record;
-  await writeProfitabilityInputsFile(allInputs);
+  await saveProfitabilityRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -4982,8 +5946,7 @@ app.post("/api/profitability/costs/upsert", authRequired, requireRole("subscribe
     return res.status(400).json({ error: "COGS percent must be between 0 and 95." });
   }
 
-  const allInputs = await readProfitabilityInputsFile();
-  const record = normalizeProfitabilityRecord(allInputs?.[businessId]);
+  const record = await loadProfitabilityRecord(businessId);
   record.fixedCosts = {
     rent: Number(rent.toFixed(2)),
     utilities: Number(utilities.toFixed(2)),
@@ -4991,8 +5954,7 @@ app.post("/api/profitability/costs/upsert", authRequired, requireRole("subscribe
     other: Number(other.toFixed(2))
   };
   record.cogsPercent = Number(cogsPercent.toFixed(2));
-  allInputs[businessId] = record;
-  await writeProfitabilityInputsFile(allInputs);
+  await saveProfitabilityRecord(businessId, record);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5107,8 +6069,6 @@ app.post("/api/business-reports/email", authRequired, requireRole("subscriber", 
   if (!isValidEmail(recipientEmail)) return res.status(400).json({ error: "Invalid recipient email format." });
   if (!report) return res.status(400).json({ error: "Report payload is required." });
 
-  const queue = await readBusinessReportQueueFile();
-  const businessQueue = Array.isArray(queue?.[businessId]) ? queue[businessId] : [];
   const queuedAt = new Date().toISOString();
   const item = {
     id: randomUUID(),
@@ -5125,8 +6085,7 @@ app.post("/api/business-reports/email", authRequired, requireRole("subscriber", 
       email: String(req.auth?.email || "")
     }
   };
-  queue[businessId] = [item, ...businessQueue].slice(0, 100);
-  await writeBusinessReportQueueFile(queue);
+  await enqueueBusinessReportEmailRequest(item);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5150,8 +6109,7 @@ app.get("/api/accounting-integrations", authRequired, requireRole("subscriber", 
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
-  const all = await readAccountingIntegrationsFile();
-  const record = all?.[businessId] || {};
+  const record = await loadAccountingIntegrationsRecord(businessId);
   return res.json({
     providers: summarizeBusinessAccountingIntegrations(record),
     supportedProviders: supportedAccountingProviders
@@ -5170,8 +6128,7 @@ app.post("/api/accounting-integrations/connect", authRequired, requireRole("subs
   if (!accountLabel) return res.status(400).json({ error: "Account label is required." });
   if (!allowedSyncModes.has(syncMode)) return res.status(400).json({ error: "Unsupported sync mode." });
 
-  const all = await readAccountingIntegrationsFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+  const businessRecord = await loadAccountingIntegrationsRecord(businessId);
   const now = new Date().toISOString();
   businessRecord[provider] = {
     provider,
@@ -5181,8 +6138,7 @@ app.post("/api/accounting-integrations/connect", authRequired, requireRole("subs
     connectedAt: businessRecord?.[provider]?.connectedAt || now,
     updatedAt: now
   };
-  all[businessId] = businessRecord;
-  await writeAccountingIntegrationsFile(all);
+  await saveAccountingIntegrationsRecord(businessId, businessRecord);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5210,8 +6166,7 @@ app.post(
     const provider = normalizeAccountingProvider(req.params.provider);
     if (!provider) return res.status(400).json({ error: "Unsupported provider." });
 
-    const all = await readAccountingIntegrationsFile();
-    const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
+    const businessRecord = await loadAccountingIntegrationsRecord(businessId);
     const existing = businessRecord?.[provider];
     if (!existing || existing.status !== "connected") {
       return res.status(404).json({ error: "Provider is not connected for this business." });
@@ -5226,8 +6181,7 @@ app.post(
       connectedAt: null,
       updatedAt: now
     };
-    all[businessId] = businessRecord;
-    await writeAccountingIntegrationsFile(all);
+    await saveAccountingIntegrationsRecord(businessId, businessRecord);
 
     await writeAuditLog({
       actorId: req.auth.sub,
@@ -5249,8 +6203,7 @@ app.get("/api/staff-roster", authRequired, requireRole("subscriber", "admin"), a
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
 
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   return res.json(
     buildStaffRosterResponse(businessRecord, {
       includeRotaWeek: true,
@@ -5273,8 +6226,7 @@ app.post("/api/staff-roster/upsert", authRequired, requireRole("subscriber", "ad
     return res.status(400).json({ error: "Invalid availability value." });
   }
 
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const existingIndex = members.findIndex((member) => String(member?.id || "") === id);
   const nextMember = {
@@ -5291,8 +6243,7 @@ app.post("/api/staff-roster/upsert", authRequired, requireRole("subscriber", "ad
     members.push(nextMember);
   }
   businessRecord.members = members;
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5324,8 +6275,7 @@ app.post("/api/staff-roster/:staffId/availability", authRequired, requireRole("s
     return res.status(400).json({ error: "Invalid availability value." });
   }
 
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const index = members.findIndex((member) => String(member?.id || "") === staffId);
   if (index < 0) return res.status(404).json({ error: "Staff member not found." });
@@ -5335,8 +6285,7 @@ app.post("/api/staff-roster/:staffId/availability", authRequired, requireRole("s
     updatedAt: new Date().toISOString()
   };
   businessRecord.members = members;
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5363,14 +6312,12 @@ app.delete("/api/staff-roster/:staffId", authRequired, requireRole("subscriber",
   const staffId = String(req.params.staffId || "").trim();
   if (!staffId) return res.status(400).json({ error: "Staff member id is required." });
 
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   const members = Array.isArray(businessRecord.members) ? businessRecord.members : [];
   const filtered = members.filter((member) => String(member?.id || "") !== staffId);
   if (filtered.length === members.length) return res.status(404).json({ error: "Staff member not found." });
   businessRecord.members = filtered;
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5390,8 +6337,7 @@ app.delete("/api/staff-roster/:staffId", authRequired, requireRole("subscriber",
       }
     });
   }
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
   return res.json(
     buildStaffRosterResponse(businessRecord, {
       includeRotaWeek: true,
@@ -5404,8 +6350,7 @@ app.get("/api/staff-roster/rota", authRequired, requireRole("subscriber", "admin
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
   const weekStart = normalizeWeekStartKey(req.query?.weekStart) || currentWeekStartKey();
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   return res.json(getStaffRotaWeekPayload(businessRecord, weekStart));
 });
 
@@ -5416,8 +6361,7 @@ app.post("/api/staff-roster/rota/bulk", authRequired, requireRole("subscriber", 
   const updates = Array.isArray(req.body?.updates) ? req.body.updates : [];
   const appendSicknessLogs = Array.isArray(req.body?.sicknessLogs) ? req.body.sicknessLogs : [];
 
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   const members = normalizeStaffMembers(businessRecord.members || []);
   const validIds = new Set(members.map((member) => String(member.id)));
   if (!businessRecord.rotaWeeks || typeof businessRecord.rotaWeeks !== "object") businessRecord.rotaWeeks = {};
@@ -5460,8 +6404,7 @@ app.post("/api/staff-roster/rota/bulk", authRequired, requireRole("subscriber", 
 
   week.updatedAt = now;
   businessRecord.rotaWeeks[weekStart] = week;
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
 
   if (applied || appendSicknessLogs.length) {
     await writeAuditLog({
@@ -5481,12 +6424,10 @@ app.post("/api/staff-roster/rota/reset", authRequired, requireRole("subscriber",
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
   const weekStart = normalizeWeekStartKey(req.body?.weekStart) || currentWeekStartKey();
-  const all = await readStaffRosterFile();
-  const businessRecord = getNormalizedStaffBusinessRecord(all, businessId);
+  const businessRecord = await loadStaffBusinessRecord(businessId);
   if (!businessRecord.rotaWeeks || typeof businessRecord.rotaWeeks !== "object") businessRecord.rotaWeeks = {};
   delete businessRecord.rotaWeeks[weekStart];
-  all[businessId] = businessRecord;
-  await writeStaffRosterFile(all);
+  await saveStaffBusinessRecord(businessId, businessRecord);
   await writeAuditLog({
     actorId: req.auth.sub,
     actorRole: req.auth.role,
@@ -5501,9 +6442,7 @@ app.post("/api/staff-roster/rota/reset", authRequired, requireRole("subscriber",
 app.get("/api/waitlist", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
   const businessId = await resolveManagedBusinessId(req);
   if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
-
-  const all = await readWaitlistFile();
-  const rows = normalizeWaitlistRows(all?.[businessId]?.entries || []);
+  const rows = await getWaitlistEntriesForBusiness(businessId);
   return res.json({
     entries: rows,
     summary: summarizeWaitlist(rows)
@@ -5535,33 +6474,22 @@ app.post("/api/waitlist/upsert", authRequired, requireRole("subscriber", "admin"
     return res.status(400).json({ error: "Invalid preferred date/time." });
   }
 
-  const all = await readWaitlistFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
-  const entries = normalizeWaitlistRows(businessRecord.entries || []);
-  const index = entries.findIndex((item) => item.id === id);
-  const now = new Date().toISOString();
-  const next = {
-    id,
-    customerName,
-    customerPhone,
-    customerEmail,
-    service,
-    preferredDate,
-    preferredTime,
-    notes,
-    status: "waiting",
-    createdAt: index >= 0 ? entries[index].createdAt || now : now,
-    updatedAt: now,
-    lastActionAt: index >= 0 ? entries[index].lastActionAt || null : null
-  };
-  if (index >= 0) {
-    entries[index] = next;
-  } else {
-    entries.push(next);
+  let saved;
+  try {
+    saved = await upsertWaitlistEntryForBusiness(businessId, {
+      id,
+      customerName,
+      customerPhone,
+      customerEmail,
+      service,
+      preferredDate,
+      preferredTime,
+      notes
+    });
+  } catch (error) {
+    if (error?.statusCode === 404) return res.status(404).json({ error: "Waitlist entry not found." });
+    throw error;
   }
-  businessRecord.entries = entries;
-  all[businessId] = businessRecord;
-  await writeWaitlistFile(all);
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5573,9 +6501,9 @@ app.post("/api/waitlist/upsert", authRequired, requireRole("subscriber", "admin"
   });
 
   return res.json({
-    entry: next,
-    entries,
-    summary: summarizeWaitlist(entries)
+    entry: saved.entry,
+    entries: saved.entries,
+    summary: summarizeWaitlist(saved.entries)
   });
 });
 
@@ -5594,22 +6522,13 @@ app.post("/api/waitlist/:entryId/backfill", authRequired, requireRole("subscribe
     }
   }
 
-  const all = await readWaitlistFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
-  const entries = normalizeWaitlistRows(businessRecord.entries || []);
-  const index = entries.findIndex((item) => item.id === entryId);
-  if (index < 0) return res.status(404).json({ error: "Waitlist entry not found." });
-
-  const now = new Date().toISOString();
-  entries[index] = {
-    ...entries[index],
-    status: "contacted",
-    updatedAt: now,
-    lastActionAt: now
-  };
-  businessRecord.entries = entries;
-  all[businessId] = businessRecord;
-  await writeWaitlistFile(all);
+  let updated;
+  try {
+    updated = await markWaitlistEntryContactedForBusiness(businessId, entryId);
+  } catch (error) {
+    if (error?.statusCode === 404) return res.status(404).json({ error: "Waitlist entry not found." });
+    throw error;
+  }
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5620,14 +6539,14 @@ app.post("/api/waitlist/:entryId/backfill", authRequired, requireRole("subscribe
     metadata: {
       businessId,
       cancelledBookingId: cancelledBooking?.id || null,
-      service: cancelledBooking?.service || entries[index].service || null
+      service: cancelledBooking?.service || updated.entry?.service || null
     }
   });
 
   return res.json({
-    entry: entries[index],
-    entries,
-    summary: summarizeWaitlist(entries)
+    entry: updated.entry,
+    entries: updated.entries,
+    summary: summarizeWaitlist(updated.entries)
   });
 });
 
@@ -5637,14 +6556,13 @@ app.delete("/api/waitlist/:entryId", authRequired, requireRole("subscriber", "ad
   const entryId = String(req.params.entryId || "").trim();
   if (!entryId) return res.status(400).json({ error: "Waitlist entry id is required." });
 
-  const all = await readWaitlistFile();
-  const businessRecord = all?.[businessId] && typeof all[businessId] === "object" ? all[businessId] : {};
-  const entries = normalizeWaitlistRows(businessRecord.entries || []);
-  const filtered = entries.filter((item) => item.id !== entryId);
-  if (filtered.length === entries.length) return res.status(404).json({ error: "Waitlist entry not found." });
-  businessRecord.entries = filtered;
-  all[businessId] = businessRecord;
-  await writeWaitlistFile(all);
+  let deleted;
+  try {
+    deleted = await deleteWaitlistEntryForBusiness(businessId, entryId);
+  } catch (error) {
+    if (error?.statusCode === 404) return res.status(404).json({ error: "Waitlist entry not found." });
+    throw error;
+  }
 
   await writeAuditLog({
     actorId: req.auth.sub,
@@ -5656,8 +6574,8 @@ app.delete("/api/waitlist/:entryId", authRequired, requireRole("subscriber", "ad
   });
 
   return res.json({
-    entries: filtered,
-    summary: summarizeWaitlist(filtered)
+    entries: deleted.entries,
+    summary: summarizeWaitlist(deleted.entries)
   });
 });
 
@@ -5680,11 +6598,17 @@ app.get("/api/billing/subscriber-summary", authRequired, requireRole("subscriber
   const plan = String(subscription?.plan || "starter").trim().toLowerCase();
   const planLabel = plan === "yearly" ? "Subscriber Yearly" : "Subscriber Monthly";
   const effectiveMonthlyOnYearly = Number((subscriberYearlyFeeGbp / 12).toFixed(2));
+  const provider = subscription?.stripeCustomerId || subscription?.stripeSubscription
+    ? "stripe"
+    : status === "active" || status === "trialing" || status === "past_due"
+      ? "paypal"
+      : "";
 
   return res.json({
     status,
     plan,
     planLabel,
+    provider,
     currentPeriodEnd: subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toISOString() : null,
     monthlyFee: subscriberMonthlyFeeGbp,
     yearlyFee: subscriberYearlyFeeGbp,
@@ -5831,12 +6755,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     const userMessageLower = userMessage.toLowerCase();
     if (/(what('s| is)?\s+(the\s+)?date\b|today'?s date|what day is it)/i.test(userMessageLower)) {
       const now = new Date();
-      const formattedDate = now.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
+      const formattedDate = formatDisplayDateWithWeekdayGb(now.toISOString());
       return res.json({ reply: `Today is ${formattedDate}.` });
     }
     if (/(what('s| is)?\s+(the\s+)?time\b|current time|time is it)/i.test(userMessageLower)) {
@@ -6002,7 +6921,8 @@ Style:
 - sound like an experienced salon owner/front-desk manager, not a scripted assistant
 - respond to the user's actual question first before giving extra detail
 - avoid robotic phrases such as "I reviewed" / "the system indicates" / "snapshot"
-- keep replies quick and clear by default (usually 1-4 short sentences unless the user asks for more detail)
+- keep replies quick and clear by default (usually 1-2 short sentences, maximum 4 unless the user asks for more detail)
+- no long preambles; answer the question directly first
 - act like the star front-desk assistant: confident, helpful, and proactive without sounding salesy
 - sound premium, polished, and reassuring
 - do not repeat a long capability list on simple greetings like "hi" or "hello"
@@ -6036,7 +6956,7 @@ Rules:
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       temperature: 0.2,
-      max_tokens: 450,
+      max_tokens: 280,
       messages,
       tools,
       tool_choice: "auto"
@@ -6199,7 +7119,7 @@ Rules:
       }
     }
 
-    return res.json({ reply: choice?.content || "I can help you book an appointment." });
+    return res.json({ reply: normalizeLexiReplyText(choice?.content || "I can help you book an appointment.", { maxSentences: 2, maxChars: 320 }) });
   } catch (error) {
     const status = Number(error?.status || error?.code || 0);
     const code = String(error?.error?.code || error?.code || "");
@@ -6295,4 +7215,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log(`Background queues: ${jobRuntime?.enabled ? "enabled (Redis)" : "inline fallback"}`);
   });
 }
+
 

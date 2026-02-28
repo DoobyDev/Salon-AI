@@ -2,9 +2,9 @@
 
 ## Pricing Inputs
 
-- Monthly price: GBP 29.99
-- Yearly price: GBP 299.99
-- Yearly discount %: [PLACEHOLDER]
+- Monthly price: GBP 9.99
+- Yearly price: GBP 99.99
+- Yearly discount %: 16.7
 
 ## Core Assumptions
 

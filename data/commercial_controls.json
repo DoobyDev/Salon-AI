@@ -1330,5 +1330,1189 @@
         "updatedAt": "2026-02-24T09:48:21.830Z"
       }
     ]
+  },
+  "biz_controls_create_1772017931654_30826": {
+    "memberships": [
+      {
+        "id": "f70c8563-b2f5-48fa-92d1-e3a2a524d0db",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T11:12:11.729Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "730fdad5-e89d-4cde-bea9-8f63da316802",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T11:12:11.754Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "ff6096ee-49c2-4c15-b78a-4a3694ca9477",
+        "code": "GIFT-D17CB265",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:12:11.771Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:12:11.771Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772017931801_85045": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "9561381f-d382-4dbf-8db2-a5b0d810d93d",
+        "code": "GIFT-0E78ACD3",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:12:11.810Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:12:11.819Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772017931824_54678": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "cd53febb-096b-4f77-93b6-5f19b2f7f1e4",
+        "code": "GIFT-2C0B676C",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:12:11.830Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:12:11.830Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772019105315_908": {
+    "memberships": [
+      {
+        "id": "3dae82fd-b40a-476d-b7a1-f9723b0a9756",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T11:31:45.386Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "61bc647d-80cc-4151-8fa0-b945369374ae",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T11:31:45.411Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "4ab03936-e340-4f8c-9e67-b7891d0d72d8",
+        "code": "GIFT-0D7DCCAA",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:31:45.425Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:31:45.425Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772019105485_24861": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "e66b6f7e-3f10-475c-868d-72eb6e58daaa",
+        "code": "GIFT-D22B5B55",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:31:45.506Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:31:45.536Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772019105546_9048": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "636a2947-978d-4b68-b00c-85bad25fbb9b",
+        "code": "GIFT-AEF156F8",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:31:45.554Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:31:45.554Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772019131260_31969": {
+    "memberships": [
+      {
+        "id": "587a7187-6336-460e-bb14-6897b98e464f",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T11:32:11.371Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "7c8d4de5-a70b-4618-8164-ba3d1462fc2a",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T11:32:11.415Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "3d5ec528-c949-4ea5-afdb-f1d9f1186d21",
+        "code": "GIFT-04937135",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:32:11.439Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:32:11.439Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772019131476_78934": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "6d5b53c9-c9fa-46dc-bcee-d77ddef50fcb",
+        "code": "GIFT-46793E6E",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:32:11.486Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:32:11.503Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772019131513_44244": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "524dd607-6c75-4506-b838-902303c0af08",
+        "code": "GIFT-5CDC4738",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T11:32:11.521Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T11:32:11.521Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021035526_45069": {
+    "memberships": [
+      {
+        "id": "74224fc4-75c6-41e1-9434-f5880e092f1c",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:03:55.595Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "443baf24-8c8e-4edf-8535-15694cc27a58",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:03:55.625Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "4a3b45d2-34ce-44b9-aaa2-318e13f0e4a0",
+        "code": "GIFT-2916D9AD",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:03:55.646Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:03:55.646Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021035688_19022": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "a368b965-05dd-47fe-8edf-844064cc2cf3",
+        "code": "GIFT-60C5ECDF",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:03:55.708Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:03:55.748Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021035761_75162": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "779f4443-514e-4286-8fd7-b3b0cee1d755",
+        "code": "GIFT-CA6FDF78",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:03:55.773Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:03:55.773Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021081279_96510": {
+    "memberships": [
+      {
+        "id": "fc9490e4-843b-40c1-afb2-f3621e2bb722",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:04:41.344Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "694f9f92-487d-41de-944c-6711d36ab521",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:04:41.383Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "f4684964-f27d-4136-8fdd-41278ad82b3d",
+        "code": "GIFT-303726E6",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:04:41.408Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:04:41.408Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021081454_73435": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "fba050f9-88bd-48b7-8e8f-0c782ab9b797",
+        "code": "GIFT-991DEF2F",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:04:41.462Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:04:41.474Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021081479_20154": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "74c3b399-d232-4cd8-b197-071e6c0374c5",
+        "code": "GIFT-3CEEB102",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:04:41.486Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:04:41.486Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021502664_17149": {
+    "memberships": [
+      {
+        "id": "afed0655-e96b-4b4f-8fee-805bc4cf4fbb",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:11:42.732Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "02a00462-ca85-4d96-9502-e1cbda348c57",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:11:42.768Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "ef702252-38d1-4c58-82e9-b08531a22c3a",
+        "code": "GIFT-CD1F72A0",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:11:42.783Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:11:42.783Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021502821_93403": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "af9b2a68-3579-47ad-ac26-4d326aba7deb",
+        "code": "GIFT-8817705E",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:11:42.830Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:11:42.844Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021502849_7105": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "cc84df8e-c6f8-4e62-98f9-4c9571cfb5e1",
+        "code": "GIFT-B5372108",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:11:42.855Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:11:42.855Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021761488_84781": {
+    "memberships": [
+      {
+        "id": "1013b34b-17ce-4e82-a15f-cca2c04ad462",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:16:01.517Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "4b90e91a-6519-4253-a355-70b34041d14d",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:16:01.536Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "ae194394-ba8f-4115-af48-994bfeafcc1e",
+        "code": "GIFT-C493F70D",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:01.543Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:01.543Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021761556_38623": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "705331cd-c00f-4674-a3c1-d65825a89696",
+        "code": "GIFT-4BF6334A",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:01.560Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:01.567Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021761570_3415": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "5021cb2d-3ec7-4aa5-8c9c-3987dc3b19c3",
+        "code": "GIFT-7330C7A7",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:01.574Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:01.574Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021770358_52144": {
+    "memberships": [
+      {
+        "id": "73a4f692-4f62-4b73-a0a4-a3526b586f41",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:16:10.462Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "9cf6a247-e3b9-4f99-86d5-a41f154ddcef",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:16:10.489Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "81cacfd2-1765-4bed-b5eb-0cc2e38db1f3",
+        "code": "GIFT-1E1B254C",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:10.512Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:10.512Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021770536_48291": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "95c54f12-fb9a-4fd2-961e-b29265a895d8",
+        "code": "GIFT-F78FCBB3",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:10.567Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:10.615Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021770689_88815": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "37fee7e2-fa63-4440-90b8-b37198b96b96",
+        "code": "GIFT-D8EB82BB",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:16:10.714Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:16:10.714Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772021934312_27614": {
+    "memberships": [
+      {
+        "id": "aff459e4-0dea-4ee3-9c3f-66267f2dff9b",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:18:54.376Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "c4de7a28-cf68-4aa4-a8ec-33bea2abd3a1",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:18:54.422Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "fea155de-4131-42a3-98de-a79153fc844f",
+        "code": "GIFT-8FDEE263",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:18:54.452Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:18:54.452Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772021934476_37076": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "cb59a905-20af-45ee-a919-9b66d3d7a878",
+        "code": "GIFT-87119146",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:18:54.487Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:18:54.514Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772021934522_29279": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "919f4635-02dd-49bb-bfe0-79c342beabf7",
+        "code": "GIFT-D0AB0870",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:18:54.530Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:18:54.530Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772022170368_49033": {
+    "memberships": [
+      {
+        "id": "01a018fc-cdf6-435f-8423-733ebb098eb2",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:22:50.422Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "652ecc14-4e46-4456-ba37-05f86ecc6908",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:22:50.466Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "d113b119-6037-4798-b56a-177aab17f2b9",
+        "code": "GIFT-2676B446",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:22:50.503Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:22:50.503Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772022170536_88323": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "23b2c8fc-d22f-49be-9acc-dbe25182f74e",
+        "code": "GIFT-4E4362F2",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:22:50.548Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:22:50.574Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772022170584_67566": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "c4240eb6-dcc2-425a-8472-d4a12f64b35b",
+        "code": "GIFT-84326773",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:22:50.591Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:22:50.591Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772022352241_72880": {
+    "memberships": [
+      {
+        "id": "a0afb76c-87c1-49e4-9c12-b1a3f902df16",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T12:25:52.333Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "93233b30-5457-41a7-80b9-e37af034fcb4",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T12:25:52.362Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "b2df58c9-52d7-408d-8c26-b24739897efd",
+        "code": "GIFT-7FCF5E46",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:25:52.388Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:25:52.388Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772022352416_10604": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "5a9fbcf2-8de9-4597-b7f9-d2140f4788a4",
+        "code": "GIFT-085B2A82",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:25:52.427Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:25:52.441Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772022352447_55010": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "772e3583-2796-4cee-867d-8685df0aef2a",
+        "code": "GIFT-8BEA97ED",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T12:25:52.456Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T12:25:52.456Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772034088932_2314": {
+    "memberships": [
+      {
+        "id": "2744d35d-3c30-4d17-843c-306bbc00f8d7",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T15:41:29.008Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "ef9eb27e-33f6-4b52-b750-242239aeac0a",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T15:41:29.061Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "fcc0a3cc-05c4-4ea6-8b90-110d82a03e04",
+        "code": "GIFT-5B6EB5ED",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:41:29.088Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:41:29.088Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772034089129_35624": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "18e25f6c-57e4-42ab-b281-2c9c775af451",
+        "code": "GIFT-70D0CF0F",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:41:29.137Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:41:29.152Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772034089159_67757": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "a2026fb9-f8f2-425b-ba8a-faf090aa350b",
+        "code": "GIFT-94309277",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:41:29.173Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:41:29.173Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772034754863_36602": {
+    "memberships": [
+      {
+        "id": "abd9d519-d6a4-4e6a-b600-dc9bfac6598a",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-25T15:52:34.942Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "4390bad2-1a48-4ad7-8e75-adad9b09bbc9",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-25T15:52:34.979Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "08274948-f645-4272-b67a-5a352317d7bf",
+        "code": "GIFT-FCE2E892",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:52:34.997Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:52:34.997Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772034755020_81872": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "b915d6d9-1b97-41eb-87a6-770c829039a5",
+        "code": "GIFT-F7843B10",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:52:35.027Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:52:35.049Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772034755058_32704": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "4e2ec869-b10a-4d63-b221-3234c635f1d7",
+        "code": "GIFT-BCBEF699",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-25T15:52:35.067Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-25T15:52:35.067Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772273803041_85243": {
+    "memberships": [
+      {
+        "id": "912a7b8a-c12d-40a5-99be-6980af82294e",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-28T10:16:43.155Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "cce7f7c5-42d5-4abb-b07b-9961a918b279",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-28T10:16:43.192Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "1715a086-be67-43db-9c0e-7c78733c426c",
+        "code": "GIFT-F1EE92DD",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:16:43.227Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:16:43.227Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772273803270_93849": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "f1e76307-727e-472e-b1a6-988f1e2a86dc",
+        "code": "GIFT-B8D3A27C",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:16:43.286Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:16:43.338Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772273803350_65477": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "92caa07b-fc72-40be-a2a2-7143b0aa7266",
+        "code": "GIFT-80C106EC",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:16:43.359Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:16:43.359Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772275942726_61137": {
+    "memberships": [
+      {
+        "id": "347a463c-1dad-473d-ac80-180f1958701d",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-28T10:52:22.800Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "bc4a4e7b-0bd0-4c4d-8653-e68aea97bdd9",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-28T10:52:22.843Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "b1b73aa6-89bb-40d1-ace5-2a6bff4991ea",
+        "code": "GIFT-CFDBF076",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:52:22.883Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:52:22.883Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772275942927_38588": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "1cc81c9a-33b9-48e0-bfc6-02ed56d95903",
+        "code": "GIFT-A7D35127",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:52:22.944Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:52:22.972Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772275942985_9329": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "de3f631a-7b60-40ae-a9e3-d7bc543873fd",
+        "code": "GIFT-33945A3D",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:52:23.001Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:52:23.001Z"
+      }
+    ]
+  },
+  "biz_controls_create_1772276197494_89982": {
+    "memberships": [
+      {
+        "id": "cece3f50-b4b0-4f6a-9195-912bf0608ea3",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-02-28T10:56:37.562Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "cc9d45eb-6232-4653-910f-9d7fdeb9c66e",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-02-28T10:56:37.627Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "0a4b98e0-ba36-423e-91eb-ddfac8ccdc70",
+        "code": "GIFT-0EC9C9CE",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:56:37.651Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:56:37.651Z"
+      }
+    ]
+  },
+  "biz_controls_redeem_1772276197681_13731": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "cb832383-a979-452b-8138-ef777c56e60c",
+        "code": "GIFT-2D1063BB",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:56:37.700Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:56:37.729Z"
+      }
+    ]
+  },
+  "biz_controls_validate_1772276197737_62367": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "a78d8ffd-6e25-4753-80e7-62ad2806c5d4",
+        "code": "GIFT-3CA8AE01",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-02-28T10:56:37.745Z",
+        "expiresAt": null,
+        "updatedAt": "2026-02-28T10:56:37.745Z"
+      }
+    ]
   }
 }

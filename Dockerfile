@@ -8,7 +8,8 @@ RUN npm ci
 COPY . .
 
 RUN npx prisma generate
-RUN npm prune --omit=dev
+# Keep Prisma CLI available in the runtime image because docker-compose startup
+# runs `prisma migrate deploy` before launching the app.
 
 RUN mkdir -p /app/data
 

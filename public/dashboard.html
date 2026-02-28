@@ -71,6 +71,83 @@
         grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 0.5rem;
       }
+      .workspace-star-panel {
+        border: 1px solid rgba(124, 234, 216, 0.18);
+        border-radius: 14px;
+        background:
+          radial-gradient(circle at 92% -8%, rgba(124, 234, 216, 0.08), transparent 42%),
+          radial-gradient(circle at 8% -10%, rgba(109, 185, 255, 0.08), transparent 40%),
+          rgba(9, 15, 28, 0.78);
+        padding: 0.6rem;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .workspace-star-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .workspace-star-kicker {
+        margin: 0;
+        color: #9bd2ff;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .workspace-star-head h3 {
+        margin: 0.12rem 0 0;
+        font-size: 0.92rem;
+      }
+      .workspace-star-head > div > p:last-child {
+        margin: 0.18rem 0 0;
+        color: var(--muted);
+        font-size: 0.75rem;
+        line-height: 1.35;
+        max-width: 70ch;
+      }
+      .workspace-star-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .workspace-star-actions .btn {
+        min-height: 32px;
+        padding: 0.24rem 0.55rem;
+        font-size: 0.72rem;
+      }
+      .workspace-star-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.45rem;
+      }
+      .workspace-star-card {
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.02);
+        padding: 0.5rem;
+        display: grid;
+        gap: 0.14rem;
+        min-width: 0;
+      }
+      .workspace-star-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.67rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .workspace-star-card strong {
+        color: #e7f4ff;
+        font-size: 0.77rem;
+        line-height: 1.28;
+      }
+      .workspace-star-card small {
+        color: var(--muted);
+        font-size: 0.69rem;
+        line-height: 1.3;
+      }
       .workspace-action-btn {
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 12px;
@@ -1397,6 +1474,12 @@
         display: block;
         margin-bottom: 0.14rem;
       }
+      .module-card .module-card-job {
+        margin-top: 0.04rem;
+        color: #d7fff4;
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
       .module-card small {
         color: var(--muted);
         display: block;
@@ -1437,6 +1520,35 @@
         border-color: rgba(255,255,255,0.08);
         background: rgba(255,255,255,0.03);
         color: var(--muted);
+      }
+      .module-card-status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.14rem 0.46rem;
+        font-size: 0.68rem;
+        line-height: 1.1;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+      }
+      .module-card-status.is-compact {
+        font-size: 0.66rem;
+      }
+      .module-card-status.is-good {
+        border-color: rgba(124, 234, 216, 0.2);
+        background: rgba(124, 234, 216, 0.08);
+        color: #d7fff4;
+      }
+      .module-card-status.is-attention {
+        border-color: rgba(255, 187, 120, 0.22);
+        background: rgba(255, 187, 120, 0.08);
+        color: #ffe7c5;
+      }
+      .module-card-status.is-setup {
+        border-color: rgba(109, 185, 255, 0.2);
+        background: rgba(109, 185, 255, 0.08);
+        color: #dceeff;
       }
       .module-card.active {
         border-color: rgba(124, 234, 216, 0.65);
@@ -2627,6 +2739,61 @@
         border-color: rgba(255,255,255,0.08);
         background: rgba(255,255,255,0.03);
       }
+      .module-chip.module-chip-status.is-good {
+        border-color: rgba(124, 234, 216, 0.22);
+        background: rgba(124, 234, 216, 0.08);
+        color: #d7fff4;
+      }
+      .module-chip.module-chip-status.is-attention {
+        border-color: rgba(255, 187, 120, 0.24);
+        background: rgba(255, 187, 120, 0.08);
+        color: #ffe7c5;
+      }
+      .module-chip.module-chip-status.is-setup {
+        border-color: rgba(109, 185, 255, 0.2);
+        background: rgba(109, 185, 255, 0.08);
+        color: #dceeff;
+      }
+      .module-purpose-strip {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        background:
+          radial-gradient(circle at 10% -14%, rgba(109, 185, 255, 0.08), transparent 42%),
+          radial-gradient(circle at 92% -12%, rgba(124, 234, 216, 0.08), transparent 42%),
+          rgba(8, 14, 26, 0.62);
+        padding: 0.6rem;
+      }
+      .module-purpose-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.45rem;
+      }
+      .module-purpose-item {
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.02);
+        padding: 0.5rem;
+        display: grid;
+        gap: 0.16rem;
+        min-width: 0;
+      }
+      .module-purpose-item p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.67rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .module-purpose-item strong {
+        color: #e7f4ff;
+        font-size: 0.76rem;
+        line-height: 1.3;
+      }
+      .module-purpose-item small {
+        color: var(--muted);
+        font-size: 0.69rem;
+        line-height: 1.35;
+      }
       .module-info-close {
         border: 1px solid rgba(255,255,255,0.12);
         background: rgba(255,255,255,0.04);
@@ -3241,6 +3408,9 @@
         }
         .module-lexi-brief-grid,
         .module-lexi-brief.is-compact .module-lexi-brief-grid {
+          grid-template-columns: 1fr;
+        }
+        .module-purpose-grid {
           grid-template-columns: 1fr;
         }
         .module-operator-signal-grid {
@@ -6358,6 +6528,19 @@
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0.45rem;
         }
+        .workspace-star-grid {
+          grid-template-columns: 1fr;
+        }
+        .workspace-star-head {
+          align-items: stretch;
+        }
+        .workspace-star-actions {
+          width: 100%;
+        }
+        .workspace-star-actions .btn {
+          flex: 1 1 auto;
+          justify-content: center;
+        }
         .customer-journey-grid {
           grid-template-columns: 1fr;
           gap: 0.45rem;
@@ -6744,6 +6927,9 @@
         border-color: rgba(219, 137, 170, 0.28);
         background: rgba(255, 206, 225, 0.2);
       }
+      body.dashboard-light-mode .workspace-star-kicker {
+        color: #7b3a5b;
+      }
       body.dashboard-light-mode .hub-command-pill.muted {
         color: #7a6c81;
         border-color: rgba(145, 114, 144, 0.12);
@@ -6757,6 +6943,9 @@
       body.dashboard-light-mode .dash-action-status,
       body.dashboard-light-mode .panel p,
       body.dashboard-light-mode .panel small,
+      body.dashboard-light-mode .workspace-star-head > div > p:last-child,
+      body.dashboard-light-mode .workspace-star-card p,
+      body.dashboard-light-mode .workspace-star-card small,
       body.dashboard-light-mode .module-card small,
       body.dashboard-light-mode .copilot-guardrail,
       body.dashboard-light-mode .calendar-legend,
@@ -6769,6 +6958,7 @@
         color: #7a6c81;
       }
       body.dashboard-light-mode .hub-command-signal strong,
+      body.dashboard-light-mode .workspace-star-card strong,
       body.dashboard-light-mode .hub-command-list li strong,
       body.dashboard-light-mode .hub-command-head h4,
       body.dashboard-light-mode .hub-command-panel-head h5,
@@ -6857,6 +7047,8 @@
         background: rgba(255,255,255,0.92);
       }
       body.dashboard-light-mode .workspace-action-btn,
+      body.dashboard-light-mode .workspace-star-panel,
+      body.dashboard-light-mode .workspace-star-card,
       body.dashboard-light-mode .customer-journey-link,
       body.dashboard-light-mode .module-card,
       body.dashboard-light-mode .module-group,
@@ -7537,6 +7729,7 @@
         background: rgba(255, 232, 242, 0.72) !important;
       }
       body.dashboard-light-mode .manage-modal-grid label,
+      body.dashboard-light-mode .module-card .module-card-job,
       body.dashboard-light-mode .module-workspace-summary,
       body.dashboard-light-mode .calendar-day-modal-head p,
       body.dashboard-light-mode .module-info-hint,
@@ -7555,6 +7748,8 @@
         color: #302734 !important;
       }
       body.dashboard-light-mode .module-info-pane,
+      body.dashboard-light-mode .module-purpose-strip,
+      body.dashboard-light-mode .module-purpose-item,
       body.dashboard-light-mode .module-lexi-brief,
       body.dashboard-light-mode .module-lexi-brief-card,
       body.dashboard-light-mode .module-lexi-brief-list li,
@@ -7589,10 +7784,15 @@
       }
       body.dashboard-light-mode .module-operator-headline p,
       body.dashboard-light-mode .module-operator-signal p,
+      body.dashboard-light-mode .module-purpose-item p,
       body.dashboard-light-mode .module-workboard-head p,
       body.dashboard-light-mode .module-workboard-list li small,
+      body.dashboard-light-mode .module-purpose-item small,
       body.dashboard-light-mode .module-workboard-automation-row small {
         color: #6f6278 !important;
+      }
+      body.dashboard-light-mode .module-purpose-item strong {
+        color: #2d2330 !important;
       }
       body.dashboard-light-mode .module-operator-next .module-info-feature-list li {
         border-color: rgba(145, 114, 144, 0.12) !important;
@@ -7613,6 +7813,29 @@
         border-color: rgba(214, 164, 77, 0.22) !important;
         background: rgba(255, 229, 170, 0.24) !important;
         color: #7f5722 !important;
+      }
+      body.dashboard-light-mode .module-card-status {
+        border-color: rgba(145, 114, 144, 0.14) !important;
+        background: rgba(255,255,255,0.82) !important;
+        color: #6f6278 !important;
+      }
+      body.dashboard-light-mode .module-card-status.is-good,
+      body.dashboard-light-mode .module-chip.module-chip-status.is-good {
+        border-color: rgba(120, 188, 170, 0.22) !important;
+        background: rgba(184, 231, 221, 0.2) !important;
+        color: #37635a !important;
+      }
+      body.dashboard-light-mode .module-card-status.is-attention,
+      body.dashboard-light-mode .module-chip.module-chip-status.is-attention {
+        border-color: rgba(214, 164, 77, 0.22) !important;
+        background: rgba(255, 229, 170, 0.24) !important;
+        color: #7f5722 !important;
+      }
+      body.dashboard-light-mode .module-card-status.is-setup,
+      body.dashboard-light-mode .module-chip.module-chip-status.is-setup {
+        border-color: rgba(142, 166, 225, 0.22) !important;
+        background: rgba(214, 225, 255, 0.28) !important;
+        color: #4b5b8d !important;
       }
       body.dashboard-light-mode .module-openclose-shell,
       body.dashboard-light-mode .module-openclose-kpi,
@@ -10011,7 +10234,7 @@
           <div class="business-profile-launch-grid">
             <article class="business-profile-launch-card">
               <h3>What this setup covers</h3>
-              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboard�s front desk context.</p>
+              <p>Build a proper subscriber business profile that powers booking conversion, customer trust, and the dashboard's front desk context.</p>
               <ul class="business-profile-launch-list">
                 <li>Company name, type, phone, email, and address</li>
                 <li>Website details, business description, and summary text</li>
@@ -10271,10 +10494,40 @@
             <span class="workspace-actions-badge">Top actions</span>
           </div>
         </div>
+        <section class="workspace-star-panel" id="workspaceStarPanel" aria-label="Calendar and Lexi first view">
+          <div class="workspace-star-head">
+            <div>
+              <p class="workspace-star-kicker">Star Feature</p>
+              <h3>Calendar + Lexi Working Together</h3>
+              <p id="workspaceStarSummary">Use Lexi to work the diary faster: check today, pick a date, and act on the next booking priority.</p>
+            </div>
+            <div class="workspace-star-actions">
+              <button type="button" class="btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
+              <button type="button" class="btn btn-ghost" id="workspaceStarOpenCalendarBtn">Open Calendar</button>
+            </div>
+          </div>
+          <div class="workspace-star-grid">
+            <article class="workspace-star-card">
+              <p>Calendar Focus</p>
+              <strong id="workspaceStarCalendarFocus">No day selected yet</strong>
+              <small id="workspaceStarCalendarNote">Pick a day in the calendar to sync Booking Operations and Lexi guidance.</small>
+            </article>
+            <article class="workspace-star-card">
+              <p>Today’s Diary</p>
+              <strong id="workspaceStarTodayCount">0 bookings</strong>
+              <small id="workspaceStarTodayRevenue">Revenue snapshot: -</small>
+            </article>
+            <article class="workspace-star-card">
+              <p>Lexi Next Prompt</p>
+              <strong id="workspaceStarLexiPrompt">Review today’s bookings and tell me what needs attention first.</strong>
+              <small id="workspaceStarLexiHint">Short, direct actions for the front desk.</small>
+            </article>
+          </div>
+        </section>
         <div class="workspace-actions-grid">
           <button class="workspace-action-btn" type="button" data-module-jump="home">
             <strong>Home Overview</strong>
-            <small>Start here and check today�s priorities</small>
+            <small>Start here and check today's priorities</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="calendar">
             <strong>Booking Diary</strong>
@@ -10380,21 +10633,21 @@
         </div>
       </section>
 
-      <section class="panel executive-pulse" id="subscriberExecutivePulseSection">
+            <section class="panel executive-pulse" id="subscriberExecutivePulseSection">
         <div class="executive-pulse-head">
           <div>
-            <h2 style="margin:0;">Executive Pulse</h2>
+            <h2 style="margin:0;">Daily Pulse</h2>
             <p id="executivePulseSubtitle" class="executive-pulse-subtitle">
-              Real-time operational view for bookings, demand, revenue signals, and service pressure.
+              Fast operational readout for bookings, cancellations, revenue and next actions.
             </p>
           </div>
           <div class="executive-pulse-badge">
             <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse">Ask Lexi</button>
-            <span class="live-pill"><i class="live-dot"></i> Live dashboard signals</span>
+            <span class="live-pill"><i class="live-dot"></i> Live booking pulse</span>
           </div>
         </div>
-        <div class="executive-pulse-toolbar" aria-label="Executive pulse controls">
-          <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Executive pulse range">
+        <div class="executive-pulse-toolbar" aria-label="Daily pulse controls">
+          <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Pulse range">
             <button type="button" class="is-active" data-exec-range="day" role="tab" aria-selected="true">Day</button>
             <button type="button" data-exec-range="week" role="tab" aria-selected="false">Week</button>
             <button type="button" data-exec-range="month" role="tab" aria-selected="false">Month</button>
@@ -10409,22 +10662,22 @@
         <div class="executive-pulse-grid">
           <article class="executive-card executive-card-primary">
             <div class="executive-card-head">
-              <h3>Operational Gauges</h3>
-              <small>Today + next 7 days</small>
+              <h3>Service Flow Mix</h3>
+              <small>Completion, confirmation and cancellation pressure</small>
             </div>
             <div id="executivePulseGauges" class="executive-gauge-grid"></div>
           </article>
           <article class="executive-card">
             <div class="executive-card-head">
               <h3>Booking Trend</h3>
-              <small>Recent activity density</small>
+              <small>Pulse view for the selected range</small>
             </div>
             <div id="executivePulseBars" class="executive-bars"></div>
           </article>
           <article class="executive-card">
             <div class="executive-card-head">
-              <h3>Priority Actions</h3>
-              <small>Fast operator focus list</small>
+              <h3>Next Actions</h3>
+              <small>Front desk priorities to work now</small>
             </div>
             <ul id="executivePulseActions" class="executive-action-list"></ul>
           </article>
@@ -10432,37 +10685,26 @@
         <div class="executive-pulse-deep-grid">
           <article class="executive-card executive-card-finance">
             <div class="executive-card-head">
-              <h3>Revenue &amp; Profit View</h3>
-              <small id="executivePulseFinanceWindowLabel">Fast performance view</small>
+              <h3>Finance Summary</h3>
+              <small id="executivePulseFinanceWindowLabel">Range finance summary</small>
             </div>
             <div id="executivePulseFinanceStats" class="executive-finance-stats"></div>
-            <div class="executive-mini-charts">
-              <section class="executive-mini-chart-card">
-                <div class="executive-mini-chart-head">
-                  <strong>Revenue Flow</strong>
-                  <small id="executivePulseRevenueChartNote">Loading…</small>
-                </div>
-                <div id="executivePulseRevenueChart" class="executive-mini-bars" aria-live="polite"></div>
-              </section>
-              <section class="executive-mini-chart-card">
-                <div class="executive-mini-chart-head">
-                  <strong>Profit Signal</strong>
-                  <small id="executivePulseProfitChartNote">Loading…</small>
-                </div>
-                <div id="executivePulseProfitChart" class="executive-mini-bars executive-mini-bars-profit" aria-live="polite"></div>
-              </section>
+            <div style="display:none;">
+              <small id="executivePulseRevenueChartNote"></small>
+              <small id="executivePulseProfitChartNote"></small>
+              <div id="executivePulseRevenueChart"></div>
+              <div id="executivePulseProfitChart"></div>
             </div>
           </article>
           <article class="executive-card executive-card-snapshots">
             <div class="executive-card-head">
-              <h3>Saved Pulse Snapshots</h3>
-              <small>Keep quick review points for performance check-ins</small>
+              <h3>Saved Snapshots</h3>
+              <small>Quick checkpoints for owner/admin reviews</small>
             </div>
             <div id="executivePulseSnapshotList" class="executive-snapshot-list" aria-live="polite"></div>
           </article>
         </div>
       </section>
-
       <section class="panel" id="businessGrowthSection">
         <div class="growth-grid">
           <article class="growth-card growth-card-onboarding growth-card-feature" id="businessSetupHubCard">
@@ -10598,8 +10840,8 @@
               <label class="subscription-plan-select-wrap" for="subscriptionBillingCycle">
                 <span class="subscription-mini-label">Change Subscription</span>
                 <select id="subscriptionBillingCycle" class="btn btn-ghost" style="padding-right:2.2rem;" aria-label="Select subscription plan">
-                  <option value="monthly">Monthly - �29.99</option>
-                  <option value="yearly">Yearly - �299.99 (Save 16.6%)</option>
+                  <option value="monthly">Monthly - GBP 29.99</option>
+                  <option value="yearly">Yearly - GBP 299.99 (Save 16.6%)</option>
                 </select>
               </label>
               <select id="subscriptionBillingProvider" class="btn btn-ghost" style="display:none;padding-right:2.2rem;" aria-label="Select payment provider" hidden>
@@ -11026,19 +11268,19 @@
     </main>
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile dashboard navigation">
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="dashboardOverviewSection" data-mobile-nav-module="home">
-        <span class="mobile-nav-icon" aria-hidden="true">�</span>
+        <span class="mobile-nav-icon" aria-hidden="true">H</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="subscriberCalendarSection" data-mobile-nav-module="calendar">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">D</span>
         <span class="mobile-nav-label">Diary</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only" type="button" data-mobile-nav-section="subscriberCopilotSection" data-mobile-nav-module="subscriber_copilot">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">C</span>
         <span class="mobile-nav-label">Copilot</span>
       </button>
       <button class="mobile-bottom-nav-item admin-only" type="button" data-mobile-nav-section="adminCopilotSection" data-mobile-nav-module="admin_copilot">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">C</span>
         <span class="mobile-nav-label">Copilot</span>
       </button>
       <button class="mobile-bottom-nav-item quick-action" type="button" data-mobile-nav-action="quick-sheet" aria-label="Open quick actions">
@@ -11046,32 +11288,32 @@
         <span class="mobile-nav-label">Quick</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="businessGrowthSection">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">G</span>
         <span class="mobile-nav-label">Hub</span>
       </button>
       <button class="mobile-bottom-nav-item subscriber-only admin-only" type="button" data-mobile-nav-section="bookingOperationsSection" data-mobile-nav-module="booking_ops">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">B</span>
         <span class="mobile-nav-label">Bookings</span>
       </button>
 
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="dashboardOverviewSection">
-        <span class="mobile-nav-icon" aria-hidden="true">�</span>
+        <span class="mobile-nav-icon" aria-hidden="true">H</span>
         <span class="mobile-nav-label">Home</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerSearchSection">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">S</span>
         <span class="mobile-nav-label">Search</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerReceptionSection">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">C</span>
         <span class="mobile-nav-label">Chat</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerSlotsSection">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">S</span>
         <span class="mobile-nav-label">Slots</span>
       </button>
       <button class="mobile-bottom-nav-item customer-only" type="button" data-mobile-nav-section="customerHistorySection">
-        <span class="mobile-nav-icon" aria-hidden="true">?</span>
+        <span class="mobile-nav-icon" aria-hidden="true">B</span>
         <span class="mobile-nav-label">Bookings</span>
       </button>
     </nav>
@@ -11082,15 +11324,15 @@
             <h3 id="mobileQuickSheetTitle">Quick Actions</h3>
             <p>Fast shortcuts for the things you use most during the day.</p>
           </div>
-          <button class="btn btn-ghost mobile-quick-sheet-close" id="mobileQuickSheetClose" type="button" aria-label="Close quick actions">?</button>
+          <button class="btn btn-ghost mobile-quick-sheet-close" id="mobileQuickSheetClose" type="button" aria-label="Close quick actions">x</button>
         </div>
         <div class="mobile-quick-sheet-grid">
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="home">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">�</span><strong>Back to Dashboard</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Back to Dashboard</strong></span>
             <small>Return to your main Home view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="today">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Today</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Today</strong></span>
             <small>Open today in the diary and jump into the day view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="new-booking">
@@ -11098,23 +11340,23 @@
             <small>Add a booking quickly from your phone</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="calendar">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Booking Diary</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Booking Diary</strong></span>
             <small>Jump to the diary and day view</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="bookings">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Booking Operations</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Booking Operations</strong></span>
             <small>Manage bookings and changes</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="waitlist">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Waitlist Recovery</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Waitlist Recovery</strong></span>
             <small>Fill cancellations and gaps</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="copilot">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Open Copilot</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Open Copilot</strong></span>
             <small>Ask for guidance or checks quickly</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="hub">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">?</span><strong>Business Hub &amp; Setup</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Business Hub &amp; Setup</strong></span>
             <small>Open setup and business modules</small>
           </button>
         </div>
@@ -11208,3 +11450,4 @@
     <script type="module" src="/dashboard.js?v=20260221"></script>
   </body>
 </html>
+

@@ -64,7 +64,19 @@ model Business {
   users        User[]
   services     Service[]
   bookings     Booking[]
+  revenueSpendChannels RevenueSpendChannel[]
+  profitabilityConfig  ProfitabilityConfig?
+  profitabilityPayrollEntries ProfitabilityPayrollEntry[]
+  socialMediaProfile  SocialMediaProfile?
+  accountingIntegrations AccountingIntegration[]
+  businessReportEmailQueueItems BusinessReportEmailQueueItem[]
+  commercialMemberships CommercialMembership[]
+  commercialPackages    CommercialPackage[]
+  commercialGiftCards   CommercialGiftCard[]
   subscription Subscription?
+  staffRosterMembers StaffRosterMember[]
+  staffRotaWeeks     StaffRotaWeek[]
+  waitlistEntries WaitlistEntry[]
 
   @@index([createdAt])
   @@index([city, country])
@@ -110,6 +122,198 @@ model Booking {
   @@index([customerEmail, createdAt, id])
   @@index([status, createdAt, id])
   @@index([businessId, date, time, status])
+}
+
+model BusinessReportEmailQueueItem {
+  id             String   @id
+  businessId      String
+  recipientEmail  String
+  subject         String
+  note            String   @default("")
+  report          Json
+  queuedAt        DateTime
+  status          String   @default("queued")
+  requestedBy     Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, queuedAt, id])
+  @@index([businessId, status, queuedAt, id])
+}
+
+model AccountingIntegration {
+  id          String   @id
+  businessId   String
+  provider     String
+  status       String   @default("not_connected")
+  accountLabel String   @default("")
+  syncMode     String   @default("daily")
+  connectedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, provider])
+  @@index([businessId, updatedAt])
+}
+
+model SocialMediaProfile {
+  businessId      String   @id
+  customSocial    String   @default("")
+  socialImageUrl  String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model RevenueSpendChannel {
+  id         String   @id
+  businessId  String
+  channel     String
+  spend       Float   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, channel])
+  @@index([businessId, updatedAt])
+}
+
+model ProfitabilityConfig {
+  businessId  String   @id
+  rent        Float    @default(0)
+  utilities   Float    @default(0)
+  software    Float    @default(0)
+  other       Float    @default(0)
+  cogsPercent Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model ProfitabilityPayrollEntry {
+  id         String   @id
+  businessId  String
+  staffName   String
+  role        String   @default("")
+  hours       Float    @default(0)
+  hourlyRate  Float    @default(0)
+  bonus       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, updatedAt, id])
+}
+
+model CommercialMembership {
+  id          String   @id
+  businessId   String
+  name         String
+  price        Float   @default(0)
+  billingCycle String  @default("monthly")
+  status       String  @default("active")
+  benefits     String  @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, updatedAt, id])
+}
+
+model CommercialPackage {
+  id               String   @id
+  businessId        String
+  name              String
+  price             Float    @default(0)
+  sessionCount      Int      @default(1)
+  remainingSessions Int      @default(1)
+  status            String   @default("active")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  business          Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, updatedAt, id])
+}
+
+model CommercialGiftCard {
+  id               String   @id
+  businessId        String
+  code             String
+  purchaserName    String
+  recipientName    String
+  initialBalance   Float
+  remainingBalance Float
+  status           String   @default("active")
+  issuedAt         DateTime @default(now())
+  expiresAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  business         Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, issuedAt, id])
+  @@index([businessId, status, updatedAt, id])
+}
+
+model StaffRosterMember {
+  id           String   @id
+  businessId    String
+  name          String
+  role          String   @default("staff")
+  availability  String   @default("off_duty")
+  shiftDays      Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, updatedAt, id])
+}
+
+model StaffRotaWeek {
+  id          String   @id @default(cuid())
+  businessId   String
+  weekStart    String
+  cells        Json?
+  sicknessLogs Json?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, weekStart])
+  @@index([businessId, updatedAt])
+}
+
+model WaitlistEntry {
+  id            String   @id
+  businessId     String
+  customerName   String
+  customerPhone  String   @default("")
+  customerEmail  String?
+  service        String   @default("")
+  preferredDate  String?
+  preferredTime  String?
+  status         String   @default("waiting")
+  notes          String?
+  lastActionAt   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  business       Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, createdAt, id])
+  @@index([businessId, status, createdAt, id])
 }
 
 model Subscription {

@@ -50,9 +50,12 @@ function isHomeScreen() {
   return !!document.getElementById("home") || window.location.pathname === "/" || window.location.pathname.endsWith("/index.html");
 }
 
+function isDashboardScreen() {
+  return !!document.getElementById("dashboardMain");
+}
+
 function mountThemeToggle(initialTheme) {
-  if (isHomeScreen()) {
-    applyTheme(THEMES.vibrant, false);
+  if (isDashboardScreen()) {
     return;
   }
 
@@ -60,6 +63,10 @@ function mountThemeToggle(initialTheme) {
   button.type = "button";
   button.className = "theme-toggle";
   button.setAttribute("aria-label", "Toggle light or dark mode");
+  const homeScreen = isHomeScreen();
+  if (homeScreen) {
+    button.classList.add("theme-toggle-nav");
+  }
 
   const syncLabel = () => {
     const isVibrant = document.body.classList.contains("theme-vibrant");
@@ -72,7 +79,16 @@ function mountThemeToggle(initialTheme) {
     syncLabel();
   });
 
-  document.body.appendChild(button);
+  if (homeScreen) {
+    const topbarActions = document.querySelector(".topbar .auth-actions");
+    if (topbarActions instanceof HTMLElement) {
+      topbarActions.appendChild(button);
+    } else {
+      document.body.appendChild(button);
+    }
+  } else {
+    document.body.appendChild(button);
+  }
   applyTheme(initialTheme, true);
   syncLabel();
 }
