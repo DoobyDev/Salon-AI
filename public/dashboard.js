@@ -978,6 +978,8 @@ if (currentRole === "subscriber") {
   }
 }
 
+hideSection(dashIdentityBlock);
+
 function headers() {
   return {
     Authorization: `Bearer ${token}`,
