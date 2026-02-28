@@ -7,20 +7,20 @@
     <link rel="stylesheet" href="/styles.css" />
     <style>
       .dash {
-        width: min(1200px, 94vw);
+        width: min(1160px, 92vw);
         margin: 2rem auto;
         display: grid;
-        gap: 1rem;
+        gap: 1.1rem;
       }
       .dash-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
+        align-items: flex-start;
+        gap: 1.25rem;
       }
       .workspace-actions {
         display: grid;
-        gap: 0.65rem;
+        gap: 0.85rem;
       }
       .workspace-actions-head {
         display: flex;
@@ -31,12 +31,14 @@
       }
       .workspace-actions-head h2 {
         margin: 0;
-        font-size: 0.98rem;
+        font-size: 1.08rem;
+        letter-spacing: -0.02em;
       }
       .workspace-actions-head p {
-        margin: 0.18rem 0 0;
+        margin: 0.22rem 0 0;
         color: var(--muted);
-        font-size: 0.82rem;
+        font-size: 0.86rem;
+        max-width: 60ch;
       }
       .workspace-actions-badge {
         display: inline-flex;
@@ -45,8 +47,10 @@
         border: 1px solid rgba(124, 234, 216, 0.2);
         background: rgba(124, 234, 216, 0.06);
         color: #d7fff4;
-        padding: 0.18rem 0.45rem;
-        font-size: 0.72rem;
+        padding: 0.22rem 0.52rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
         white-space: nowrap;
       }
       .workspace-actions-meta {
@@ -68,19 +72,18 @@
       }
       .workspace-actions-grid {
         display: grid;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-        gap: 0.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+        gap: 0.6rem;
       }
       .workspace-star-panel {
         border: 1px solid rgba(124, 234, 216, 0.18);
-        border-radius: 14px;
+        border-radius: 18px;
         background:
-          radial-gradient(circle at 92% -8%, rgba(124, 234, 216, 0.08), transparent 42%),
-          radial-gradient(circle at 8% -10%, rgba(109, 185, 255, 0.08), transparent 40%),
-          rgba(9, 15, 28, 0.78);
-        padding: 0.6rem;
+          radial-gradient(circle at 100% -6%, rgba(124, 234, 216, 0.1), transparent 38%),
+          linear-gradient(160deg, rgba(12, 20, 36, 0.96), rgba(9, 15, 28, 0.9));
+        padding: 0.85rem;
         display: grid;
-        gap: 0.55rem;
+        gap: 0.75rem;
       }
       .workspace-star-head {
         display: flex;
@@ -98,14 +101,15 @@
       }
       .workspace-star-head h3 {
         margin: 0.12rem 0 0;
-        font-size: 0.92rem;
+        font-size: 1.02rem;
+        letter-spacing: -0.02em;
       }
       .workspace-star-head > div > p:last-child {
         margin: 0.18rem 0 0;
         color: var(--muted);
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         line-height: 1.35;
-        max-width: 70ch;
+        max-width: 58ch;
       }
       .workspace-star-actions {
         display: flex;
@@ -119,16 +123,16 @@
       }
       .workspace-star-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.45rem;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.55rem;
       }
       .workspace-star-card {
         border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 12px;
-        background: rgba(255,255,255,0.02);
-        padding: 0.5rem;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.03);
+        padding: 0.7rem;
         display: grid;
-        gap: 0.14rem;
+        gap: 0.18rem;
         min-width: 0;
       }
       .workspace-star-card p {
@@ -140,7 +144,7 @@
       }
       .workspace-star-card strong {
         color: #e7f4ff;
-        font-size: 0.77rem;
+        font-size: 0.84rem;
         line-height: 1.28;
       }
       .workspace-star-card small {
@@ -156,9 +160,9 @@
           rgba(9, 15, 28, 0.72);
         color: var(--ink);
         text-align: left;
-        padding: 0.55rem 0.6rem;
+        padding: 0.8rem 0.85rem;
         display: grid;
-        gap: 0.2rem;
+        gap: 0.28rem;
         cursor: pointer;
         transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
       }
@@ -170,13 +174,14 @@
           rgba(9, 15, 28, 0.8);
       }
       .workspace-action-btn strong {
-        font-size: 0.83rem;
-        line-height: 1.2;
+        font-size: 0.92rem;
+        line-height: 1.16;
+        letter-spacing: -0.015em;
       }
       .workspace-action-btn small {
         color: var(--muted);
-        font-size: 0.72rem;
-        line-height: 1.25;
+        font-size: 0.76rem;
+        line-height: 1.3;
       }
       body[data-role="customer"] #dashboardQuickActionsSection,
       body[data-role="subscriber"] #dashboardQuickActionsSection,
@@ -1097,13 +1102,13 @@
         position: static;
         top: auto;
         z-index: auto;
-        margin-top: 0.28rem;
-        padding: 0.62rem;
+        margin-top: 0.32rem;
+        padding: 0.9rem;
         border: 1px solid rgba(124, 234, 216, 0.16);
-        border-radius: 14px;
+        border-radius: 18px;
         background:
-          radial-gradient(circle at 92% 0%, rgba(124, 234, 216, 0.06), transparent 42%),
-          rgba(9, 15, 28, 0.58);
+          radial-gradient(circle at 96% 0%, rgba(124, 234, 216, 0.08), transparent 38%),
+          rgba(9, 15, 28, 0.62);
       }
       .module-navigator-inline .module-grid {
         gap: 0.45rem;
@@ -1188,13 +1193,13 @@
       .hub-module-shell {
         margin-top: 0.15rem;
         border: 1px solid rgba(124, 234, 216, 0.16);
-        border-radius: 14px;
+        border-radius: 18px;
         background:
-          radial-gradient(circle at 92% -2%, rgba(124, 234, 216, 0.06), transparent 44%),
-          rgba(9, 15, 28, 0.52);
-        padding: 0.6rem;
+          radial-gradient(circle at 96% -2%, rgba(124, 234, 216, 0.08), transparent 40%),
+          rgba(9, 15, 28, 0.58);
+        padding: 0.85rem;
         display: grid;
-        gap: 0.55rem;
+        gap: 0.75rem;
       }
       .hub-module-head {
         display: flex;
@@ -1458,9 +1463,9 @@
       }
       .module-card {
         border: 1px solid var(--line);
-        border-radius: 12px;
-        background: rgba(9, 15, 28, 0.84);
-        padding: 0.5rem;
+        border-radius: 14px;
+        background: rgba(11, 18, 32, 0.86);
+        padding: 0.72rem;
         text-align: left;
         color: var(--ink);
         cursor: pointer;
@@ -1472,13 +1477,9 @@
       }
       .module-card strong {
         display: block;
-        margin-bottom: 0.14rem;
-      }
-      .module-card .module-card-job {
-        margin-top: 0.04rem;
-        color: #d7fff4;
-        font-size: 0.72rem;
-        line-height: 1.35;
+        margin-bottom: 0.18rem;
+        font-size: 0.92rem;
+        letter-spacing: -0.015em;
       }
       .module-card small {
         color: var(--muted);
@@ -1486,12 +1487,16 @@
         line-height: 1.4;
       }
       .module-card .module-card-summary {
-        margin-top: 0.08rem;
-        min-height: 2em;
+        margin-top: 0.04rem;
+        min-height: 2.2em;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+      .module-card .module-card-usage {
+        margin-top: 0.18rem;
+        font-size: 0.72rem;
       }
       .module-card-meta {
         display: flex;
@@ -1552,7 +1557,7 @@
       }
       .module-card.active {
         border-color: rgba(124, 234, 216, 0.65);
-        background: rgba(124, 234, 216, 0.12);
+        background: rgba(124, 234, 216, 0.1);
       }
       .module-info {
         border: 1px solid var(--line);
@@ -1567,11 +1572,11 @@
       .executive-pulse {
         border-color: rgba(124, 234, 216, 0.34);
         background:
-          radial-gradient(circle at 8% -10%, rgba(85, 168, 255, 0.16), transparent 34%),
-          radial-gradient(circle at 92% 0%, rgba(124, 234, 216, 0.14), transparent 38%),
-          linear-gradient(150deg, rgba(14, 23, 42, 0.95), rgba(9, 15, 28, 0.96));
+          radial-gradient(circle at 12% -10%, rgba(85, 168, 255, 0.12), transparent 32%),
+          radial-gradient(circle at 96% 0%, rgba(124, 234, 216, 0.12), transparent 34%),
+          linear-gradient(160deg, rgba(14, 23, 42, 0.96), rgba(9, 15, 28, 0.98));
         display: grid;
-        gap: 0.8rem;
+        gap: 0.95rem;
       }
       .executive-pulse-head {
         display: flex;
@@ -1591,8 +1596,8 @@
       }
       .executive-signal-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 0.6rem;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.65rem;
       }
       .executive-signal-card {
         border: 1px solid var(--line);
@@ -1621,16 +1626,16 @@
       }
       .executive-pulse-grid {
         display: grid;
-        grid-template-columns: 1.35fr 1fr 1fr;
-        gap: 0.65rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 0.7rem;
       }
       .executive-card {
         border: 1px solid rgba(167, 193, 255, 0.2);
         border-radius: 12px;
         background: rgba(9, 15, 28, 0.72);
-        padding: 0.75rem;
+        padding: 0.82rem;
         display: grid;
-        gap: 0.55rem;
+        gap: 0.6rem;
       }
       .executive-card-primary {
         border-color: rgba(124, 234, 216, 0.28);
@@ -1737,7 +1742,7 @@
         border: 1px solid rgba(167, 193, 255, 0.16);
         border-radius: 12px;
         background: rgba(9, 15, 28, 0.66);
-        padding: 0.55rem 0.6rem;
+        padding: 0.68rem 0.72rem;
       }
       .executive-pulse-range-tabs {
         display: inline-flex;
@@ -1780,8 +1785,8 @@
       }
       .executive-pulse-deep-grid {
         display: grid;
-        grid-template-columns: 1.45fr 0.95fr;
-        gap: 0.65rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0.7rem;
       }
       .executive-card-finance {
         border-color: rgba(109, 185, 255, 0.22);
@@ -10462,7 +10467,7 @@
 
       <section class="panel dash-top" id="dashboardOverviewSection">
         <div>
-          <h1 id="dashTitle" style="margin:0;">Salon Dashboard</h1>
+          <h1 id="dashTitle" style="margin:0;">Salon Control Center</h1>
           <p id="dashUser" style="margin:0.3rem 0 0;color:var(--muted);"></p>
           <p id="dashRoleHint" class="dash-role-hint"></p>
           <p id="dashActionStatus" class="dash-action-status" aria-live="polite"></p>
@@ -10485,21 +10490,21 @@
       <section class="panel workspace-actions" id="dashboardQuickActionsSection" aria-label="Top workspace actions">
         <div class="workspace-actions-head">
           <div>
-            <h2>Daily Workspace</h2>
-            <p>Use these shortcuts to get into the main parts of your business quickly.</p>
+            <h2>Control Center</h2>
+            <p>Open the main parts of the salon fast and keep the day moving.</p>
           </div>
           <div class="workspace-actions-meta">
             <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
             <button id="workspaceBackToDashboardBtn" class="btn btn-ghost workspace-back-btn" type="button">Back to Dashboard</button>
-            <span class="workspace-actions-badge">Top actions</span>
+            <span class="workspace-actions-badge">Fast actions</span>
           </div>
         </div>
         <section class="workspace-star-panel" id="workspaceStarPanel" aria-label="Calendar and Lexi first view">
           <div class="workspace-star-head">
             <div>
-              <p class="workspace-star-kicker">Star Feature</p>
-              <h3>Calendar + Lexi Working Together</h3>
-              <p id="workspaceStarSummary">Use Lexi to work the diary faster: check today, pick a date, and act on the next booking priority.</p>
+              <p class="workspace-star-kicker">Start Here</p>
+              <h3>Diary + Lexi</h3>
+              <p id="workspaceStarSummary">Check the diary, then ask Lexi what needs attention first.</p>
             </div>
             <div class="workspace-star-actions">
               <button type="button" class="btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
@@ -10526,28 +10531,28 @@
         </section>
         <div class="workspace-actions-grid">
           <button class="workspace-action-btn" type="button" data-module-jump="home">
-            <strong>Home Overview</strong>
-            <small>Start here and check today's priorities</small>
+            <strong>Overview</strong>
+            <small>See today's priorities first</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="calendar">
-            <strong>Booking Diary</strong>
-            <small>Open the diary and click into each day</small>
+            <strong>Calendar</strong>
+            <small>Open the diary and work by day</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="booking_ops">
-            <strong>Booking Operations</strong>
-            <small>Manage bookings, changes and status updates</small>
+            <strong>Bookings</strong>
+            <small>Manage status changes and requests</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="waitlist">
             <strong>Waitlist Recovery</strong>
-            <small>Fill cancellations and recover missed revenue</small>
+            <small>Refill cancelled slots quickly</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="staff">
-            <strong>Team & Capacity</strong>
-            <small>Check staff cover and daily pressure</small>
+            <strong>Staff</strong>
+            <small>Check cover and capacity</small>
           </button>
           <button class="workspace-action-btn" type="button" data-module-jump="business_profile">
             <strong>Business Hub</strong>
-            <small>Update profile, services, hours and setup</small>
+            <small>Profile, services, finance and setup</small>
           </button>
         </div>
       </section>
@@ -10601,34 +10606,34 @@
       <section class="panel customer-journey-actions" id="customerJourneyActionsSection" aria-label="Customer booking journey">
         <div class="customer-journey-head">
           <div>
-            <h2>Your Booking Journey</h2>
-            <p>Move through search, chat, available times, and your bookings in a simple order.</p>
+            <h2>Customer Control</h2>
+            <p>Search, ask Lexi, choose a time, and manage bookings in a simple order.</p>
           </div>
           <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
             <a class="btn" href="#customerReceptionSection">Ask Lexi</a>
-            <span class="workspace-actions-badge">Quick steps</span>
+            <span class="workspace-actions-badge">Daily flow</span>
           </div>
         </div>
         <div class="customer-journey-grid">
           <a class="customer-journey-link" href="#customerSearchSection">
-            <strong>Find a Salon</strong>
-            <small>Search by service, area, and rating</small>
+            <strong>Find a Business</strong>
+            <small>Search by service, area, or name</small>
           </a>
           <a class="customer-journey-link" href="#customerReceptionSection">
-            <strong>Ask the AI Receptionist</strong>
-            <small>Ask about services, times, and contact details</small>
+            <strong>Ask Lexi</strong>
+            <small>Ask about services, times, and booking help</small>
           </a>
           <a class="customer-journey-link" href="#customerSlotsSection">
-            <strong>Check Available Times</strong>
-            <small>See open slots and salon contact details</small>
+            <strong>Choose a Time</strong>
+            <small>See open slots and select what works</small>
           </a>
           <a class="customer-journey-link" href="#customerHistorySection">
-            <strong>My Appointments</strong>
-            <small>Review upcoming and past bookings</small>
+            <strong>My Bookings</strong>
+            <small>Review upcoming and past appointments</small>
           </a>
           <a class="customer-journey-link" href="#customerAnalyticsSection">
-            <strong>My Booking Stats</strong>
-            <small>Personal booking trends and usage</small>
+            <strong>My Account</strong>
+            <small>See your history and booking activity</small>
           </a>
         </div>
       </section>
@@ -10636,14 +10641,14 @@
             <section class="panel executive-pulse" id="subscriberExecutivePulseSection">
         <div class="executive-pulse-head">
           <div>
-            <h2 style="margin:0;">Daily Pulse</h2>
+            <h2 style="margin:0;">Business Pulse</h2>
             <p id="executivePulseSubtitle" class="executive-pulse-subtitle">
-              Fast operational readout for bookings, cancellations, revenue and next actions.
+              Quick read on bookings, cancellations, revenue and next steps.
             </p>
           </div>
           <div class="executive-pulse-badge">
             <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse">Ask Lexi</button>
-            <span class="live-pill"><i class="live-dot"></i> Live booking pulse</span>
+            <span class="live-pill"><i class="live-dot"></i> Live</span>
           </div>
         </div>
         <div class="executive-pulse-toolbar" aria-label="Daily pulse controls">
@@ -10655,29 +10660,29 @@
           </div>
           <div class="executive-pulse-toolbar-actions">
             <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing today</div>
-            <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save Snapshot</button>
+            <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save View</button>
           </div>
         </div>
         <div id="executivePulseSignals" class="executive-signal-grid"></div>
         <div class="executive-pulse-grid">
           <article class="executive-card executive-card-primary">
             <div class="executive-card-head">
-              <h3>Service Flow Mix</h3>
-              <small>Completion, confirmation and cancellation pressure</small>
+              <h3>Booking Health</h3>
+              <small>Completion, confirmation and cancellation mix</small>
             </div>
             <div id="executivePulseGauges" class="executive-gauge-grid"></div>
           </article>
           <article class="executive-card">
             <div class="executive-card-head">
-              <h3>Booking Trend</h3>
-              <small>Pulse view for the selected range</small>
+              <h3>Activity</h3>
+              <small>Booking flow for the selected range</small>
             </div>
             <div id="executivePulseBars" class="executive-bars"></div>
           </article>
           <article class="executive-card">
             <div class="executive-card-head">
-              <h3>Next Actions</h3>
-              <small>Front desk priorities to work now</small>
+              <h3>Next Moves</h3>
+              <small>What needs attention now</small>
             </div>
             <ul id="executivePulseActions" class="executive-action-list"></ul>
           </article>
@@ -10685,7 +10690,7 @@
         <div class="executive-pulse-deep-grid">
           <article class="executive-card executive-card-finance">
             <div class="executive-card-head">
-              <h3>Finance Summary</h3>
+              <h3>Finance</h3>
               <small id="executivePulseFinanceWindowLabel">Range finance summary</small>
             </div>
             <div id="executivePulseFinanceStats" class="executive-finance-stats"></div>
@@ -10698,8 +10703,8 @@
           </article>
           <article class="executive-card executive-card-snapshots">
             <div class="executive-card-head">
-              <h3>Saved Snapshots</h3>
-              <small>Quick checkpoints for owner/admin reviews</small>
+              <h3>Saved Views</h3>
+              <small>Keep quick checkpoints for reviews</small>
             </div>
             <div id="executivePulseSnapshotList" class="executive-snapshot-list" aria-live="polite"></div>
           </article>
@@ -10708,18 +10713,18 @@
       <section class="panel" id="businessGrowthSection">
         <div class="growth-grid">
           <article class="growth-card growth-card-onboarding growth-card-feature" id="businessSetupHubCard">
-            <h3>Business Hub &amp; Setup</h3>
-            <p style="margin:0;color:var(--muted);">This is your main business control hub. Open the setup areas you need and keep your daily modules ready below.</p>
+            <h3>Business Hub</h3>
+            <p style="margin:0;color:var(--muted);">Run setup, updates and business controls from one place.</p>
             <div style="display:flex;justify-content:flex-end;margin-top:0.45rem;">
               <button type="button" class="btn" data-open-subscriber-lexi="hub_setup">Ask Lexi</button>
             </div>
             <section class="hub-command-deck" aria-label="AI Business Command Deck">
               <div class="hub-command-head">
                 <div>
-                  <h4>AI Business Command Deck</h4>
-                  <p>Exception-first control center for staffing, bookings, growth and finance. Review what matters, then run one-tap actions.</p>
+                  <h4>Command Deck</h4>
+                  <p>Review the signals that matter, then run the next action fast.</p>
                 </div>
-                <span class="hub-module-badge">Autopilot-ready</span>
+                <span class="hub-module-badge">Priority view</span>
               </div>
               <div id="hubCommandSignalGrid" class="hub-command-signal-grid" aria-live="polite"></div>
               <div class="hub-command-columns">
@@ -10727,7 +10732,7 @@
                   <div class="hub-command-panel-head">
                     <div>
                       <h5 id="hubReportCenterTitle">Business Report Center</h5>
-                      <small>Print a PDF snapshot or queue an email report for business/admin use.</small>
+                      <small>Print or email a clean business report.</small>
                     </div>
                     <span id="hubReportStatusPill" class="hub-command-pill muted">Ready</span>
                   </div>
@@ -10741,8 +10746,8 @@
                 <section class="hub-command-panel" aria-labelledby="hubPriorityTitle">
                   <div class="hub-command-panel-head">
                     <div>
-                      <h5 id="hubPriorityTitle">AI Priorities &amp; Automations</h5>
-                      <small>Daily actions and routine automations for running the salon with less effort.</small>
+                      <h5 id="hubPriorityTitle">Priorities</h5>
+                      <small>Daily actions and automations for the salon.</small>
                     </div>
                     <button id="hubRunPrioritySweepBtn" type="button" class="btn btn-ghost">AI Sweep</button>
                   </div>
@@ -10754,8 +10759,8 @@
             <div class="hub-accordion">
               <details class="hub-fold" open>
                 <summary>
-                  <span>Launch Progress</span>
-                  <small>See how ready your salon setup is and what to do next</small>
+                  <span>Setup Progress</span>
+                  <small>See what is ready and what still needs work</small>
                 </summary>
                 <div class="hub-fold-body">
                   <ul id="onboardingSummaryList" class="growth-list onboarding-list"></ul>
@@ -10763,8 +10768,8 @@
               </details>
               <details class="hub-fold">
                 <summary>
-                  <span>Quick Setup Shortcuts</span>
-                  <small>Jump straight into the areas you need to set up or edit</small>
+                  <span>Quick Edits</span>
+                  <small>Jump straight into the area you want to change</small>
                 </summary>
                 <div class="hub-fold-body">
                   <ul id="onboardingQuickActionsList" class="growth-list onboarding-list"></ul>
@@ -10772,8 +10777,8 @@
               </details>
               <details class="hub-fold">
                 <summary>
-                  <span>Setup Status at a Glance</span>
-                  <small>See team, hours, services, bookings and profile progress quickly</small>
+                  <span>Status</span>
+                  <small>See team, hours, services, bookings and profile progress</small>
                 </summary>
                 <div class="hub-fold-body">
                   <ul id="onboardingStatusList" class="growth-list onboarding-list"></ul>
@@ -10781,7 +10786,7 @@
               </details>
               <details class="hub-fold">
                 <summary>
-                  <span>Launch Checklist &amp; Tasks</span>
+                  <span>Checklist</span>
                   <small>Open the exact task you want to finish next</small>
                 </summary>
                 <div class="hub-fold-body">
@@ -10792,8 +10797,8 @@
             <section class="hub-module-shell" aria-label="Business Modules Workspace">
               <div class="hub-module-head">
                 <div>
-                  <h4>Business Modules</h4>
-                  <p>Jump straight into the part of the business you want to work on. Keep setup folded away and use modules as your day-to-day control area.</p>
+                  <h4>Workspaces</h4>
+                  <p>Open the part of the business you want to work on now.</p>
                 </div>
                 <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
                   <button type="button" class="btn" data-open-subscriber-lexi="business_modules">Ask Lexi</button>
@@ -10802,9 +10807,9 @@
               </div>
               <section class="module-navigator module-navigator-inline" id="moduleNavigatorSection">
                 <div>
-                  <h2 style="margin:0;">Business Modules</h2>
+                  <h2 style="margin:0;">Business Hub</h2>
                   <p id="moduleNavigatorIntro" style="margin:0.35rem 0 0;color:var(--muted);">
-                    Pick the part of the business you want to work on right now. This keeps the dashboard cleaner and easier to use.
+                    Pick a workspace and go straight into the task.
                   </p>
                 </div>
                 <div id="moduleCards" class="module-grid"></div>
@@ -10874,8 +10879,8 @@
       </section>
 
       <section class="panel" id="customerSearchSection">
-        <h2 style="margin:0;">Business Search</h2>
-        <p style="margin:0.35rem 0 0;color:var(--muted);">Use advanced filters to find a good match quickly.</p>
+        <h2 style="margin:0;">Find a Business</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Search, choose a business, then let Lexi help with the booking.</p>
         <form id="customerSearchForm" class="customer-search-form" style="margin-top:0.8rem;">
           <input id="customerSearchQuery" type="text" placeholder="Name, service, or specialist" aria-label="Search query" />
           <input id="customerSearchService" type="text" placeholder="Service (e.g., fade, balayage)" aria-label="Service filter" />
@@ -10900,7 +10905,7 @@
       </section>
 
       <section class="panel" id="customerReceptionSection">
-        <h2 style="margin:0;">Lexi | AI Receptionist</h2>
+        <h2 style="margin:0;">Ask Lexi</h2>
         <div class="customer-chat-shell" style="margin-top:0.75rem;">
           <div id="customerReceptionMessages" class="customer-chat-box"></div>
           <form id="customerReceptionForm" class="customer-chat-form">
@@ -10908,12 +10913,17 @@
             <input id="customerReceptionInput" type="text" placeholder="Ask about services, slots, or contact info..." aria-label="Message AI receptionist" />
              <button class="btn" type="submit">Ask Lexi</button>
           </form>
+          <div class="lexi-quick-prompts" aria-label="Customer Lexi quick prompts">
+            <button class="btn btn-ghost customer-lexi-prompt-btn" type="button" data-customer-lexi-prompt="Help me choose a service.">Choose a service</button>
+            <button class="btn btn-ghost customer-lexi-prompt-btn" type="button" data-customer-lexi-prompt="Show me the best available time.">Best time</button>
+            <button class="btn btn-ghost customer-lexi-prompt-btn" type="button" data-customer-lexi-prompt="Help me book this week.">Book this week</button>
+          </div>
         </div>
       </section>
 
       <section class="panel" id="customerLexiCalendarSection">
-        <h2 style="margin:0;">Lexi | Booking Calendar Planner</h2>
-        <p style="margin:0.35rem 0 0;color:var(--muted);">See your bookings and the selected salon's available slots in one view, then ask Lexi what to book next.</p>
+        <h2 style="margin:0;">Booking Calendar</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">See your bookings and the selected business's available slots in one view.</p>
         <div class="customer-lexi-calendar-shell">
           <aside class="customer-lexi-card" aria-label="Lexi customer planner intro">
             <div class="customer-lexi-card-portrait" aria-hidden="true"></div>
@@ -10959,28 +10969,28 @@
       </section>
 
       <section class="panel" id="customerSlotsSection">
-        <h2 style="margin:0;">Available Slots and Contact</h2>
+        <h2 style="margin:0;">Times and Contact</h2>
         <p id="customerSelectedSalonLabel" style="margin:0.35rem 0 0;color:var(--muted);">Select a business from search results.</p>
         <div id="customerSalonContact" class="customer-contact"></div>
         <ul id="customerAvailableSlots" class="customer-slots" style="margin-top:0.7rem;"></ul>
       </section>
 
       <section class="panel" id="customerHistorySection">
-        <h2 style="margin:0;">Visit and Booking History</h2>
+        <h2 style="margin:0;">Booking History</h2>
         <p style="margin:0.35rem 0 0;color:var(--muted);">View your previous and upcoming appointments in one place.</p>
         <ul id="customerBookingHistory" class="customer-history" style="margin-top:0.75rem;"></ul>
       </section>
 
       <section class="panel" id="customerAnalyticsSection">
-        <h2 style="margin:0;">Personal Booking Analytics</h2>
+        <h2 style="margin:0;">Account Overview</h2>
         <p style="margin:0.35rem 0 0;color:var(--muted);">Personal usage trends only. No sensitive business data.</p>
         <div id="customerAnalyticsGrid" class="customer-analytics-grid" style="margin-top:0.75rem;"></div>
       </section>
 
       <section class="dash-grid" id="metricsGrid"></section>
       <section class="panel" id="subscriberCommandCenterSection">
-        <h2 style="margin:0;">Daily Command Center</h2>
-        <p style="margin:0.35rem 0 0;color:var(--muted);">Your operating snapshot for today and the next 7 days.</p>
+        <h2 style="margin:0;">Daily Focus</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">The key numbers and next actions for today.</p>
         <div class="command-grid" id="commandCenterCards" style="margin-top:0.8rem;"></div>
         <ul class="action-list" id="commandCenterActions"></ul>
         <p id="commandCenterStatus" class="command-status"></p>
@@ -11356,7 +11366,7 @@
             <small>Ask for guidance or checks quickly</small>
           </button>
           <button class="mobile-quick-sheet-btn" type="button" data-mobile-quick-action="hub">
-            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Business Hub &amp; Setup</strong></span>
+            <span class="mobile-quick-sheet-btn-head"><span class="mobile-quick-sheet-btn-icon" aria-hidden="true">B</span><strong>Business Hub</strong></span>
             <small>Open setup and business modules</small>
           </button>
         </div>

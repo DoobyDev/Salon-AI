@@ -47,6 +47,7 @@ const customerReceptionSection = document.getElementById("customerReceptionSecti
 const customerReceptionMessages = document.getElementById("customerReceptionMessages");
 const customerReceptionForm = document.getElementById("customerReceptionForm");
 const customerReceptionInput = document.getElementById("customerReceptionInput");
+const customerLexiPromptButtons = Array.from(document.querySelectorAll(".customer-lexi-prompt-btn"));
 const customerLexiCalendarSection = document.getElementById("customerLexiCalendarSection");
 const customerLexiPlannerMeta = document.getElementById("customerLexiPlannerMeta");
 const customerLexiStaffLegend = document.getElementById("customerLexiStaffLegend");
@@ -523,7 +524,7 @@ const customerSalonDirectory = [
 ];
 
 const subscriberFullDemoModuleGuide = [
-  { name: "Daily Workspace", detail: "Quick links to the main parts of the business so you can move around the app fast." },
+  { name: "Control Center", detail: "Fast links into the main parts of the salon so you can move quickly." },
   { name: "Booking Diary", detail: "Your booking calendar with Lexi support, staffing visibility, and clear busy-day signals." },
   { name: "Lexi Business Command AI", detail: "Your main Lexi workspace for bookings, staffing, planning, revenue protection, and growth actions." },
   { name: "Executive Pulse", detail: "A quick business health view with trends, key signals, and the priorities that need attention." },
@@ -1638,7 +1639,7 @@ function businessHubCommandModel() {
       : { level: "risk", title: "Accounting feed not connected", note: "Daily takings and reconciliation will need manual checks until a provider is connected.", action: "Open Accounting", moduleKey: "accounting" },
     setupGap
       ? { level: "risk", title: "Business profile still incomplete", note: `Profile ${profileReady ? "ready" : "missing contact details"} • ${servicesCount} services listed. Finish setup to improve booking conversion.`, action: "Open Business Profile", moduleKey: "business_profile" }
-      : { level: "focus", title: "Launch setup is in good shape", note: "Use the Business Modules grid for daily operations, growth and finance actions.", action: "Open Business Modules", moduleKey: "home" }
+      : { level: "focus", title: "Launch setup is in good shape", note: "Use the Business Hub workspaces for daily operations, growth and finance actions.", action: "Open Business Hub", moduleKey: "home" }
   ];
   const signalCards = [
     {
@@ -2751,8 +2752,8 @@ function renderModuleNavigator() {
   showSection(moduleNavigatorSection);
   if (moduleNavigatorIntro) {
     moduleNavigatorIntro.textContent = user.role === "customer"
-      ? "Move between customer tools here. Each one is labelled so it is easy to know what it does."
-      : "Open the part of the business you want to work on. Each module shows a quick preview so you know where to start.";
+      ? "Move between customer tools here."
+      : "Open a workspace and go straight to the task.";
   }
 
   moduleCards.innerHTML = "";
@@ -2768,21 +2769,21 @@ function renderModuleNavigator() {
       btn.type = "button";
       btn.className = `module-card${mod.key === activeModuleKey ? " active" : ""}`;
       btn.setAttribute("data-module-key", mod.key);
-      const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || "").trim();
-      const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
-      const jobProfile = moduleBusinessJobProfile(mod);
       const status = moduleOperationalStatus(mod);
+      const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || status.note || "").trim();
+      const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
       const usage = moduleUsageSummary(mod);
+      const usageText = usage.label === "Not used yet" ? "Open when you need it." : (usage.detail || usage.label);
       btn.innerHTML = `
-        <strong>${mod.label}${isPinned ? " (Pinned)" : ""}</strong>
-        <small class="module-card-job">${escapeHtml(jobProfile.job)}</small>
+        <strong>${mod.label}</strong>
         <small class="module-card-summary">${escapeHtml(summaryText)}</small>
         <div class="module-card-meta">
+          ${isPinned ? '<span class="module-card-pill accent">Pinned</span>' : ""}
           ${mod.startHere ? '<span class="module-card-pill accent">Start here</span>' : ""}
           <span class="module-card-pill ${cadenceClass.includes("weekly") ? "soft" : ""}">${escapeHtml(mod.cadence || "Use daily")}</span>
           ${renderModuleStatusPill(status, { compact: true })}
         </div>
-        <small class="module-card-summary">${escapeHtml(usage.label)}</small>
+        <small class="module-card-usage">${escapeHtml(usageText)}</small>
       `;
       grid.appendChild(btn);
     });
@@ -5085,7 +5086,7 @@ function renderBusinessGrowthPanel() {
     setupStatus.className = "onboarding-step";
     setupStatus.innerHTML = `
       <div class="onboarding-step-head">
-        <span class="onboarding-step-title">Setup Status at a Glance</span>
+        <span class="onboarding-step-title">Status</span>
         <span class="onboarding-badge ${completeCount === items.length ? "done" : "pending"}">${completeCount === items.length ? "Ready" : "In progress"}</span>
       </div>
       <div class="onboarding-setup-grid">
@@ -5607,10 +5608,10 @@ function renderCommandCenter() {
   };
 
   const cards = [
-    { label: "Today's Bookings", value: data.today?.totalBookings ?? 0 },
-    { label: "Today's Revenue", value: formatMoney(data.today?.estimatedRevenue ?? 0) },
+    { label: "Today", value: data.today?.totalBookings ?? 0 },
+    { label: "Revenue", value: formatMoney(data.today?.estimatedRevenue ?? 0) },
     { label: "Next 7 Days", value: data.next7Days?.confirmedBookings ?? 0 },
-    { label: "Cancellation Rate", value: `${Number(data.serviceHealth?.cancellationRate || 0).toFixed(1)}%` }
+    { label: "Risk", value: `${Number(data.serviceHealth?.cancellationRate || 0).toFixed(1)}%` }
   ];
 
   commandCenterCards.innerHTML = "";
@@ -5623,18 +5624,19 @@ function renderCommandCenter() {
 
   const actions = Array.isArray(data.recommendedActions) ? data.recommendedActions : [];
   commandCenterActions.innerHTML = "";
-  actions.forEach((action) => {
+  actions.slice(0, 3).forEach((action) => {
     const li = document.createElement("li");
     const actionId = String(action.id || "").trim();
     li.innerHTML = `
       <div><strong>${action.label || "Action"}</strong></div>
       <small>${action.detail || ""}</small>
       <div class="action-controls">
-        <button class="btn btn-ghost command-action-run" type="button" data-action-id="${actionId}">Run Action</button>
+        <button class="btn btn-ghost command-action-run" type="button" data-action-id="${actionId}">Open</button>
       </div>
     `;
     commandCenterActions.appendChild(li);
   });
+  setCommandCenterStatus(actions.length ? "Start with the first action and keep the day moving." : "No priority actions yet.");
   renderExecutivePulse();
 }
 
@@ -6047,12 +6049,12 @@ function renderExecutivePulse() {
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-selected", active ? "true" : "false");
   });
-  if (executivePulseRangeMeta) executivePulseRangeMeta.textContent = `${rangeConfig.label} | ${bookingCount} bookings`;
+  if (executivePulseRangeMeta) executivePulseRangeMeta.textContent = `${rangeConfig.label} - ${bookingCount} bookings`;
   if (executivePulseSubtitle) {
     const roleLabel = user.role === "admin" ? "Admin view" : "Owner view";
-    executivePulseSubtitle.textContent = `${roleLabel}: fast operational readout for ${rangeConfig.label.toLowerCase()} with bookings, cancellations, revenue, and next actions.`;
+    executivePulseSubtitle.textContent = `${roleLabel}: quick read for ${rangeConfig.label.toLowerCase()} bookings, cancellations, revenue and next steps.`;
   }
-  if (executivePulseFinanceWindowLabel) executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} finance + booking summary`;
+  if (executivePulseFinanceWindowLabel) executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} finance and booking summary`;
 
   const signalCards = [
     { label: rangeConfig.key === "day" ? "Today Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
@@ -6110,14 +6112,14 @@ function renderExecutivePulse() {
   }
 
   const actionItems = [];
-  if (pendingCount > 0) actionItems.push({ title: "Confirm pending bookings", detail: `${pendingCount} booking${pendingCount === 1 ? "" : "s"} need confirmation or a callback.` });
-  if (cancelRate >= 10) actionItems.push({ title: "Protect cancellations", detail: "Use Waitlist Recovery and reminder follow-up to refill lost slots quickly." });
+  if (pendingCount > 0) actionItems.push({ title: "Confirm bookings", detail: `${pendingCount} booking${pendingCount === 1 ? "" : "s"} need confirmation or a callback.` });
+  if (cancelRate >= 10) actionItems.push({ title: "Refill cancellations", detail: "Use Waitlist Recovery and reminder follow-up to refill lost slots quickly." });
   if (selectedCalendarDateKey) {
-    actionItems.push({ title: "Work selected calendar day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} bookings). Ask Lexi for a short action plan.` });
+    actionItems.push({ title: "Work selected day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} bookings). Ask Lexi for a short action plan.` });
   } else {
-    actionItems.push({ title: "Pick a calendar day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
+    actionItems.push({ title: "Pick a day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
   }
-  if (!actionItems.length) actionItems.push({ title: "Steady day", detail: "No urgent issues. Focus on service quality, rebooking, and filling quiet windows." });
+  if (!actionItems.length) actionItems.push({ title: "Steady flow", detail: "No urgent issues. Focus on service quality, rebooking, and filling quiet windows." });
   executivePulseActions.innerHTML = "";
   actionItems.slice(0, 4).forEach((item) => {
     const li = document.createElement("li");
@@ -6179,6 +6181,8 @@ function renderWorkspaceStarPanel() {
     .filter((row) => String(row?.status || "").toLowerCase() !== "cancelled")
     .reduce((sum, row) => sum + Number(row?.price || 0), 0);
   const monthLabel = String(calendarMonthLabel?.textContent || "Current month").trim();
+  const todayDiaryLabel = workspaceStarPanel.querySelector(".workspace-star-card:nth-child(2) p");
+  if (todayDiaryLabel) todayDiaryLabel.textContent = "Today's Diary";
 
   if (workspaceStarCalendarFocus) {
     workspaceStarCalendarFocus.textContent = selectedCalendarDateKey
@@ -6187,7 +6191,7 @@ function renderWorkspaceStarPanel() {
   }
   if (workspaceStarCalendarNote) {
     workspaceStarCalendarNote.textContent = selectedCalendarDateKey
-      ? `${selectedCount} booking${selectedCount === 1 ? "" : "s"} ? ${formatMoney(selectedRevenue)} revenue view`
+      ? `${selectedCount} booking${selectedCount === 1 ? "" : "s"} - ${formatMoney(selectedRevenue)} in view`
       : "Pick a day in the calendar to sync Booking Operations and Lexi guidance.";
   }
   if (workspaceStarTodayCount) {
@@ -6210,6 +6214,16 @@ function renderWorkspaceStarPanel() {
     workspaceStarSummary.textContent = selectedCalendarDateKey
       ? `Calendar day filter is active for ${selectedCalendarDateKey}. Ask Lexi for quick actions, rebooking priorities, or confirmation follow-up.`
       : "Start with the diary, then ask Lexi for the shortest action plan for bookings, cancellations, and confirmations.";
+  }
+  if (workspaceStarLexiPrompt) {
+    workspaceStarLexiPrompt.textContent = selectedCalendarDateKey
+      ? `Review ${selectedCalendarDateKey} and tell me what needs attention first.`
+      : "Review today's diary and tell me the next 3 front-desk actions.";
+  }
+  if (workspaceStarSummary) {
+    workspaceStarSummary.textContent = selectedCalendarDateKey
+      ? `Calendar day filter is active for ${selectedCalendarDateKey}. Ask Lexi for quick actions, rebooking priorities or confirmation follow-up.`
+      : "Start with the diary, then ask Lexi for the shortest action plan for bookings, cancellations and confirmations.";
   }
 }
 
@@ -7222,6 +7236,20 @@ function appendCustomerLexiChat(prompt, fallbackReply = "") {
   if (!text) return;
   customerReceptionTranscript.push({ role: "user", text });
   customerReceptionTranscript.push({ role: "ai", text: String(fallbackReply || getReceptionReply(text)).trim() || "I can help you with available slots and booking options." });
+  renderCustomerReceptionChat();
+}
+
+function queueCustomerLexiPrompt(prompt) {
+  const text = String(prompt || "").trim();
+  if (!text) return;
+  if (customerReceptionInput) customerReceptionInput.value = text;
+  appendCustomerLexiChat(text);
+}
+
+function appendCustomerLexiGuidance(text) {
+  const message = String(text || "").trim();
+  if (!message) return;
+  customerReceptionTranscript.push({ role: "ai", text: message });
   renderCustomerReceptionChat();
 }
 
@@ -10602,6 +10630,10 @@ customerSearchResults?.addEventListener("click", (event) => {
   selectedCustomerSalonId = salonId;
   renderCustomerSearchResults();
   renderCustomerSelectedSalon();
+  const salon = getSelectedCustomerSalon();
+  if (salon) {
+    appendCustomerLexiGuidance(`I've loaded ${salon.name}. Ask me about services, the best time to book, or let me help you choose a slot.`);
+  }
 });
 
 customerReceptionForm?.addEventListener("submit", (event) => {
@@ -10612,6 +10644,14 @@ customerReceptionForm?.addEventListener("submit", (event) => {
   customerReceptionTranscript.push({ role: "ai", text: getReceptionReply(text) });
   if (customerReceptionInput) customerReceptionInput.value = "";
   renderCustomerReceptionChat();
+});
+
+customerLexiPromptButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const prompt = String(button.getAttribute("data-customer-lexi-prompt") || "").trim();
+    if (!prompt) return;
+    queueCustomerLexiPrompt(prompt);
+  });
 });
 
 customerLexiCalendarPrev?.addEventListener("click", () => {
@@ -10649,7 +10689,7 @@ customerLexiCalendarViewTabs?.addEventListener("click", (event) => {
 customerLexiAskNextBest?.addEventListener("click", () => {
   const salon = getSelectedCustomerSalon();
   const prompt = buildCustomerLexiPlannerPrompt("next-best", { salonName: salon?.name || "the selected salon" });
-  appendCustomerLexiChat(prompt);
+  queueCustomerLexiPrompt(prompt);
   openInteractiveModulePopup("customer_chat");
 });
 
@@ -10668,7 +10708,7 @@ customerLexiDaySummary?.addEventListener("click", (event) => {
   const dateKey = String(actionButton.getAttribute("data-date-key") || customerLexiSelectedDateKey || "").trim();
   const dateLabel = String(actionButton.getAttribute("data-date-label") || dateKey).trim();
   const prompt = buildCustomerLexiPlannerPrompt(action, { salonName: salon?.name || "the selected salon", dateKey, dateLabel });
-  appendCustomerLexiChat(prompt);
+  queueCustomerLexiPrompt(prompt);
   openInteractiveModulePopup("customer_chat");
 });
 

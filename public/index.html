@@ -31,7 +31,6 @@
         <span class="brand-dot"></span>
         AI Salon Receptionist
       </a>
-      <a class="btn btn-ghost nav-admin-only nav-admin-side" data-open-admin-signin-modal href="/auth">ADMIN ONLY</a>
       <nav class="nav">
         <a data-open-trial-modal href="/auth?role=subscriber&mode=register">Join</a>
         <a href="#dashboards">Demo</a>
@@ -39,8 +38,7 @@
         <a class="nav-secondary" href="#footerPolicies">Policy</a>
       </nav>
       <div class="auth-actions">
-        <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">CUSTOMERS</a>
-        <a class="btn btn-ghost" data-open-subscriber-signin-modal href="/auth?role=subscriber">SUBSCRIBERS</a>
+        <a class="btn btn-ghost" data-open-login-modal href="/auth">LOGIN</a>
         <a class="btn btn-ghost" href="#frontdesk">ASK LEXI</a>
       </div>
     </header>
@@ -49,17 +47,17 @@
       <section class="hero">
         <div class="hero-copy reveal">
           <p class="eyebrow">Built for salon owners, barbers, and beauty teams</p>
-          <h1>Run Your Front Desk, Bookings, and Business Day From One Place</h1>
+          <h1>One System for Bookings, Front Desk Work, and Business Control</h1>
           <p class="hero-text">
-            AI Salon Receptionist gives you one clear system to run the day-to-day side of your business:
-            enquiries, bookings, busy periods, cancellations, repeat clients, and your numbers in one place.
+            AI Salon Receptionist helps you answer enquiries faster, fill the diary, reduce cancellations,
+            and see how the business is performing without switching between tools.
           </p>
           <div class="cta-row">
             <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
             <a class="btn btn-ghost" href="#dashboards">View Live Dashboard Demo</a>
             <a class="btn btn-ghost btn-minimal" href="#frontdesk">Try the Booking Journey</a>
           </div>
-          <p class="hero-cta-note">Take a look around first, then start your free trial when you're ready.</p>
+          <p class="hero-cta-note">See the flow first, then start your free trial when you're ready.</p>
           <div class="cta-proof">
             <strong>free trial to all new subscribers</strong>
             <span>Then plans start from £9.99/month</span>
@@ -70,8 +68,8 @@
             <p class="hero-note-label">Built for real salon owners and busy front desk teams</p>
             <ul>
               <li>Built for salons, barbershops, and beauty studios</li>
-              <li>Quick to set up for your team and easy for clients to book</li>
-              <li>A live dashboard demo so you can see how it works before you sign up</li>
+              <li>Easy for staff to run and easy for clients to use</li>
+              <li>Live demo so you can judge the product before sign-up</li>
             </ul>
           </div>
           <div class="hero-badges">
@@ -82,15 +80,15 @@
           <div class="hero-capabilities">
             <article>
               <h3>Front Desk Automation</h3>
-              <p>Turn enquiries into booked appointments even when your team is busy.</p>
+              <p>Answer questions and capture bookings even when staff are busy.</p>
             </article>
             <article>
-              <h3>Operational Command Center</h3>
-              <p>Keep on top of staffing, waitlists, cancellations, and demand in one place.</p>
+              <h3>Daily Control</h3>
+              <p>Track staffing, waitlists, cancellations, and service demand in one view.</p>
             </article>
             <article>
-              <h3>Growth and Profit Intelligence</h3>
-              <p>See what is bringing in bookings and what is actually making you profit.</p>
+              <h3>Revenue Visibility</h3>
+              <p>See what is bringing in revenue and where the business needs attention.</p>
             </article>
           </div>
           <div class="hero-stats">
@@ -111,15 +109,15 @@
 
         <div class="hero-media hero-chat-demo receptionist-live reveal" id="frontdesk">
           <div class="section-header">
-            <h2>Meet Lexi | Your AI Receptionist</h2>
-            <p>Lexi handles booking questions, service enquiries, and front desk support so your team can stay focused on clients.</p>
+            <h2>ASK LEXI</h2>
+            <p>Lexi answers service questions, helps with bookings, and supports the front desk in one place.</p>
           </div>
           <section class="hero-lexi-calendar-star" aria-label="Lexi and booking calendar first view">
             <div class="hero-lexi-calendar-star-head">
               <div>
-                <p class="hero-lexi-calendar-star-kicker">Star Feature</p>
-                <h3>Lexi + Booking Calendar</h3>
-                <p id="heroLexiCalendarSummary">See live booking movement and ask Lexi the next best question in one view.</p>
+                <p class="hero-lexi-calendar-star-kicker">OpenAI Lexi</p>
+                <h3>Booking Calendar with Lexi</h3>
+                <p id="heroLexiCalendarSummary">See booking movement and ask Lexi the next best question in one view.</p>
               </div>
               <div class="hero-lexi-calendar-star-actions">
                 <button class="btn" type="button" id="heroLexiAskBtn">Ask Lexi</button>
@@ -135,12 +133,12 @@
               <article>
                 <p>Live Bookings</p>
                 <strong id="heroLexiBookingsCount">Loading...</strong>
-                <small id="heroLexiBookingsRevenue">Demo feed updates from public booking activity.</small>
+                <small id="heroLexiBookingsRevenue">Live demo view from booking activity.</small>
               </article>
               <article>
                 <p>Lexi Prompt</p>
                 <strong id="heroLexiSuggestedPrompt">Can you help me book an appointment this week?</strong>
-                <small id="heroLexiPromptHint">Short, human answers that move the booking forward.</small>
+                <small id="heroLexiPromptHint">Short, clear replies that move the booking forward.</small>
               </article>
             </div>
           </section>
@@ -158,11 +156,62 @@
                 <button class="btn" type="submit">Ask Lexi</button>
               <button class="btn btn-ghost" id="chatClear" type="button">Clear Chat</button>
             </form>
+            <div class="lexi-quick-prompts" aria-label="Quick Lexi prompts">
+              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="I want to book an appointment this week.">Book this week</button>
+              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="What service would you recommend for me?">Choose a service</button>
+              <button class="btn btn-ghost lexi-prompt-btn" type="button" data-lexi-prompt="Can you check available times for me?">Check times</button>
+            </div>
+            <section class="lexi-booking-guide" aria-label="Guided Lexi booking flow">
+              <div class="lexi-booking-guide-head">
+                <div>
+                  <p>Guided Booking</p>
+                  <strong>Simple, clear steps to confirm the appointment.</strong>
+                </div>
+                <small id="lexiBookingGuideNext">Choose a business below to begin.</small>
+              </div>
+              <div class="lexi-booking-guide-grid">
+                <article class="lexi-booking-guide-step" id="lexiGuideStepService">
+                  <span>1</span>
+                  <div>
+                    <strong>Service</strong>
+                    <small id="lexiGuideServiceValue">Not chosen yet</small>
+                  </div>
+                </article>
+                <article class="lexi-booking-guide-step" id="lexiGuideStepDate">
+                  <span>2</span>
+                  <div>
+                    <strong>Date</strong>
+                    <small id="lexiGuideDateValue">Waiting for date</small>
+                  </div>
+                </article>
+                <article class="lexi-booking-guide-step" id="lexiGuideStepTime">
+                  <span>3</span>
+                  <div>
+                    <strong>Time</strong>
+                    <small id="lexiGuideTimeValue">Waiting for time</small>
+                  </div>
+                </article>
+                <article class="lexi-booking-guide-step" id="lexiGuideStepDetails">
+                  <span>4</span>
+                  <div>
+                    <strong>Details</strong>
+                    <small id="lexiGuideDetailsValue">Need name and contact</small>
+                  </div>
+                </article>
+                <article class="lexi-booking-guide-step" id="lexiGuideStepConfirm">
+                  <span>5</span>
+                  <div>
+                    <strong>Confirm</strong>
+                    <small id="lexiGuideConfirmValue">Ready when Lexi has everything</small>
+                  </div>
+                </article>
+              </div>
+            </section>
           </div>
           <div class="hero-lexi-sell-card" aria-label="Lexi and business profile overview">
               <div class="hero-lexi-sell-head">
                 <p>Lexi + Your Business Profile</p>
-                <strong>Lexi helps you deliver a faster, more professional front desk experience from the very first client message.</strong>
+                <strong>Lexi gives your business a faster, clearer front desk experience from the first client message.</strong>
               </div>
             <p id="heroSalonMeta" class="hero-lexi-business-meta">Loading featured business details...</p>
             <div class="hero-lexi-value-pills" aria-label="What Lexi and the app can do">
@@ -170,7 +219,7 @@
               <span>Check availability</span>
               <span>Start booking requests</span>
               <span>Reduce missed calls</span>
-              <span>Support salon, barber & beauty services</span>
+              <span>Support salon, barber and beauty services</span>
             </div>
           </div>
           <div class="hero-chat-status">
@@ -186,7 +235,7 @@
           <div class="hero-chat-features" aria-label="AI receptionist features">
             <article>
               <h3>Answers Questions</h3>
-              <p>Answers common questions about services, prices, opening hours, and bookings in one chat.</p>
+              <p>Answers common questions about services, prices, hours, and booking rules.</p>
             </article>
             <article>
               <h3>Starts Bookings</h3>
@@ -194,7 +243,7 @@
             </article>
             <article>
               <h3>Works 24/7</h3>
-              <p>Captures client intent even when the salon is closed or the team is busy.</p>
+              <p>Keeps enquiries moving when the salon is closed or the team is busy.</p>
             </article>
             <article>
               <h3>Handles FAQs</h3>
@@ -218,7 +267,7 @@
             </article>
             <article>
               <h3>Feels On-Brand</h3>
-              <p>Gives clients a polished first response that supports trust and conversion.</p>
+              <p>Gives clients a professional first response that supports trust and conversion.</p>
             </article>
           </div>
         </div>
@@ -228,10 +277,10 @@
         <div class="command-deck-intro">
           <div>
             <p class="eyebrow">Built to help salons grow without the chaos</p>
-            <h2>See how the full system supports bookings and revenue before you commit</h2>
+            <h2>See how the system helps you book better, run smoother, and protect revenue</h2>
             <p>
-              Explore Lexi, the day-to-day dashboards, cancellation protection, and the booking journey
-              in the same order most salon owners review new software.
+              Explore Lexi, the daily dashboards, cancellation controls, and the booking journey
+              in the same order most owners check a new platform.
             </p>
           </div>
           <div class="command-deck-actions">
@@ -244,22 +293,22 @@
           <article class="command-deck-card">
             <p>Step 1</p>
             <h3>Prove Conversion</h3>
-            <span>Lexi catches enquiries and starts bookings in real time.</span>
+            <span>Lexi catches enquiries and starts bookings fast.</span>
           </article>
           <article class="command-deck-card">
             <p>Step 2</p>
             <h3>Verify Operations</h3>
-            <span>The dashboards show how your day is running when things get busy.</span>
+            <span>The dashboards show what is happening when the day gets busy.</span>
           </article>
           <article class="command-deck-card">
             <p>Step 3</p>
             <h3>Protect Revenue</h3>
-            <span>Cancellation and waitlist workflows help reduce empty-chair time.</span>
+            <span>Cancellation and waitlist tools help reduce empty-chair time.</span>
           </article>
           <article class="command-deck-card command-deck-card-accent">
             <p>Step 4</p>
             <h3>Launch Fast</h3>
-            <span>Owner and customer journeys are ready when you're ready to go live.</span>
+            <span>Owner and customer journeys are ready when you want to go live.</span>
           </article>
         </div>
       </section>
@@ -357,39 +406,44 @@
           <div class="control-room-frame-main">
       <section class="home-business-modules panel reveal" id="experience" aria-label="Business areas">
         <div class="section-header">
-          <h2>Business Areas</h2>
-          <p>Open a quick view for the part of the salon you want to focus on, without cluttering the homepage.</p>
+          <h2>Business HUB</h2>
+          <p>Open the main business areas fast and manage the parts of the salon that matter most.</p>
         </div>
         <div class="home-module-grid" id="homeModuleGrid">
-          <button class="home-module-card" type="button" data-home-module="frontdesk">
-            <strong>Front Desk</strong>
-            <small>Handle enquiries, bookings, and client questions quickly.</small>
+          <button class="home-module-card" type="button" data-home-module="business_information">
+            <strong>Business Information</strong>
+            <small>Keep your salon details, contact info, and profile accurate.</small>
             <span class="home-module-pill accent">Start here</span>
           </button>
-          <button class="home-module-card" type="button" data-home-module="operations">
-            <strong>Operations</strong>
-            <small>Keep the day running with bookings, staffing, and cancellations.</small>
+          <button class="home-module-card" type="button" data-home-module="staff_setup">
+            <strong>Staff Setup</strong>
+            <small>Manage rota, availability, and working capacity.</small>
             <span class="home-module-pill">Use daily</span>
           </button>
-          <button class="home-module-card" type="button" data-home-module="waitlist">
-            <strong>Waitlist Recovery</strong>
-            <small>Refill cancelled slots before the chair sits empty.</small>
-            <span class="home-module-pill">Use daily</span>
+          <button class="home-module-card" type="button" data-home-module="salon_features">
+            <strong>Salon Features</strong>
+            <small>Control the services and options your salon offers.</small>
+            <span class="home-module-pill soft">Setup</span>
           </button>
-          <button class="home-module-card" type="button" data-home-module="growth">
-            <strong>Client Growth</strong>
-            <small>Follow up, rebook, and bring regular clients back in.</small>
-            <span class="home-module-pill soft">Weekly check</span>
+          <button class="home-module-card" type="button" data-home-module="social_media">
+            <strong>Social Media</strong>
+            <small>Link your social channels and keep your brand visible.</small>
+            <span class="home-module-pill soft">Marketing</span>
+          </button>
+          <button class="home-module-card" type="button" data-home-module="accounting">
+            <strong>Accounting</strong>
+            <small>Share revenue data with your accountant or connect systems.</small>
+            <span class="home-module-pill soft">Admin</span>
           </button>
           <button class="home-module-card" type="button" data-home-module="finance">
-            <strong>Revenue &amp; Profit</strong>
-            <small>See takings, trends, and what is actually making money.</small>
-            <span class="home-module-pill soft">Weekly check</span>
+            <strong>Finance</strong>
+            <small>See day, week, month, and year revenue clearly.</small>
+            <span class="home-module-pill soft">Key view</span>
           </button>
-          <button class="home-module-card" type="button" data-home-module="owner_clarity">
-            <strong>Owner View</strong>
-            <small>Get a simple picture of what needs attention next.</small>
-            <span class="home-module-pill soft">Quick view</span>
+          <button class="home-module-card" type="button" data-home-module="cancellations">
+            <strong>Cancellations</strong>
+            <small>Control your cancellation policy and fee rules.</small>
+            <span class="home-module-pill soft">Control</span>
           </button>
         </div>
       </section>
@@ -529,8 +583,8 @@
 
       <section class="panel join-roles reveal" id="join">
         <div class="section-header">
-          <h2>Join as a Salon Owner or Customer</h2>
-          <p>Choose the right access for you. Salon owners get the business dashboard and tools, and customers get a simple booking experience. All new subscribers start with a free trial.</p>
+          <h2>Choose Your Daily Workspace</h2>
+          <p>Subscribers run the business day from one workspace. Customers book and manage appointments with a simpler flow.</p>
         </div>
         <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
           <a class="btn" href="#frontdesk">Ask Lexi</a>
@@ -539,19 +593,19 @@
           <article class="join-card">
             <p class="join-tag">For salon owners &amp; teams • Free Trial available</p>
             <h3>Subscriber</h3>
-            <p>Run the day-to-day side of your business: bookings, staffing, waitlist, CRM, finance, and growth insights.</p>
-            <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+            <p>Run bookings, staff, cancellations, waitlist recovery, and business reporting from one workspace.</p>
+            <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Create Subscriber Workspace</a>
           </article>
           <article class="join-card">
             <p class="join-tag">For end customers</p>
             <h3>Customer</h3>
-            <p>Find trusted local hair and beauty businesses, then book, reschedule, or cancel easily.</p>
-            <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">Book as a Customer</a>
+            <p>Find a business, book quickly, and manage your appointments without extra steps.</p>
+            <a class="btn btn-ghost" data-open-customer-access-modal href="/auth?role=customer">Customer Login</a>
           </article>
           <article class="join-card join-card-benefits">
             <p class="join-tag join-tag-gold">Most requested outcomes</p>
             <h3>Why Salon Owners Choose Lexi</h3>
-            <p>Built to help you win more bookings, protect revenue, and give clients a better experience from day one.</p>
+            <p>Built to help you win more bookings, protect revenue, and give clients a better experience.</p>
             <ul class="benefit-list">
               <li>Convert more enquiries into confirmed appointments</li>
               <li>Reduce no-shows with intelligent reminder and policy flows</li>
@@ -563,13 +617,12 @@
       </section>
 
       <section class="panel role-cta reveal" aria-label="Free trial invite">
-          <h2>Start Your Subscriber Free Trial</h2>
+          <h2>Set Up Your Subscriber Workspace</h2>
           <p>
-            Try Lexi, the dashboards, and the booking workflows before you commit. Explore the demo above,
-            then create your subscriber workspace when you're ready to start your free trial.
+            Try Lexi, the dashboards, and the booking workflows first. When you're ready, create your workspace and start setting up the business.
           </p>
         <div class="cta-row">
-          <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+          <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Create Subscriber Workspace</a>
           <a class="btn" href="#frontdesk">Ask Lexi</a>
           <a class="btn btn-ghost" href="#dashboards">Review Dashboard Demo</a>
           <a class="btn btn-ghost" href="#frontdesk">Test AI Receptionist</a>
@@ -582,9 +635,9 @@
           <ul>
             <li>AI receptionist + booking automation that works 24/7</li>
             <li>One clear dashboard for bookings, capacity, and demand</li>
-            <li>No-show risk controls and fast cancellation backfill workflows</li>
-            <li>CRM segmentation with campaign actions for retention and reactivation</li>
-            <li>Revenue attribution and profitability visibility for better decisions</li>
+            <li>Cancellation controls and fast backfill workflows</li>
+            <li>Retention and follow-up tools for repeat bookings</li>
+            <li>Revenue and performance visibility for better decisions</li>
           </ul>
         </article>
         <article class="impact-card">
@@ -600,11 +653,11 @@
         <article class="impact-card">
           <h2>Why It Makes Sense So Quickly</h2>
           <ul>
-            <li>Premium, modern interface designed for trust and conversion</li>
             <li>Clearly defined workflows from enquiry to confirmed booking</li>
             <li>Business insights that turn data into practical next steps</li>
             <li>Role-based controls for owners, teams, and customers</li>
-            <li>Scalable architecture across web, desktop, and mobile wrappers</li>
+            <li>One platform instead of disconnected tools</li>
+            <li>Designed to be easy to use under pressure</li>
           </ul>
         </article>
       </section>
@@ -642,6 +695,20 @@
         </div>
         <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
           <a class="btn" href="#frontdesk">Ask Lexi</a>
+        </div>
+        <div class="booking-flow-strip" aria-label="Simple booking flow">
+          <article class="booking-flow-card is-active" id="bookingStepSearch">
+            <strong>1. Find</strong>
+            <small>Search for the right business.</small>
+          </article>
+          <article class="booking-flow-card" id="bookingStepChoose">
+            <strong>2. Choose</strong>
+            <small>Open the profile and check the fit.</small>
+          </article>
+          <article class="booking-flow-card" id="bookingStepBook">
+            <strong>3. Book</strong>
+            <small>Ask Lexi to help you confirm the slot.</small>
+          </article>
         </div>
 
         <div class="finder-grid">
@@ -886,6 +953,44 @@
               <span id="homeTrialMsg" class="home-trial-msg" aria-live="polite"></span>
             </div>
           </form>
+        </div>
+      </section>
+    </div>
+
+    <div id="homeLoginModal" class="home-trial-overlay" aria-hidden="true">
+      <section class="home-trial-modal home-access-modal" role="dialog" aria-modal="true" aria-labelledby="homeLoginModalTitle">
+        <div class="home-trial-modal-head">
+          <div>
+            <p class="eyebrow">Login</p>
+            <h2 id="homeLoginModalTitle">Choose Your Access</h2>
+            <p>Use one login entry point, then go to the right workspace for customer, subscriber, or admin access.</p>
+          </div>
+          <button id="homeLoginModalClose" class="btn btn-ghost" type="button" aria-label="Close login options">Close</button>
+        </div>
+        <div class="home-customer-choice-grid home-login-choice-grid">
+          <article class="home-customer-choice-card">
+            <h3>Subscriber</h3>
+            <p>Manage bookings, staff, waitlist recovery, dashboards, and business controls.</p>
+            <div class="home-access-form-actions">
+              <button class="btn" type="button" data-login-role="subscriber">Subscriber Login</button>
+              <a class="btn btn-ghost" data-open-trial-modal href="/auth?role=subscriber&mode=register">Start Free Trial</a>
+            </div>
+          </article>
+          <article class="home-customer-choice-card">
+            <h3>Customer</h3>
+            <p>Sign in to manage bookings, or create a customer account if you are new.</p>
+            <div class="home-access-form-actions">
+              <button class="btn" type="button" data-login-role="customer">Customer Login</button>
+              <button class="btn btn-ghost" type="button" data-login-role="customer_signup">Create Account</button>
+            </div>
+          </article>
+          <article class="home-customer-choice-card home-login-choice-card-admin">
+            <h3>Admin</h3>
+            <p>Restricted access for platform owner, developer, and maintenance tasks.</p>
+            <div class="home-access-form-actions">
+              <button class="btn btn-ghost" type="button" data-login-role="admin">Admin Login</button>
+            </div>
+          </article>
         </div>
       </section>
     </div>
@@ -1390,10 +1495,3 @@
     <script type="module" src="/app.js"></script>
   </body>
 </html>
-
-
-
-
-
-
-

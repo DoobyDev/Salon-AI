@@ -72,9 +72,15 @@ async function createWindow() {
       nodeIntegration: false
     }
   });
+  win.setTitle("Ask Lexi | AI Salon Receptionist");
 
   const devStartUrl = process.env.ELECTRON_START_URL || "http://localhost:3000";
   const appUrl = app.isPackaged ? `http://localhost:${desktopPort}` : devStartUrl;
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    win.loadURL(url);
+    return { action: "deny" };
+  });
 
   if (app.isPackaged) {
     startEmbeddedBackend();

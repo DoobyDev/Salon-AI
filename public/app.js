@@ -17,11 +17,26 @@ const heroLexiBookingsCount = document.getElementById("heroLexiBookingsCount");
 const heroLexiBookingsRevenue = document.getElementById("heroLexiBookingsRevenue");
 const heroLexiSuggestedPrompt = document.getElementById("heroLexiSuggestedPrompt");
 const heroLexiPromptHint = document.getElementById("heroLexiPromptHint");
+const lexiPromptButtons = Array.from(document.querySelectorAll(".lexi-prompt-btn"));
+const lexiBookingGuideNext = document.getElementById("lexiBookingGuideNext");
+const lexiGuideStepService = document.getElementById("lexiGuideStepService");
+const lexiGuideStepDate = document.getElementById("lexiGuideStepDate");
+const lexiGuideStepTime = document.getElementById("lexiGuideStepTime");
+const lexiGuideStepDetails = document.getElementById("lexiGuideStepDetails");
+const lexiGuideStepConfirm = document.getElementById("lexiGuideStepConfirm");
+const lexiGuideServiceValue = document.getElementById("lexiGuideServiceValue");
+const lexiGuideDateValue = document.getElementById("lexiGuideDateValue");
+const lexiGuideTimeValue = document.getElementById("lexiGuideTimeValue");
+const lexiGuideDetailsValue = document.getElementById("lexiGuideDetailsValue");
+const lexiGuideConfirmValue = document.getElementById("lexiGuideConfirmValue");
 
 const searchForm = document.getElementById("searchForm");
 const clearFiltersBtn = document.getElementById("clearFilters");
 const salonResults = document.getElementById("salonResults");
 const selectedBusiness = document.getElementById("selectedBusiness");
+const bookingStepSearch = document.getElementById("bookingStepSearch");
+const bookingStepChoose = document.getElementById("bookingStepChoose");
+const bookingStepBook = document.getElementById("bookingStepBook");
 const liveAreaLabel = document.getElementById("liveAreaLabel");
 const appStatus = document.getElementById("appStatus");
 
@@ -71,6 +86,10 @@ const homeTrialSetupNotes = document.getElementById("homeTrialSetupNotes");
 const homeTrialPaymentConsent = document.getElementById("homeTrialPaymentConsent");
 const homeTrialTemplatePreview = document.getElementById("homeTrialTemplatePreview");
 const homeTrialTriggers = Array.from(document.querySelectorAll("[data-open-trial-modal]"));
+const homeLoginModal = document.getElementById("homeLoginModal");
+const homeLoginModalClose = document.getElementById("homeLoginModalClose");
+const homeLoginTriggers = Array.from(document.querySelectorAll("[data-open-login-modal]"));
+const homeLoginRoleTriggers = Array.from(document.querySelectorAll("[data-login-role]"));
 const homeSubscriberSigninModal = document.getElementById("homeSubscriberSigninModal");
 const homeSubscriberSigninClose = document.getElementById("homeSubscriberSigninClose");
 const homeSubscriberSigninForm = document.getElementById("homeSubscriberSigninForm");
@@ -134,6 +153,7 @@ let homeLexiPopupOverlay = null;
 let homeLexiPopupContainer = null;
 let homeLexiChatPlaceholder = null;
 let homeLexiPopupLastFocus = null;
+let lexiBookingGuideState = createLexiBookingGuideState();
 const homeDemoDisplayValues = {
   revenue: 0,
   cancels: 0,
@@ -143,6 +163,48 @@ const homeDemoDisplayValues = {
 const CHATBOT_WELCOME_MESSAGE = "Hi I'm Lexi, how can I help you today?";
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
+const DEFAULT_LEXI_PROMPTS = [
+  {
+    label: "Book this week",
+    prompt: "I want to book an appointment this week."
+  },
+  {
+    label: "Choose a service",
+    prompt: "What service would you recommend for me?"
+  },
+  {
+    label: "Check times",
+    prompt: "Can you check available times for me?"
+  }
+];
+const GENERIC_SERVICE_KEYWORDS = [
+  "haircut",
+  "cut and finish",
+  "blow dry",
+  "blowout",
+  "balayage",
+  "highlights",
+  "ombre",
+  "colour correction",
+  "color correction",
+  "colour",
+  "color",
+  "skin fade",
+  "fade",
+  "beard trim",
+  "beard treatment",
+  "brow wax",
+  "brow tint",
+  "lashes",
+  "facial",
+  "waxing",
+  "extensions",
+  "keratin",
+  "smoothing treatment",
+  "bridal styling",
+  "manicure",
+  "pedicure"
+];
 
 const HOME_TRIAL_TEMPLATES = {
   hair_salon: {
@@ -163,64 +225,74 @@ const HOME_TRIAL_TEMPLATES = {
 };
 
 const HOME_MODULE_DETAILS = {
-  frontdesk: {
-    title: "Front Desk",
+  business_information: {
+    title: "Business Information",
     badge: "Start here",
-    summary: "This is the day-to-day front desk side of the app. It helps your team handle enquiries, answer common questions, and move clients into booked appointments without losing track of what is happening.",
+    summary: "This is the main place for salon details. It gives you one popup area to review and update the information Lexi, customers, and the dashboard rely on every day.",
     bullets: [
-      "Handle bookings and client questions in one flow",
-      "Keep your team focused during busy periods",
-      "Create a smoother booking experience for clients"
+      "Edit business name, contact details, and opening hours",
+      "Keep customer-facing salon information correct",
+      "Support cleaner booking and front desk communication"
     ]
   },
-  operations: {
-    title: "Operations",
+  staff_setup: {
+    title: "Staff Setup",
     badge: "Use daily",
-    summary: "This area is for running the day properly. It brings together bookings, calendar visibility, staffing pressure, and live priorities so the team knows what needs attention next.",
+    summary: "This popup is for staff setup and rota control. It gives salon owners a quick way to manage availability, adjust team cover, and edit the rota when the day changes.",
     bullets: [
-      "See what needs attention first today",
-      "Manage bookings, coverage, and cancellations",
-      "Reduce firefighting during peak times"
+      "Edit staff rota and shift coverage",
+      "Keep availability clear for booking capacity",
+      "Reduce scheduling confusion during busy periods"
     ]
   },
-  waitlist: {
-    title: "Waitlist Recovery",
-    badge: "Use daily",
-    summary: "When a client cancels, this helps you fill that slot faster. Your team can use the waitlist to contact the right people quickly instead of losing the appointment entirely.",
+  salon_features: {
+    title: "Salon Features",
+    badge: "Setup",
+    summary: "This area is for the services and features your salon offers. It lets the business control what the salon can do and what should be visible through Lexi and the wider app.",
     bullets: [
-      "Refill cancelled appointments faster",
-      "Protect revenue from last-minute cancellations",
-      "Keep chairs and treatment slots full"
+      "Set the services and salon capabilities you offer",
+      "Keep Lexi aligned with real salon options",
+      "Avoid showing features the salon does not use"
     ]
   },
-  growth: {
-    title: "Client Growth",
-    badge: "Weekly check",
-    summary: "This is where you work on repeat bookings and follow-up activity. It helps you stay consistent with client rebooking and retention instead of relying on memory.",
+  social_media: {
+    title: "Social Media",
+    badge: "Marketing",
+    summary: "This popup helps the salon manage linked social accounts. It keeps your business profile connected so customers can find the salon, and the team can keep sharing in one place.",
     bullets: [
-      "Support repeat bookings and reactivation",
-      "Use CRM-style segments and campaign prompts",
-      "Keep marketing actions tied to actual bookings"
+      "Link salon social media accounts",
+      "Keep brand and contact channels consistent",
+      "Support sharing and discovery from one place"
+    ]
+  },
+  accounting: {
+    title: "Accounting",
+    badge: "Admin",
+    summary: "This area is for sending salon revenue information to an accountant or linking accounting systems. It keeps the salon's numbers easier to share and reconcile.",
+    bullets: [
+      "Send revenue information to your accountant",
+      "Link accounting accounts where needed",
+      "Support cleaner export and reporting workflows"
     ]
   },
   finance: {
-    title: "Revenue & Profit",
-    badge: "Weekly check",
-    summary: "This area helps you check how the business is performing, not just how busy it feels. It brings revenue, spend, and profitability signals into one place.",
+    title: "Finance",
+    badge: "Key view",
+    summary: "This popup should give salon owners an easy view of revenue without digging through complex screens. It is focused on clear day, week, month, and year totals.",
     bullets: [
-      "Track revenue trends and channel performance",
-      "Review spend vs results more clearly",
-      "See what is helping profit, not just turnover"
+      "Show daily salon revenue clearly",
+      "Show weekly, monthly, and yearly revenue in one view",
+      "Keep financial performance simple to understand"
     ]
   },
-  owner_clarity: {
-    title: "Owner View",
-    badge: "Quick view",
-    summary: "This is the simple high-level view for owners and managers. It helps you check what is going well, what needs attention, and where to focus next without digging through every screen.",
+  cancellations: {
+    title: "Cancellations",
+    badge: "Control",
+    summary: "This area gives the subscriber direct control over the salon cancellation fee and related cancellation settings. It keeps the policy simple to review and adjust.",
     bullets: [
-      "Quick summary of priorities and business signals",
-      "Useful for end-of-day and start-of-day checks",
-      "Helps with clearer decision-making"
+      "Let subscribers control the cancellation fee",
+      "Keep the salon policy easy to update",
+      "Reduce confusion around charges and missed bookings"
     ]
   }
 };
@@ -260,6 +332,7 @@ function renderHomeTrialTemplatePreview() {
 }
 
 let lastHomeTrialTrigger = null;
+let lastHomeLoginTrigger = null;
 let lastHomeSubscriberSigninTrigger = null;
 let lastHomeAdminSigninTrigger = null;
 let lastHomeCustomerAccessTrigger = null;
@@ -267,6 +340,7 @@ let homeSubscriberAccessMode = "subscriber";
 let homeCustomerAccessMode = "signin";
 function openHomeTrialModal(trigger = null) {
   if (!homeTrialModal) return;
+  if (homeLoginModal?.classList.contains("is-open")) closeHomeLoginModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
   if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
@@ -285,6 +359,27 @@ function closeHomeTrialModal() {
   homeTrialModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
   if (lastHomeTrialTrigger instanceof HTMLElement) lastHomeTrialTrigger.focus();
+}
+
+function openHomeLoginModal(trigger = null) {
+  if (!homeLoginModal) return;
+  if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
+  if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
+  if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
+  if (trigger instanceof HTMLElement) lastHomeLoginTrigger = trigger;
+  homeLoginModal.classList.add("is-open");
+  homeLoginModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  window.requestAnimationFrame(() => homeLoginRoleTriggers[0]?.focus());
+}
+
+function closeHomeLoginModal() {
+  if (!homeLoginModal) return;
+  homeLoginModal.classList.remove("is-open");
+  homeLoginModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastHomeLoginTrigger instanceof HTMLElement) lastHomeLoginTrigger.focus();
 }
 
 function setHomeSubscriberSigninMessage(text, state = "") {
@@ -314,6 +409,7 @@ function setHomeSubscriberAccessMode(mode) {
 function openHomeSubscriberSigninModal(trigger = null, mode = "subscriber") {
   if (!homeSubscriberSigninModal) return;
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeLoginModal?.classList.contains("is-open")) closeHomeLoginModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
   if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
   if (trigger instanceof HTMLElement) lastHomeSubscriberSigninTrigger = trigger;
@@ -355,6 +451,7 @@ function openHomeAdminSigninModal(trigger = null) {
   }
   if (!homeAdminSigninModal) return;
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeLoginModal?.classList.contains("is-open")) closeHomeLoginModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
   if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
   if (trigger instanceof HTMLElement) lastHomeAdminSigninTrigger = trigger;
@@ -376,6 +473,7 @@ function closeHomeAdminSigninModal() {
 function openHomeCustomerAccessModal(trigger = null) {
   if (!homeCustomerAccessModal) return;
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeLoginModal?.classList.contains("is-open")) closeHomeLoginModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
   if (trigger instanceof HTMLElement) lastHomeCustomerAccessTrigger = trigger;
@@ -496,6 +594,248 @@ function appendMessage(role, content) {
   el.textContent = content;
   chatWindow.appendChild(el);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function createLexiBookingGuideState() {
+  return {
+    businessId: "",
+    businessName: "",
+    service: "",
+    date: "",
+    time: "",
+    name: "",
+    phone: "",
+    email: "",
+    confirmed: false
+  };
+}
+
+function cleanLexiValue(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function getSelectedBusinessRecord() {
+  return businessCache.find((business) => business.id === selectedBusinessId) || null;
+}
+
+function isLexiDetailsComplete() {
+  return Boolean(lexiBookingGuideState.name && (lexiBookingGuideState.phone || lexiBookingGuideState.email));
+}
+
+function getLexiGuideCurrentStep() {
+  if (!selectedBusinessId || !lexiBookingGuideState.service) return "service";
+  if (!lexiBookingGuideState.date) return "date";
+  if (!lexiBookingGuideState.time) return "time";
+  if (!isLexiDetailsComplete()) return "details";
+  if (!lexiBookingGuideState.confirmed) return "confirm";
+  return "complete";
+}
+
+function setLexiPromptButton(button, label, prompt) {
+  if (!(button instanceof HTMLElement)) return;
+  button.textContent = label;
+  button.setAttribute("data-lexi-prompt", prompt);
+}
+
+function renderLexiPromptButtons() {
+  const currentBusiness = getSelectedBusinessRecord();
+  const slots = Array.isArray(currentBusiness?.availableSlots) ? currentBusiness.availableSlots : [];
+  const topServices = Array.isArray(currentBusiness?.services) ? currentBusiness.services.slice(0, 3) : [];
+  const step = getLexiGuideCurrentStep();
+  let prompts = DEFAULT_LEXI_PROMPTS;
+
+  if (selectedBusinessId && step === "service" && topServices.length) {
+    prompts = topServices.map((service) => ({
+      label: service.name,
+      prompt: `I want to book ${service.name}.`
+    }));
+  } else if (selectedBusinessId && (step === "date" || step === "time") && slots.length) {
+    prompts = slots.slice(0, 3).map((slot) => ({
+      label: slot,
+      prompt: `Book ${lexiBookingGuideState.service || "an appointment"} on ${slot}.`
+    }));
+  } else if (selectedBusinessId && step === "details") {
+    prompts = [
+      { label: "Share name", prompt: "My name is " },
+      { label: "Share phone", prompt: "My phone number is " },
+      { label: "Share email", prompt: "My email is " }
+    ];
+  } else if (selectedBusinessId && step === "confirm") {
+    prompts = [
+      { label: "Confirm booking", prompt: "Please confirm this booking." },
+      { label: "Repeat details", prompt: "Please repeat my booking details." },
+      { label: "Add recommendation", prompt: "Do you recommend an add-on for this booking?" }
+    ];
+  } else if (selectedBusinessId && step === "complete") {
+    prompts = [
+      { label: "Book again", prompt: "I want to make another booking." },
+      { label: "Aftercare advice", prompt: "Can you give me aftercare advice for my appointment?" },
+      { label: "Change booking", prompt: "I need to change my booking." }
+    ];
+  }
+
+  lexiPromptButtons.forEach((button, index) => {
+    const nextPrompt = prompts[index] || DEFAULT_LEXI_PROMPTS[index] || DEFAULT_LEXI_PROMPTS[0];
+    setLexiPromptButton(button, nextPrompt.label, nextPrompt.prompt);
+  });
+}
+
+function renderLexiBookingGuide() {
+  const currentBusiness = getSelectedBusinessRecord();
+  const nextStep = getLexiGuideCurrentStep();
+  const selectedLabel = lexiBookingGuideState.businessName || currentBusiness?.name || "this business";
+  const detailsBits = [
+    lexiBookingGuideState.name ? `Name: ${lexiBookingGuideState.name}` : "",
+    lexiBookingGuideState.phone ? `Phone: ${lexiBookingGuideState.phone}` : "",
+    lexiBookingGuideState.email ? `Email: ${lexiBookingGuideState.email}` : ""
+  ].filter(Boolean);
+
+  if (lexiGuideServiceValue) {
+    lexiGuideServiceValue.textContent = lexiBookingGuideState.service || (selectedBusinessId ? `Choose a service at ${selectedLabel}` : "Choose a business first");
+  }
+  if (lexiGuideDateValue) {
+    lexiGuideDateValue.textContent = lexiBookingGuideState.date || "Waiting for date";
+  }
+  if (lexiGuideTimeValue) {
+    lexiGuideTimeValue.textContent = lexiBookingGuideState.time || "Waiting for time";
+  }
+  if (lexiGuideDetailsValue) {
+    lexiGuideDetailsValue.textContent = detailsBits.join(" | ") || "Need name and contact";
+  }
+  if (lexiGuideConfirmValue) {
+    lexiGuideConfirmValue.textContent = lexiBookingGuideState.confirmed
+      ? `Confirmed with ${selectedLabel}`
+      : isLexiDetailsComplete()
+        ? "Ready for Lexi to confirm"
+        : "Ready when Lexi has everything";
+  }
+  if (lexiBookingGuideNext) {
+    if (!selectedBusinessId) {
+      lexiBookingGuideNext.textContent = "Choose a business below, then Lexi can complete the booking.";
+    } else if (nextStep === "service") {
+      lexiBookingGuideNext.textContent = `Next: choose the service you want at ${selectedLabel}.`;
+    } else if (nextStep === "date") {
+      lexiBookingGuideNext.textContent = "Next: tell Lexi the day that works for you.";
+    } else if (nextStep === "time") {
+      lexiBookingGuideNext.textContent = "Next: choose the time that fits your day.";
+    } else if (nextStep === "details") {
+      lexiBookingGuideNext.textContent = "Next: share your name and contact details.";
+    } else if (nextStep === "confirm") {
+      lexiBookingGuideNext.textContent = "Next: ask Lexi to confirm the appointment.";
+    } else {
+      lexiBookingGuideNext.textContent = "Booking confirmed. Lexi can help with changes, aftercare, or another visit.";
+    }
+  }
+
+  const steps = [
+    { key: "service", node: lexiGuideStepService, complete: Boolean(selectedBusinessId && lexiBookingGuideState.service) },
+    { key: "date", node: lexiGuideStepDate, complete: Boolean(lexiBookingGuideState.date) },
+    { key: "time", node: lexiGuideStepTime, complete: Boolean(lexiBookingGuideState.time) },
+    { key: "details", node: lexiGuideStepDetails, complete: isLexiDetailsComplete() },
+    { key: "confirm", node: lexiGuideStepConfirm, complete: Boolean(lexiBookingGuideState.confirmed) }
+  ];
+
+  steps.forEach(({ key, node, complete }) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.classList.toggle("is-complete", complete);
+    node.classList.toggle("is-active", !complete && nextStep === key);
+  });
+
+  renderLexiPromptButtons();
+}
+
+function resetLexiBookingGuide(business = null) {
+  lexiBookingGuideState = createLexiBookingGuideState();
+  if (business) {
+    lexiBookingGuideState.businessId = String(business.id || "");
+    lexiBookingGuideState.businessName = cleanLexiValue(business.name);
+  }
+  renderLexiBookingGuide();
+}
+
+function parseLexiBookingText(text, business = getSelectedBusinessRecord()) {
+  const source = cleanLexiValue(text);
+  const lower = source.toLowerCase();
+  const parsed = {
+    service: "",
+    date: "",
+    time: "",
+    name: "",
+    phone: "",
+    email: ""
+  };
+
+  const serviceNames = Array.isArray(business?.services)
+    ? business.services.map((service) => cleanLexiValue(service.name)).filter(Boolean)
+    : [];
+  parsed.service = serviceNames.find((serviceName) => lower.includes(serviceName.toLowerCase())) || "";
+  if (!parsed.service) {
+    parsed.service = GENERIC_SERVICE_KEYWORDS.find((serviceName) => lower.includes(serviceName)) || "";
+  }
+
+  const dateMatchers = [
+    /\b(today|tomorrow|this week|next week|this weekend|next weekend)\b/i,
+    /\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
+    /\b\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?\b/i,
+    /\b(?:jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\s+\d{1,2}(?:st|nd|rd|th)?\b/i
+  ];
+  for (const matcher of dateMatchers) {
+    const match = source.match(matcher);
+    if (match) {
+      parsed.date = cleanLexiValue(match[0]);
+      break;
+    }
+  }
+
+  const timeMatch = source.match(/\b\d{1,2}(?::\d{2})?\s?(?:am|pm)\b/i) || source.match(/\b(?:morning|afternoon|evening)\b/i);
+  if (timeMatch) parsed.time = cleanLexiValue(timeMatch[0]);
+
+  const nameMatch = source.match(/\b(?:my name is|name is|i am|i'm)\s+([a-z][a-z' -]{1,40})/i);
+  if (nameMatch) {
+    parsed.name = cleanLexiValue(nameMatch[1]).replace(/\b(on|for|at|tomorrow|today)\b.*$/i, "").trim();
+  }
+
+  const emailMatch = source.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
+  if (emailMatch) parsed.email = cleanLexiValue(emailMatch[0]).toLowerCase();
+
+  const phoneMatch = source.match(/(?:\+?\d[\d\s\-()]{7,}\d)/);
+  if (phoneMatch) parsed.phone = cleanLexiValue(phoneMatch[0]);
+
+  return parsed;
+}
+
+function syncLexiBookingGuideFromMessage(text, options = {}) {
+  const parsed = parseLexiBookingText(text);
+  if (parsed.service) lexiBookingGuideState.service = parsed.service;
+  if (parsed.date) lexiBookingGuideState.date = parsed.date;
+  if (parsed.time) lexiBookingGuideState.time = parsed.time;
+  if (parsed.name) lexiBookingGuideState.name = parsed.name;
+  if (parsed.phone) lexiBookingGuideState.phone = parsed.phone;
+  if (parsed.email) lexiBookingGuideState.email = parsed.email;
+  if (options.bookingCreated) lexiBookingGuideState.confirmed = true;
+  renderLexiBookingGuide();
+}
+
+function setLexiGuideBusiness(business, options = {}) {
+  if (!business) {
+    resetLexiBookingGuide();
+    return;
+  }
+  const nextBusinessId = String(business.id || "");
+  if (lexiBookingGuideState.businessId !== nextBusinessId) {
+    resetLexiBookingGuide(business);
+  }
+  lexiBookingGuideState.businessId = nextBusinessId;
+  lexiBookingGuideState.businessName = cleanLexiValue(business.name);
+  if (options.prefillService && !lexiBookingGuideState.service) {
+    lexiBookingGuideState.service = cleanLexiValue(options.prefillService);
+  }
+  if (options.prefillSlot) {
+    const parsedSlot = parseLexiBookingText(String(options.prefillSlot), business);
+    if (parsedSlot.date && !lexiBookingGuideState.date) lexiBookingGuideState.date = parsedSlot.date;
+    if (parsedSlot.time && !lexiBookingGuideState.time) lexiBookingGuideState.time = parsedSlot.time;
+  }
+  renderLexiBookingGuide();
 }
 
 let appStatusTimer = null;
@@ -990,7 +1330,7 @@ function renderHeroLexiCalendarStar() {
 
   heroLexiBookingsCount.textContent = `${rows.length} live booking${rows.length === 1 ? "" : "s"}`;
   if (heroLexiBookingsRevenue) {
-    heroLexiBookingsRevenue.textContent = `Demo revenue snapshot: GBP ${Number(revenue || 0).toFixed(0)}`;
+    heroLexiBookingsRevenue.textContent = `Revenue snapshot: GBP ${Number(revenue || 0).toFixed(0)}`;
   }
   if (heroLexiCalendarFocus) {
     heroLexiCalendarFocus.textContent = nextDate
@@ -1008,7 +1348,7 @@ function renderHeroLexiCalendarStar() {
       : "Can you help me book an appointment this week?";
   }
   if (heroLexiPromptHint) {
-    heroLexiPromptHint.textContent = `Lexi gives short, human replies and moves the booking forward for the ${featuredBusinessHint}.`;
+    heroLexiPromptHint.textContent = `Lexi gives short, clear replies and helps move the booking forward for ${featuredBusinessHint}.`;
   }
   if (heroLexiCalendarSummary) {
     heroLexiCalendarSummary.textContent = nextDate
@@ -1033,7 +1373,20 @@ function updateLiveSummary(results, location) {
   liveAreaLabel.textContent = `Live availability scan for ${locationLabel}: ${results.length} businesses matched.`;
 }
 
+function setBookingFlowStep(step = "search") {
+  const states = {
+    search: bookingStepSearch,
+    choose: bookingStepChoose,
+    book: bookingStepBook
+  };
+  Object.entries(states).forEach(([key, node]) => {
+    if (!node) return;
+    node.classList.toggle("is-active", key === step);
+  });
+}
+
 function renderBusinessDetails(business) {
+  setLexiGuideBusiness(business);
   const serviceRows = business.services
       .map((s) => `<li>${escapeHtml(s.name)} - ${s.duration} mins - £${s.price}</li>`)
     .join("");
@@ -1048,10 +1401,12 @@ function renderBusinessDetails(business) {
     <ul class="highlights">${serviceRows}</ul>
     <h4>Available Booking Slots</h4>
     <ul class="slot-list">${slots}</ul>
-    <div class="salon-actions">
+    <div class="salon-actions selected-business-actions">
       <button class="btn btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Book with Lexi</button>
+      <button class="btn btn-ghost btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Let Lexi choose a time</button>
     </div>
   `;
+  setBookingFlowStep("choose");
 }
 
 function renderBusinessResults(results) {
@@ -1073,7 +1428,7 @@ function renderBusinessResults(results) {
       <p>${escapeHtml(business.phone)} ? Rating: ${business.rating} ? slots shown in profile</p>
       <p>Services: ${escapeHtml(business.services.map((s) => s.name).join(", "))}</p>
       <div class="salon-actions">
-        <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">View Profile</button>
+        <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">Choose</button>
         <button class="btn btn-ghost btn-quickbook" data-salon-id="${escapeHtml(business.id)}">Ask Lexi to Book</button>
       </div>
     `;
@@ -1106,8 +1461,13 @@ function quickBookBusiness(business) {
   selectedBusinessId = business.id;
   const slot = business.availableSlots[0] || "tomorrow 2:00 PM";
   const defaultService = business.services[0]?.name || "Signature Service";
+  setLexiGuideBusiness(business, {
+    prefillService: defaultService,
+    prefillSlot: slot
+  });
   chatInput.value = `Book ${defaultService} at ${business.name} on ${slot}. My name is `;
   openHomeLexiPopup();
+  setBookingFlowStep("book");
 }
 
 function ensureHomeLexiPopup() {
@@ -1200,7 +1560,7 @@ async function loadConfig() {
   } else {
     salonMeta.textContent = `No featured business configured yet. Cancellation: ${policyText}`;
     if (heroSalonMeta) {
-      heroSalonMeta.textContent = "No featured business is set yet. Add your business profile to show Lexi's front-desk experience, live availability, and service guidance on the homepage.";
+      heroSalonMeta.textContent = "No featured business is set yet. Add your business profile to show Lexi's front-desk experience, availability view, and service guidance on the homepage.";
     }
     liveBookingSummary.textContent = "No live availability is showing yet. Add businesses to display slots.";
     selectedBusinessId = "";
@@ -1227,6 +1587,15 @@ heroLexiBookBtn?.addEventListener("click", () => {
   setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
 });
 
+lexiPromptButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const prompt = String(button.getAttribute("data-lexi-prompt") || "").trim();
+    if (!prompt || !chatInput) return;
+    chatInput.value = prompt;
+    openHomeLexiPopup();
+  });
+});
+
 async function loadBookings() {
   try {
     const response = await fetch("/api/bookings/public-demo");
@@ -1251,6 +1620,7 @@ chatForm.addEventListener("submit", async (event) => {
   const message = chatInput.value.trim();
   if (!message) return;
 
+  syncLexiBookingGuideFromMessage(message);
   appendMessage("user", message);
   history.push({ role: "user", content: message });
   chatInput.value = "";
@@ -1276,6 +1646,7 @@ chatForm.addEventListener("submit", async (event) => {
     const reply = data.reply || data.error || "I couldn't answer that right now.";
     appendMessage("assistant", reply);
     history.push({ role: "assistant", content: reply });
+    syncLexiBookingGuideFromMessage(reply, { bookingCreated: Boolean(data.bookingCreated) });
     setAppStatus(data.bookingCreated ? "Booking request captured successfully." : "Lexi has replied.");
 
     if (data.bookingCreated) await loadBookings();
@@ -1291,6 +1662,7 @@ chatClear?.addEventListener("click", () => {
   history.length = 0;
   if (chatWindow) chatWindow.innerHTML = "";
   appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
+  resetLexiBookingGuide(getSelectedBusinessRecord());
   if (chatInput) {
     chatInput.value = "";
     chatInput.focus();
@@ -1300,6 +1672,7 @@ chatClear?.addEventListener("click", () => {
 
 searchForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  setBookingFlowStep("search");
   await searchBusinesses();
 });
 
@@ -1379,6 +1752,40 @@ homeTrialModal?.addEventListener("click", (event) => {
 });
 homeTrialBusinessType?.addEventListener("change", renderHomeTrialTemplatePreview);
 
+homeLoginTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openHomeLoginModal(trigger);
+  });
+});
+homeLoginModalClose?.addEventListener("click", closeHomeLoginModal);
+homeLoginModal?.addEventListener("click", (event) => {
+  if (event.target === homeLoginModal) closeHomeLoginModal();
+});
+homeLoginRoleTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    const role = String(trigger.getAttribute("data-login-role") || "").trim().toLowerCase();
+    if (role === "subscriber") {
+      openHomeSubscriberSigninModal(trigger, "subscriber");
+      return;
+    }
+    if (role === "admin") {
+      openHomeSubscriberSigninModal(trigger, "admin");
+      return;
+    }
+    if (role === "customer") {
+      setHomeCustomerAccessMode("signin");
+      openHomeCustomerAccessModal(trigger);
+      return;
+    }
+    if (role === "customer_signup") {
+      setHomeCustomerAccessMode("signup");
+      openHomeCustomerAccessModal(trigger);
+    }
+  });
+});
+
 homeSubscriberSigninTriggers.forEach((trigger) => {
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
@@ -1452,6 +1859,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (homeLexiPopupOpen) closeHomeLexiPopup();
   if (homeTrialModal?.classList.contains("is-open")) closeHomeTrialModal();
+  if (homeLoginModal?.classList.contains("is-open")) closeHomeLoginModal();
   if (homeSubscriberSigninModal?.classList.contains("is-open")) closeHomeSubscriberSigninModal();
   if (homeAdminSigninModal?.classList.contains("is-open")) closeHomeAdminSigninModal();
   if (homeCustomerAccessModal?.classList.contains("is-open")) closeHomeCustomerAccessModal();
@@ -1642,6 +2050,7 @@ try {
   appendMessage("assistant", "Configuration could not be loaded right now.");
   setAppStatus("Config load failed. Some features may be limited.", true);
 }
+renderLexiBookingGuide();
 await loadBookings();
 await searchBusinesses();
 initializeHomeDemoDashboard();

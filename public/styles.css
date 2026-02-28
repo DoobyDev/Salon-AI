@@ -179,6 +179,7 @@ a {
 .auth-actions {
   display: flex;
   gap: 0.45rem;
+  align-items: center;
 }
 
 .btn {
@@ -1305,6 +1306,151 @@ body.home-lexi-popup-open {
   font-size: 0.74rem;
 }
 
+.lexi-quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.lexi-quick-prompts .btn {
+  min-height: 36px;
+}
+
+.lexi-booking-guide {
+  border: 1px solid rgba(167, 193, 255, 0.16);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 42%),
+    rgba(9, 15, 28, 0.56);
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.lexi-booking-guide-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.lexi-booking-guide-head p {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7cead8;
+}
+
+.lexi-booking-guide-head strong {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.98rem;
+}
+
+.lexi-booking-guide-head small {
+  max-width: 220px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.lexi-booking-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.55rem;
+}
+
+.lexi-booking-guide-step {
+  border: 1px solid rgba(167, 193, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(9, 15, 28, 0.56);
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+  min-height: 104px;
+}
+
+.lexi-booking-guide-step span {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(167, 193, 255, 0.18);
+  color: #cbd6ea;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.lexi-booking-guide-step strong {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.lexi-booking-guide-step small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.lexi-booking-guide-step.is-active {
+  border-color: rgba(124, 234, 216, 0.35);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 44%),
+    rgba(9, 15, 28, 0.7);
+}
+
+.lexi-booking-guide-step.is-active span {
+  border-color: rgba(124, 234, 216, 0.45);
+  color: #7cead8;
+}
+
+.lexi-booking-guide-step.is-complete {
+  border-color: rgba(126, 222, 155, 0.3);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(126, 222, 155, 0.08), transparent 42%),
+    rgba(9, 15, 28, 0.68);
+}
+
+.lexi-booking-guide-step.is-complete span {
+  border-color: rgba(126, 222, 155, 0.38);
+  color: #7ede9b;
+}
+
+.booking-flow-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0.25rem 0 0.9rem;
+}
+
+.booking-flow-card {
+  border: 1px solid rgba(167, 193, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(9, 15, 28, 0.52);
+  padding: 0.7rem 0.8rem;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.booking-flow-card strong {
+  font-size: 0.9rem;
+}
+
+.booking-flow-card small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.booking-flow-card.is-active {
+  border-color: rgba(124, 234, 216, 0.35);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 44%),
+    rgba(9, 15, 28, 0.66);
+}
+
 .home-trial-overlay {
   position: fixed;
   inset: 0;
@@ -1640,6 +1786,10 @@ body.home-lexi-popup-open {
   gap: 0.75rem;
 }
 
+.home-login-choice-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .home-customer-choice-card {
   border: 1px solid rgba(167, 193, 255, 0.18);
   border-radius: 14px;
@@ -1658,6 +1808,12 @@ body.home-lexi-popup-open {
   margin: 0;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.home-login-choice-card-admin {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(214, 181, 106, 0.1), transparent 48%),
+    rgba(8, 13, 24, 0.64);
 }
 
 .home-customer-mode-tabs {
@@ -1723,6 +1879,26 @@ body.home-lexi-popup-open {
 
   .home-access-form-actions .btn {
     width: 100%;
+  }
+
+  .home-login-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-flow-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .lexi-booking-guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lexi-booking-guide-head {
+    flex-direction: column;
+  }
+
+  .lexi-booking-guide-head small {
+    max-width: none;
   }
 
   .home-customer-choice-grid {

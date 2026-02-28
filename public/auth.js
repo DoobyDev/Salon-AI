@@ -107,7 +107,7 @@ function renderOnboardingTemplatePreview() {
 developerAdminAccess?.addEventListener("click", () => {
   setAdminLoginVisible(true);
   loginRole.value = "admin";
-  setMessage(loginMsg, "Admin login enabled. Developer and maintenance use only.", true);
+  setMessage(loginMsg, "Admin login enabled. Restricted access for developer and maintenance use only.", true);
   loginEmail.focus();
 });
 
