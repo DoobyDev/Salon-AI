@@ -1231,7 +1231,17 @@ function openBusinessAiChatPopup(role, options = {}) {
   if (refs.overlay.parentElement !== document.body) {
     document.body.appendChild(refs.overlay);
   }
-  refs.overlay.style.display = "flex";
+  refs.overlay.hidden = false;
+  refs.overlay.style.setProperty("display", "flex", "important");
+  refs.overlay.style.setProperty("position", "fixed", "important");
+  refs.overlay.style.setProperty("inset", "0", "important");
+  refs.overlay.style.setProperty("z-index", "1400", "important");
+  refs.overlay.style.setProperty("visibility", "visible", "important");
+  refs.overlay.style.setProperty("opacity", "1", "important");
+  const popupCard = refs.overlay.querySelector(".copilot-chat-popup");
+  if (popupCard instanceof HTMLElement) {
+    popupCard.style.setProperty("display", "grid", "important");
+  }
   refs.overlay.classList.add("is-open");
   refs.overlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("home-lexi-popup-open");
@@ -1253,7 +1263,16 @@ function closeBusinessAiChatPopup(role) {
   if (!refs.overlay) return;
   refs.overlay.classList.remove("is-open");
   refs.overlay.setAttribute("aria-hidden", "true");
-  refs.overlay.style.display = "";
+  refs.overlay.style.removeProperty("display");
+  refs.overlay.style.removeProperty("position");
+  refs.overlay.style.removeProperty("inset");
+  refs.overlay.style.removeProperty("z-index");
+  refs.overlay.style.removeProperty("visibility");
+  refs.overlay.style.removeProperty("opacity");
+  const popupCard = refs.overlay.querySelector(".copilot-chat-popup");
+  if (popupCard instanceof HTMLElement) {
+    popupCard.style.removeProperty("display");
+  }
   document.body.classList.remove("home-lexi-popup-open");
   if (openCopilotPopupRole === role) {
     openCopilotPopupRole = "";
