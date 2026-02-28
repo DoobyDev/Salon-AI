@@ -2089,6 +2089,13 @@ function showSection(sectionEl) {
 
 function isPopupOnlyBusinessModuleKey(moduleKey) {
   return [
+    "business_information",
+    "staff_setup",
+    "salon_features",
+    "social_media",
+    "accounting",
+    "finance",
+    "cancellations",
     "operations",
     "crm",
     "client_retention",
@@ -2106,6 +2113,7 @@ function isPopupMountedBusinessSection(sectionEl) {
 
 function renderPopupOnlyBusinessModule(moduleKey) {
   switch (String(moduleKey || "").trim()) {
+    case "cancellations":
     case "operations":
       renderOperationsInsights();
       break;
@@ -2175,6 +2183,23 @@ function enforceDashboardRoleLayoutVisibility() {
   }
   if (user.role !== "subscriber") {
     hideSection(subscriberCopilotSection);
+  }
+  if (user.role === "subscriber" || user.role === "admin") {
+    hideSection(subscriberExecutivePulseSection);
+    hideSection(subscriberCalendarSection);
+    hideSection(subscriberCopilotSection);
+    hideSection(adminCopilotSection);
+    hideSection(businessGrowthSection);
+    hideSection(subscriberCommandCenterSection);
+    hideSection(bookingOperationsSection);
+    hideSection(waitlistSection);
+    hideSection(crmSection);
+    hideSection(commercialSection);
+    hideSection(revenueAttributionSection);
+    hideSection(profitabilitySection);
+    hideSection(subscriberSubscriptionSection);
+    hideSection(first7DaysSnapshotSection);
+    hideSection(mobileBottomNav);
   }
   if (user.role === "subscriber" || user.role === "admin") {
     hideSection(metricsGrid);
@@ -2754,35 +2779,93 @@ function moduleDefinitionsForRole() {
         howItHelps: "Reduces finance surprises and makes month-end checks faster."
       }
     ];
-    if (user.role === "subscriber") {
-      modules.unshift({
-        key: "subscriber_copilot",
-        section: subscriberCopilotSection,
-        label: "Subscriber Copilot",
+    const curatedModules = [
+      {
+        key: "business_information",
+        section: businessProfileSection,
+        label: "Business Information",
         popupMode: "interactive",
-        popupSize: "medium",
+        popupSize: "xl",
         cadence: "Use daily",
-        navSummary: "Ask for practical guidance on bookings, cancellations, waitlist recovery, and daily priorities.",
-        features: ["Operations Q&A", "Suggested actions", "Business snapshot"],
-        howItWorks: "Ask for guidance using safe booking and business summary data.",
-        howItHelps: "Helps you decide what to focus on next without digging through every module."
-      });
-    }
-    if (user.role === "admin") {
-      modules.unshift({
-        key: "admin_copilot",
-        section: adminCopilotSection,
-        label: "Admin Copilot",
+        navSummary: "Review and update the business details Lexi, customers, and the dashboard rely on every day.",
+        features: ["Business details", "Opening hours", "Contact setup"],
+        howItWorks: "Opens the business profile workspace so you can update the core information your salon runs on.",
+        howItHelps: "Keeps the business profile accurate for bookings, customer trust, and daily operations."
+      },
+      {
+        key: "staff_setup",
+        section: staffRosterSection,
+        label: "Staff Setup",
         popupMode: "interactive",
-        popupSize: "medium",
+        popupSize: "large",
         cadence: "Use daily",
-        navSummary: "Run diagnostics and get suggested fixes without exposing private data or secrets.",
-        features: ["Diagnostics Q&A", "Safe platform snapshot", "Suggested fixes"],
-        howItWorks: "Ask platform and subscriber-ops questions to get a diagnosis summary and recommended fixes.",
-        howItHelps: "Speeds up troubleshooting without exposing secrets or personal data."
-      });
-    }
-    return modules.map(normalizeModuleConfig).filter((mod) => mod?.enabled !== false);
+        navSummary: "Manage the team rota, shift cover, and availability in one focused workspace.",
+        features: ["Rota control", "Availability", "Cover planning"],
+        howItWorks: "Opens the staff workspace so you can edit rota coverage and keep capacity aligned with bookings.",
+        howItHelps: "Reduces scheduling confusion and keeps the day easier to manage."
+      },
+      {
+        key: "salon_features",
+        section: businessProfileSection,
+        label: "Salon Features",
+        popupMode: "interactive",
+        popupSize: "xl",
+        cadence: "Weekly check",
+        navSummary: "Control the services and salon features Lexi and customers should see.",
+        features: ["Service visibility", "Salon capabilities", "Feature control"],
+        howItWorks: "Uses the business profile workspace to manage the services, features, and options the salon actually offers.",
+        howItHelps: "Keeps Lexi and the booking journey aligned with the real business."
+      },
+      {
+        key: "social_media",
+        section: socialMediaSection,
+        label: "Social Media",
+        popupMode: "interactive",
+        popupSize: "large",
+        cadence: "Weekly check",
+        navSummary: "Keep the salon's linked social accounts, brand links, and public profile touchpoints tidy.",
+        features: ["Linked socials", "Profile links", "Brand consistency"],
+        howItWorks: "Opens the social workspace so you can manage the accounts and links connected to the business.",
+        howItHelps: "Makes the salon easier to find and keeps brand presentation consistent."
+      },
+      {
+        key: "accounting",
+        section: accountingIntegrationsSection,
+        label: "Accounting",
+        popupMode: "interactive",
+        popupSize: "xl",
+        cadence: "Weekly check",
+        navSummary: "Send revenue information to accounting and manage connected finance tools from one place.",
+        features: ["Provider links", "Exports", "Accountant-ready data"],
+        howItWorks: "Opens the accounting workspace so you can link providers, export reports, and keep records cleaner.",
+        howItHelps: "Reduces manual finance admin and keeps reconciliation easier."
+      },
+      {
+        key: "finance",
+        section: accountingIntegrationsSection,
+        label: "Finance",
+        popupMode: "interactive",
+        popupSize: "xl",
+        cadence: "Use daily",
+        navSummary: "See day, week, month, and custom revenue views without digging through complex reports.",
+        features: ["Daily revenue", "Weekly and monthly views", "Fast money check"],
+        howItWorks: "Uses the accounting workspace to show a simpler revenue view for the business.",
+        howItHelps: "Gives owners a faster way to understand how the salon is performing."
+      },
+      {
+        key: "cancellations",
+        section: operationsInsightsSection,
+        label: "Cancellations",
+        popupMode: "interactive",
+        popupSize: "large",
+        cadence: "Use daily",
+        navSummary: "Review cancellation pressure, no-show risk, and recovery actions in one popup workspace.",
+        features: ["Cancellation risk", "Rebooking prompts", "Recovery actions"],
+        howItWorks: "Uses the operations workspace to review cancellation and no-show pressure, then move into recovery actions with Lexi.",
+        howItHelps: "Helps protect revenue and keep empty chairs from building up."
+      }
+    ];
+    return curatedModules.map(normalizeModuleConfig).filter((mod) => mod?.enabled !== false);
   }
   return [];
 }
@@ -2791,6 +2874,13 @@ function moduleGroupForRole(mod) {
   if (!mod || !mod.key) return "Modules";
   const key = String(mod.key);
   const map = {
+    business_information: "Business Hub",
+    staff_setup: "Business Hub",
+    salon_features: "Business Hub",
+    social_media: "Business Hub",
+    accounting: "Business Hub",
+    finance: "Business Hub",
+    cancellations: "Business Hub",
     admin_copilot: "Copilot",
     subscriber_copilot: "Copilot",
     home: "Home",
@@ -2831,7 +2921,7 @@ function moduleGroupForRole(mod) {
 
 function groupedModulesForCurrentRole() {
   const modules = moduleDefinitionsForRole().filter((mod) => mod && mod.hideInNavigator !== true);
-  const groupOrder = ["Home", "Copilot", "Operations", "Growth", "Finance", "Modules"];
+  const groupOrder = ["Business Hub", "Home", "Copilot", "Operations", "Growth", "Finance", "Modules"];
   const groups = new Map();
   modules.forEach((mod) => {
     const group = moduleGroupForRole(mod);
@@ -11290,6 +11380,9 @@ if (user.role === "admin") {
 }
 if (user.role === "subscriber" || user.role === "admin") {
   hideSection(metricsGrid);
+  hideSection(subscriberCommandCenterSection);
+  hideSection(waitlistSection);
+  hideSection(bookingOperationsSection);
 }
 if (user.role === "customer") {
   bookingStatus.value = "all";
