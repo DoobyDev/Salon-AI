@@ -958,6 +958,7 @@ if (currentRole === "subscriber" || currentRole === "admin") {
   hideSection(dashUser);
 } else {
   dashUser.textContent = `${user.name || "User"} (${user.email || "unknown"})`;
+  hideSection(dashUser);
 }
 if (dashRoleHint) {
   if (currentRole === "customer") {
@@ -979,8 +980,11 @@ if (currentRole === "subscriber") {
   }
 }
 
-hideSection(dashIdentityBlock);
-dashboardOverviewSection?.classList.add("actions-only");
+hideSection(dashRoleHint);
+hideSection(dashActionStatus);
+hideSection(adminBusinessScope);
+showSection(dashIdentityBlock);
+dashboardOverviewSection?.classList.remove("actions-only");
 
 function headers() {
   return {
@@ -2176,7 +2180,7 @@ function enforceDashboardRoleLayoutVisibility() {
     hideSection(metricsGrid);
   }
   if (user.role === "customer") {
-    hideSection(dashIdentityBlock);
+    showSection(dashIdentityBlock);
     hideSection(frontDeskSection);
     hideSection(subscriberExecutivePulseSection);
     hideSection(subscriberCopilotSection);
@@ -11290,7 +11294,7 @@ if (user.role === "subscriber" || user.role === "admin") {
 if (user.role === "customer") {
   bookingStatus.value = "all";
   setActiveStatusChip("all");
-  hideSection(dashIdentityBlock);
+  showSection(dashIdentityBlock);
   hideSection(frontDeskSection);
   hideSection(subscriberExecutivePulseSection);
   hideSection(subscriberCopilotSection);

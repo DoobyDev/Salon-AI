@@ -713,6 +713,29 @@ body.home-lexi-popup-open {
   overflow: hidden;
 }
 
+.home-lexi-popup .lexi-avatar-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(7, 11, 19, 0.18), rgba(7, 11, 19, 0.5)),
+    url("/Salon_AI_IMG.png") center 24% / cover no-repeat;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.home-lexi-popup .lexi-avatar-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(109, 185, 255, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(10, 15, 24, 0.08), rgba(10, 15, 24, 0.42));
+  z-index: 1;
+  pointer-events: none;
+}
+
 .lexi-avatar-figure {
   display: grid;
   justify-items: center;
@@ -3177,6 +3200,16 @@ body[data-theme-mode="light"] .lexi-avatar-chip {
   background-color: rgba(255,255,255,0.96);
   border-color: rgba(186, 204, 231, 0.74);
   color: #24324a;
+}
+
+body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-stage::before {
+  opacity: 0.35;
+}
+
+body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-stage::after {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(109, 185, 255, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.32));
 }
 
 body[data-theme-mode="light"] .lexi-avatar-label small,
