@@ -871,6 +871,13 @@ body.home-lexi-popup-open {
   align-items: center;
 }
 
+.lexi-mic-btn {
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.78rem;
+  line-height: 1.1;
+}
+
 .lexi-avatar-actions .btn[disabled] {
   opacity: 0.62;
   cursor: not-allowed;
@@ -1023,6 +1030,15 @@ body.home-lexi-popup-open {
 .home-lexi-popup .copilot-form {
   display: grid;
   gap: 0.55rem;
+}
+
+.home-lexi-popup .copilot-form.business-lexi-inline-form {
+  grid-template-columns: minmax(0, 1fr) auto auto auto auto;
+  align-items: center;
+}
+
+.home-lexi-popup .business-lexi-guardrail {
+  grid-column: 1 / -1;
 }
 
 .home-lexi-popup .copilot-form input,

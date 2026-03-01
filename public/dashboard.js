@@ -7680,8 +7680,8 @@ function ensureCustomerLexiPopup() {
   const micSlot = document.createElement("div");
   micSlot.className = "lexi-popup-mic-actions";
   micSlot.innerHTML = `
-    <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Push to Talk</button>
-    <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Stop</button>
+    <button class="btn lexi-mic-btn" id="customerLexiVoiceBtn" type="button" disabled>Push to Talk</button>
+    <button class="btn btn-ghost lexi-mic-btn" id="customerLexiMuteBtn" type="button" disabled>Stop</button>
   `;
   container?.appendChild(micSlot);
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
