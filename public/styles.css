@@ -877,11 +877,31 @@ body.home-lexi-popup-open {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(8, 12, 20, 0.28), rgba(8, 12, 20, 0.58)),
-    url("/Salon_AI_IMG.png") center 18% / cover no-repeat,
-    radial-gradient(circle at top right, rgba(124, 234, 216, 0.05), transparent 28%),
-    linear-gradient(180deg, rgba(12, 19, 33, 0.96), rgba(8, 13, 24, 0.94));
-  background-blend-mode: normal, normal, screen, normal;
+    linear-gradient(180deg, rgba(4, 7, 13, 0.08), rgba(4, 7, 13, 0.18)),
+    url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+  background-color: rgba(245, 248, 252, 0.9);
+  background-blend-mode: normal, normal;
+  color: #111111;
+}
+
+.home-lexi-popup .chat-shell,
+.home-lexi-popup .chat-window,
+.home-lexi-popup .lexi-chat-head strong,
+.home-lexi-popup .lexi-chat-head small,
+.home-lexi-popup .msg {
+  color: #111111;
+}
+
+.home-lexi-popup .msg.assistant {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #111111;
+}
+
+.home-lexi-popup .msg.user {
+  background: rgba(228, 240, 255, 0.92);
+  border-color: rgba(109, 185, 255, 0.18);
+  color: #111111;
 }
 
 .home-lexi-popup .chat-window > * {
@@ -5355,11 +5375,21 @@ body[data-theme-mode="light"] .chat-window {
 
 body[data-theme-mode="light"] .home-lexi-popup .chat-window {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.48)),
-    url("/Salon_AI_IMG.png") center 18% / cover no-repeat,
-    radial-gradient(circle at top right, rgba(255, 207, 226, 0.2), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 252, 255, 0.98)) !important;
-  background-blend-mode: normal, normal, screen, normal !important;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.24)),
+    url("/Salon_AI_IMG.png") center 18% / cover no-repeat !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  background-blend-mode: normal, normal !important;
+  color: #111111 !important;
+}
+
+body[data-theme-mode="light"] .home-lexi-popup .chat-shell,
+body[data-theme-mode="light"] .home-lexi-popup .chat-window,
+body[data-theme-mode="light"] .home-lexi-popup .lexi-chat-head strong,
+body[data-theme-mode="light"] .home-lexi-popup .lexi-chat-head small,
+body[data-theme-mode="light"] .home-lexi-popup .msg,
+body[data-theme-mode="light"] .home-lexi-popup .msg.assistant,
+body[data-theme-mode="light"] .home-lexi-popup .msg.user {
+  color: #111111 !important;
 }
 
 body[data-theme-mode="light"] .msg.user {
