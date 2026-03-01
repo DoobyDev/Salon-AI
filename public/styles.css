@@ -646,6 +646,23 @@ body.home-lexi-popup-open {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.55rem;
   padding: 0.75rem;
+  position: relative;
+}
+
+.home-lexi-popup::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 12, 20, 0.34), rgba(8, 12, 20, 0.68)),
+    url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+  opacity: 0.26;
+  pointer-events: none;
+}
+
+.home-lexi-popup > * {
+  position: relative;
+  z-index: 1;
 }
 
 .home-lexi-popup-head {
@@ -3176,6 +3193,13 @@ body[data-theme-mode="light"] .home-lexi-popup {
     radial-gradient(circle at 6% -10%, rgba(184, 231, 221, 0.1), transparent 44%),
     rgba(255,255,255,0.97);
   color: #2b2231;
+}
+
+body[data-theme-mode="light"] .home-lexi-popup::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.56)),
+    url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+  opacity: 0.18;
 }
 
 body[data-theme-mode="light"] .home-lexi-popup-kicker {
