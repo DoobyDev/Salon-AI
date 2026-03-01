@@ -1325,21 +1325,12 @@ function startBusinessLexiMicCapture(role) {
 function appendCopilotChatMessage(role, kind, text, options = {}) {
   const refs = copilotPopupRefs(role);
   if (!refs.messages) return null;
-  const row = document.createElement("article");
-  row.className = `copilot-chat-message is-${kind}${options.pending ? " is-pending" : ""}`;
-
-  const meta = document.createElement("div");
-  meta.className = "copilot-chat-message-meta";
-  meta.textContent = kind === "user" ? "You" : "Lexi";
-
-  const bubble = document.createElement("div");
-  bubble.className = "copilot-chat-bubble";
-  bubble.textContent = String(text || "");
-
-  row.append(meta, bubble);
+  const row = document.createElement("div");
+  row.className = `customer-chat-msg ${kind === "user" ? "user" : "ai"}${options.pending ? " is-pending" : ""}`;
+  row.textContent = String(text || "");
   refs.messages.appendChild(row);
   refs.messages.scrollTop = refs.messages.scrollHeight;
-  return { row, bubble };
+  return { row, bubble: row };
 }
 
 function ensureCopilotChatSeed(role) {
