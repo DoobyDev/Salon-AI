@@ -48,6 +48,7 @@ const customerReceptionSection = document.getElementById("customerReceptionSecti
 const customerReceptionMessages = document.getElementById("customerReceptionMessages");
 const customerReceptionForm = document.getElementById("customerReceptionForm");
 const customerReceptionInput = document.getElementById("customerReceptionInput");
+const customerReceptionClear = document.getElementById("customerReceptionClear");
 const customerChatGuideHint = document.getElementById("customerChatGuideHint");
 const customerLexiLaunchBtn = document.getElementById("customerLexiLaunchBtn");
 const customerLexiLaunchBookingBtn = document.getElementById("customerLexiLaunchBookingBtn");
@@ -7628,9 +7629,9 @@ function ensureCustomerLexiPopup() {
     <section class="home-lexi-popup" role="dialog" aria-modal="true" aria-labelledby="customerLexiPopupTitle">
       <div class="home-lexi-popup-head">
         <div>
-          <p class="home-lexi-popup-kicker">Lexi Chat</p>
+          <p class="home-lexi-popup-kicker">Ask Lexi</p>
           <h3 id="customerLexiPopupTitle">Ask Lexi</h3>
-          <p>Focused booking help, recommendations, and day-to-day customer guidance.</p>
+          <p>Ask questions, get recommendations, and move straight into booking from one focused popup.</p>
         </div>
         <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
       </div>
@@ -7642,7 +7643,7 @@ function ensureCustomerLexiPopup() {
               <div class="lexi-avatar-orb" aria-hidden="true"></div>
               <div class="lexi-avatar-label">
                 <strong id="customerLexiAvatarTitle">Lexi live assistant</strong>
-                <small id="customerLexiAvatarStatus">Customer booking mode is ready. Voice avatar can be connected here next.</small>
+                <small id="customerLexiAvatarStatus">Push to talk is ready.</small>
               </div>
             </div>
           </div>
@@ -7654,11 +7655,11 @@ function ensureCustomerLexiPopup() {
             </div>
             <div class="lexi-avatar-note">
               <strong>Lexi focus</strong>
-              <p id="customerLexiAvatarNote">Ask about services, timings, recommendations, aftercare, and move into booking from this one popup.</p>
+              <p id="customerLexiAvatarNote">Ask about services, treatments, timings, aftercare, and the best next step for a booking.</p>
             </div>
             <div class="lexi-avatar-transcript">
               <strong>Live status</strong>
-              <p id="customerLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can be connected here without changing the customer journey.</p>
+              <p id="customerLexiAvatarTranscript">Use text now or press Push to Talk and review your words before sending them.</p>
             </div>
           </div>
         </section>
@@ -11695,6 +11696,21 @@ customerReceptionForm?.addEventListener("submit", (event) => {
   customerReceptionTranscript.push({ role: "user", text });
   customerReceptionTranscript.push({ role: "ai", text: getReceptionReply(text) });
   if (customerReceptionInput) customerReceptionInput.value = "";
+  updateCustomerChatGuideHint();
+  renderCustomerReceptionChat();
+});
+
+customerReceptionClear?.addEventListener("click", () => {
+  customerReceptionTranscript = [
+    {
+      role: "ai",
+      text: "Hi, I'm Lexi. How can I help today?"
+    }
+  ];
+  if (customerReceptionInput) {
+    customerReceptionInput.value = "";
+    customerReceptionInput.focus();
+  }
   updateCustomerChatGuideHint();
   renderCustomerReceptionChat();
 });

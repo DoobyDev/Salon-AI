@@ -1445,9 +1445,9 @@ function ensureHomeLexiPopup() {
     <section class="home-lexi-popup" role="dialog" aria-modal="true" aria-labelledby="homeLexiPopupTitle">
       <div class="home-lexi-popup-head">
         <div>
-          <p class="home-lexi-popup-kicker">Lexi Chat</p>
+          <p class="home-lexi-popup-kicker">Ask Lexi</p>
           <h3 id="homeLexiPopupTitle">Ask Lexi</h3>
-          <p>Short, direct booking help in a focused popup.</p>
+          <p>Ask questions, get recommendations, and move straight into booking from one focused popup.</p>
         </div>
         <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
       </div>
@@ -1459,7 +1459,7 @@ function ensureHomeLexiPopup() {
               <div class="lexi-avatar-orb" aria-hidden="true"></div>
               <div class="lexi-avatar-label">
                 <strong id="homeLexiAvatarTitle">Lexi live assistant</strong>
-                <small id="homeLexiAvatarStatus">Popup booking mode is ready. Voice avatar can be connected here next.</small>
+                <small id="homeLexiAvatarStatus">Push to talk is ready.</small>
               </div>
             </div>
           </div>
@@ -1471,11 +1471,11 @@ function ensureHomeLexiPopup() {
             </div>
             <div class="lexi-avatar-note">
               <strong>Lexi focus</strong>
-              <p id="homeLexiAvatarNote">Customers can ask about services, treatments, timing, aftercare, and move straight into booking from this popup.</p>
+              <p id="homeLexiAvatarNote">Ask about services, treatments, timings, aftercare, and the best next step for a booking.</p>
             </div>
             <div class="lexi-avatar-transcript">
               <strong>Live status</strong>
-              <p id="homeLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can plug into this same popup without changing the customer flow.</p>
+              <p id="homeLexiAvatarTranscript">Use text now or press Push to Talk and review your words before sending them.</p>
             </div>
           </div>
         </section>
