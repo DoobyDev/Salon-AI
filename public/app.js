@@ -155,6 +155,8 @@ let homeLexiPopupOverlay = null;
 let homeLexiPopupContainer = null;
 let homeLexiChatPlaceholder = null;
 let homeLexiPopupLastFocus = null;
+let homeLexiSpeechRecognition = null;
+let homeLexiMicListening = false;
 let homeLexiAvatarConfigPromise = null;
 let homeLexiRealtimeSessionPromise = null;
 let homeLexiRealtimeSession = null;
@@ -164,6 +166,7 @@ let homeLexiAvatarSession = null;
 let homeLexiAvatarRoom = null;
 let homeLexiLivekitScriptPromise = null;
 let lexiBookingGuideState = createLexiBookingGuideState();
+const HomeSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 const homeDemoDisplayValues = {
   revenue: 0,
   cancels: 0,
@@ -1475,8 +1478,8 @@ function ensureHomeLexiPopup() {
               <p id="homeLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can plug into this same popup without changing the customer flow.</p>
             </div>
             <div class="lexi-avatar-actions">
-              <button class="btn" id="homeLexiVoiceBtn" type="button" disabled>Voice Coming Soon</button>
-              <button class="btn btn-ghost" id="homeLexiMuteBtn" type="button" disabled>Mute</button>
+              <button class="btn" id="homeLexiVoiceBtn" type="button" disabled>Push to Talk</button>
+              <button class="btn btn-ghost" id="homeLexiMuteBtn" type="button" disabled>Stop</button>
             </div>
           </div>
         </section>
@@ -1488,24 +1491,90 @@ function ensureHomeLexiPopup() {
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
   const closeBtn = overlay.querySelector(".home-lexi-popup-close");
   closeBtn?.addEventListener("click", closeHomeLexiPopup);
-  overlay.querySelector("#homeLexiVoiceBtn")?.addEventListener("click", startHomeLexiVoicePreparation);
-  overlay.querySelector("#homeLexiMuteBtn")?.addEventListener("click", () => {
-    const connection = homeLexiRealtimeConnection;
-    if (!connection) return;
-    connection.muted = !connection.muted;
-    connection.audioElement.muted = connection.muted;
-    const muteBtn = overlay.querySelector("#homeLexiMuteBtn");
-    if (muteBtn instanceof HTMLButtonElement) {
-      muteBtn.textContent = connection.muted ? "Unmute" : "Mute";
-    }
-    updateHomeLexiTranscript(connection.muted ? "Lexi audio muted for this popup." : "Lexi audio unmuted.");
-  });
+  overlay.querySelector("#homeLexiVoiceBtn")?.addEventListener("click", toggleHomeLexiMicCapture);
+  overlay.querySelector("#homeLexiMuteBtn")?.addEventListener("click", stopHomeLexiMicCapture);
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeHomeLexiPopup();
   });
   homeLexiPopupOverlay = overlay;
   homeLexiPopupContainer = container;
   return { overlay, container };
+}
+
+function homeLexiMicSupported() {
+  return typeof HomeSpeechRecognition === "function";
+}
+
+function setHomeLexiMicButtonState(listening = false) {
+  const voiceBtn = homeLexiPopupOverlay?.querySelector("#homeLexiVoiceBtn");
+  const stopBtn = homeLexiPopupOverlay?.querySelector("#homeLexiMuteBtn");
+  const supported = homeLexiMicSupported();
+  if (voiceBtn instanceof HTMLButtonElement) {
+    voiceBtn.disabled = !supported;
+    voiceBtn.textContent = listening ? "Listening..." : "Push to Talk";
+  }
+  if (stopBtn instanceof HTMLButtonElement) {
+    stopBtn.disabled = !supported || !listening;
+    stopBtn.textContent = "Stop";
+  }
+}
+
+function stopHomeLexiMicCapture() {
+  try {
+    homeLexiSpeechRecognition?.stop?.();
+  } catch {}
+}
+
+function toggleHomeLexiMicCapture() {
+  if (homeLexiMicListening) {
+    stopHomeLexiMicCapture();
+    return;
+  }
+  if (!homeLexiMicSupported()) {
+    updateHomeLexiTranscript("Push-to-talk is not supported in this browser.");
+    setAppStatus("Push-to-talk is not supported in this browser.", true, 2600);
+    return;
+  }
+  const recognition = new HomeSpeechRecognition();
+  let finalTranscript = "";
+  recognition.lang = "en-GB";
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    homeLexiMicListening = true;
+    homeLexiSpeechRecognition = recognition;
+    setHomeLexiMicButtonState(true);
+    setHomeLexiAvatarPanelState("listening", "Lexi is listening.", "Say your question, then review the text before sending it.");
+  };
+  recognition.onresult = (event) => {
+    const transcript = Array.from(event.results || [])
+      .map((result) => String(result?.[0]?.transcript || ""))
+      .join(" ")
+      .trim();
+    if (!transcript) return;
+    finalTranscript = transcript;
+    if (chatInput) chatInput.value = transcript;
+    updateHomeLexiTranscript(`You: ${transcript}`);
+  };
+  recognition.onerror = (event) => {
+    const message = String(event?.error || "speech error").replace(/_/g, " ").trim();
+    updateHomeLexiTranscript(`Mic error: ${message}`);
+    setAppStatus(`Mic error: ${message}`, true, 2600);
+  };
+  recognition.onend = () => {
+    homeLexiMicListening = false;
+    homeLexiSpeechRecognition = null;
+    setHomeLexiMicButtonState(false);
+    setHomeLexiAvatarPanelState(
+      "idle",
+      "Push-to-talk is ready.",
+      finalTranscript
+        ? "Review your words in the chat box, then send them to Lexi."
+        : "Press Push to Talk when you want to speak."
+    );
+    chatInput?.focus();
+  };
+  recognition.start();
 }
 
 function setHomeLexiAvatarPanelState(state, status, transcript) {
@@ -1671,17 +1740,8 @@ function updateHomeLexiTranscript(text) {
   if (transcriptNode) transcriptNode.textContent = text;
 }
 
-function resetHomeLexiVoiceControls(label = "Prepare Voice", enabled = true) {
-  const voiceBtn = homeLexiPopupOverlay?.querySelector("#homeLexiVoiceBtn");
-  const muteBtn = homeLexiPopupOverlay?.querySelector("#homeLexiMuteBtn");
-  if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !enabled;
-    voiceBtn.textContent = label;
-  }
-  if (muteBtn instanceof HTMLButtonElement) {
-    muteBtn.disabled = !enabled;
-    muteBtn.textContent = "Mute";
-  }
+function resetHomeLexiVoiceControls() {
+  setHomeLexiMicButtonState(false);
 }
 
 function cleanupHomeLexiRealtimeConnection() {
@@ -1800,11 +1860,11 @@ async function connectHomeLexiRealtimeSession(sessionPayload) {
     const state = String(peerConnection.connectionState || "").trim();
     if (state === "connected") {
       setHomeLexiAvatarPanelState("listening", "Lexi is live and listening.", "Talk naturally. Lexi will answer out loud and keep the booking moving.");
-      resetHomeLexiVoiceControls("End Voice", true);
+      resetHomeLexiVoiceControls();
       setAppStatus("Lexi voice is live.", false, 2200);
     } else if (state === "failed" || state === "disconnected" || state === "closed") {
       cleanupHomeLexiRealtimeConnection();
-      resetHomeLexiVoiceControls("Prepare Voice", true);
+      resetHomeLexiVoiceControls();
       setHomeLexiAvatarPanelState("speaking", "Lexi voice session ended.", "Text chat is still available in this popup.");
     }
   };
@@ -1875,20 +1935,21 @@ async function hydrateHomeLexiAvatarPanel() {
       : "Ask about cuts, colour, brows, beauty treatments, aftercare, availability, or booking help. Lexi keeps the flow simple and moves straight into the next step.";
   }
   if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !config.sessionEndpointReady;
-    voiceBtn.textContent = config.sessionEndpointReady ? "Prepare Voice" : "Voice Coming Soon";
+    voiceBtn.disabled = !homeLexiMicSupported();
+    voiceBtn.textContent = "Push to Talk";
   }
   if (muteBtn instanceof HTMLButtonElement) {
-    muteBtn.disabled = !config.sessionEndpointReady;
+    muteBtn.disabled = true;
+    muteBtn.textContent = "Stop";
   }
   setHomeLexiAvatarPanelState(
-    config.sessionEndpointReady ? "idle" : "speaking",
-    config.sessionEndpointReady
-      ? "Lexi can prepare a live realtime voice session from this popup."
-      : "Text booking mode is live now. Add realtime server config to activate live voice from this popup.",
-    config.sessionEndpointReady
-      ? "Press Prepare Voice and the popup will request a brokered Lexi session for this business context."
-      : "The popup is already the final Lexi surface. Voice streaming plugs into this exact space once the server can mint realtime sessions."
+    "idle",
+    homeLexiMicSupported()
+      ? "Push-to-talk is ready in this popup."
+      : "Text booking mode is live now.",
+    homeLexiMicSupported()
+      ? "Press Push to Talk, speak your question, then send the text to Lexi."
+      : "This browser does not support push-to-talk, but text chat still works."
   );
 }
 
@@ -1896,7 +1957,7 @@ async function startHomeLexiVoicePreparation() {
   if (homeLexiRealtimeConnection) {
     cleanupHomeLexiRealtimeConnection();
     cleanupHomeLexiAvatarSession();
-    resetHomeLexiVoiceControls("Prepare Voice", true);
+    resetHomeLexiVoiceControls();
     setHomeLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
     setAppStatus("Lexi voice disconnected.", false, 2200);
     return;
@@ -1919,7 +1980,7 @@ async function startHomeLexiVoicePreparation() {
       readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
     }
     if (!data.sessionReady) {
-      resetHomeLexiVoiceControls("Prepare Voice", true);
+      resetHomeLexiVoiceControls();
       setHomeLexiAvatarPanelState(
         "speaking",
         data.message || "Lexi voice session updated.",
@@ -1945,8 +2006,8 @@ async function startHomeLexiVoicePreparation() {
     cleanupHomeLexiRealtimeConnection();
     cleanupHomeLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
-      voiceBtn.disabled = false;
-      voiceBtn.textContent = "Prepare Voice";
+      voiceBtn.disabled = !homeLexiMicSupported();
+      voiceBtn.textContent = "Push to Talk";
     }
     const readyChip = homeLexiPopupOverlay?.querySelector("#homeLexiAvatarReadyChip");
     if (readyChip) {
@@ -1986,9 +2047,10 @@ function openHomeLexiPopup() {
 
 function closeHomeLexiPopup() {
   if (!homeLexiPopupOpen) return;
+  stopHomeLexiMicCapture();
   cleanupHomeLexiRealtimeConnection();
   cleanupHomeLexiAvatarSession();
-  resetHomeLexiVoiceControls("Prepare Voice", true);
+  resetHomeLexiVoiceControls();
   if (homeLexiChatPlaceholder?.parentNode && frontdeskChatShell instanceof HTMLElement) {
     homeLexiChatPlaceholder.parentNode.insertBefore(frontdeskChatShell, homeLexiChatPlaceholder);
     homeLexiChatPlaceholder.remove();

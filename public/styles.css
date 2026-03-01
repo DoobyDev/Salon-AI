@@ -883,6 +883,7 @@ body.home-lexi-popup-open {
     url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
   background-color: rgba(245, 248, 252, 0.9);
   background-blend-mode: normal, normal;
+  color: #111111;
 }
 
 .home-lexi-popup .chat-form {
@@ -897,7 +898,26 @@ body.home-lexi-popup-open {
   padding: 0.7rem 0.85rem;
   padding-inline: 1rem;
   background: rgba(9, 15, 28, 0.88);
-  color: var(--ink);
+  color: #111111;
+}
+
+.home-lexi-popup .msg,
+.home-lexi-popup .lexi-chat-head strong,
+.home-lexi-popup .lexi-chat-head small,
+.home-lexi-popup .lexi-avatar-label strong,
+.home-lexi-popup .lexi-avatar-label small,
+.home-lexi-popup .lexi-avatar-note p,
+.home-lexi-popup .lexi-avatar-transcript p,
+.home-lexi-popup .customer-chat-msg,
+.home-lexi-popup .copilot-chat-message-meta,
+.home-lexi-popup .copilot-chat-bubble,
+.home-lexi-popup .copilot-answer,
+.home-lexi-popup .copilot-result h3,
+.home-lexi-popup .copilot-card,
+.home-lexi-popup .copilot-card li,
+.home-lexi-popup .copilot-guardrail,
+.home-lexi-popup .copilot-form textarea {
+  color: #111111 !important;
 }
 
 .home-lexi-popup .msg.assistant {
@@ -909,7 +929,7 @@ body.home-lexi-popup-open {
   line-height: 1.5;
   background: linear-gradient(180deg, rgba(124, 234, 216, 0.08), rgba(255,255,255,0.02));
   border: 1px solid rgba(124, 234, 216, 0.24);
-  color: #edf7ff;
+  color: #111111;
   font-weight: 600;
 }
 
@@ -922,8 +942,23 @@ body.home-lexi-popup-open {
   line-height: 1.5;
   background: linear-gradient(180deg, rgba(101, 181, 255, 0.24), rgba(72, 124, 187, 0.18));
   border: 1px solid rgba(101, 181, 255, 0.38);
-  color: #eff7ff;
+  color: #111111;
   font-weight: 600;
+}
+
+.business-lexi-popup-chat-slot {
+  display: grid;
+  gap: 0.85rem;
+  min-height: 0;
+}
+
+.business-lexi-popup-chat-slot .copilot-chat-messages {
+  min-height: 320px;
+}
+
+.home-lexi-popup .copilot-form textarea {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(186, 204, 231, 0.78) !important;
 }
 
 .home-lexi-popup .chat-window > * {

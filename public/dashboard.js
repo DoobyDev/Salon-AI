@@ -181,6 +181,8 @@ const subscriberCopilotOpenPopup = document.getElementById("subscriberCopilotOpe
 const subscriberCopilotPopup = document.getElementById("subscriberCopilotPopup");
 const subscriberCopilotPopupClose = document.getElementById("subscriberCopilotPopupClose");
 const subscriberCopilotMessages = document.getElementById("subscriberCopilotMessages");
+const subscriberCopilotMicBtn = document.getElementById("subscriberCopilotMicBtn");
+const subscriberCopilotMicStopBtn = document.getElementById("subscriberCopilotMicStopBtn");
 const adminCopilotSection = document.getElementById("adminCopilotSection");
 const adminCopilotForm = document.getElementById("adminCopilotForm");
 const adminCopilotInput = document.getElementById("adminCopilotInput");
@@ -196,6 +198,8 @@ const adminCopilotOpenPopup = document.getElementById("adminCopilotOpenPopup");
 const adminCopilotPopup = document.getElementById("adminCopilotPopup");
 const adminCopilotPopupClose = document.getElementById("adminCopilotPopupClose");
 const adminCopilotMessages = document.getElementById("adminCopilotMessages");
+const adminCopilotMicBtn = document.getElementById("adminCopilotMicBtn");
+const adminCopilotMicStopBtn = document.getElementById("adminCopilotMicStopBtn");
 const accountingIntegrationsSection = document.getElementById("accountingIntegrationsSection");
 const accountingConnectForm = document.getElementById("accountingConnectForm");
 const accountingProvider = document.getElementById("accountingProvider");
@@ -291,6 +295,8 @@ let customerLexiPopupOverlay = null;
 let customerLexiPopupContainer = null;
 let customerLexiChatPlaceholder = null;
 let customerLexiPopupLastFocus = null;
+let customerLexiSpeechRecognition = null;
+let customerLexiMicListening = false;
 let customerLexiAvatarConfigPromise = null;
 let customerLexiRealtimeSessionPromise = null;
 let customerLexiRealtimeSession = null;
@@ -299,6 +305,8 @@ let customerLexiAvatarSessionPromise = null;
 let customerLexiAvatarSession = null;
 let customerLexiAvatarRoom = null;
 let customerLexiLivekitScriptPromise = null;
+let businessLexiSpeechRecognition = { subscriber: null, admin: null };
+let businessLexiMicListening = { subscriber: false, admin: false };
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -318,6 +326,7 @@ const STAFF_ROTA_OVERRIDES_STORAGE_KEY = "salon_ai_staff_rota_overrides_v1";
 const OPEN_CLOSE_CHECKLIST_STORAGE_KEY = "salon_ai_open_close_checklist_v1";
 const HUB_AUTOROUTINES_STORAGE_KEY = "salon_ai_hub_autoroutines_v1";
 const DASHBOARD_INLINE_EDIT_STORAGE_KEY = "salon_ai_dashboard_inline_edits_v1";
+const DashboardSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 const STAFF_ROTA_DAYS = [
   { key: "mon", label: "Mon" },
   { key: "tue", label: "Tue" },
@@ -1190,7 +1199,9 @@ function copilotPopupRefs(role) {
       messages: adminCopilotMessages,
       answer: adminCopilotAnswer,
       openBtn: adminCopilotOpenPopup,
-      closeBtn: adminCopilotPopupClose
+      closeBtn: adminCopilotPopupClose,
+      micBtn: adminCopilotMicBtn,
+      stopBtn: adminCopilotMicStopBtn
     };
   }
   return {
@@ -1199,8 +1210,116 @@ function copilotPopupRefs(role) {
     messages: subscriberCopilotMessages,
     answer: subscriberCopilotAnswer,
     openBtn: subscriberCopilotOpenPopup,
-    closeBtn: subscriberCopilotPopupClose
+    closeBtn: subscriberCopilotPopupClose,
+    micBtn: subscriberCopilotMicBtn,
+    stopBtn: subscriberCopilotMicStopBtn
   };
+}
+
+function dashboardMicSupported() {
+  return typeof DashboardSpeechRecognition === "function";
+}
+
+function getBusinessAiPopupCard(role) {
+  const refs = copilotPopupRefs(role);
+  const host = businessCopilotPopupHosts[role];
+  return (host instanceof HTMLElement ? host.querySelector(".copilot-chat-popup") : null)
+    || refs.overlay?.querySelector(".copilot-chat-popup")
+    || null;
+}
+
+function businessLexiStatusRefs(role) {
+  const popupCard = getBusinessAiPopupCard(role);
+  const prefix = role === "admin" ? "admin" : "subscriber";
+  return {
+    popupCard,
+    micBtn: popupCard?.querySelector(`#${prefix}CopilotMicBtn`) || null,
+    stopBtn: popupCard?.querySelector(`#${prefix}CopilotMicStopBtn`) || null,
+    status: popupCard?.querySelector(`#${prefix}CopilotAvatarStatus`) || null,
+    transcript: popupCard?.querySelector(`#${prefix}CopilotAvatarTranscript`) || null,
+    shell: popupCard?.querySelector(".lexi-avatar-shell") || null
+  };
+}
+
+function setBusinessLexiPanelState(role, state, status, transcript) {
+  const refs = businessLexiStatusRefs(role);
+  if (refs.shell instanceof HTMLElement) refs.shell.setAttribute("data-avatar-state", state);
+  if (refs.status) refs.status.textContent = status;
+  if (refs.transcript) refs.transcript.textContent = transcript;
+}
+
+function setBusinessLexiMicButtonState(role, listening = false) {
+  const refs = businessLexiStatusRefs(role);
+  const supported = dashboardMicSupported();
+  if (refs.micBtn instanceof HTMLButtonElement) {
+    refs.micBtn.disabled = !supported;
+    refs.micBtn.textContent = listening ? "Listening..." : "Push to Talk";
+  }
+  if (refs.stopBtn instanceof HTMLButtonElement) {
+    refs.stopBtn.disabled = !supported || !listening;
+    refs.stopBtn.textContent = "Stop";
+  }
+}
+
+function stopBusinessLexiMicCapture(role) {
+  try {
+    businessLexiSpeechRecognition[role]?.stop?.();
+  } catch {}
+}
+
+function startBusinessLexiMicCapture(role) {
+  if (businessLexiMicListening[role]) {
+    stopBusinessLexiMicCapture(role);
+    return;
+  }
+  if (!dashboardMicSupported()) {
+    setDashActionStatus("Push-to-talk is not supported in this browser.", true, 2600);
+    setBusinessLexiPanelState(role, "speaking", "Push-to-talk is unavailable.", "This browser does not support speech capture.");
+    return;
+  }
+  const refs = copilotPopupRefs(role);
+  if (!refs.input) return;
+  const recognition = new DashboardSpeechRecognition();
+  let finalTranscript = "";
+  recognition.lang = "en-GB";
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    businessLexiMicListening[role] = true;
+    businessLexiSpeechRecognition[role] = recognition;
+    setBusinessLexiMicButtonState(role, true);
+    setBusinessLexiPanelState(role, "listening", "Lexi is listening.", "Say your question, then review the text before sending it.");
+  };
+  recognition.onresult = (event) => {
+    const transcript = Array.from(event.results || [])
+      .map((result) => String(result?.[0]?.transcript || ""))
+      .join(" ")
+      .trim();
+    if (!transcript) return;
+    finalTranscript = transcript;
+    refs.input.value = transcript;
+    setBusinessLexiPanelState(role, "listening", "Lexi is listening.", `You: ${transcript}`);
+  };
+  recognition.onerror = (event) => {
+    const message = String(event?.error || "speech error").replace(/_/g, " ").trim();
+    setDashActionStatus(`Mic error: ${message}`, true, 2600);
+    setBusinessLexiPanelState(role, "speaking", "Lexi hit a mic error.", `Mic error: ${message}`);
+  };
+  recognition.onend = () => {
+    businessLexiMicListening[role] = false;
+    businessLexiSpeechRecognition[role] = null;
+    setBusinessLexiMicButtonState(role, false);
+    setBusinessLexiPanelState(
+      role,
+      "idle",
+      "Push-to-talk is ready.",
+      finalTranscript
+        ? "Review your words in the chat box, then press Ask Lexi."
+        : "Press Push to Talk when you want to speak."
+    );
+    refs.input.focus();
+  };
+  recognition.start();
 }
 
 function appendCopilotChatMessage(role, kind, text, options = {}) {
@@ -1239,7 +1358,7 @@ function ensureBusinessAiPopupHost(role) {
   const current = businessCopilotPopupHosts[role];
   if (current instanceof HTMLElement) return current;
   const host = document.createElement("div");
-  host.className = "copilot-chat-popup-overlay";
+  host.className = "copilot-chat-popup-overlay home-lexi-popup-overlay";
   host.setAttribute("aria-hidden", "true");
   host.addEventListener("click", (event) => {
     if (event.target === host) closeBusinessAiChatPopup(role);
@@ -1278,6 +1397,13 @@ function openBusinessAiChatPopup(role, options = {}) {
     setBusinessAiPrompt(role, options.prompt);
   }
   ensureCopilotChatSeed(role);
+  setBusinessLexiMicButtonState(role, false);
+  setBusinessLexiPanelState(
+    role,
+    "idle",
+    "Push-to-talk is ready.",
+    "Ask about bookings, treatments, operations, or business decisions from this one popup."
+  );
   if (options.focusInput !== false) {
     window.requestAnimationFrame(() => refs.input?.focus());
   }
@@ -1290,6 +1416,7 @@ function closeBusinessAiChatPopup(role) {
   const popupCard = (host instanceof HTMLElement ? host.querySelector(".copilot-chat-popup") : null)
     || refs.overlay.querySelector(".copilot-chat-popup");
   const placeholder = businessCopilotPopupPlaceholders[role];
+  stopBusinessLexiMicCapture(role);
   if (host instanceof HTMLElement) {
     host.classList.remove("is-open");
     host.setAttribute("aria-hidden", "true");
@@ -7543,8 +7670,8 @@ function ensureCustomerLexiPopup() {
               <p id="customerLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can be connected here without changing the customer journey.</p>
             </div>
             <div class="lexi-avatar-actions">
-              <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Voice Coming Soon</button>
-              <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Mute</button>
+              <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Push to Talk</button>
+              <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Stop</button>
             </div>
           </div>
         </section>
@@ -7555,24 +7682,90 @@ function ensureCustomerLexiPopup() {
   document.body.appendChild(overlay);
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
-  overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", startCustomerLexiVoicePreparation);
-  overlay.querySelector("#customerLexiMuteBtn")?.addEventListener("click", () => {
-    const connection = customerLexiRealtimeConnection;
-    if (!connection) return;
-    connection.muted = !connection.muted;
-    connection.audioElement.muted = connection.muted;
-    const muteBtn = overlay.querySelector("#customerLexiMuteBtn");
-    if (muteBtn instanceof HTMLButtonElement) {
-      muteBtn.textContent = connection.muted ? "Unmute" : "Mute";
-    }
-    updateCustomerLexiTranscript(connection.muted ? "Lexi audio muted for this popup." : "Lexi audio unmuted.");
-  });
+  overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", toggleCustomerLexiMicCapture);
+  overlay.querySelector("#customerLexiMuteBtn")?.addEventListener("click", stopCustomerLexiMicCapture);
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeCustomerLexiPopup();
   });
   customerLexiPopupOverlay = overlay;
   customerLexiPopupContainer = container;
   return { overlay, container };
+}
+
+function customerLexiMicSupported() {
+  return typeof DashboardSpeechRecognition === "function";
+}
+
+function setCustomerLexiMicButtonState(listening = false) {
+  const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
+  const stopBtn = customerLexiPopupOverlay?.querySelector("#customerLexiMuteBtn");
+  const supported = customerLexiMicSupported();
+  if (voiceBtn instanceof HTMLButtonElement) {
+    voiceBtn.disabled = !supported;
+    voiceBtn.textContent = listening ? "Listening..." : "Push to Talk";
+  }
+  if (stopBtn instanceof HTMLButtonElement) {
+    stopBtn.disabled = !supported || !listening;
+    stopBtn.textContent = "Stop";
+  }
+}
+
+function stopCustomerLexiMicCapture() {
+  try {
+    customerLexiSpeechRecognition?.stop?.();
+  } catch {}
+}
+
+function toggleCustomerLexiMicCapture() {
+  if (customerLexiMicListening) {
+    stopCustomerLexiMicCapture();
+    return;
+  }
+  if (!customerLexiMicSupported()) {
+    updateCustomerLexiTranscript("Push-to-talk is not supported in this browser.");
+    setDashActionStatus("Push-to-talk is not supported in this browser.", true, 2600);
+    return;
+  }
+  const recognition = new DashboardSpeechRecognition();
+  let finalTranscript = "";
+  recognition.lang = "en-GB";
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    customerLexiMicListening = true;
+    customerLexiSpeechRecognition = recognition;
+    setCustomerLexiMicButtonState(true);
+    setCustomerLexiAvatarPanelState("listening", "Lexi is listening.", "Say your question, then review the text before sending it.");
+  };
+  recognition.onresult = (event) => {
+    const transcript = Array.from(event.results || [])
+      .map((result) => String(result?.[0]?.transcript || ""))
+      .join(" ")
+      .trim();
+    if (!transcript) return;
+    finalTranscript = transcript;
+    if (customerReceptionInput) customerReceptionInput.value = transcript;
+    updateCustomerLexiTranscript(`You: ${transcript}`);
+  };
+  recognition.onerror = (event) => {
+    const message = String(event?.error || "speech error").replace(/_/g, " ").trim();
+    updateCustomerLexiTranscript(`Mic error: ${message}`);
+    setDashActionStatus(`Mic error: ${message}`, true, 2600);
+  };
+  recognition.onend = () => {
+    customerLexiMicListening = false;
+    customerLexiSpeechRecognition = null;
+    setCustomerLexiMicButtonState(false);
+    setCustomerLexiAvatarPanelState(
+      "idle",
+      "Push-to-talk is ready.",
+      finalTranscript
+        ? "Review your words in the chat box, then send them to Lexi."
+        : "Press Push to Talk when you want to speak."
+    );
+    customerReceptionInput?.focus();
+  };
+  recognition.start();
 }
 
 function setCustomerLexiAvatarPanelState(state, status, transcript) {
@@ -7742,17 +7935,8 @@ function updateCustomerLexiTranscript(text) {
   if (transcriptNode) transcriptNode.textContent = text;
 }
 
-function resetCustomerLexiVoiceControls(label = "Prepare Voice", enabled = true) {
-  const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
-  const muteBtn = customerLexiPopupOverlay?.querySelector("#customerLexiMuteBtn");
-  if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !enabled;
-    voiceBtn.textContent = label;
-  }
-  if (muteBtn instanceof HTMLButtonElement) {
-    muteBtn.disabled = !enabled;
-    muteBtn.textContent = "Mute";
-  }
+function resetCustomerLexiVoiceControls() {
+  setCustomerLexiMicButtonState(false);
 }
 
 function cleanupCustomerLexiRealtimeConnection() {
@@ -7871,11 +8055,11 @@ async function connectCustomerLexiRealtimeSession(sessionPayload) {
     const state = String(peerConnection.connectionState || "").trim();
     if (state === "connected") {
       setCustomerLexiAvatarPanelState("listening", "Lexi is live and listening.", "Talk naturally. Lexi will answer out loud and keep the booking moving.");
-      resetCustomerLexiVoiceControls("End Voice", true);
+      resetCustomerLexiVoiceControls();
       setDashActionStatus("Lexi voice is live.", false, 2200);
     } else if (state === "failed" || state === "disconnected" || state === "closed") {
       cleanupCustomerLexiRealtimeConnection();
-      resetCustomerLexiVoiceControls("Prepare Voice", true);
+      resetCustomerLexiVoiceControls();
       setCustomerLexiAvatarPanelState("speaking", "Lexi voice session ended.", "Text chat is still available in this popup.");
     }
   };
@@ -7946,20 +8130,21 @@ async function hydrateCustomerLexiAvatarPanel() {
       : "Pick a business, then ask about services, timings, recommendations, aftercare, or booking help from this popup.";
   }
   if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !config.sessionEndpointReady;
-    voiceBtn.textContent = config.sessionEndpointReady ? "Prepare Voice" : "Voice Coming Soon";
+    voiceBtn.disabled = !customerLexiMicSupported();
+    voiceBtn.textContent = "Push to Talk";
   }
   if (muteBtn instanceof HTMLButtonElement) {
-    muteBtn.disabled = !config.sessionEndpointReady;
+    muteBtn.disabled = true;
+    muteBtn.textContent = "Stop";
   }
   setCustomerLexiAvatarPanelState(
-    config.sessionEndpointReady ? "idle" : "speaking",
-    config.sessionEndpointReady
-      ? "Lexi can prepare a live realtime voice session from this popup."
-      : "Text booking mode is live now. Add realtime server config to activate live voice from this popup.",
-    config.sessionEndpointReady
-      ? "Press Prepare Voice and the popup will request a brokered Lexi session for this business context."
-      : "The customer flow stays simple: one popup, one assistant, with voice added into the same surface once the server can mint realtime sessions."
+    "idle",
+    customerLexiMicSupported()
+      ? "Push-to-talk is ready in this popup."
+      : "Text booking mode is live now.",
+    customerLexiMicSupported()
+      ? "Press Push to Talk, speak your question, then send the text to Lexi."
+      : "This browser does not support push-to-talk, but text chat still works."
   );
 }
 
@@ -7967,7 +8152,7 @@ async function startCustomerLexiVoicePreparation() {
   if (customerLexiRealtimeConnection) {
     cleanupCustomerLexiRealtimeConnection();
     cleanupCustomerLexiAvatarSession();
-    resetCustomerLexiVoiceControls("Prepare Voice", true);
+    resetCustomerLexiVoiceControls();
     setCustomerLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
     setDashActionStatus("Lexi voice disconnected.", false, 2200);
     return;
@@ -7990,7 +8175,7 @@ async function startCustomerLexiVoicePreparation() {
       readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
     }
     if (!data.sessionReady) {
-      resetCustomerLexiVoiceControls("Prepare Voice", true);
+      resetCustomerLexiVoiceControls();
       setCustomerLexiAvatarPanelState(
         "speaking",
         data.message || "Lexi voice session updated.",
@@ -8016,8 +8201,8 @@ async function startCustomerLexiVoicePreparation() {
     cleanupCustomerLexiRealtimeConnection();
     cleanupCustomerLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
-      voiceBtn.disabled = false;
-      voiceBtn.textContent = "Prepare Voice";
+      voiceBtn.disabled = !customerLexiMicSupported();
+      voiceBtn.textContent = "Push to Talk";
     }
     const readyChip = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarReadyChip");
     if (readyChip) {
@@ -8058,9 +8243,10 @@ function openCustomerLexiPopup() {
 
 function closeCustomerLexiPopup() {
   if (!customerLexiPopupOpen) return;
+  stopCustomerLexiMicCapture();
   cleanupCustomerLexiRealtimeConnection();
   cleanupCustomerLexiAvatarSession();
-  resetCustomerLexiVoiceControls("Prepare Voice", true);
+  resetCustomerLexiVoiceControls();
   const customerChatShell = customerReceptionSection?.querySelector(".customer-chat-shell") || null;
   if (customerLexiChatPlaceholder?.parentNode && customerChatShell instanceof HTMLElement) {
     customerLexiChatPlaceholder.parentNode.insertBefore(customerChatShell, customerLexiChatPlaceholder);
@@ -12482,6 +12668,8 @@ customerLexiLaunchBookingBtn?.addEventListener("click", () => {
   queueCustomerLexiPrompt("Help me book this week.");
   openCustomerLexiPopup();
 });
+subscriberCopilotMicBtn?.addEventListener("click", () => startBusinessLexiMicCapture("subscriber"));
+subscriberCopilotMicStopBtn?.addEventListener("click", () => stopBusinessLexiMicCapture("subscriber"));
 subscriberCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("subscriber"));
 subscriberCopilotPopup?.addEventListener("click", (event) => {
   if (event.target === subscriberCopilotPopup) closeBusinessAiChatPopup("subscriber");
@@ -12490,6 +12678,8 @@ subscriberCopilotPopup?.addEventListener("click", (event) => {
 adminCopilotOpenPopup?.addEventListener("click", (event) => {
   openDashboardLexiForCurrentRole(event.currentTarget, "daily_workspace");
 });
+adminCopilotMicBtn?.addEventListener("click", () => startBusinessLexiMicCapture("admin"));
+adminCopilotMicStopBtn?.addEventListener("click", () => stopBusinessLexiMicCapture("admin"));
 adminCopilotPopupClose?.addEventListener("click", () => closeBusinessAiChatPopup("admin"));
 adminCopilotPopup?.addEventListener("click", (event) => {
   if (event.target === adminCopilotPopup) closeBusinessAiChatPopup("admin");
