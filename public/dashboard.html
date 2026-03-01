@@ -1978,6 +1978,14 @@
         background: rgba(9, 15, 28, 0.9);
         color: var(--ink);
       }
+      .copilot-form input {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 0.7rem 0.85rem;
+        min-height: 48px;
+        background: rgba(9, 15, 28, 0.9);
+        color: var(--ink);
+      }
       .copilot-form-actions {
         display: flex;
         gap: 0.55rem;
@@ -2140,12 +2148,16 @@
       .copilot-chat-popup.home-lexi-popup .copilot-card,
       .copilot-chat-popup.home-lexi-popup .copilot-card li,
       .copilot-chat-popup.home-lexi-popup .copilot-guardrail,
+      .copilot-chat-popup.home-lexi-popup .copilot-form input,
       .copilot-chat-popup.home-lexi-popup .copilot-form textarea,
       .home-lexi-popup .customer-chat-msg,
       .home-lexi-popup .customer-chat-head strong,
       .home-lexi-popup .customer-chat-head small,
       .home-lexi-popup .customer-chat-form input {
         color: #111111;
+      }
+      .copilot-chat-popup.home-lexi-popup .business-lexi-popup-chat-slot .copilot-result {
+        display: none;
       }
       @media (max-width: 980px) {
         .copilot-chat-popup.home-lexi-popup .home-lexi-popup-body {
@@ -10417,18 +10429,16 @@
                       <strong>Live status</strong>
                       <p id="subscriberCopilotAvatarTranscript">Ask about bookings, operations, treatments, or business decisions from this one popup.</p>
                     </div>
-                    <div class="lexi-avatar-actions">
-                      <button class="btn" id="subscriberCopilotMicBtn" type="button">Push to Talk</button>
-                      <button class="btn btn-ghost" id="subscriberCopilotMicStopBtn" type="button" disabled>Stop</button>
-                    </div>
                   </div>
                 </section>
                 <div class="home-lexi-popup-chat-slot business-lexi-popup-chat-slot">
                   <div id="subscriberCopilotMessages" class="copilot-chat-messages" aria-live="polite"></div>
                   <form id="subscriberCopilotForm" class="copilot-form">
                     <label class="sr-only" for="subscriberCopilotInput">Ask Lexi</label>
-                    <textarea id="subscriberCopilotInput" placeholder="Example: What should I focus on today, or what ingredients should I avoid for color-treated hair?" required></textarea>
+                    <input id="subscriberCopilotInput" type="text" placeholder="Example: What should I focus on today, or what ingredients should I avoid for color-treated hair?" required />
                     <div class="copilot-form-actions">
+                      <button class="btn" id="subscriberCopilotMicBtn" type="button">Push to Talk</button>
+                      <button class="btn btn-ghost" id="subscriberCopilotMicStopBtn" type="button" disabled>Stop</button>
                       <button id="subscriberCopilotSend" class="btn" type="submit">Ask Lexi</button>
                       <button id="subscriberCopilotClear" class="btn btn-ghost" type="button">Clear</button>
                       <span class="copilot-guardrail">One Lexi mode: salon and beauty guidance plus your salon dashboard context when helpful.</span>
@@ -10545,18 +10555,16 @@
                       <strong>Live status</strong>
                       <p id="adminCopilotAvatarTranscript">Ask about diagnostics, managed businesses, or day-to-day beauty business decisions from this one popup.</p>
                     </div>
-                    <div class="lexi-avatar-actions">
-                      <button class="btn" id="adminCopilotMicBtn" type="button">Push to Talk</button>
-                      <button class="btn btn-ghost" id="adminCopilotMicStopBtn" type="button" disabled>Stop</button>
-                    </div>
                   </div>
                 </section>
                 <div class="home-lexi-popup-chat-slot business-lexi-popup-chat-slot">
                   <div id="adminCopilotMessages" class="copilot-chat-messages" aria-live="polite"></div>
                   <form id="adminCopilotForm" class="copilot-form">
                     <label class="sr-only" for="adminCopilotInput">Ask Lexi</label>
-                    <textarea id="adminCopilotInput" placeholder="Example: Why are subscriber bookings lower today, or what should a salon do to reduce no-shows?" required></textarea>
+                    <input id="adminCopilotInput" type="text" placeholder="Example: Why are subscriber bookings lower today, or what should a salon do to reduce no-shows?" required />
                     <div class="copilot-form-actions">
+                      <button class="btn" id="adminCopilotMicBtn" type="button">Push to Talk</button>
+                      <button class="btn btn-ghost" id="adminCopilotMicStopBtn" type="button" disabled>Stop</button>
                       <button id="adminCopilotSend" class="btn" type="submit">Ask Lexi</button>
                       <button id="adminCopilotClear" class="btn btn-ghost" type="button">Clear</button>
                       <span class="copilot-guardrail">One Lexi mode: admin diagnostics + general salon, beauty, and business guidance.</span>

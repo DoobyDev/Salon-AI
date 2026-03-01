@@ -1477,10 +1477,6 @@ function ensureHomeLexiPopup() {
               <strong>Live status</strong>
               <p id="homeLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can plug into this same popup without changing the customer flow.</p>
             </div>
-            <div class="lexi-avatar-actions">
-              <button class="btn" id="homeLexiVoiceBtn" type="button" disabled>Push to Talk</button>
-              <button class="btn btn-ghost" id="homeLexiMuteBtn" type="button" disabled>Stop</button>
-            </div>
           </div>
         </section>
         <div class="home-lexi-popup-chat-slot"></div>
@@ -1489,6 +1485,13 @@ function ensureHomeLexiPopup() {
   `;
   document.body.appendChild(overlay);
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
+  const micSlot = document.createElement("div");
+  micSlot.className = "lexi-popup-mic-actions";
+  micSlot.innerHTML = `
+    <button class="btn" id="homeLexiVoiceBtn" type="button" disabled>Push to Talk</button>
+    <button class="btn btn-ghost" id="homeLexiMuteBtn" type="button" disabled>Stop</button>
+  `;
+  container?.appendChild(micSlot);
   const closeBtn = overlay.querySelector(".home-lexi-popup-close");
   closeBtn?.addEventListener("click", closeHomeLexiPopup);
   overlay.querySelector("#homeLexiVoiceBtn")?.addEventListener("click", toggleHomeLexiMicCapture);
@@ -2037,6 +2040,15 @@ function openHomeLexiPopup() {
   frontdeskChatShell.classList.remove("lexi-chat-inline-hidden");
   homeLexiPopupLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   container.appendChild(frontdeskChatShell);
+  const popupMicActions = overlay.querySelector(".lexi-popup-mic-actions");
+  if (popupMicActions instanceof HTMLElement && chatForm instanceof HTMLElement) {
+    const submitBtn = chatForm.querySelector('button[type="submit"]');
+    if (submitBtn instanceof HTMLElement) {
+      chatForm.insertBefore(popupMicActions, submitBtn);
+    } else {
+      chatForm.appendChild(popupMicActions);
+    }
+  }
   overlay.classList.add("is-open");
   overlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("home-lexi-popup-open");

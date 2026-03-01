@@ -7669,10 +7669,6 @@ function ensureCustomerLexiPopup() {
               <strong>Live status</strong>
               <p id="customerLexiAvatarTranscript">Text fallback is active now. Voice and avatar streaming can be connected here without changing the customer journey.</p>
             </div>
-            <div class="lexi-avatar-actions">
-              <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Push to Talk</button>
-              <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Stop</button>
-            </div>
           </div>
         </section>
         <div class="home-lexi-popup-chat-slot"></div>
@@ -7681,6 +7677,13 @@ function ensureCustomerLexiPopup() {
   `;
   document.body.appendChild(overlay);
   const container = overlay.querySelector(".home-lexi-popup-chat-slot");
+  const micSlot = document.createElement("div");
+  micSlot.className = "lexi-popup-mic-actions";
+  micSlot.innerHTML = `
+    <button class="btn" id="customerLexiVoiceBtn" type="button" disabled>Push to Talk</button>
+    <button class="btn btn-ghost" id="customerLexiMuteBtn" type="button" disabled>Stop</button>
+  `;
+  container?.appendChild(micSlot);
   overlay.querySelector(".home-lexi-popup-close")?.addEventListener("click", closeCustomerLexiPopup);
   overlay.querySelector("#customerLexiVoiceBtn")?.addEventListener("click", toggleCustomerLexiMicCapture);
   overlay.querySelector("#customerLexiMuteBtn")?.addEventListener("click", stopCustomerLexiMicCapture);
@@ -8233,6 +8236,15 @@ function openCustomerLexiPopup() {
   customerChatShell.classList.remove("customer-chat-inline-hidden");
   customerLexiPopupLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   container.appendChild(customerChatShell);
+  const popupMicActions = overlay.querySelector(".lexi-popup-mic-actions");
+  if (popupMicActions instanceof HTMLElement && customerReceptionForm instanceof HTMLElement) {
+    const submitBtn = customerReceptionForm.querySelector('button[type="submit"]');
+    if (submitBtn instanceof HTMLElement) {
+      customerReceptionForm.insertBefore(popupMicActions, submitBtn);
+    } else {
+      customerReceptionForm.appendChild(popupMicActions);
+    }
+  }
   overlay.classList.add("is-open");
   overlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("home-lexi-popup-open");
