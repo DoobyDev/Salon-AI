@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260302-neutral2" />
     <style>
       .auth-page {
         width: min(1160px, 94vw);
@@ -179,6 +179,113 @@
           align-items: flex-start;
         }
       }
+
+      body {
+        background:
+          radial-gradient(circle at 12% 10%, rgba(255, 202, 166, 0.45), transparent 28%),
+          linear-gradient(180deg, #f5e8db 0%, #efdfcf 100%);
+        color: #2b180f;
+      }
+
+      body::before {
+        background-image:
+          linear-gradient(rgba(92, 58, 36, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(92, 58, 36, 0.06) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: none;
+        opacity: 0.55;
+      }
+
+      .auth-page {
+        width: min(1220px, 94vw);
+        gap: 1.15rem;
+      }
+
+      .auth-topbar,
+      .auth-intro,
+      .auth-card {
+        border-color: rgba(110, 59, 30, 0.1);
+        background: rgba(251, 243, 235, 0.92);
+        box-shadow:
+          0 18px 44px rgba(108, 68, 42, 0.08),
+          inset 0 1px 0 rgba(255,255,255,0.72);
+      }
+
+      .auth-topbar {
+        border-radius: 24px;
+        padding: 0.9rem 1rem;
+      }
+
+      .auth-brand,
+      .auth-card h1,
+      .auth-card h2,
+      .auth-intro h1,
+      .auth-points strong {
+        color: #2b180f;
+      }
+
+      .auth-brand .brand-dot {
+        background: radial-gradient(circle at 30% 30%, #fff4d6, #ef9f66 58%, #cb5a35);
+        box-shadow: 0 0 0 6px rgba(239, 159, 102, 0.14);
+      }
+
+      .auth-wrap {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      }
+
+      .auth-intro,
+      .auth-card {
+        border-radius: 24px;
+        padding: 1.2rem;
+      }
+
+      .auth-intro p,
+      .auth-note,
+      .dev-admin-note,
+      .template-preview small,
+      .msg-box {
+        color: #6a4e3e;
+      }
+
+      .auth-points li,
+      .template-preview {
+        border-color: rgba(110, 59, 30, 0.1);
+        background: rgba(255, 250, 245, 0.92);
+      }
+
+      .auth-form input,
+      .auth-form select {
+        border-color: rgba(110, 59, 30, 0.1);
+        border-radius: 14px;
+        padding: 0.75rem 0.85rem;
+        background: rgba(255, 250, 245, 0.96);
+        color: #2b180f;
+      }
+
+      .auth-form input:focus,
+      .auth-form select:focus {
+        border-color: rgba(203, 90, 53, 0.45);
+        box-shadow: 0 0 0 3px rgba(203, 90, 53, 0.12);
+      }
+
+      .btn {
+        border-color: rgba(128, 67, 37, 0.16);
+        background: #e3a16f;
+        background-image: none;
+        color: #3b2d23;
+        box-shadow: 0 10px 24px rgba(135, 78, 46, 0.16);
+      }
+
+      .btn.btn-ghost {
+        background: #fff7f0;
+        color: #3b2418;
+        box-shadow: none;
+      }
+
+      .dev-admin-card {
+        border-color: rgba(205, 111, 64, 0.18);
+        background: rgba(255, 246, 238, 0.96);
+      }
     </style>
   </head>
   <body>
@@ -289,7 +396,7 @@
         front desk work, client retention, and day-to-day business performance.
       </p>
     </footer>
-    <script src="/theme-toggle.js"></script>
+    <script src="/theme-toggle.js?v=20260302-neutral2"></script>
     <script type="module" src="/auth.js"></script>
   </body>
 </html>

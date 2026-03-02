@@ -12,8 +12,8 @@
   --teal: #4ed9c7;
   --gold: #d6b56a;
   --danger: #ff8d72;
-  --pink-metal: rgba(233, 141, 186, 0.42);
-  --pink-metal-soft: rgba(233, 141, 186, 0.16);
+  --accent-metal: rgba(233, 141, 186, 0.42);
+  --accent-metal-soft: rgba(233, 141, 186, 0.16);
   --glow: 0 0 0 1px rgba(109, 165, 255, 0.15), 0 0 24px rgba(85, 168, 255, 0.18);
   --card-shadow: 0 18px 48px rgba(0, 0, 0, 0.48);
   --card-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
@@ -114,7 +114,7 @@ a {
   top: 0.5rem;
   z-index: 50;
   isolation: isolate;
-  border-color: color-mix(in srgb, var(--line) 68%, var(--pink-metal) 32%);
+  border-color: color-mix(in srgb, var(--line) 68%, var(--accent-metal) 32%);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.04),
     0 8px 18px rgba(0,0,0,0.28);
@@ -260,6 +260,227 @@ body .page {
   gap: 0.95rem;
 }
 
+.top-lexi-marquee {
+  position: relative;
+  overflow: clip;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  padding: 1.1rem;
+  border: 1px solid color-mix(in srgb, rgba(167, 193, 255, 0.22) 55%, var(--accent-metal) 45%);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(95, 172, 255, 0.22), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(255, 146, 196, 0.18), transparent 34%),
+    linear-gradient(140deg, rgba(10, 15, 29, 0.96), rgba(16, 23, 42, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 20px 48px rgba(0,0,0,0.34);
+}
+
+.top-lexi-copy {
+  display: grid;
+  align-content: center;
+  gap: 0.7rem;
+}
+
+.top-lexi-copy h2 {
+  margin: 0;
+  font-family: "Sora", "Manrope", sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.06;
+}
+
+.top-lexi-copy > p:last-of-type {
+  margin: 0;
+  color: #c2d0e7;
+  line-height: 1.65;
+  max-width: 58ch;
+}
+
+.top-lexi-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.top-lexi-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.top-lexi-pills span {
+  border-radius: 999px;
+  padding: 0.34rem 0.7rem;
+  border: 1px solid rgba(158, 195, 255, 0.26);
+  background: rgba(19, 29, 50, 0.7);
+  color: #d7e6ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.top-lexi-stage {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+.top-lexi-portrait-card,
+.top-lexi-chat-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(160, 198, 255, 0.18);
+  background: rgba(12, 18, 33, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.top-lexi-portrait-card {
+  min-height: 100%;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.top-lexi-portrait-halo {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(107, 185, 255, 0.32), transparent 28%),
+    radial-gradient(circle at 50% 78%, rgba(255, 149, 201, 0.18), transparent 34%);
+  pointer-events: none;
+}
+
+.top-lexi-portrait-image {
+  position: relative;
+  width: min(100%, 260px);
+  aspect-ratio: 1 / 1.08;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid rgba(169, 205, 255, 0.24);
+  background: linear-gradient(180deg, rgba(34, 54, 96, 0.95), rgba(14, 20, 38, 0.95));
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.26);
+}
+
+.top-lexi-portrait-copy {
+  position: relative;
+  display: grid;
+  gap: 0.28rem;
+  margin-top: 0.85rem;
+  text-align: center;
+}
+
+.top-lexi-portrait-copy p {
+  margin: 0;
+  color: #97f3e7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.top-lexi-portrait-copy strong {
+  font-size: 1.08rem;
+}
+
+.top-lexi-portrait-copy small {
+  color: #a7b7d5;
+  line-height: 1.55;
+}
+
+.top-lexi-chat-card {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+.top-lexi-chat-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.top-lexi-chat-head p,
+.top-lexi-chat-head strong {
+  margin: 0;
+}
+
+.top-lexi-chat-head p {
+  color: #97f3e7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.top-lexi-chat-head strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1rem;
+}
+
+.top-lexi-chat-head span {
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  background: rgba(80, 224, 197, 0.12);
+  border: 1px solid rgba(80, 224, 197, 0.2);
+  color: #aaf3e7;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.top-lexi-chat-thread {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+}
+
+.top-lexi-bubble {
+  max-width: 92%;
+  border-radius: 18px;
+  padding: 0.75rem 0.9rem;
+  line-height: 1.5;
+  font-size: 0.92rem;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+}
+
+.top-lexi-bubble.user {
+  margin-left: auto;
+  background: linear-gradient(180deg, rgba(69, 132, 255, 0.94), rgba(36, 94, 209, 0.94));
+  color: #eef5ff;
+}
+
+.top-lexi-bubble.assistant {
+  background: rgba(238, 244, 255, 0.08);
+  border: 1px solid rgba(167, 193, 255, 0.18);
+  color: #dce8ff;
+}
+
+.top-lexi-quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.top-lexi-prompt {
+  border: 1px solid rgba(167, 193, 255, 0.18);
+  background: rgba(17, 25, 43, 0.78);
+  color: #dbe8ff;
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.top-lexi-prompt:hover {
+  background: rgba(32, 49, 83, 0.92);
+}
+
 .hero,
 .panel,
 .trust-strip,
@@ -272,7 +493,7 @@ body .page {
 .panel,
 .trust-strip {
   position: relative;
-  border-color: color-mix(in srgb, rgba(167, 193, 255, 0.2) 58%, var(--pink-metal) 42%);
+  border-color: color-mix(in srgb, rgba(167, 193, 255, 0.2) 58%, var(--accent-metal) 42%);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.03),
     inset 0 0 0 1px rgba(233, 141, 186, 0.08),
@@ -2216,6 +2437,33 @@ body.home-lexi-popup-open {
   box-shadow: 0 0 0 3px rgba(85, 168, 255, 0.17);
 }
 
+.password-peek-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.password-peek-field input {
+  flex: 1;
+}
+
+.password-peek-toggle {
+  border: 1px solid rgba(126, 180, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(85, 168, 255, 0.12);
+  color: #ebf2ff;
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.password-peek-toggle:hover,
+.password-peek-toggle:focus-visible {
+  background: rgba(85, 168, 255, 0.18);
+  outline: none;
+}
+
 .home-access-form-actions {
   display: flex;
   flex-wrap: wrap;
@@ -3312,63 +3560,63 @@ body.dashboard-light-mode .footer-links a:hover {
 }
 
 body[data-theme-mode="light"] {
-  --bg: #fff8fc;
-  --bg-2: #fbf5fb;
-  --ink: #2b2231;
-  --muted: #7a6c81;
-  --surface: rgba(255, 255, 255, 0.92);
-  --surface-2: rgba(255, 255, 255, 0.96);
-  --line: rgba(145, 114, 144, 0.14);
-  --line-strong: rgba(219, 137, 170, 0.28);
-  --primary: #8fc2ff;
-  --primary-strong: #6fa8ea;
-  --teal: #59b9ae;
-  --gold: #c39a58;
+  --bg: #f3e1cf;
+  --bg-2: #ecd6bf;
+  --ink: #2f1c13;
+  --muted: #73533f;
+  --surface: rgba(255, 248, 240, 0.92);
+  --surface-2: rgba(255, 252, 247, 0.96);
+  --line: rgba(114, 72, 45, 0.14);
+  --line-strong: rgba(167, 101, 61, 0.28);
+  --primary: #cb5a35;
+  --primary-strong: #a94829;
+  --teal: #ee9d63;
+  --gold: #d89a5b;
   color: var(--ink);
   background:
-    radial-gradient(circle at 10% -8%, rgba(255, 201, 220, 0.28), transparent 42%),
-    radial-gradient(circle at 88% 2%, rgba(184, 231, 221, 0.2), transparent 38%),
-    radial-gradient(circle at 82% 82%, rgba(255, 224, 178, 0.14), transparent 38%),
-    linear-gradient(180deg, #fffbfd 0%, #f9f4fb 44%, #f7f1f8 100%);
+    radial-gradient(circle at 10% -8%, rgba(255, 198, 149, 0.28), transparent 42%),
+    radial-gradient(circle at 88% 2%, rgba(238, 157, 99, 0.18), transparent 38%),
+    radial-gradient(circle at 82% 82%, rgba(222, 156, 98, 0.14), transparent 38%),
+    linear-gradient(180deg, #fff6ee 0%, #f7ebdf 44%, #f1e1d0 100%);
 }
 
 body[data-theme-mode="light"]::before {
   background-image:
-    linear-gradient(rgba(145, 114, 144, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(145, 114, 144, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(114, 72, 45, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(114, 72, 45, 0.045) 1px, transparent 1px);
 }
 
 body[data-theme-mode="light"] .topbar {
-  border-color: rgba(145, 114, 144, 0.16);
+  border-color: rgba(114, 72, 45, 0.16);
   background:
-    radial-gradient(circle at 92% -18%, rgba(255, 201, 220, 0.18), transparent 44%),
-    radial-gradient(circle at 8% -14%, rgba(184, 231, 221, 0.12), transparent 42%),
+    radial-gradient(circle at 92% -18%, rgba(255, 198, 149, 0.18), transparent 44%),
+    radial-gradient(circle at 8% -14%, rgba(238, 157, 99, 0.12), transparent 42%),
     rgba(255, 255, 255, 0.94);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
-    0 8px 18px rgba(95, 68, 105, 0.08);
+    0 8px 18px rgba(95, 68, 45, 0.08);
 }
 
 body[data-theme-mode="light"] .nav,
 body[data-theme-mode="light"] .nav-secondary {
-  color: #6f6278;
+  color: #73533f;
 }
 
 body[data-theme-mode="light"] .brand {
-  color: #2b2231;
+  color: #2f1c13;
 }
 
 body[data-theme-mode="light"] .btn-ghost {
-  color: #4b3652;
-  border-color: rgba(145, 114, 144, 0.16);
+  color: #4b2f22;
+  border-color: rgba(114, 72, 45, 0.16);
   background: rgba(255,255,255,0.9);
 }
 
 body[data-theme-mode="light"] .btn:not(.btn-ghost) {
-  border-color: rgba(111, 168, 234, 0.35);
-  background: linear-gradient(180deg, #8fc2ff 0%, #6fa8ea 100%);
+  border-color: rgba(169, 72, 41, 0.35);
+  background: linear-gradient(180deg, #ee9d63 0%, #cb5a35 100%);
   color: #ffffff;
-  box-shadow: 0 8px 16px rgba(103, 142, 197, 0.16);
+  box-shadow: 0 8px 16px rgba(135, 78, 46, 0.16);
 }
 
 body[data-theme-mode="light"] .panel,
@@ -3391,14 +3639,14 @@ body[data-theme-mode="light"] .command-deck-card,
 body[data-theme-mode="light"] .trust-strip,
 body[data-theme-mode="light"] .homepage-flow-main > section,
 body[data-theme-mode="light"] .role-cta {
-  border-color: rgba(145, 114, 144, 0.12) !important;
+  border-color: rgba(114, 72, 45, 0.12) !important;
   background:
-    radial-gradient(circle at 95% -10%, rgba(255, 201, 220, 0.1), transparent 46%),
-    radial-gradient(circle at 6% -10%, rgba(184, 231, 221, 0.08), transparent 44%),
+    radial-gradient(circle at 95% -10%, rgba(255, 198, 149, 0.1), transparent 46%),
+    radial-gradient(circle at 6% -10%, rgba(238, 157, 99, 0.08), transparent 44%),
     rgba(255,255,255,0.93) !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.85),
-    0 10px 24px rgba(95, 68, 105, 0.06);
+    0 10px 24px rgba(95, 68, 45, 0.06);
 }
 
 body[data-theme-mode="light"] .panel h1,
@@ -3407,7 +3655,7 @@ body[data-theme-mode="light"] .panel h3,
 body[data-theme-mode="light"] .hero-copy h1,
 body[data-theme-mode="light"] .section-header h2,
 body[data-theme-mode="light"] .command-deck-card h3 {
-  color: #2b2231;
+  color: #2f1c13;
 }
 
 body[data-theme-mode="light"] .hero-text,
@@ -3420,34 +3668,34 @@ body[data-theme-mode="light"] .panel p,
 body[data-theme-mode="light"] .panel small,
 body[data-theme-mode="light"] .command-deck-card span,
 body[data-theme-mode="light"] .role-cta p {
-  color: #7a6c81;
+  color: #73533f;
 }
 
 body[data-theme-mode="light"] .hero-lexi-calendar-star-kicker {
-  color: #7b3a5b;
+  color: #a14d2f;
 }
 
 body[data-theme-mode="light"] .hero-lexi-calendar-star-grid strong {
-  color: #2b2231;
+  color: #2f1c13;
 }
 
 body[data-theme-mode="light"] .home-lexi-popup {
-  border-color: rgba(145, 114, 144, 0.14);
+  border-color: rgba(114, 72, 45, 0.14);
   background:
-    radial-gradient(circle at 95% -10%, rgba(255, 201, 220, 0.12), transparent 46%),
-    radial-gradient(circle at 6% -10%, rgba(184, 231, 221, 0.1), transparent 44%),
+    radial-gradient(circle at 95% -10%, rgba(255, 198, 149, 0.12), transparent 46%),
+    radial-gradient(circle at 6% -10%, rgba(238, 157, 99, 0.1), transparent 44%),
     rgba(255,255,255,0.97);
-  color: #2b2231;
+  color: #2f1c13;
 }
 
 body[data-theme-mode="light"] .home-lexi-popup .home-lexi-popup-chat-slot,
 body[data-theme-mode="light"] .home-lexi-popup .business-lexi-popup-chat-slot {
   background:
-    linear-gradient(180deg, rgba(252, 253, 255, 0.98), rgba(241, 247, 255, 0.98));
-  border-color: rgba(186, 204, 231, 0.74);
+    linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(248, 239, 228, 0.98));
+  border-color: rgba(196, 146, 110, 0.48);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
-    0 16px 42px rgba(62, 88, 122, 0.1);
+    0 16px 42px rgba(95, 68, 45, 0.1);
 }
 
 body[data-theme-mode="light"] .home-lexi-popup-kicker {
@@ -4148,7 +4396,7 @@ body[data-theme-mode="light"] .command-deck-card-accent {
   grid-template-columns: minmax(0, 1.8fr) minmax(17rem, 0.9fr);
   gap: 0.95rem;
   align-items: start;
-  border: 1px solid color-mix(in srgb, var(--line) 68%, var(--pink-metal) 32%);
+  border: 1px solid color-mix(in srgb, var(--line) 68%, var(--accent-metal) 32%);
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(8, 12, 22, 0.72), rgba(6, 9, 17, 0.68));
   padding: 0.95rem;
@@ -4545,8 +4793,8 @@ body[data-theme-mode="light"] .theme-toggle.theme-toggle-nav {
 }
 
 body.theme-vibrant {
-  --pink-metal: rgba(248, 158, 206, 0.5);
-  --pink-metal-soft: rgba(248, 158, 206, 0.2);
+  --accent-metal: rgba(238, 157, 99, 0.32);
+  --accent-metal-soft: rgba(238, 157, 99, 0.14);
 }
 
 body.theme-vibrant {
@@ -5159,6 +5407,2884 @@ body[data-theme-mode="light"] .selected-business h4 {
   color: #24324a !important;
 }
 
+
+/* Homepage redesign override */
+body {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(183, 164, 145, 0.2), transparent 30%),
+    linear-gradient(180deg, #eee7de 0%, #e5dccf 100%);
+  color: #2f2924;
+}
+
+body::before {
+  background-image:
+    linear-gradient(rgba(84, 72, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(84, 72, 61, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: none;
+  opacity: 0.55;
+}
+
+.topbar {
+  width: min(1380px, 96vw);
+  margin-top: 1.1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(94, 59, 37, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 249, 241, 0.86);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 24px 60px rgba(91, 51, 26, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.brand,
+.nav a,
+.auth-actions a {
+  color: #2c1a12;
+}
+
+.brand {
+  font-size: 1.08rem;
+}
+
+.brand-dot {
+  background: radial-gradient(circle at 30% 30%, #fff7d2, #ff9a73 58%, #c1552c);
+  box-shadow: 0 0 0 7px rgba(255, 154, 115, 0.16), 0 0 24px rgba(255, 154, 115, 0.28);
+}
+
+.nav {
+  color: #6c5443;
+}
+
+.nav a::after {
+  background: linear-gradient(90deg, #f06a43, #f2a65a);
+}
+
+.topbar .btn,
+.control-room-home .btn {
+  border-color: rgba(188, 88, 50, 0.24);
+  background: linear-gradient(135deg, #231611 0%, #c75530 54%, #f59a5f 100%);
+  color: #fff7f1;
+  box-shadow: 0 16px 30px rgba(199, 85, 48, 0.22);
+}
+
+.topbar .btn:hover,
+.control-room-home .btn:hover {
+  box-shadow: 0 22px 38px rgba(199, 85, 48, 0.28);
+}
+
+.topbar .btn-ghost,
+.control-room-home .btn-ghost {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(94, 59, 37, 0.16);
+  color: #331f17;
+  box-shadow: none;
+}
+
+.control-room-home {
+  gap: 1.4rem;
+  padding-bottom: 2rem;
+}
+
+.control-room-home > .top-lexi-marquee,
+.control-room-home > .hero,
+.control-room-home > .command-deck,
+.control-room-home > .homepage-flow-grid,
+.control-room-home > .control-room-frame {
+  border: 1px solid rgba(93, 60, 39, 0.12);
+  background: rgba(255, 250, 244, 0.8);
+  box-shadow: 0 24px 70px rgba(98, 61, 36, 0.1);
+}
+
+.top-lexi-marquee {
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: 1.35rem;
+  padding: 1.5rem;
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 171, 131, 0.38), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(239, 103, 66, 0.12), transparent 22%),
+    linear-gradient(135deg, #fff7ee 0%, #f8ebde 42%, #f4e0ce 100%);
+}
+
+.top-lexi-marquee::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 28px;
+  border: 1px solid rgba(131, 76, 47, 0.08);
+  pointer-events: none;
+}
+
+.top-lexi-copy {
+  gap: 1rem;
+}
+
+.eyebrow,
+.top-lexi-chat-head p,
+.top-lexi-portrait-copy p,
+.hero-lexi-calendar-star-kicker,
+.lexi-launch-kicker {
+  color: #b85d35;
+}
+
+.top-lexi-copy h2,
+.hero-copy h1,
+.command-deck-intro h2,
+.control-room-frame-head h2 {
+  color: #1f130d;
+  letter-spacing: -0.04em;
+}
+
+.top-lexi-copy h2 {
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: 0.92;
+  max-width: 10ch;
+}
+
+.top-lexi-copy > p:last-of-type,
+.hero-text,
+.command-deck-intro p:not(.eyebrow),
+.section-header p,
+.control-room-frame-head p:last-child {
+  color: #644d3e;
+  font-size: 1rem;
+}
+
+.top-lexi-pills span,
+.cta-proof strong,
+.cta-proof span,
+.hero-badges span,
+.home-module-pill,
+.homepage-command-proof .home-module-pill {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(93, 60, 39, 0.12);
+  color: #53362a;
+}
+
+.top-lexi-stage {
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.top-lexi-portrait-card,
+.top-lexi-chat-card {
+  border-radius: 30px;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.top-lexi-portrait-card {
+  padding: 1.2rem;
+}
+
+.top-lexi-portrait-halo {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(247, 152, 105, 0.34), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(255, 225, 199, 0.76), transparent 38%);
+}
+
+.top-lexi-portrait-image {
+  width: min(100%, 310px);
+  border-radius: 28px;
+  border: none;
+  box-shadow: 0 26px 44px rgba(119, 71, 44, 0.16);
+}
+
+.top-lexi-portrait-copy strong,
+.top-lexi-chat-head strong,
+.hero-lexi-calendar-star-head h3,
+.hero-lexi-sell-head strong,
+.hero-chat-status strong {
+  color: #231710;
+}
+
+.top-lexi-portrait-copy small,
+.top-lexi-chat-head span,
+.hero-cta-note,
+.hero-lexi-business-meta,
+.hero-lexi-calendar-star-grid small,
+.hero-chat-status p,
+.hero-lexi-privacy-note p,
+.hero-chat-features p,
+.homepage-command-proof p,
+.homepage-command-rail-head p:not(.eyebrow),
+.homepage-command-steps li,
+.hero-operator-note ul,
+.stat-chip p {
+  color: #705646;
+}
+
+.top-lexi-chat-card {
+  padding: 1.1rem;
+}
+
+.top-lexi-chat-head span {
+  background: rgba(248, 126, 82, 0.12);
+  border-color: rgba(248, 126, 82, 0.16);
+  color: #a95132;
+}
+
+.top-lexi-bubble {
+  border-radius: 22px;
+  font-size: 0.95rem;
+  box-shadow: 0 14px 30px rgba(102, 61, 39, 0.08);
+}
+
+.top-lexi-bubble.user {
+  background: linear-gradient(135deg, #231611 0%, #d15a34 58%, #f0a36a 100%);
+}
+
+.top-lexi-bubble.assistant {
+  background: #fffaf6;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  color: #453125;
+}
+
+/* TRUE FINAL flat button override
+   This must remain at the very end of the file. */
+html body .btn,
+html body button.btn,
+html body a.btn,
+html body input.btn,
+html body .topbar .btn,
+html body .control-room-home .btn,
+html body .frontdesk-section .btn,
+html body .home-lexi-popup .btn,
+html body .home-access-form-actions .btn,
+html body .home-trial-form-actions .btn,
+html body .dashboard-actions .btn,
+html body .billing-actions .btn,
+html body .workspace-actions .btn,
+html body .lexi-launch-actions .btn,
+html body .top-lexi-actions .btn,
+html body .hero-lexi-calendar-star-actions .btn,
+html body .home-payment-provider-row .btn,
+html body .mobile-quick-sheet-close.btn,
+html body .mobile-bottom-nav-item,
+html body .password-peek-toggle {
+  background: #e3a16f !important;
+  background-image: none !important;
+  background-color: #e3a16f !important;
+  border: 1px solid rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body .btn:hover,
+html body button.btn:hover,
+html body a.btn:hover,
+html body input.btn:hover,
+html body .topbar .btn:hover,
+html body .control-room-home .btn:hover,
+html body .frontdesk-section .btn:hover,
+html body .home-lexi-popup .btn:hover,
+html body .home-access-form-actions .btn:hover,
+html body .home-trial-form-actions .btn:hover,
+html body .dashboard-actions .btn:hover,
+html body .billing-actions .btn:hover,
+html body .workspace-actions .btn:hover,
+html body .lexi-launch-actions .btn:hover,
+html body .top-lexi-actions .btn:hover,
+html body .hero-lexi-calendar-star-actions .btn:hover,
+html body .home-payment-provider-row .btn:hover,
+html body .mobile-quick-sheet-close.btn:hover,
+html body .mobile-bottom-nav-item:hover,
+html body .password-peek-toggle:hover {
+  background: #d99663 !important;
+  background-image: none !important;
+  background-color: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.38) !important;
+  color: #3b2d23 !important;
+}
+
+html body .btn.btn-ghost,
+html body button.btn-ghost,
+html body a.btn-ghost,
+html body select.btn-ghost,
+html body .topbar .btn-ghost,
+html body .control-room-home .btn-ghost,
+html body .frontdesk-section .btn-ghost,
+html body .home-lexi-popup .btn-ghost,
+html body .home-access-form-actions .btn-ghost,
+html body .home-trial-form-actions .btn-ghost,
+html body .dashboard-actions .btn-ghost,
+html body .billing-actions .btn-ghost,
+html body .workspace-actions .btn-ghost,
+html body .lexi-launch-actions .btn-ghost,
+html body .top-lexi-actions .btn-ghost,
+html body .hero-lexi-calendar-star-actions .btn-ghost,
+html body .home-payment-provider-row .btn-ghost {
+  background: #f8f3ed !important;
+  background-image: none !important;
+  background-color: #f8f3ed !important;
+  border: 1px solid rgba(88, 75, 63, 0.14) !important;
+  color: #3e352f !important;
+  box-shadow: none !important;
+}
+
+html body .btn.btn-ghost:hover,
+html body button.btn-ghost:hover,
+html body a.btn-ghost:hover,
+html body select.btn-ghost:hover,
+html body .topbar .btn-ghost:hover,
+html body .control-room-home .btn-ghost:hover,
+html body .frontdesk-section .btn-ghost:hover,
+html body .home-lexi-popup .btn-ghost:hover,
+html body .home-access-form-actions .btn-ghost:hover,
+html body .home-trial-form-actions .btn-ghost:hover,
+html body .dashboard-actions .btn-ghost:hover,
+html body .billing-actions .btn-ghost:hover,
+html body .workspace-actions .btn-ghost:hover,
+html body .lexi-launch-actions .btn-ghost:hover,
+html body .top-lexi-actions .btn-ghost:hover,
+html body .hero-lexi-calendar-star-actions .btn-ghost:hover,
+html body .home-payment-provider-row .btn-ghost:hover {
+  background: #f1caa8 !important;
+  background-image: none !important;
+  background-color: #f1caa8 !important;
+  border-color: rgba(173, 117, 78, 0.24) !important;
+  color: #3b2d23 !important;
+}
+
+.top-lexi-prompt {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(93, 60, 39, 0.12);
+  color: #3f291d;
+}
+
+.top-lexi-prompt:hover {
+  background: #fff;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: 1.2rem;
+  padding: 1.45rem;
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 209, 177, 0.34), transparent 30%),
+    linear-gradient(135deg, #fffaf5 0%, #f6eadf 100%);
+}
+
+.hero-copy {
+  gap: 0.35rem;
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 0.92;
+}
+
+.hero-operator-note,
+.hero-capabilities article,
+.stat-chip,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.hero-chat-features article,
+.hero-lexi-calendar-star,
+.hero-lexi-calendar-star-grid article,
+.lexi-launch-panel,
+.chat-shell {
+  border-color: rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: none;
+}
+
+.hero-capabilities h3,
+.stat-chip h3,
+.section-header h2,
+.home-quick-path-card strong,
+.command-deck-card h3,
+.homepage-command-rail-head h2,
+.control-room-sidebar-panel a,
+.control-room-sidebar-panel li,
+.hero-chat-features h3 {
+  color: #231710;
+}
+
+.hero-capabilities p,
+.command-deck-card span,
+.home-quick-path-card small,
+.control-room-sidebar-panel ul,
+.privacy-promise p,
+.home-module-card small {
+  color: #6a5343;
+}
+
+.hero-media {
+  border-radius: 30px;
+}
+
+.hero-chat-demo {
+  border-radius: 32px;
+  padding: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(251, 244, 237, 0.92)),
+    linear-gradient(135deg, #f6e4d2, #fff8f1);
+}
+
+.section-header h2 {
+  letter-spacing: -0.03em;
+}
+
+.hero-lexi-calendar-star-grid {
+  gap: 0.65rem;
+}
+
+.lexi-launch-panel {
+  border-radius: 20px;
+}
+
+.command-deck {
+  border-radius: 34px;
+  padding: 1.35rem;
+  background:
+    linear-gradient(180deg, rgba(252, 244, 235, 0.88), rgba(247, 236, 225, 0.92));
+}
+
+.command-deck-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.command-deck-card {
+  border-radius: 22px;
+  border-color: rgba(93, 60, 39, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+}
+
+.command-deck-card p,
+.control-room-sidebar-label,
+.trust-label {
+  color: #bf623a;
+}
+
+.command-deck-card-accent {
+  background:
+    radial-gradient(circle at top right, rgba(245, 165, 107, 0.28), transparent 42%),
+    rgba(255, 248, 242, 0.88);
+}
+
+.homepage-flow-grid {
+  grid-template-columns: minmax(0, 1.6fr) minmax(310px, 0.8fr);
+  gap: 1.2rem;
+  padding: 1.2rem;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 249, 242, 0.84), rgba(248, 238, 227, 0.92));
+}
+
+.trust-strip,
+.home-quick-paths,
+.homepage-command-rail,
+.control-room-frame,
+.control-room-sidebar-panel,
+.control-room-frame-head {
+  border-color: rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.trust-strip ul {
+  color: #4b3327;
+}
+
+.home-quick-path-grid {
+  gap: 0.85rem;
+}
+
+.home-quick-path-card {
+  border-radius: 22px;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(252, 246, 240, 0.94));
+  box-shadow: 0 14px 30px rgba(91, 51, 26, 0.06);
+}
+
+.homepage-command-rail {
+  top: 5rem;
+  border-radius: 26px;
+  box-shadow: 0 18px 36px rgba(91, 51, 26, 0.08);
+}
+
+.homepage-command-proof {
+  border-top-color: rgba(93, 60, 39, 0.1);
+}
+
+.control-room-frame {
+  border-radius: 38px;
+  padding: 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 240, 0.9), rgba(247, 236, 223, 0.94));
+}
+
+.control-room-frame-grid {
+  gap: 1.2rem;
+}
+
+.home-module-card {
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 14px 28px rgba(91, 51, 26, 0.06);
+}
+
+.home-module-card strong,
+.privacy-promise h2 {
+  color: #241710;
+}
+
+@media (max-width: 1100px) {
+  .top-lexi-marquee,
+  .hero,
+  .homepage-flow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-lexi-copy h2,
+  .hero-copy h1 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    width: min(96vw, 96vw);
+    padding: 0.9rem;
+    border-radius: 22px;
+  }
+
+  .top-lexi-marquee,
+  .hero,
+  .command-deck,
+  .homepage-flow-grid,
+  .control-room-frame {
+    border-radius: 26px;
+    padding: 1rem;
+  }
+
+  .top-lexi-copy h2 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2rem, 12vw, 3.3rem);
+  }
+
+  .command-deck-grid,
+  .hero-capabilities,
+  .hero-stats,
+  .hero-lexi-calendar-star-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ACTUAL END-OF-FILE flat button override */
+html body .btn,
+html body button.btn,
+html body a.btn,
+html body input.btn,
+html body .topbar .btn,
+html body .control-room-home .btn,
+html body .frontdesk-section .btn,
+html body .home-lexi-popup .btn,
+html body .home-access-form-actions .btn,
+html body .home-trial-form-actions .btn,
+html body .dashboard-actions .btn,
+html body .billing-actions .btn,
+html body .workspace-actions .btn,
+html body .lexi-launch-actions .btn,
+html body .top-lexi-actions .btn,
+html body .hero-lexi-calendar-star-actions .btn,
+html body .home-payment-provider-row .btn,
+html body .mobile-quick-sheet-close.btn,
+html body .mobile-bottom-nav-item,
+html body .password-peek-toggle {
+  background: #e3a16f !important;
+  background-image: none !important;
+  background-color: #e3a16f !important;
+  border: 1px solid rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body .btn:hover,
+html body button.btn:hover,
+html body a.btn:hover,
+html body input.btn:hover,
+html body .topbar .btn:hover,
+html body .control-room-home .btn:hover,
+html body .frontdesk-section .btn:hover,
+html body .home-lexi-popup .btn:hover,
+html body .home-access-form-actions .btn:hover,
+html body .home-trial-form-actions .btn:hover,
+html body .dashboard-actions .btn:hover,
+html body .billing-actions .btn:hover,
+html body .workspace-actions .btn:hover,
+html body .lexi-launch-actions .btn:hover,
+html body .top-lexi-actions .btn:hover,
+html body .hero-lexi-calendar-star-actions .btn:hover,
+html body .home-payment-provider-row .btn:hover,
+html body .mobile-quick-sheet-close.btn:hover,
+html body .mobile-bottom-nav-item:hover,
+html body .password-peek-toggle:hover {
+  background: #d99663 !important;
+  background-image: none !important;
+  background-color: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.38) !important;
+  color: #3b2d23 !important;
+}
+
+html body .btn.btn-ghost,
+html body button.btn-ghost,
+html body a.btn-ghost,
+html body select.btn-ghost,
+html body .topbar .btn-ghost,
+html body .control-room-home .btn-ghost,
+html body .frontdesk-section .btn-ghost,
+html body .home-lexi-popup .btn-ghost,
+html body .home-access-form-actions .btn-ghost,
+html body .home-trial-form-actions .btn-ghost,
+html body .dashboard-actions .btn-ghost,
+html body .billing-actions .btn-ghost,
+html body .workspace-actions .btn-ghost,
+html body .lexi-launch-actions .btn-ghost,
+html body .top-lexi-actions .btn-ghost,
+html body .hero-lexi-calendar-star-actions .btn-ghost,
+html body .home-payment-provider-row .btn-ghost {
+  background: #f8f3ed !important;
+  background-image: none !important;
+  background-color: #f8f3ed !important;
+  border: 1px solid rgba(88, 75, 63, 0.14) !important;
+  color: #3e352f !important;
+  box-shadow: none !important;
+}
+
+html body .btn.btn-ghost:hover,
+html body button.btn-ghost:hover,
+html body a.btn-ghost:hover,
+html body select.btn-ghost:hover,
+html body .topbar .btn-ghost:hover,
+html body .control-room-home .btn-ghost:hover,
+html body .frontdesk-section .btn-ghost:hover,
+html body .home-lexi-popup .btn-ghost:hover,
+html body .home-access-form-actions .btn-ghost:hover,
+html body .home-trial-form-actions .btn-ghost:hover,
+html body .dashboard-actions .btn-ghost:hover,
+html body .billing-actions .btn-ghost:hover,
+html body .workspace-actions .btn-ghost:hover,
+html body .lexi-launch-actions .btn-ghost:hover,
+html body .top-lexi-actions .btn-ghost:hover,
+html body .hero-lexi-calendar-star-actions .btn-ghost:hover,
+html body .home-payment-provider-row .btn-ghost:hover {
+  background: #f1caa8 !important;
+  background-image: none !important;
+  background-color: #f1caa8 !important;
+  border-color: rgba(173, 117, 78, 0.24) !important;
+  color: #3b2d23 !important;
+}
+
+/* TRUE FINAL neutral homepage override
+   This must stay at the very end of the file. */
+html body,
+html body[data-theme-mode="light"],
+html body.control-room-home,
+html body.control-room-home.home-orange-reboot {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(183, 164, 145, 0.2), transparent 30%) !important,
+    linear-gradient(180deg, #eee7de 0%, #e5dccf 100%) !important;
+  color: #2f2924 !important;
+}
+
+html body::before,
+html body[data-theme-mode="light"]::before,
+html body.control-room-home::before,
+html body.control-room-home.home-orange-reboot::before {
+  background-image:
+    linear-gradient(rgba(84, 72, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(84, 72, 61, 0.06) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+  background-position: 0 0, 0 0 !important;
+  mask-image: none !important;
+  opacity: 0.55 !important;
+}
+
+html body .topbar,
+html body .control-room-home > .top-lexi-marquee,
+html body .control-room-home > .hero,
+html body .control-room-home > .command-deck,
+html body .control-room-home > .homepage-flow-grid,
+html body .control-room-home > .control-room-frame,
+html body .top-lexi-portrait-card,
+html body .top-lexi-chat-card,
+html body .hero-chat-demo,
+html body .hero-operator-note,
+html body .hero-capabilities article,
+html body .stat-chip,
+html body .hero-lexi-sell-card,
+html body .hero-chat-status,
+html body .hero-lexi-privacy-note,
+html body .hero-chat-features article,
+html body .hero-lexi-calendar-star,
+html body .hero-lexi-calendar-star-grid article,
+html body .lexi-launch-panel,
+html body .chat-shell,
+html body .trust-strip,
+html body .home-quick-paths,
+html body .homepage-command-rail,
+html body .control-room-sidebar-panel,
+html body .control-room-frame-head,
+html body .home-module-card,
+html body .join-section,
+html body .join-roles,
+html body .pricing-panel,
+html body .role-cta,
+html body .frontdesk-section,
+html body .privacy-promise,
+html body .selected-business,
+html body .finder-grid,
+html body .search-form,
+html body .finder-results,
+html body .launch-strip,
+html body .storyline,
+html body .storyline article,
+html body .experience-card,
+html body .booking-flow-card,
+html body .join-card,
+html body .join-card-benefits,
+html body .impact-card,
+html body .policy,
+html body .policy-card,
+html body .policy-card-accent {
+  background: rgba(255, 251, 246, 0.9) !important;
+  background-image: none !important;
+  border-color: rgba(88, 75, 63, 0.12) !important;
+  color: #2f2924 !important;
+  box-shadow: 0 18px 40px rgba(70, 56, 45, 0.08) !important;
+}
+
+html body .btn,
+html body button.btn,
+html body a.btn,
+html body input.btn,
+html body .topbar .btn,
+html body .control-room-home .btn {
+  background: #e3a16f !important;
+  border-color: rgba(173, 117, 78, 0.26) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body .btn:hover,
+html body button.btn:hover,
+html body a.btn:hover,
+html body input.btn:hover,
+html body .topbar .btn:hover,
+html body .control-room-home .btn:hover {
+  background: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.34) !important;
+}
+
+html body .btn.btn-ghost,
+html body button.btn-ghost,
+html body a.btn-ghost,
+html body select.btn-ghost,
+html body .topbar .btn-ghost,
+html body .control-room-home .btn-ghost {
+  background: #f8f3ed !important;
+  border-color: rgba(88, 75, 63, 0.14) !important;
+  color: #3e352f !important;
+  box-shadow: none !important;
+}
+
+/* Universal final button system
+   Keep this block last so every page uses the same button palette. */
+html body .btn,
+html body button.btn,
+html body a.btn,
+html body input.btn,
+html body .home-lexi-popup .btn,
+html body .home-access-form-actions .btn,
+html body .home-trial-form-actions .btn,
+html body .dashboard-actions .btn,
+html body .billing-actions .btn,
+html body .workspace-actions .btn,
+html body .lexi-launch-actions .btn,
+html body .top-lexi-actions .btn,
+html body .hero-lexi-calendar-star-actions .btn,
+html body .home-payment-provider-row .btn,
+html body .mobile-quick-sheet-close.btn,
+html body .mobile-bottom-nav-item,
+html body .password-peek-toggle {
+  background: #e3a16f !important;
+  background-image: none !important;
+  background-color: #e3a16f !important;
+  border: 1px solid rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body .btn:hover,
+html body button.btn:hover,
+html body a.btn:hover,
+html body input.btn:hover,
+html body .home-lexi-popup .btn:hover,
+html body .home-access-form-actions .btn:hover,
+html body .home-trial-form-actions .btn:hover,
+html body .dashboard-actions .btn:hover,
+html body .billing-actions .btn:hover,
+html body .workspace-actions .btn:hover,
+html body .lexi-launch-actions .btn:hover,
+html body .top-lexi-actions .btn:hover,
+html body .hero-lexi-calendar-star-actions .btn:hover,
+html body .home-payment-provider-row .btn:hover,
+html body .mobile-quick-sheet-close.btn:hover,
+html body .mobile-bottom-nav-item:hover,
+html body .password-peek-toggle:hover {
+  background: #d99663 !important;
+  background-image: none !important;
+  background-color: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.38) !important;
+  color: #3b2d23 !important;
+}
+
+html body .btn.btn-ghost,
+html body button.btn-ghost,
+html body a.btn-ghost,
+html body select.btn-ghost,
+html body .home-lexi-popup .btn-ghost,
+html body .home-access-form-actions .btn-ghost,
+html body .home-trial-form-actions .btn-ghost,
+html body .dashboard-actions .btn-ghost,
+html body .billing-actions .btn-ghost,
+html body .workspace-actions .btn-ghost,
+html body .lexi-launch-actions .btn-ghost,
+html body .top-lexi-actions .btn-ghost,
+html body .hero-lexi-calendar-star-actions .btn-ghost,
+html body .home-payment-provider-row .btn-ghost {
+  background: #f8f3ed !important;
+  background-image: none !important;
+  background-color: #f8f3ed !important;
+  border: 1px solid rgba(88, 75, 63, 0.14) !important;
+  color: #3e352f !important;
+  box-shadow: none !important;
+}
+
+html body .btn.btn-ghost:hover,
+html body button.btn-ghost:hover,
+html body a.btn-ghost:hover,
+html body select.btn-ghost:hover,
+html body .home-lexi-popup .btn-ghost:hover,
+html body .home-access-form-actions .btn-ghost:hover,
+html body .home-trial-form-actions .btn-ghost:hover,
+html body .dashboard-actions .btn-ghost:hover,
+html body .billing-actions .btn-ghost:hover,
+html body .workspace-actions .btn-ghost:hover,
+html body .lexi-launch-actions .btn-ghost:hover,
+html body .top-lexi-actions .btn-ghost:hover,
+html body .hero-lexi-calendar-star-actions .btn-ghost:hover,
+html body .home-payment-provider-row .btn-ghost:hover {
+  background: #f1caa8 !important;
+  background-image: none !important;
+  background-color: #f1caa8 !important;
+  border-color: rgba(173, 117, 78, 0.24) !important;
+  color: #3b2d23 !important;
+}
+
+html body .btn.btn-ghost:hover,
+html body button.btn-ghost:hover,
+html body a.btn-ghost:hover,
+html body select.btn-ghost:hover,
+html body .topbar .btn-ghost:hover,
+html body .control-room-home .btn-ghost:hover {
+  background: #f1caa8 !important;
+  border-color: rgba(173, 117, 78, 0.24) !important;
+  color: #3b2d23 !important;
+}
+
+/* Ask Lexi CTA buttons */
+#headerLexiAskBtn,
+#heroLexiAskBtn,
+#homeLexiLaunchBtn,
+#subscriberCopilotOpenPopup,
+#adminCopilotOpenPopup,
+#customerLexiLaunchBtn,
+#workspaceStarAskLexiBtn,
+[data-open-subscriber-lexi],
+a[href="#frontdesk"].btn,
+.home-lexi-popup .chat-form .btn[type="submit"],
+.home-lexi-popup .customer-chat-form .btn[type="submit"],
+.home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
+  background: #e3a16f !important;
+  border-color: rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+#headerLexiAskBtn:hover,
+#heroLexiAskBtn:hover,
+#homeLexiLaunchBtn:hover,
+#subscriberCopilotOpenPopup:hover,
+#adminCopilotOpenPopup:hover,
+#customerLexiLaunchBtn:hover,
+#workspaceStarAskLexiBtn:hover,
+[data-open-subscriber-lexi]:hover,
+a[href="#frontdesk"].btn:hover,
+.home-lexi-popup .chat-form .btn[type="submit"]:hover,
+.home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
+.home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {
+  background: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.36) !important;
+}
+
+/* Absolute final Ask Lexi button color override */
+html body #headerLexiAskBtn,
+html body #heroLexiAskBtn,
+html body #homeLexiLaunchBtn,
+html body #subscriberCopilotOpenPopup,
+html body #adminCopilotOpenPopup,
+html body #customerLexiLaunchBtn,
+html body #workspaceStarAskLexiBtn,
+html body [data-open-subscriber-lexi],
+html body a[href="#frontdesk"].btn,
+html body .home-lexi-popup .chat-form .btn[type="submit"],
+html body .home-lexi-popup .customer-chat-form .btn[type="submit"],
+html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
+  background: #e3a16f !important;
+  background-image: none !important;
+  border-color: rgba(173, 117, 78, 0.34) !important;
+  color: #3b2d23 !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body #headerLexiAskBtn:hover,
+html body #heroLexiAskBtn:hover,
+html body #homeLexiLaunchBtn:hover,
+html body #subscriberCopilotOpenPopup:hover,
+html body #adminCopilotOpenPopup:hover,
+html body #customerLexiLaunchBtn:hover,
+html body #workspaceStarAskLexiBtn:hover,
+html body [data-open-subscriber-lexi]:hover,
+html body a[href="#frontdesk"].btn:hover,
+html body .home-lexi-popup .chat-form .btn[type="submit"]:hover,
+html body .home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
+html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {
+  background: #d99663 !important;
+  background-image: none !important;
+  border-color: rgba(173, 117, 78, 0.4) !important;
+}
+
+/* Absolute final body override: homepage must match the neutral dashboard/customer background */
+html body,
+html body[data-theme-mode="light"],
+html body.control-room-home,
+html body.control-room-home.home-orange-reboot {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(183, 164, 145, 0.2), transparent 30%) !important,
+    linear-gradient(180deg, #eee7de 0%, #e5dccf 100%) !important;
+  color: #2f2924 !important;
+}
+
+html body::before,
+html body[data-theme-mode="light"]::before,
+html body.control-room-home::before,
+html body.control-room-home.home-orange-reboot::before {
+  background-image:
+    linear-gradient(rgba(84, 72, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(84, 72, 61, 0.06) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+  background-position: 0 0, 0 0 !important;
+  mask-image: none !important;
+  opacity: 0.55 !important;
+}
+
+/* Absolute final homepage grid override */
+body::before,
+body[data-theme-mode="light"]::before,
+.control-room-home::before {
+  background-image:
+    linear-gradient(rgba(84, 72, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(84, 72, 61, 0.06) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+  background-position: 0 0, 0 0 !important;
+  opacity: 0.55 !important;
+  mask-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0.18)) !important;
+}
+
+/* Final neutral homepage override
+   Keep this block last so older homepage redesign rules cannot override it. */
+body,
+body[data-theme-mode="light"] {
+  background:
+    radial-gradient(circle at top left, rgba(183, 164, 145, 0.22), transparent 26%) !important,
+    radial-gradient(circle at 88% 8%, rgba(140, 124, 110, 0.12), transparent 24%) !important,
+    linear-gradient(180deg, #f3ede6 0%, #ebe2d7 32%, #e4d9cd 100%) !important;
+  color: #2f2924 !important;
+}
+
+body::before,
+body[data-theme-mode="light"]::before {
+  background-image:
+    linear-gradient(rgba(84, 72, 61, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(84, 72, 61, 0.06) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+  mask-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0.18)) !important;
+}
+
+.topbar,
+.control-room-home > .top-lexi-marquee,
+.control-room-home > .hero,
+.control-room-home > .command-deck,
+.control-room-home > .homepage-flow-grid,
+.control-room-home > .control-room-frame,
+.top-lexi-portrait-card,
+.top-lexi-chat-card,
+.hero-chat-demo,
+.hero-operator-note,
+.hero-capabilities article,
+.stat-chip,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.hero-chat-features article,
+.hero-lexi-calendar-star,
+.hero-lexi-calendar-star-grid article,
+.lexi-launch-panel,
+.chat-shell,
+.trust-strip,
+.home-quick-paths,
+.homepage-command-rail,
+.control-room-frame,
+.control-room-sidebar-panel,
+.control-room-frame-head,
+.home-module-card {
+  border-color: rgba(88, 75, 63, 0.12) !important;
+  background: rgba(255, 251, 246, 0.82) !important;
+  background-image: none !important;
+  box-shadow: 0 18px 40px rgba(70, 56, 45, 0.08) !important;
+}
+
+.topbar .btn,
+.control-room-home .btn,
+.btn,
+button.btn,
+a.btn,
+input.btn {
+  border-color: rgba(79, 68, 59, 0.2) !important;
+  background: linear-gradient(135deg, #3d342d 0%, #6d5e52 58%, #908173 100%) !important;
+  color: #fffdfa !important;
+  box-shadow: 0 12px 24px rgba(70, 56, 45, 0.12) !important;
+}
+
+.topbar .btn:hover,
+.control-room-home .btn:hover,
+.btn:hover {
+  background: linear-gradient(135deg, #463c35 0%, #77685b 58%, #9a8c7d 100%) !important;
+  box-shadow: 0 14px 28px rgba(70, 56, 45, 0.14) !important;
+}
+
+.topbar .btn-ghost,
+.control-room-home .btn-ghost,
+.btn.btn-ghost,
+button.btn-ghost,
+a.btn-ghost,
+select.btn-ghost {
+  background: #f8f3ed !important;
+  border-color: rgba(88, 75, 63, 0.14) !important;
+  color: #3e352f !important;
+  box-shadow: none !important;
+}
+
+.top-lexi-chat-head span,
+.eyebrow,
+.top-lexi-chat-head p,
+.top-lexi-portrait-copy p,
+.hero-lexi-calendar-star-kicker,
+.lexi-launch-kicker,
+.command-deck-card p,
+.control-room-sidebar-label,
+.trust-label {
+  color: #6d5e52 !important;
+}
+
+.top-lexi-bubble.user {
+  background: linear-gradient(135deg, #3d342d 0%, #6d5e52 58%, #908173 100%) !important;
+}
+
+.top-lexi-bubble.assistant {
+  background: #f2ece4 !important;
+  border: 1px solid rgba(88, 75, 63, 0.12) !important;
+  color: #3c342e !important;
+}
+
+/* Shared Neutral Theme Control Center
+   Edit these variables to update the app-wide theme. */
+:root {
+  --theme-body-bg: #eee7de;
+  --theme-body-bg-2: #e5dccf;
+  --theme-grid-line: rgba(84, 72, 61, 0.08);
+  --theme-surface: rgba(255, 251, 246, 0.88);
+  --theme-surface-strong: rgba(255, 253, 250, 0.96);
+  --theme-border: rgba(88, 75, 63, 0.12);
+  --theme-ink: #2f2924;
+  --theme-muted: #6b5f56;
+  --theme-accent: #6d5e52;
+  --theme-accent-strong: #4f443b;
+  --theme-accent-soft: rgba(109, 94, 82, 0.16);
+  --theme-accent-gradient: linear-gradient(135deg, #3d342d 0%, #6d5e52 58%, #908173 100%);
+  --theme-user-bubble: #e3a16f;
+  --theme-assistant-bubble: #f2ece4;
+  --bg: var(--theme-body-bg);
+  --bg-2: var(--theme-body-bg-2);
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --surface: var(--theme-surface);
+  --surface-2: var(--theme-surface-strong);
+  --line: var(--theme-border);
+  --line-strong: rgba(109, 94, 82, 0.26);
+  --primary: var(--theme-accent);
+  --primary-strong: var(--theme-accent-strong);
+  --teal: #8b8074;
+  --gold: #b29f8d;
+  --danger: #9f6d59;
+  --accent-metal: rgba(109, 94, 82, 0.22);
+  --accent-metal-soft: rgba(109, 94, 82, 0.1);
+  --glow: 0 0 0 1px rgba(109, 94, 82, 0.12), 0 0 24px rgba(109, 94, 82, 0.12);
+  --card-shadow: 0 18px 44px rgba(70, 56, 45, 0.1);
+  --card-shadow-soft: 0 10px 24px rgba(70, 56, 45, 0.07);
+}
+
+body,
+body[data-theme-mode="light"] {
+  color: var(--theme-ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(183, 164, 145, 0.22), transparent 28%),
+    radial-gradient(circle at 86% 10%, rgba(140, 124, 110, 0.14), transparent 26%),
+    linear-gradient(180deg, var(--theme-body-bg) 0%, var(--theme-body-bg-2) 100%);
+}
+
+body::before,
+body[data-theme-mode="light"]::before {
+  background-image:
+    linear-gradient(var(--theme-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--theme-grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: none;
+  opacity: 0.7;
+}
+
+::selection {
+  background: rgba(109, 94, 82, 0.2);
+  color: #fffdfa;
+}
+
+.topbar,
+.panel,
+.auth-card,
+.dash-card,
+.integration-card,
+.salon-item,
+.stat-chip,
+.policy-card,
+.chat-shell,
+.chat-window,
+.home-lexi-popup,
+.home-lexi-popup .home-lexi-popup-chat-slot,
+.home-lexi-popup .business-lexi-popup-chat-slot,
+.home-lexi-popup .chat-window,
+.home-lexi-popup .customer-chat-box,
+.home-lexi-popup .business-lexi-chat-box,
+.home-lexi-popup .lexi-avatar-stage,
+.home-lexi-popup .lexi-avatar-note,
+.home-lexi-popup .lexi-avatar-transcript,
+.home-access-modal,
+.home-trial-modal,
+.home-customer-panel,
+.home-customer-choice-card,
+.home-payment-setup-block {
+  color: var(--theme-ink);
+  background: var(--theme-surface-strong) !important;
+  background-image: none !important;
+  border-color: var(--theme-border) !important;
+  box-shadow: var(--card-shadow-soft);
+}
+
+.btn,
+.nav-admin-only,
+.home-lexi-popup .btn:not(.btn-ghost),
+.home-trial-modal .btn:not(.btn-ghost),
+.home-access-modal .btn:not(.btn-ghost) {
+  background: var(--theme-accent-gradient) !important;
+  color: #fffdfa !important;
+  border-color: rgba(79, 68, 59, 0.18) !important;
+  box-shadow: 0 10px 24px rgba(70, 56, 45, 0.12) !important;
+}
+
+.btn-ghost,
+select.btn-ghost,
+.home-lexi-popup .btn-ghost,
+.home-lexi-popup-close,
+.theme-toggle,
+.theme-toggle.theme-toggle-nav {
+  background: #f8f3ed !important;
+  color: #3e352f !important;
+  border-color: var(--theme-border) !important;
+  box-shadow: none !important;
+}
+
+input,
+select,
+textarea,
+.chat-form input,
+.chat-form textarea,
+.home-access-form input,
+.home-access-form select,
+.home-access-form textarea,
+.home-customer-panel input,
+.home-customer-panel select,
+.home-customer-panel textarea {
+  background: var(--theme-surface-strong) !important;
+  color: var(--theme-ink) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.msg.assistant,
+.customer-chat-msg.ai,
+.home-lexi-popup .msg.assistant,
+.home-lexi-popup .customer-chat-msg.ai,
+.home-lexi-popup .business-lexi-chat-box .customer-chat-msg.ai {
+  background: var(--theme-assistant-bubble) !important;
+  color: #3c342e !important;
+  border-color: var(--theme-border) !important;
+}
+
+.msg.user,
+.customer-chat-msg.user,
+.home-lexi-popup .msg.user,
+.home-lexi-popup .customer-chat-msg.user,
+.home-lexi-popup .business-lexi-chat-box .customer-chat-msg.user {
+  background: var(--theme-user-bubble) !important;
+  color: #fffdfa !important;
+  border-color: transparent !important;
+}
+
+.hero-lexi-calendar-star,
+.hero-lexi-calendar-star-grid article,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.hero-chat-features article,
+.chat-shell,
+.trust-strip,
+.trust-strip li,
+.home-quick-paths,
+.home-quick-path-card,
+.homepage-command-rail,
+.control-room-frame,
+.control-room-frame-head,
+.control-room-sidebar-panel,
+.privacy-promise,
+.privacy-promise-grid article,
+.home-business-modules,
+.home-module-card {
+  background-image: none !important;
+}
+
+.hero-lexi-calendar-star,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.hero-chat-features article,
+.chat-shell,
+.trust-strip,
+.home-quick-paths,
+.homepage-command-rail,
+.control-room-frame,
+.control-room-frame-head,
+.control-room-sidebar-panel,
+.privacy-promise,
+.home-business-modules {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.hero-lexi-calendar-star-grid article,
+.trust-strip li,
+.home-quick-path-card,
+.privacy-promise-grid article,
+.home-module-card {
+  background-color: rgba(255, 252, 248, 0.94) !important;
+  border-color: rgba(93, 60, 39, 0.1) !important;
+}
+
+.hero-chat-demo .chat-window,
+.hero-chat-demo .chat-form input,
+.hero-chat-demo .lexi-booking-guide,
+.hero-chat-demo .lexi-booking-guide-step,
+.hero-chat-demo .lexi-booking-guide-head,
+.hero-chat-demo .selected-business,
+.hero-chat-demo .selected-business-card,
+.hero-chat-demo .salon-item {
+  background-image: none !important;
+  background-color: rgba(255, 252, 248, 0.94) !important;
+  border-color: rgba(93, 60, 39, 0.1) !important;
+  color: #2d1d15 !important;
+}
+
+.hero-chat-demo .msg.assistant {
+  background: rgba(255, 247, 240, 0.96) !important;
+  border-color: rgba(93, 60, 39, 0.1) !important;
+  color: #3a271d !important;
+}
+
+.hero-chat-demo .msg.user {
+  background: linear-gradient(135deg, #231611 0%, #d15a34 58%, #f0a36a 100%) !important;
+  border-color: transparent !important;
+  color: #fff8f3 !important;
+}
+
+.hero-chat-demo .section-header h2,
+  .hero-chat-demo .section-header p,
+  .hero-chat-demo .lexi-chat-head strong,
+  .hero-chat-demo .lexi-chat-head small,
+  .hero-chat-demo .lexi-booking-guide strong,
+  .hero-chat-demo .lexi-booking-guide small,
+  .hero-chat-demo .selected-business h3,
+  .hero-chat-demo .selected-business h4,
+  .hero-chat-demo .selected-business p,
+  .privacy-promise-grid h3,
+  .privacy-promise-grid p,
+  .trust-strip li {
+  color: #4d382c !important;
+}
+
+/* Orange homepage rebuild */
+.home-orange-reboot {
+  width: min(1380px, 96vw);
+  gap: 1.6rem;
+}
+
+.home-orange-reboot .topbar {
+  width: 100%;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage,
+.home-orange-reboot .home-story-band,
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  border: 1px solid rgba(110, 59, 30, 0.12) !important;
+  box-shadow:
+    0 28px 80px rgba(125, 71, 39, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.home-orange-reboot .home-hero-band::after,
+.home-orange-reboot .home-conversion-stage::after,
+.home-orange-reboot .home-story-band::after,
+.home-orange-reboot .home-path-band::after,
+.home-orange-reboot .home-control-band::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -60px -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 151, 90, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.home-orange-reboot .home-hero-band {
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.95fr);
+  padding: 1.8rem;
+  background:
+    radial-gradient(circle at 15% 14%, rgba(255, 194, 154, 0.7), transparent 24%),
+    linear-gradient(135deg, #fff6ec 0%, #f8e7d4 48%, #f2dbc8 100%) !important;
+}
+
+.home-orange-reboot .top-lexi-copy {
+  align-content: stretch;
+  gap: 1.1rem;
+}
+
+.home-orange-reboot .top-lexi-copy h2 {
+  font-size: clamp(2.9rem, 6vw, 5.8rem);
+  max-width: 8ch;
+  line-height: 0.88;
+}
+
+.home-orange-reboot .top-lexi-copy > p:last-of-type {
+  max-width: 54ch;
+  font-size: 1.06rem;
+}
+
+.home-orange-reboot .top-lexi-actions {
+  margin-top: 0.2rem;
+}
+
+.home-orange-reboot .top-lexi-stage {
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
+  gap: 1.1rem;
+}
+
+.home-orange-reboot .top-lexi-portrait-card {
+  align-content: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(249, 234, 220, 0.96)) !important;
+}
+
+.home-orange-reboot .top-lexi-chat-card {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.88), rgba(248, 236, 225, 0.98)) !important;
+}
+
+.home-orange-reboot .top-lexi-chat-thread {
+  padding: 0.4rem 0;
+}
+
+.home-orange-reboot .top-lexi-pills span,
+.home-orange-reboot .hero-badges span,
+.home-orange-reboot .cta-proof strong,
+.home-orange-reboot .cta-proof span {
+  backdrop-filter: blur(10px);
+}
+
+.home-orange-reboot .home-conversion-stage {
+  grid-template-columns: minmax(0, 1.04fr) minmax(470px, 0.96fr);
+  padding: 1.8rem;
+  background:
+    radial-gradient(circle at top right, rgba(243, 157, 96, 0.22), transparent 26%),
+    linear-gradient(135deg, #fff9f4 0%, #f7ecdf 100%) !important;
+}
+
+.home-orange-reboot .hero-copy {
+  gap: 0.45rem;
+  padding-right: 0.4rem;
+}
+
+.home-orange-reboot .hero-copy h1 {
+  font-size: clamp(3rem, 6vw, 5.6rem);
+  margin-top: 0.35rem;
+}
+
+.home-orange-reboot .hero-text {
+  max-width: 58ch;
+  font-size: 1.05rem;
+}
+
+.home-orange-reboot .hero-capabilities {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.home-orange-reboot .hero-capabilities article,
+.home-orange-reboot .stat-chip {
+  border-radius: 18px;
+  background: rgba(255, 252, 248, 0.92) !important;
+}
+
+.home-orange-reboot .hero-chat-demo {
+  padding: 1.2rem;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(249, 238, 228, 0.94)) !important;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header {
+  margin-bottom: 0.1rem;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header h2 {
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+}
+
+.home-orange-reboot .hero-lexi-calendar-star {
+  padding: 1rem;
+}
+
+.home-orange-reboot .hero-chat-status,
+.home-orange-reboot .hero-lexi-privacy-note {
+  padding: 0.9rem 1rem;
+}
+
+.home-orange-reboot .hero-chat-features {
+  gap: 0.65rem;
+}
+
+.home-orange-reboot .hero-chat-features article {
+  min-height: 0;
+  border-radius: 16px;
+}
+
+.home-orange-reboot .home-story-band {
+  padding: 1.45rem;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 241, 0.92), rgba(248, 236, 223, 0.94)) !important;
+}
+
+.home-orange-reboot .command-deck-intro {
+  grid-template-columns: minmax(0, 1.2fr) auto;
+  gap: 1.4rem;
+}
+
+.home-orange-reboot .command-deck-intro h2 {
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  max-width: 20ch;
+}
+
+.home-orange-reboot .command-deck-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.home-orange-reboot .command-deck-card {
+  min-height: 11.5rem;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.home-orange-reboot .home-path-band {
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.82fr);
+  padding: 1.4rem;
+  background:
+    linear-gradient(135deg, rgba(255, 251, 245, 0.94), rgba(247, 237, 226, 0.96)) !important;
+}
+
+.home-orange-reboot .trust-strip {
+  padding: 1rem 1.1rem;
+  border-radius: 22px;
+}
+
+.home-orange-reboot .trust-strip ul {
+  gap: 0.7rem;
+}
+
+.home-orange-reboot .trust-strip li {
+  border-radius: 16px;
+  padding: 0.7rem 0.45rem;
+}
+
+.home-orange-reboot .home-quick-paths {
+  border-radius: 26px;
+  padding: 1rem;
+}
+
+.home-orange-reboot .home-quick-path-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.home-orange-reboot .home-quick-path-card {
+  min-height: 12rem;
+  padding: 1rem;
+  border-radius: 22px;
+  display: grid;
+  align-content: space-between;
+}
+
+.home-orange-reboot .homepage-command-rail {
+  padding: 1.1rem;
+  border-radius: 28px;
+}
+
+.home-orange-reboot .homepage-command-steps {
+  gap: 0.8rem;
+}
+
+.home-orange-reboot .home-control-band {
+  padding: 1.4rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 240, 0.94), rgba(247, 236, 223, 0.98)) !important;
+}
+
+.home-orange-reboot .control-room-frame-head {
+  padding: 1.15rem 1.2rem;
+  border-radius: 24px;
+}
+
+.home-orange-reboot .control-room-frame-head h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.home-orange-reboot .control-room-frame-grid {
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
+  gap: 1.2rem;
+}
+
+.home-orange-reboot .control-room-sidebar {
+  gap: 1rem;
+}
+
+.home-orange-reboot .control-room-sidebar-panel {
+  border-radius: 22px;
+  padding: 1rem;
+}
+
+.home-orange-reboot .home-module-grid {
+  gap: 0.9rem;
+}
+
+.home-orange-reboot .home-module-card {
+  min-height: 0;
+  padding: 1rem;
+  border-radius: 22px;
+}
+
+.home-orange-reboot .privacy-promise-grid {
+  gap: 0.85rem;
+}
+
+.home-orange-reboot .privacy-promise-grid article {
+  border-radius: 18px;
+}
+
+@media (max-width: 1180px) {
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage,
+  .home-orange-reboot .home-path-band,
+  .home-orange-reboot .control-room-frame-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-orange-reboot .top-lexi-copy h2,
+  .home-orange-reboot .hero-copy h1,
+  .home-orange-reboot .command-deck-intro h2 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage,
+  .home-orange-reboot .home-story-band,
+  .home-orange-reboot .home-path-band,
+  .home-orange-reboot .home-control-band {
+    border-radius: 28px;
+    padding: 1rem;
+  }
+
+  .home-orange-reboot .top-lexi-stage,
+  .home-orange-reboot .home-quick-path-grid,
+  .home-orange-reboot .command-deck-grid,
+  .home-orange-reboot .hero-capabilities,
+  .home-orange-reboot .hero-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Final tighten + remove dark bleed on homepage */
+.home-orange-reboot {
+  gap: 1.1rem;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage,
+.home-orange-reboot .home-story-band,
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band {
+  padding: 1.1rem;
+}
+
+.home-orange-reboot .top-lexi-copy,
+.home-orange-reboot .hero-copy,
+.home-orange-reboot .command-deck,
+.home-orange-reboot .control-room-frame-main,
+.home-orange-reboot .homepage-flow-main {
+  gap: 0.75rem;
+}
+
+.home-orange-reboot .top-lexi-copy h2 {
+  font-size: clamp(2.35rem, 5vw, 4.4rem);
+}
+
+.home-orange-reboot .hero-copy h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.home-orange-reboot .top-lexi-copy > p:last-of-type,
+.home-orange-reboot .hero-text,
+.home-orange-reboot .command-deck-intro p:not(.eyebrow),
+.home-orange-reboot .section-header p,
+.home-orange-reboot .control-room-frame-head p:last-child {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.home-orange-reboot .hero-operator-note,
+.home-orange-reboot .hero-badges,
+.home-orange-reboot .hero-cta-note {
+  display: none;
+}
+
+.home-orange-reboot .hero-capabilities {
+  margin-top: 0.35rem;
+}
+
+.home-orange-reboot .hero-capabilities article,
+.home-orange-reboot .stat-chip,
+.home-orange-reboot .command-deck-card,
+.home-orange-reboot .home-quick-path-card,
+.home-orange-reboot .home-module-card,
+.home-orange-reboot .privacy-promise-grid article {
+  min-height: 0 !important;
+}
+
+.home-orange-reboot .command-deck-intro,
+.home-orange-reboot .command-deck-grid,
+.home-orange-reboot .home-quick-path-grid,
+.home-orange-reboot .control-room-frame-grid {
+  gap: 0.8rem;
+}
+
+.home-orange-reboot .homepage-command-steps {
+  gap: 0.55rem;
+}
+
+.home-orange-reboot .trust-strip,
+.home-orange-reboot .home-quick-paths,
+.home-orange-reboot .homepage-command-rail,
+.home-orange-reboot .control-room-frame-head,
+.home-orange-reboot .control-room-sidebar-panel,
+.home-orange-reboot .hero-lexi-calendar-star,
+.home-orange-reboot .hero-lexi-calendar-star-grid article,
+.home-orange-reboot .hero-lexi-sell-card,
+.home-orange-reboot .hero-chat-status,
+.home-orange-reboot .hero-lexi-privacy-note,
+.home-orange-reboot .hero-chat-features article,
+.home-orange-reboot .chat-shell,
+.home-orange-reboot .privacy-promise,
+.home-orange-reboot .privacy-promise-grid article,
+.home-orange-reboot .home-business-modules,
+.home-orange-reboot .home-module-card,
+.home-orange-reboot .home-quick-path-card,
+.home-orange-reboot .command-deck-card,
+.home-orange-reboot .stat-chip,
+.home-orange-reboot .hero-capabilities article {
+  background: rgba(255, 251, 246, 0.96) !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  color: #2f1c14 !important;
+}
+
+.home-orange-reboot .trust-strip li,
+.home-orange-reboot .chat-window,
+.home-orange-reboot .lexi-booking-guide,
+.home-orange-reboot .lexi-booking-guide-head,
+.home-orange-reboot .lexi-booking-guide-step,
+.home-orange-reboot .selected-business,
+.home-orange-reboot .selected-business-card,
+.home-orange-reboot .salon-item,
+.home-orange-reboot .chat-form input {
+  background: rgba(255, 252, 248, 0.98) !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  color: #2f1c14 !important;
+}
+
+.home-orange-reboot .section-header h2,
+.home-orange-reboot .command-deck-card h3,
+.home-orange-reboot .home-quick-path-card strong,
+.home-orange-reboot .home-module-card strong,
+.home-orange-reboot .control-room-sidebar-panel a,
+.home-orange-reboot .homepage-command-rail-head h2,
+.home-orange-reboot .hero-chat-features h3,
+.home-orange-reboot .hero-lexi-calendar-star-grid strong,
+.home-orange-reboot .hero-chat-status strong,
+.home-orange-reboot .hero-lexi-sell-head strong,
+.home-orange-reboot .hero-capabilities h3,
+.home-orange-reboot .stat-chip h3 {
+  color: #2b180f !important;
+}
+
+.home-orange-reboot .command-deck-card span,
+.home-orange-reboot .home-quick-path-card small,
+.home-orange-reboot .home-module-card small,
+.home-orange-reboot .hero-chat-features p,
+.home-orange-reboot .hero-lexi-privacy-note p,
+.home-orange-reboot .hero-chat-status p,
+.home-orange-reboot .hero-lexi-business-meta,
+.home-orange-reboot .hero-lexi-calendar-star-grid small,
+.home-orange-reboot .homepage-command-proof p,
+.home-orange-reboot .homepage-command-rail-head p:not(.eyebrow),
+.home-orange-reboot .homepage-command-steps li,
+.home-orange-reboot .privacy-promise-grid p,
+.home-orange-reboot .control-room-sidebar-panel ul,
+.home-orange-reboot .section-header p {
+  color: #6a4e3e !important;
+}
+
+.home-orange-reboot .msg.assistant {
+  background: rgba(255, 246, 239, 0.98) !important;
+  border-color: rgba(110, 59, 30, 0.12) !important;
+  color: #3d281d !important;
+}
+
+.home-orange-reboot .msg.user {
+  background: linear-gradient(135deg, #24150f 0%, #d25b35 58%, #f0a66d 100%) !important;
+  border-color: transparent !important;
+  color: #fff8f2 !important;
+}
+
+@media (max-width: 860px) {
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage,
+  .home-orange-reboot .home-story-band,
+  .home-orange-reboot .home-path-band,
+  .home-orange-reboot .home-control-band {
+    padding: 0.9rem;
+    border-radius: 24px;
+  }
+
+  .home-orange-reboot .top-lexi-copy h2,
+  .home-orange-reboot .hero-copy h1 {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+  }
+}
+
+/* Homepage simplification + single-theme background */
+body {
+  background: #f5e8db;
+  color: #21160f;
+}
+
+body::before {
+  background-image:
+    linear-gradient(rgba(92, 58, 36, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 58, 36, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: none;
+  opacity: 0.55;
+}
+
+.home-orange-reboot {
+  --home-paper: #fbf3eb;
+  --home-paper-strong: #fff7f0;
+  --home-line: rgba(110, 59, 30, 0.1);
+  --home-ink: #2b180f;
+  --home-muted: #6c4f3f;
+  gap: 1rem;
+}
+
+.home-orange-reboot .home-story-band {
+  display: none;
+}
+
+.home-orange-reboot .home-path-band {
+  grid-template-columns: 1fr;
+}
+
+.home-orange-reboot .homepage-command-rail,
+.home-orange-reboot .control-room-sidebar,
+.home-orange-reboot .hero-lexi-privacy-note,
+.home-orange-reboot .hero-chat-features,
+.home-orange-reboot .cta-proof,
+.home-orange-reboot .hero-stats {
+  display: none !important;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage,
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band,
+.home-orange-reboot .topbar {
+  background: var(--home-paper) !important;
+  background-image: none !important;
+  border-color: var(--home-line) !important;
+}
+
+.home-orange-reboot .top-lexi-portrait-card,
+.home-orange-reboot .top-lexi-chat-card,
+.home-orange-reboot .hero-chat-demo,
+.home-orange-reboot .hero-lexi-calendar-star,
+.home-orange-reboot .hero-lexi-calendar-star-grid article,
+.home-orange-reboot .hero-lexi-sell-card,
+.home-orange-reboot .chat-shell,
+.home-orange-reboot .trust-strip,
+.home-orange-reboot .home-quick-paths,
+.home-orange-reboot .control-room-frame,
+.home-orange-reboot .control-room-frame-head,
+.home-orange-reboot .privacy-promise,
+.home-orange-reboot .privacy-promise-grid article,
+.home-orange-reboot .home-business-modules,
+.home-orange-reboot .home-module-card,
+.home-orange-reboot .command-deck-card,
+.home-orange-reboot .hero-capabilities article {
+  background: var(--home-paper-strong) !important;
+  background-image: none !important;
+  border-color: var(--home-line) !important;
+  box-shadow: none !important;
+}
+
+.home-orange-reboot .trust-strip li,
+.home-orange-reboot .home-quick-path-card,
+.home-orange-reboot .chat-window,
+.home-orange-reboot .lexi-booking-guide,
+.home-orange-reboot .lexi-booking-guide-head,
+.home-orange-reboot .lexi-booking-guide-step,
+.home-orange-reboot .selected-business,
+.home-orange-reboot .selected-business-card,
+.home-orange-reboot .salon-item,
+.home-orange-reboot .chat-form input {
+  background: var(--home-paper-strong) !important;
+  background-image: none !important;
+  border-color: var(--home-line) !important;
+  box-shadow: none !important;
+}
+
+.home-orange-reboot .top-lexi-copy h2,
+.home-orange-reboot .hero-copy h1,
+.home-orange-reboot .section-header h2,
+.home-orange-reboot .control-room-frame-head h2,
+.home-orange-reboot .command-deck-intro h2,
+.home-orange-reboot .command-deck-card h3,
+.home-orange-reboot .home-quick-path-card strong,
+.home-orange-reboot .home-module-card strong,
+.home-orange-reboot .hero-capabilities h3,
+.home-orange-reboot .hero-lexi-sell-head strong,
+.home-orange-reboot .hero-lexi-calendar-star-head h3,
+.home-orange-reboot .hero-lexi-calendar-star-grid strong,
+.home-orange-reboot .lexi-chat-head strong {
+  color: var(--home-ink) !important;
+}
+
+.home-orange-reboot .top-lexi-copy > p:last-of-type,
+.home-orange-reboot .hero-text,
+.home-orange-reboot .section-header p,
+.home-orange-reboot .command-deck-intro p:not(.eyebrow),
+.home-orange-reboot .command-deck-card span,
+.home-orange-reboot .home-quick-path-card small,
+.home-orange-reboot .home-module-card small,
+.home-orange-reboot .privacy-promise-grid p,
+.home-orange-reboot .privacy-promise p,
+.home-orange-reboot .hero-capabilities p,
+.home-orange-reboot .hero-lexi-business-meta,
+.home-orange-reboot .hero-lexi-calendar-star-grid small,
+.home-orange-reboot .lexi-chat-head small,
+.home-orange-reboot .lexi-booking-guide small,
+.home-orange-reboot .selected-business p {
+  color: var(--home-muted) !important;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage,
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band {
+  padding: 1rem !important;
+  border-radius: 28px !important;
+}
+
+.home-orange-reboot .home-hero-band {
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
+}
+
+.home-orange-reboot .home-conversion-stage {
+  grid-template-columns: minmax(0, 0.95fr) minmax(430px, 1.05fr);
+}
+
+.home-orange-reboot .hero-copy,
+.home-orange-reboot .top-lexi-copy {
+  gap: 0.65rem;
+}
+
+.home-orange-reboot .hero-capabilities {
+  margin-top: 0.2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.home-orange-reboot .home-quick-path-grid,
+.home-orange-reboot .privacy-promise-grid,
+.home-orange-reboot .home-module-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.home-orange-reboot .hero-chat-demo {
+  padding: 1rem;
+}
+
+.home-orange-reboot .msg.assistant {
+  background: #fff3e8 !important;
+  border-color: var(--home-line) !important;
+  color: #3e291d !important;
+}
+
+.home-orange-reboot .msg.user,
+.home-orange-reboot .top-lexi-bubble.user {
+  background: linear-gradient(135deg, #2c1a12 0%, #cf5c36 58%, #ef9f66 100%) !important;
+  color: #fff8f2 !important;
+  border-color: transparent !important;
+}
+
+.home-orange-reboot .top-lexi-bubble.assistant {
+  background: #fff4ea !important;
+  border-color: var(--home-line) !important;
+  color: #422d21 !important;
+}
+
+@media (max-width: 1100px) {
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage,
+  .home-orange-reboot .home-quick-path-grid,
+  .home-orange-reboot .privacy-promise-grid,
+  .home-orange-reboot .home-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cleaner homepage pass */
+.home-orange-reboot {
+  width: min(1240px, 94vw);
+  gap: 1.2rem;
+}
+
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band {
+  display: none;
+}
+
+.home-orange-reboot .topbar {
+  width: min(1240px, 94vw);
+  margin: 0.9rem auto 0;
+  padding: 0.85rem 1rem;
+  border-radius: 20px;
+  background: rgba(251, 243, 235, 0.92) !important;
+  border-color: rgba(95, 57, 35, 0.12) !important;
+  box-shadow: 0 12px 32px rgba(99, 63, 40, 0.08) !important;
+}
+
+.home-orange-reboot .nav {
+  gap: 0.85rem;
+  font-size: 0.88rem;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage {
+  border-radius: 26px !important;
+  padding: 1rem !important;
+  box-shadow: 0 18px 44px rgba(108, 68, 42, 0.08) !important;
+}
+
+.home-orange-reboot .home-hero-band {
+  grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+}
+
+.home-orange-reboot .home-conversion-stage {
+  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+}
+
+.home-orange-reboot .top-lexi-copy h2 {
+  font-size: clamp(2.7rem, 5vw, 4.8rem);
+  max-width: 8ch;
+}
+
+.home-orange-reboot .hero-copy h1 {
+  font-size: clamp(2.8rem, 5vw, 4.9rem);
+  max-width: 10ch;
+}
+
+.home-orange-reboot .top-lexi-copy > p:last-of-type,
+.home-orange-reboot .hero-text {
+  max-width: 46ch;
+  font-size: 0.98rem !important;
+}
+
+.home-orange-reboot .top-lexi-pills,
+.home-orange-reboot .hero-capabilities article:nth-child(n+4) {
+  display: none;
+}
+
+.home-orange-reboot .hero-capabilities {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.home-orange-reboot .hero-capabilities article,
+.home-orange-reboot .top-lexi-portrait-card,
+.home-orange-reboot .top-lexi-chat-card,
+.home-orange-reboot .hero-chat-demo,
+.home-orange-reboot .hero-lexi-calendar-star,
+.home-orange-reboot .hero-lexi-calendar-star-grid article,
+.home-orange-reboot .hero-lexi-sell-card,
+.home-orange-reboot .chat-shell {
+  border-radius: 18px !important;
+}
+
+.home-orange-reboot .top-lexi-stage {
+  align-items: stretch;
+}
+
+.home-orange-reboot .top-lexi-portrait-card {
+  padding: 0.9rem;
+}
+
+.home-orange-reboot .top-lexi-portrait-image {
+  width: min(100%, 260px);
+}
+
+.home-orange-reboot .top-lexi-chat-card {
+  padding: 0.9rem;
+}
+
+.home-orange-reboot .top-lexi-chat-head strong,
+.home-orange-reboot .hero-lexi-sell-head strong,
+.home-orange-reboot .lexi-chat-head strong {
+  font-size: 0.95rem;
+}
+
+.home-orange-reboot .hero-chat-demo {
+  gap: 0.65rem;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header {
+  gap: 0.2rem;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header h2 {
+  font-size: 1.25rem !important;
+}
+
+.home-orange-reboot .hero-lexi-calendar-star-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.home-orange-reboot .hero-lexi-sell-card {
+  padding: 0.85rem;
+}
+
+.home-orange-reboot .lexi-launch-panel {
+  padding: 0.85rem;
+}
+
+.home-orange-reboot .chat-shell {
+  padding: 0.85rem;
+}
+
+.home-orange-reboot .chat-window {
+  min-height: 240px !important;
+}
+
+.home-orange-reboot .lexi-booking-guide {
+  display: none !important;
+}
+
+.home-orange-reboot .top-lexi-copy,
+.home-orange-reboot .hero-copy,
+.home-orange-reboot .hero-chat-demo {
+  align-content: start;
+}
+
+@media (max-width: 980px) {
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .home-orange-reboot .top-lexi-copy h2,
+  .home-orange-reboot .hero-copy h1 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-orange-reboot {
+    width: min(96vw, 96vw);
+  }
+
+  .home-orange-reboot .topbar {
+    width: min(96vw, 96vw);
+  }
+
+  .home-orange-reboot .hero-capabilities,
+  .home-orange-reboot .hero-lexi-calendar-star-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-orange-reboot .top-lexi-copy h2,
+  .home-orange-reboot .hero-copy h1 {
+    font-size: clamp(2.15rem, 10vw, 3.4rem);
+  }
+}
+
+/* Minimal homepage reset */
+.home-orange-reboot {
+  width: min(1180px, 92vw);
+  gap: 1rem;
+}
+
+.home-orange-reboot .home-story-band,
+.home-orange-reboot .home-path-band,
+.home-orange-reboot .home-control-band {
+  display: none !important;
+}
+
+.home-orange-reboot .topbar {
+  width: min(1180px, 92vw);
+  background: rgba(251, 243, 235, 0.94) !important;
+}
+
+.home-orange-reboot .home-hero-band {
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+  padding: 1.1rem !important;
+  border-radius: 24px !important;
+  background: #fbf3eb !important;
+}
+
+.home-orange-reboot .top-lexi-copy h2 {
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  max-width: 8ch;
+}
+
+.home-orange-reboot .top-lexi-copy > p:last-of-type {
+  max-width: 42ch;
+}
+
+.home-orange-reboot .top-lexi-stage {
+  grid-template-columns: minmax(220px, 0.62fr) minmax(0, 1fr);
+}
+
+.home-orange-reboot .top-lexi-portrait-card {
+  display: grid;
+  align-content: center;
+  min-height: 100%;
+}
+
+.home-orange-reboot .top-lexi-chat-card {
+  border-radius: 20px !important;
+  padding: 1rem;
+  background: #fff7f0 !important;
+}
+
+.home-orange-reboot .home-conversion-stage {
+  grid-template-columns: 1fr;
+  padding: 1rem !important;
+  border-radius: 24px !important;
+  background: #fbf3eb !important;
+}
+
+.home-orange-reboot .hero-copy {
+  display: none;
+}
+
+.home-orange-reboot .hero-chat-demo {
+  margin-top: 0;
+  border-radius: 20px !important;
+  padding: 1rem;
+  background: #fff7f0 !important;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header {
+  margin-bottom: 0.2rem;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header h2 {
+  font-size: 1.35rem !important;
+}
+
+.home-orange-reboot .hero-chat-demo .section-header p {
+  max-width: 44ch;
+}
+
+.home-orange-reboot .hero-lexi-calendar-star,
+.home-orange-reboot .hero-lexi-sell-card,
+.home-orange-reboot .hero-chat-status {
+  background: #fffaf5 !important;
+  border-radius: 18px !important;
+}
+
+.home-orange-reboot .hero-lexi-calendar-star-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-orange-reboot .lexi-launch-panel,
+.home-orange-reboot .chat-shell,
+.home-orange-reboot .chat-window,
+.home-orange-reboot .chat-form input {
+  background: #fffaf5 !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+}
+
+.home-orange-reboot .lexi-booking-guide,
+.home-orange-reboot .hero-lexi-sell-card,
+.home-orange-reboot .hero-chat-status,
+.home-orange-reboot .hero-lexi-privacy-note,
+.home-orange-reboot .hero-chat-features {
+  display: none !important;
+}
+
+.home-orange-reboot .chat-window {
+  min-height: 260px !important;
+}
+
+.home-orange-reboot .btn,
+.home-orange-reboot .btn-ghost {
+  min-height: 42px;
+  padding: 0.62rem 0.92rem;
+  font-size: 0.88rem;
+  border-radius: 999px;
+}
+
+.home-orange-reboot .top-lexi-actions .btn,
+.home-orange-reboot .cta-row .btn,
+.home-orange-reboot .hero-lexi-calendar-star-actions .btn,
+.home-orange-reboot .lexi-launch-actions .btn {
+  min-height: 40px;
+  padding: 0.58rem 0.88rem;
+}
+
+@media (max-width: 760px) {
+  .home-orange-reboot,
+  .home-orange-reboot .topbar {
+    width: min(96vw, 96vw);
+  }
+
+  .home-orange-reboot .home-hero-band,
+  .home-orange-reboot .home-conversion-stage {
+    padding: 0.85rem !important;
+  }
+
+  .home-orange-reboot .top-lexi-copy h2 {
+    max-width: none;
+    font-size: clamp(2.2rem, 10vw, 3.4rem);
+  }
+
+  .home-orange-reboot .top-lexi-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .home-orange-reboot .hero-lexi-calendar-star-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Final orange theme enforcement */
+body .topbar {
+  background: rgba(251, 243, 235, 0.94) !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.12) !important;
+  box-shadow:
+    0 12px 32px rgba(99, 63, 40, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+body .topbar .brand,
+body .topbar .nav a,
+body .topbar .auth-actions a {
+  color: #2b180f !important;
+}
+
+body .topbar .btn,
+body .topbar .btn-ghost,
+.home-orange-reboot .btn,
+.home-orange-reboot .btn-ghost {
+  background: linear-gradient(135deg, #2c1a12 0%, #cb5a35 58%, #ee9d63 100%) !important;
+  color: #fff8f2 !important;
+  border-color: rgba(128, 67, 37, 0.16) !important;
+  box-shadow: 0 10px 24px rgba(135, 78, 46, 0.16) !important;
+}
+
+body .topbar .btn-ghost,
+.home-orange-reboot .btn-ghost {
+  background: #fff7f0 !important;
+  color: #3b2418 !important;
+}
+
+.home-orange-reboot .home-hero-band,
+.home-orange-reboot .home-conversion-stage,
+.home-orange-reboot .top-lexi-portrait-card,
+.home-orange-reboot .top-lexi-chat-card,
+.home-orange-reboot .hero-chat-demo,
+.home-orange-reboot .hero-lexi-calendar-star,
+.home-orange-reboot .hero-lexi-calendar-star-grid article,
+.home-orange-reboot .lexi-launch-panel,
+.home-orange-reboot .chat-shell,
+.home-orange-reboot .chat-window,
+.home-orange-reboot .chat-form input {
+  background-color: #fff7f0 !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+}
+
+.home-lexi-popup,
+.home-lexi-popup .home-lexi-popup-chat-slot,
+.home-lexi-popup .business-lexi-popup-chat-slot,
+.home-lexi-popup .chat-window,
+.home-lexi-popup .customer-chat-box,
+.home-lexi-popup .business-lexi-chat-box,
+.home-lexi-popup .lexi-avatar-stage,
+.home-lexi-popup .lexi-avatar-note,
+.home-lexi-popup .lexi-avatar-transcript,
+.home-lexi-popup .chat-form input,
+.home-lexi-popup .customer-chat-form input,
+.home-lexi-popup .business-lexi-inline-form input {
+  background: #fff7f0 !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.12) !important;
+  color: #2f1c14 !important;
+  box-shadow: none !important;
+}
+
+.home-lexi-popup-overlay {
+  background:
+    radial-gradient(circle at top, rgba(238, 157, 99, 0.16), transparent 28%),
+    rgba(112, 77, 56, 0.18) !important;
+  backdrop-filter: blur(14px);
+}
+
+.home-lexi-popup {
+  border-color: rgba(110, 59, 30, 0.12) !important;
+  box-shadow:
+    0 28px 80px rgba(88, 56, 37, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74) !important;
+}
+
+.home-lexi-popup .home-lexi-popup-head,
+.home-lexi-popup .lexi-chat-head strong,
+.home-lexi-popup .lexi-avatar-label strong,
+.home-lexi-popup .lexi-avatar-note strong,
+.home-lexi-popup .lexi-avatar-transcript strong,
+.home-lexi-popup .msg,
+.home-lexi-popup .customer-chat-msg,
+.home-lexi-popup .copilot-answer,
+.home-lexi-popup .copilot-card,
+.home-lexi-popup .copilot-result h3 {
+  color: #2f1c14 !important;
+}
+
+.home-lexi-popup .home-lexi-popup-head p:last-child,
+.home-lexi-popup .lexi-chat-head small,
+.home-lexi-popup .lexi-avatar-label small,
+.home-lexi-popup .lexi-avatar-note p,
+.home-lexi-popup .lexi-avatar-transcript p,
+.home-lexi-popup .business-lexi-guardrail {
+  color: #6a4e3e !important;
+}
+
+.home-lexi-popup .msg.assistant,
+.home-lexi-popup .customer-chat-msg.ai,
+.home-lexi-popup .business-lexi-chat-box .customer-chat-msg.ai {
+  background: #fff1e4 !important;
+  border-color: rgba(110, 59, 30, 0.12) !important;
+  color: #3b261b !important;
+}
+
+.home-lexi-popup .msg.user,
+.home-lexi-popup .customer-chat-msg.user,
+.home-lexi-popup .business-lexi-chat-box .customer-chat-msg.user {
+  background: linear-gradient(135deg, #2c1a12 0%, #cb5a35 58%, #ee9d63 100%) !important;
+  border-color: transparent !important;
+  color: #fff8f2 !important;
+}
+
+.home-lexi-popup .btn,
+.home-lexi-popup .btn-ghost,
+.home-lexi-popup .lexi-mic-btn,
+body .topbar a[href="#frontdesk"] {
+  background: linear-gradient(135deg, #2c1a12 0%, #cb5a35 58%, #ee9d63 100%) !important;
+  color: #fff8f2 !important;
+  border-color: rgba(128, 67, 37, 0.16) !important;
+  box-shadow: 0 10px 24px rgba(135, 78, 46, 0.16) !important;
+}
+
+.home-lexi-popup .btn-ghost {
+  background: #fff7f0 !important;
+  color: #3b2418 !important;
+}
+
+/* Shared auth + popup redesign */
+.home-trial-overlay {
+  background:
+    radial-gradient(circle at top, rgba(238, 157, 99, 0.16), transparent 28%),
+    rgba(114, 82, 62, 0.2) !important;
+  backdrop-filter: blur(14px);
+}
+
+.home-trial-modal,
+.home-access-modal,
+.home-access-form,
+.home-customer-choice-card,
+.home-customer-mode-tabs,
+.home-customer-panel,
+.home-payment-setup-block,
+.home-payment-warning,
+.home-trial-rail-card,
+.home-trial-check {
+  background: #fbf3eb !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  color: #2b180f !important;
+  box-shadow: none !important;
+}
+
+.home-trial-modal {
+  border-radius: 26px;
+  box-shadow:
+    0 28px 80px rgba(88, 56, 37, 0.18),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+.home-trial-modal-head h2,
+.home-customer-choice-card h3,
+.home-admin-warning strong,
+.home-payment-setup-block h3 {
+  color: #2b180f !important;
+}
+
+.home-trial-modal-head p:not(.eyebrow),
+.home-customer-choice-card p,
+.home-trial-msg,
+.home-payment-setup-note,
+.home-payment-warning p,
+.home-trial-rail-card p,
+.home-trial-rail-card li {
+  color: #6a4e3e !important;
+}
+
+.home-access-form input,
+.home-access-form select,
+.home-trial-form input,
+.home-trial-form select,
+.home-trial-form textarea,
+.home-payment-provider-row .btn-ghost {
+  background: #fffaf5 !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  color: #2b180f !important;
+  box-shadow: none !important;
+}
+
+.home-customer-mode-tab {
+  color: #6a4e3e !important;
+}
+
+.home-customer-mode-tab.is-active {
+  background: #fffaf5 !important;
+  border-color: rgba(203, 90, 53, 0.14) !important;
+  color: #2b180f !important;
+}
+
+.home-login-choice-grid .btn,
+.home-access-modal .home-access-form-actions .btn:not(.btn-ghost),
+.home-customer-choice-card .btn:not(.btn-ghost) {
+  background: #e3a16f !important;
+  border-color: rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+}
+
+.home-login-choice-card-admin .btn,
+.home-login-choice-card-admin .btn.btn-ghost,
+.home-login-choice-card-admin button.btn,
+.home-login-choice-card-admin button.btn-ghost,
+.home-access-modal .home-admin-warning + .home-access-form .btn:not(.btn-ghost),
+#homeAdminSigninSubmit {
+  background: #e3a16f !important;
+  border-color: rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+}
+
+.home-login-choice-grid a.btn.btn-ghost,
+.home-login-choice-grid button.btn.btn-ghost,
+.home-access-modal .home-access-form-actions .btn.btn-ghost,
+.home-trial-form-actions .btn.btn-ghost {
+  background: #ffffff !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  color: #3b2418 !important;
+  box-shadow: none !important;
+}
+
+.home-login-choice-grid button[data-login-role="admin"],
+.home-login-choice-grid button[data-login-role="admin"].btn,
+.home-login-choice-grid button[data-login-role="admin"].btn.btn-ghost {
+  background: #e3a16f !important;
+  border-color: rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+}
+
+/* Button text contrast hardening */
+.btn,
+.btn:visited,
+button.btn,
+a.btn {
+  color: #fff8f2 !important;
+}
+
+.btn strong,
+.btn span,
+.btn small,
+button.btn strong,
+button.btn span,
+button.btn small,
+a.btn strong,
+a.btn span,
+a.btn small {
+  color: inherit !important;
+}
+
+.btn-ghost,
+.btn-ghost:visited,
+button.btn-ghost,
+a.btn-ghost,
+select.btn-ghost {
+  color: #3b2418 !important;
+}
+
+.btn-ghost strong,
+.btn-ghost span,
+.btn-ghost small,
+button.btn-ghost strong,
+button.btn-ghost span,
+button.btn-ghost small,
+a.btn-ghost strong,
+a.btn-ghost span,
+a.btn-ghost small {
+  color: inherit !important;
+}
+
+.home-access-form-actions .btn,
+.home-trial-form-actions .btn,
+.dashboard-actions .btn,
+.billing-actions .btn,
+.workspace-actions .btn,
+.lexi-launch-actions .btn,
+.top-lexi-actions .btn,
+.hero-lexi-calendar-star-actions .btn,
+.home-payment-provider-row .btn,
+.mobile-quick-sheet-close.btn,
+.mobile-bottom-nav-item,
+.password-peek-toggle {
+  color: #fff8f2;
+}
+
+.home-access-form-actions .btn-ghost,
+.home-trial-form-actions .btn-ghost,
+.dashboard-actions .btn-ghost,
+.billing-actions .btn-ghost,
+.workspace-actions .btn-ghost,
+.lexi-launch-actions .btn-ghost,
+.top-lexi-actions .btn-ghost,
+.hero-lexi-calendar-star-actions .btn-ghost,
+.home-payment-provider-row .btn-ghost,
+.password-peek-toggle {
+  color: #3b2418 !important;
+}
+
+.mobile-bottom-nav-item {
+  color: #6a4e3e !important;
+}
+
+.mobile-bottom-nav-item.is-active {
+  color: #2b180f !important;
+}
+
+/* Keep the subscriber workspace CTA block on one button treatment */
+html body .role-cta .cta-row .btn,
+html body .role-cta .cta-row .btn.btn-ghost,
+html body .role-cta .cta-row a.btn,
+html body .role-cta .cta-row a.btn.btn-ghost {
+  background: #e3a16f !important;
+  background-image: none !important;
+  background-color: #e3a16f !important;
+  border: 1px solid rgba(173, 117, 78, 0.3) !important;
+  color: #3b2d23 !important;
+  box-shadow: none !important;
+}
+
+html body .role-cta .cta-row .btn:hover,
+html body .role-cta .cta-row .btn.btn-ghost:hover,
+html body .role-cta .cta-row a.btn:hover,
+html body .role-cta .cta-row a.btn.btn-ghost:hover {
+  background: #d99663 !important;
+  background-image: none !important;
+  background-color: #d99663 !important;
+  border-color: rgba(173, 117, 78, 0.38) !important;
+  color: #3b2d23 !important;
+}
+
+html body .top-lexi-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.15rem;
+  max-width: 100%;
+}
+
+html body .top-lexi-copy-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+html body .top-lexi-head-notes {
+  display: grid;
+  gap: 0.7rem;
+}
+
+html body .top-lexi-head-note {
+  border: 1px solid rgba(173, 117, 78, 0.2);
+  border-radius: 20px;
+  background: rgba(255, 248, 240, 0.8);
+  padding: 0.85rem 0.95rem;
+}
+
+html body .top-lexi-head-note span {
+  display: block;
+  margin-bottom: 0.28rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b6c4a;
+}
+
+html body .top-lexi-head-note strong {
+  display: block;
+  color: #3f2e23;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+html body .top-lexi-info-card {
+  border: 1px solid rgba(173, 117, 78, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 249, 242, 0.74);
+  padding: 0.78rem 0.9rem;
+}
+
+html body .top-lexi-info-card span {
+  display: block;
+  margin-bottom: 0.24rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b6c4a;
+}
+
+html body .top-lexi-info-card strong {
+  display: block;
+  color: #3f2e23;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+html body .top-lexi-chat-thread .top-lexi-bubble-final + .top-lexi-bubble {
+  display: none;
+}
+
+html body .top-lexi-bubble.user,
+html body .msg.user,
+html body .customer-chat-msg.user,
+html body .home-lexi-popup .msg.user,
+html body .home-lexi-popup .customer-chat-msg.user,
+html body .home-lexi-popup .business-lexi-chat-box .customer-chat-msg.user {
+  background: #e3a16f !important;
+  background-image: none !important;
+  background-color: #e3a16f !important;
+  color: #3b2d23 !important;
+  border-color: rgba(173, 117, 78, 0.28) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 980px) {
+  html body .top-lexi-copy-head,
+  html body .top-lexi-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Text-color-only button readability pass */
+.btn,
+button.btn,
+a.btn,
+input.btn {
+  color: #fff8f2 !important;
+}
+
+.btn.btn-ghost,
+button.btn-ghost,
+a.btn-ghost,
+select.btn-ghost,
+.password-peek-toggle,
+.home-lexi-popup-close {
+  color: #4a2d1f !important;
+}
+
+.btn *,
+.btn-ghost * {
+  color: inherit !important;
+}
+
+body[data-theme-mode="light"] .top-lexi-marquee,
+body[data-theme-mode="light"] .top-lexi-portrait-card,
+body[data-theme-mode="light"] .top-lexi-chat-card {
+  background:
+    radial-gradient(circle at top left, rgba(95, 172, 255, 0.14), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(255, 146, 196, 0.12), transparent 34%),
+    rgba(247, 250, 255, 0.96);
+  color: #10203a;
+}
+
+body[data-theme-mode="light"] .top-lexi-copy > p:last-of-type,
+body[data-theme-mode="light"] .top-lexi-portrait-copy small,
+body[data-theme-mode="light"] .top-lexi-bubble.assistant {
+  color: #42546f;
+}
+
+body[data-theme-mode="light"] .top-lexi-prompt,
+body[data-theme-mode="light"] .top-lexi-pills span,
+body[data-theme-mode="light"] .top-lexi-chat-head span {
+  color: #173256;
+  background: rgba(109, 162, 255, 0.1);
+}
+
+@media (max-width: 1100px) {
+  .top-lexi-marquee,
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .top-lexi-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .top-lexi-marquee {
+    padding: 0.9rem;
+    border-radius: 22px;
+  }
+
+  .top-lexi-copy h2 {
+    font-size: 1.55rem;
+  }
+
+  .top-lexi-actions,
+  .top-lexi-quick-prompts {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-lexi-portrait-image {
+    width: min(100%, 220px);
+  }
+
+  .top-lexi-bubble {
+    max-width: 100%;
+  }
+}
+
 body[data-theme-mode="light"] .join-tag {
   color: #5c6f8d !important;
 }
@@ -5734,4 +8860,593 @@ body[data-theme-mode="light"] .selected-business h4 {
 
 
 
+
+/* Legacy panel normalization for homepage */
+.join-section,
+.join-roles,
+.pricing-panel,
+.role-cta,
+.frontdesk-section,
+.privacy-promise,
+.selected-business,
+.finder-grid,
+.search-form,
+.finder-results,
+.launch-strip,
+.storyline,
+.storyline article,
+.experience-card,
+.booking-flow-card,
+.join-card,
+.join-card-benefits,
+.impact-card,
+.policy,
+.policy-card,
+.policy-card-accent {
+  background: #fff7f0 !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.join-section,
+.join-roles,
+.pricing-panel,
+.role-cta,
+.frontdesk-section,
+.privacy-promise,
+.policy,
+.launch-strip,
+.storyline,
+.finder-grid {
+  background: #fbf3eb !important;
+}
+
+.join-card,
+.join-card-benefits,
+.impact-card,
+.experience-card,
+.booking-flow-card,
+.policy-card,
+.policy-card-accent,
+.storyline article,
+.selected-business,
+.finder-results,
+.search-form,
+.search-form input,
+.search-form select,
+.search-form textarea,
+.finder-grid input,
+.finder-grid select,
+.finder-grid textarea {
+  background: #fffaf5 !important;
+  color: #2b180f !important;
+}
+
+.search-form input,
+.search-form select,
+.search-form textarea,
+.finder-grid input,
+.finder-grid select,
+.finder-grid textarea {
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.policy p,
+.policy-card p,
+.role-cta p,
+.storyline p,
+.join-card p,
+.impact-card ul,
+.experience-card p:not(.experience-tag),
+.booking-flow-card small,
+.selected-business p,
+.search-form label,
+.finder-results p,
+.privacy-promise p {
+  color: #6a4e3e !important;
+}
+
+.storyline h3,
+.join-card h3,
+.impact-card h2,
+.policy-card h3,
+.policy-card strong,
+.selected-business h3,
+.selected-business h4,
+.experience-card h3,
+.booking-flow-card strong,
+.role-cta h2,
+.privacy-promise h2 {
+  color: #2b180f !important;
+}
+
+.role-cta .cta-row .btn,
+.join-section .btn,
+.pricing-panel .btn,
+.policy .btn,
+.launch-strip .btn,
+.frontdesk-section .btn {
+  background: linear-gradient(135deg, #2c1a12 0%, #cb5a35 58%, #ee9d63 100%) !important;
+  color: #fff8f2 !important;
+  border-color: rgba(128, 67, 37, 0.16) !important;
+  box-shadow: 0 10px 24px rgba(135, 78, 46, 0.16) !important;
+}
+
+.panel.join-roles {
+  background: #fbf3eb !important;
+  background-image: none !important;
+  border-color: rgba(110, 59, 30, 0.1) !important;
+  box-shadow: none !important;
+}
+/* Final homepage redesign override */
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 212, 170, 0.5), transparent 26%),
+    radial-gradient(circle at 88% 8%, rgba(255, 120, 92, 0.22), transparent 24%),
+    linear-gradient(180deg, #fffaf4 0%, #f7efe5 32%, #f2e4d6 100%);
+  color: #21160f;
+}
+
+body::before {
+  background-image:
+    linear-gradient(rgba(74, 41, 22, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 41, 22, 0.05) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0.16));
+}
+
+.topbar {
+  width: min(1380px, 96vw);
+  margin-top: 1.1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(94, 59, 37, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 249, 241, 0.86);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 24px 60px rgba(91, 51, 26, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.brand,
+.nav a,
+.auth-actions a {
+  color: #2c1a12;
+}
+
+.brand {
+  font-size: 1.08rem;
+}
+
+.brand-dot {
+  background: radial-gradient(circle at 30% 30%, #fff7d2, #ff9a73 58%, #c1552c);
+  box-shadow: 0 0 0 7px rgba(255, 154, 115, 0.16), 0 0 24px rgba(255, 154, 115, 0.28);
+}
+
+.nav {
+  color: #6c5443;
+}
+
+.nav a::after {
+  background: linear-gradient(90deg, #f06a43, #f2a65a);
+}
+
+.topbar .btn,
+.control-room-home .btn {
+  border-color: rgba(188, 88, 50, 0.24);
+  background: linear-gradient(135deg, #231611 0%, #c75530 54%, #f59a5f 100%);
+  color: #fff7f1;
+  box-shadow: 0 16px 30px rgba(199, 85, 48, 0.22);
+}
+
+.topbar .btn:hover,
+.control-room-home .btn:hover {
+  box-shadow: 0 22px 38px rgba(199, 85, 48, 0.28);
+}
+
+.topbar .btn-ghost,
+.control-room-home .btn-ghost {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(94, 59, 37, 0.16);
+  color: #331f17;
+  box-shadow: none;
+}
+
+.control-room-home {
+  gap: 1.4rem;
+  padding-bottom: 2rem;
+}
+
+.control-room-home > .top-lexi-marquee,
+.control-room-home > .hero,
+.control-room-home > .command-deck,
+.control-room-home > .homepage-flow-grid,
+.control-room-home > .control-room-frame {
+  border: 1px solid rgba(93, 60, 39, 0.12);
+  background: rgba(255, 250, 244, 0.8);
+  box-shadow: 0 24px 70px rgba(98, 61, 36, 0.1);
+}
+
+.top-lexi-marquee {
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: 1.35rem;
+  padding: 1.5rem;
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 171, 131, 0.38), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(239, 103, 66, 0.12), transparent 22%),
+    linear-gradient(135deg, #fff7ee 0%, #f8ebde 42%, #f4e0ce 100%);
+}
+
+.top-lexi-marquee::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 28px;
+  border: 1px solid rgba(131, 76, 47, 0.08);
+  pointer-events: none;
+}
+
+.top-lexi-copy {
+  gap: 1rem;
+}
+
+.eyebrow,
+.top-lexi-chat-head p,
+.top-lexi-portrait-copy p,
+.hero-lexi-calendar-star-kicker,
+.lexi-launch-kicker {
+  color: #b85d35;
+}
+
+.top-lexi-copy h2,
+.hero-copy h1,
+.command-deck-intro h2,
+.control-room-frame-head h2 {
+  color: #1f130d;
+  letter-spacing: -0.04em;
+}
+
+.top-lexi-copy h2 {
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: 0.92;
+  max-width: 10ch;
+}
+
+.top-lexi-copy > p:last-of-type,
+.hero-text,
+.command-deck-intro p:not(.eyebrow),
+.section-header p,
+.control-room-frame-head p:last-child {
+  color: #644d3e;
+  font-size: 1rem;
+}
+
+.top-lexi-pills span,
+.cta-proof strong,
+.cta-proof span,
+.hero-badges span,
+.home-module-pill,
+.homepage-command-proof .home-module-pill {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(93, 60, 39, 0.12);
+  color: #53362a;
+}
+
+.top-lexi-stage {
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.top-lexi-portrait-card,
+.top-lexi-chat-card {
+  border-radius: 30px;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.top-lexi-portrait-card {
+  padding: 1.2rem;
+}
+
+.top-lexi-portrait-halo {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(247, 152, 105, 0.34), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(255, 225, 199, 0.76), transparent 38%);
+}
+
+.top-lexi-portrait-image {
+  width: min(100%, 310px);
+  border-radius: 28px;
+  border: none;
+  box-shadow: 0 26px 44px rgba(119, 71, 44, 0.16);
+}
+
+.top-lexi-portrait-copy strong,
+.top-lexi-chat-head strong,
+.hero-lexi-calendar-star-head h3,
+.hero-lexi-sell-head strong,
+.hero-chat-status strong {
+  color: #231710;
+}
+
+.top-lexi-portrait-copy small,
+.top-lexi-chat-head span,
+.hero-cta-note,
+.hero-lexi-business-meta,
+.hero-lexi-calendar-star-grid small,
+.hero-chat-status p,
+.hero-lexi-privacy-note p,
+.hero-chat-features p,
+.homepage-command-proof p,
+.homepage-command-rail-head p:not(.eyebrow),
+.homepage-command-steps li,
+.hero-operator-note ul,
+.stat-chip p {
+  color: #705646;
+}
+
+.top-lexi-chat-card {
+  padding: 1.1rem;
+}
+
+.top-lexi-chat-head span {
+  background: rgba(248, 126, 82, 0.12);
+  border-color: rgba(248, 126, 82, 0.16);
+  color: #a95132;
+}
+
+.top-lexi-bubble {
+  border-radius: 22px;
+  font-size: 0.95rem;
+  box-shadow: 0 14px 30px rgba(102, 61, 39, 0.08);
+}
+
+.top-lexi-bubble.user {
+  background: linear-gradient(135deg, #231611 0%, #d15a34 58%, #f0a36a 100%);
+}
+
+.top-lexi-bubble.assistant {
+  background: #fffaf6;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  color: #453125;
+}
+
+.top-lexi-prompt {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(93, 60, 39, 0.12);
+  color: #3f291d;
+}
+
+.top-lexi-prompt:hover {
+  background: #fff;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: 1.2rem;
+  padding: 1.45rem;
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 209, 177, 0.34), transparent 30%),
+    linear-gradient(135deg, #fffaf5 0%, #f6eadf 100%);
+}
+
+.hero-copy {
+  gap: 0.35rem;
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 0.92;
+}
+
+.hero-operator-note,
+.hero-capabilities article,
+.stat-chip,
+.hero-lexi-sell-card,
+.hero-chat-status,
+.hero-lexi-privacy-note,
+.hero-chat-features article,
+.hero-lexi-calendar-star,
+.hero-lexi-calendar-star-grid article,
+.lexi-launch-panel,
+.chat-shell {
+  border-color: rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: none;
+}
+
+.hero-capabilities h3,
+.stat-chip h3,
+.section-header h2,
+.home-quick-path-card strong,
+.command-deck-card h3,
+.homepage-command-rail-head h2,
+.control-room-sidebar-panel a,
+.control-room-sidebar-panel li,
+.hero-chat-features h3 {
+  color: #231710;
+}
+
+.hero-capabilities p,
+.command-deck-card span,
+.home-quick-path-card small,
+.control-room-sidebar-panel ul,
+.privacy-promise p,
+.home-module-card small {
+  color: #6a5343;
+}
+
+.hero-media {
+  border-radius: 30px;
+}
+
+.hero-chat-demo {
+  border-radius: 32px;
+  padding: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(251, 244, 237, 0.92)),
+    linear-gradient(135deg, #f6e4d2, #fff8f1);
+}
+
+.section-header h2 {
+  letter-spacing: -0.03em;
+}
+
+.hero-lexi-calendar-star-grid {
+  gap: 0.65rem;
+}
+
+.lexi-launch-panel {
+  border-radius: 20px;
+}
+
+.command-deck {
+  border-radius: 34px;
+  padding: 1.35rem;
+  background:
+    linear-gradient(180deg, rgba(252, 244, 235, 0.88), rgba(247, 236, 225, 0.92));
+}
+
+.command-deck-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.command-deck-card {
+  border-radius: 22px;
+  border-color: rgba(93, 60, 39, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+}
+
+.command-deck-card p,
+.control-room-sidebar-label,
+.trust-label {
+  color: #bf623a;
+}
+
+.command-deck-card-accent {
+  background:
+    radial-gradient(circle at top right, rgba(245, 165, 107, 0.28), transparent 42%),
+    rgba(255, 248, 242, 0.88);
+}
+
+.homepage-flow-grid {
+  grid-template-columns: minmax(0, 1.6fr) minmax(310px, 0.8fr);
+  gap: 1.2rem;
+  padding: 1.2rem;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 249, 242, 0.84), rgba(248, 238, 227, 0.92));
+}
+
+.trust-strip,
+.home-quick-paths,
+.homepage-command-rail,
+.control-room-frame,
+.control-room-sidebar-panel,
+.control-room-frame-head {
+  border-color: rgba(93, 60, 39, 0.1);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.trust-strip ul {
+  color: #4b3327;
+}
+
+.home-quick-path-grid {
+  gap: 0.85rem;
+}
+
+.home-quick-path-card {
+  border-radius: 22px;
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(252, 246, 240, 0.94));
+  box-shadow: 0 14px 30px rgba(91, 51, 26, 0.06);
+}
+
+.homepage-command-rail {
+  top: 5rem;
+  border-radius: 26px;
+  box-shadow: 0 18px 36px rgba(91, 51, 26, 0.08);
+}
+
+.homepage-command-proof {
+  border-top-color: rgba(93, 60, 39, 0.1);
+}
+
+.control-room-frame {
+  border-radius: 38px;
+  padding: 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 240, 0.9), rgba(247, 236, 223, 0.94));
+}
+
+.control-room-frame-grid {
+  gap: 1.2rem;
+}
+
+.home-module-card {
+  border: 1px solid rgba(93, 60, 39, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 14px 28px rgba(91, 51, 26, 0.06);
+}
+
+.home-module-card strong,
+.privacy-promise h2 {
+  color: #241710;
+}
+
+@media (max-width: 1100px) {
+  .top-lexi-marquee,
+  .hero,
+  .homepage-flow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-lexi-copy h2,
+  .hero-copy h1 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    width: min(96vw, 96vw);
+    padding: 0.9rem;
+    border-radius: 22px;
+  }
+
+  .top-lexi-marquee,
+  .hero,
+  .command-deck,
+  .homepage-flow-grid,
+  .control-room-frame {
+    border-radius: 26px;
+    padding: 1rem;
+  }
+
+  .top-lexi-copy h2 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2rem, 12vw, 3.3rem);
+  }
+
+  .command-deck-grid,
+  .hero-capabilities,
+  .hero-stats,
+  .hero-lexi-calendar-star-grid {
+    grid-template-columns: 1fr;
+  }
+}
 

@@ -8,7 +8,7 @@
       name="description"
       content="AI Hair & Beauty Receptionist helps hair and beauty businesses automate bookings, reduce no-shows, recover lost revenue, and run a better business with AI."
     />
-    <meta name="theme-color" content="#05070d" />
+    <meta name="theme-color" content="#eee7de" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -22,7 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260302-neutral2" />
   </head>
   <body>
     <a class="skip-link" href="#home">Skip to main content</a>
@@ -43,13 +43,97 @@
       </div>
     </header>
 
-    <main class="page control-room-home" id="home">
-      <section class="hero">
+    <main class="page control-room-home home-orange-reboot" id="home">
+      <section class="top-lexi-marquee home-hero-band reveal" aria-label="Lexi featured chat launch">
+        <div class="top-lexi-copy">
+          <p class="eyebrow">Book without calling</p>
+          <div class="top-lexi-copy-head">
+            <h2>Let customers book with Lexi in seconds instead of waiting on the phone.</h2>
+            <div class="top-lexi-head-notes" aria-label="Lexi sales highlights">
+              <article class="top-lexi-head-note">
+                <span>For customers</span>
+                <strong>Customers get quick answers, live slot checks, and a clear booking path without needing to call.</strong>
+              </article>
+              <article class="top-lexi-head-note">
+                <span>For salons</span>
+                <strong>Salons capture more booking intent, reduce missed-call friction, and keep the front desk moving.</strong>
+              </article>
+              <article class="top-lexi-head-note">
+                <span>Inside the app</span>
+                <strong>Lexi links chat, account access, booking handoff, and dashboard visibility in one connected system.</strong>
+              </article>
+              <article class="top-lexi-head-note">
+                <span>What she answers</span>
+                <strong>She handles services, availability, pricing guidance, prep questions, and booking follow-ups in one chat.</strong>
+              </article>
+            </div>
+          </div>
+          <p>
+            Lexi answers service questions, checks availability, guides the customer, and moves them straight into booking.
+            It feels quicker for the client and takes pressure off the salon team.
+          </p>
+          <div class="top-lexi-actions">
+            <button class="btn" type="button" id="headerLexiAskBtn">Ask Lexi Now</button>
+            <button class="btn btn-ghost" type="button" id="headerLexiBookBtn">Start a Booking</button>
+          </div>
+          <div class="top-lexi-info-grid" aria-label="Lexi booking information">
+            <article class="top-lexi-info-card">
+              <span>What Lexi handles</span>
+              <strong>Lexi covers booking enquiries, live availability, service recommendations, consultations, prep, aftercare, and first-time client questions.</strong>
+            </article>
+            <article class="top-lexi-info-card">
+              <span>Why customers use her</span>
+              <strong>She replies quickly, keeps the conversation simple, and moves customers from question to booking without making them chase the salon.</strong>
+            </article>
+            <article class="top-lexi-info-card">
+              <span>What the salon receives</span>
+              <strong>When a booking is made, the salon gets better context too: service goals, useful notes, and the conversation summary with the appointment.</strong>
+            </article>
+          </div>
+          <div class="top-lexi-pills" aria-label="Lexi strengths">
+            <span>Book faster</span>
+            <span>Ask anything</span>
+            <span>No phone calls</span>
+          </div>
+        </div>
+        <div class="top-lexi-stage">
+          <article class="top-lexi-portrait-card" aria-label="Lexi portrait">
+            <div class="top-lexi-portrait-halo"></div>
+            <img src="/Salon_AI_IMG.png" alt="Lexi AI receptionist portrait" class="top-lexi-portrait-image" />
+            <div class="top-lexi-portrait-copy">
+              <p>Lexi AI Receptionist</p>
+              <strong>Fast, polished, and easier than calling.</strong>
+              <small>Built for salons, barbers, and beauty businesses that want customers to book through the app first.</small>
+            </div>
+          </article>
+          <article class="top-lexi-chat-card" aria-label="Ask Lexi preview">
+            <div class="top-lexi-chat-head">
+              <div>
+                <p>Live Ask Lexi</p>
+                <strong>Short replies that turn questions into bookings.</strong>
+              </div>
+              <span>24/7</span>
+            </div>
+            <div class="top-lexi-chat-thread">
+              <div class="top-lexi-bubble assistant">Hi, I'm Lexi. What would you like to book?</div>
+              <div class="top-lexi-bubble user">A haircut this Thursday.</div>
+              <div class="top-lexi-bubble assistant">Thursday works. What time suits you best?</div>
+              <div class="top-lexi-bubble user">Around 2pm.</div>
+              <div class="top-lexi-bubble assistant">Perfect. I've got Thursday at 2:00pm for a haircut.</div>
+              <div class="top-lexi-bubble user">Great, can you book that?</div>
+              <div class="top-lexi-bubble assistant top-lexi-bubble-final">Yes. I'll open sign in or sign up so I can lock it in for you.</div>
+              <div class="top-lexi-bubble assistant">Perfect. I’ve got Thursday at 2:00pm. Would you like me to book that for you?</div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section class="hero home-conversion-stage">
         <div class="hero-copy reveal">
           <p class="eyebrow">Autonomous reception, consultation, and booking for salons</p>
           <h1>Meet Lexi, Your AI Salon Receptionist</h1>
           <p class="hero-text">
-            Lexi handles customer questions, recommends services, manages booking flow, and gives salon owners one operating system for the diary, staff, revenue, and cancellations.
+            Stop making customers chase a phone line. Lexi handles service questions, availability, recommendations,
+            and booking handoff in one clean conversation that feels quick and premium.
           </p>
           <div class="cta-row">
             <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Create Subscriber Workspace</a>
@@ -79,7 +163,7 @@
           <div class="hero-capabilities">
             <article>
               <h3>Ask Lexi</h3>
-              <p>Lexi answers questions, recommends services, and moves the booking forward.</p>
+              <p>Lexi answers the questions customers would normally phone about and turns them into bookings faster.</p>
             </article>
             <article>
               <h3>Booking Calendar</h3>
@@ -108,8 +192,8 @@
 
         <div class="hero-media hero-chat-demo receptionist-live reveal" id="frontdesk">
           <div class="section-header">
-            <h2>ASK LEXI</h2>
-            <p>Lexi answers service questions, helps with bookings, and supports the front desk in one place.</p>
+            <h2>BOOK WITH LEXI</h2>
+            <p>Make the homepage feel like the fastest route to a booking, not just another salon website.</p>
           </div>
           <section class="hero-lexi-calendar-star" aria-label="Lexi and booking calendar first view">
             <div class="hero-lexi-calendar-star-head">
@@ -144,8 +228,8 @@
           <section class="lexi-launch-panel" aria-label="Open Lexi popup">
             <div>
               <p class="lexi-launch-kicker">Popup Experience</p>
-              <strong>Open Lexi in a focused live assistant window.</strong>
-              <small>Ask questions, get recommendations, and move straight into booking without cluttering the page.</small>
+              <strong>Open Lexi and let customers book here instead of picking up the phone.</strong>
+              <small>Ask questions, get recommendations, and move straight into booking in one focused flow.</small>
             </div>
             <div class="lexi-launch-actions">
               <button class="btn" type="button" id="homeLexiLaunchBtn">Ask Lexi</button>
@@ -285,7 +369,7 @@
         </div>
       </section>
 
-      <section class="command-deck reveal" aria-label="Salon growth control room overview">
+      <section class="command-deck home-story-band reveal" aria-label="Salon growth control room overview">
         <div class="command-deck-intro">
           <div>
             <p class="eyebrow">Built to help salons grow without the chaos</p>
@@ -325,7 +409,7 @@
         </div>
       </section>
 
-      <section class="homepage-flow-grid reveal" aria-label="Sales evaluation path">
+      <section class="homepage-flow-grid home-path-band reveal" aria-label="Sales evaluation path">
         <div class="homepage-flow-main">
       <section class="trust-strip reveal">
           <div class="trust-label">Built for modern hair and beauty businesses that want a smoother day</div>
@@ -388,7 +472,7 @@
         </aside>
       </section>
 
-      <section class="control-room-frame reveal" aria-labelledby="controlRoomTitle">
+      <section class="control-room-frame home-control-band reveal" aria-labelledby="controlRoomTitle">
         <div class="control-room-frame-head">
           <p class="eyebrow">Operations + intelligence</p>
           <h2 id="controlRoomTitle">Premium Control Room Layout</h2>
@@ -1094,7 +1178,14 @@
             </label>
             <label>
               Password
-              <input id="homeCustomerSigninPassword" type="password" placeholder="Password" required />
+              <div class="password-peek-field">
+                <input id="homeCustomerSigninPassword" type="password" placeholder="Password" required />
+                <button class="password-peek-toggle" type="button" data-password-toggle="homeCustomerSigninPassword" aria-label="Show password">Show</button>
+              </div>
+            </label>
+            <label>
+              Phone
+              <input id="homeCustomerSigninPhone" type="tel" placeholder="Phone number if Lexi needs it to finish the booking" />
             </label>
             <div class="home-access-form-actions">
               <button id="homeCustomerSigninSubmit" class="btn" type="submit">Sign In</button>
@@ -1117,7 +1208,10 @@
               </label>
               <label>
                 Password
-                <input id="homeCustomerSignupPassword" type="password" placeholder="Create password" required />
+                <div class="password-peek-field">
+                  <input id="homeCustomerSignupPassword" type="password" placeholder="Create password" required />
+                  <button class="password-peek-toggle" type="button" data-password-toggle="homeCustomerSignupPassword" aria-label="Show password">Show</button>
+                </div>
               </label>
               <label>
                 Phone (optional)
@@ -1208,9 +1302,8 @@
     <style id="homepage-light-hard-reset">
       body[data-theme-mode="light"] {
         background:
-          radial-gradient(circle at 12% 10%, rgba(255, 150, 201, 0.24), transparent 44%),
-          radial-gradient(circle at 88% 6%, rgba(255, 184, 217, 0.22), transparent 46%),
-          linear-gradient(90deg, #fff0f8 0%, #fff7fc 52%, #ffffff 100%) !important;
+          radial-gradient(circle at 12% 10%, rgba(183, 164, 145, 0.2), transparent 30%),
+          linear-gradient(180deg, #eee7de 0%, #e5dccf 100%) !important;
       }
 
       body[data-theme-mode="light"]::before {
@@ -1446,34 +1539,38 @@
       }
 
       body[data-theme-mode="light"] .btn:not(.btn-ghost) {
-        background: linear-gradient(180deg, #ff9dc9 0%, #f47db5 100%) !important;
-        border-color: rgba(226, 102, 166, 0.55) !important;
-        color: #2a1320 !important;
+        background: #e3a16f !important;
+        background-image: none !important;
+        border-color: rgba(79, 68, 59, 0.28) !important;
+        color: #3b2d23 !important;
         box-shadow: none !important;
       }
 
       body[data-theme-mode="light"] .btn:not(.btn-ghost):hover {
-        background: linear-gradient(180deg, #ffacd2 0%, #f78abc 100%) !important;
-        border-color: rgba(226, 102, 166, 0.62) !important;
+        background: #d99663 !important;
+        background-image: none !important;
+        border-color: rgba(79, 68, 59, 0.34) !important;
       }
 
       body[data-theme-mode="light"] .nav-admin-only.btn-ghost {
-        background: linear-gradient(180deg, #ff9dc9 0%, #f47db5 100%) !important;
-        border-color: rgba(226, 102, 166, 0.55) !important;
-        color: #2a1320 !important;
+        background: #e3a16f !important;
+        background-image: none !important;
+        border-color: rgba(79, 68, 59, 0.28) !important;
+        color: #3b2d23 !important;
       }
 
       body[data-theme-mode="light"] .nav-admin-only.btn-ghost:hover {
-        background: linear-gradient(180deg, #ffacd2 0%, #f78abc 100%) !important;
-        border-color: rgba(226, 102, 166, 0.62) !important;
+        background: #d99663 !important;
+        background-image: none !important;
+        border-color: rgba(79, 68, 59, 0.34) !important;
       }
 
       body[data-theme-mode="light"] .timeframe-switch button.active,
       body[data-theme-mode="light"] .quick-filter-group .btn.active,
       body[data-theme-mode="light"] .quick-filter-custom .btn.active {
-        background: rgba(244, 125, 181, 0.14) !important;
-        border-color: rgba(226, 102, 166, 0.42) !important;
-        color: #8e2f66 !important;
+        background: rgba(109, 94, 82, 0.12) !important;
+        border-color: rgba(109, 94, 82, 0.28) !important;
+        color: #4f443b !important;
       }
 
       body[data-theme-mode="light"] .join-tag {
@@ -1490,20 +1587,20 @@
       body[data-theme-mode="light"] .hero-note-label,
       body[data-theme-mode="light"] .hero-lexi-sell-head p,
       body[data-theme-mode="light"] .hero-lexi-privacy-note strong {
-        color: #b63f7f !important;
+        color: #6d5e52 !important;
       }
 
       body[data-theme-mode="light"] .live-pill {
-        background: rgba(244, 125, 181, 0.12) !important;
-        border-color: rgba(226, 102, 166, 0.35) !important;
+        background: rgba(109, 94, 82, 0.1) !important;
+        border-color: rgba(109, 94, 82, 0.22) !important;
       }
 
       body[data-theme-mode="light"] .live-dot,
       body[data-theme-mode="light"] .finder-results .live-label::before {
-        background: #f27fb7 !important;
+        background: #6d5e52 !important;
       }
     </style>
-    <script src="/theme-toggle.js"></script>
+    <script src="/theme-toggle.js?v=20260302-neutral2"></script>
     <script type="module" src="/app.js"></script>
   </body>
 </html>

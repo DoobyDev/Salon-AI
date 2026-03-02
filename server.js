@@ -1346,13 +1346,44 @@ function formatDisplayDateGb(value, options = {}) {
   return parsed.toLocaleDateString("en-GB", options);
 }
 
+function formatOrdinalDay(day) {
+  const mod10 = day % 10;
+  const mod100 = day % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${day}st`;
+  if (mod10 === 2 && mod100 !== 12) return `${day}nd`;
+  if (mod10 === 3 && mod100 !== 13) return `${day}rd`;
+  return `${day}th`;
+}
+
+function formatDisplayDateLongGb(value, options = {}) {
+  if (!value) return "";
+  const raw = String(value || "").trim();
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T12:00:00`)
+    : new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+  const weekday = options.weekday ? `${parsed.toLocaleDateString("en-GB", { weekday: "long" })}, ` : "";
+  const day = formatOrdinalDay(parsed.getDate());
+  const monthYear = parsed.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  return `${weekday}${day} ${monthYear}`;
+}
+
 function formatDisplayDateWithWeekdayGb(value) {
-  return formatDisplayDateGb(value, {
-    weekday: "long",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  });
+  return formatDisplayDateLongGb(value, { weekday: true });
+}
+
+function formatLexiBookingDate(value, options = {}) {
+  if (!value) return "";
+  const raw = String(value || "").trim();
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T12:00:00`)
+    : new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+  const weekday = options.weekday ? `${parsed.toLocaleDateString("en-GB", { weekday: "long" })} ` : "";
+  const day = formatOrdinalDay(parsed.getDate());
+  const month = parsed.toLocaleDateString("en-GB", { month: "long" });
+  const year = options.year ? ` ${parsed.getFullYear()}` : "";
+  return `${weekday}${day} ${month}${year}`.trim();
 }
 
 function formatLexiSlotLabelForDisplay(slot) {
@@ -3968,6 +3999,15 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
     role: effectiveRole,
     businessId: effectiveBusinessId
   };
+  let customerPhone = null;
+  if (effectiveRole === "customer" && user.email) {
+    const latestCustomerBooking = await prisma.booking.findFirst({
+      where: { customerEmail: user.email },
+      select: { customerPhone: true },
+      orderBy: [{ createdAt: "desc" }]
+    });
+    customerPhone = String(latestCustomerBooking?.customerPhone || "").trim() || null;
+  }
   const token = signToken(sessionUser);
   await writeAuditLog({
     actorId: user.id,
@@ -3988,7 +4028,8 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
       role: effectiveRole,
       email: user.email,
       businessId: effectiveBusinessId,
-      name: user.name
+      name: user.name,
+      phone: customerPhone
     }
   });
 });
@@ -4399,6 +4440,8 @@ app.post("/api/bookings", bookingLimiter, async (req, res) => {
   const service = String(req.body?.service || "").trim();
   const date = String(req.body?.date || "").trim();
   const time = String(req.body?.time || "").trim();
+  const source = String(req.body?.source || "manual").trim().toLowerCase() === "lexi" ? "lexi" : "manual";
+  const notes = String(req.body?.notes || "").trim().slice(0, 12000);
 
   if (!businessId || !customerName || !customerPhone || !service || !date || !time) {
     return res.status(400).json({ error: "Missing booking fields." });
@@ -4441,7 +4484,8 @@ app.post("/api/bookings", bookingLimiter, async (req, res) => {
       date: normalized.date,
       time: normalized.time,
       status: "confirmed",
-      source: "manual"
+      source,
+      notes: notes || null
     }
   });
 
@@ -5026,13 +5070,71 @@ function normalizeLexiTypos(text) {
     ["bokking", "booking"],
     ["boooking", "booking"],
     ["bookng", "booking"],
+    ["bookin", "booking"],
+    ["bok", "book"],
+    ["boook", "book"],
+    ["bokk", "book"],
+    ["greatt", "great"],
+    ["goood", "good"],
+    ["okee", "okay"],
+    ["okkk", "ok"],
+    ["yees", "yes"],
+    ["yess", "yes"],
+    ["cnfirm", "confirm"],
+    ["confrim", "confirm"],
+    ["confim", "confirm"],
+    ["comfirm", "confirm"],
+    ["sigin", "sign in"],
+    ["signin", "sign in"],
+    ["signn in", "sign in"],
+    ["sing up", "sign up"],
+    ["signup", "sign up"],
+    ["sin up", "sign up"],
+    ["accout", "account"],
+    ["acount", "account"],
+    ["loggin", "login"],
+    ["log in", "login"],
+    ["canel", "cancel"],
+    ["cnacel", "cancel"],
+    ["cancell", "cancel"],
+    ["reshedule", "reschedule"],
+    ["rescedule", "reschedule"],
+    ["avaiblity", "availability"],
+    ["avalability", "availability"],
+    ["availiblity", "availability"],
     ["appoinment", "appointment"],
     ["calender", "calendar"],
     ["dashbord", "dashboard"],
     ["deashboard", "dashboard"],
     ["subcriber", "subscriber"],
     ["recptionist", "receptionist"],
-    ["renenue", "revenue"]
+    ["renenue", "revenue"],
+    ["haiecut", "haircut"],
+    ["haircuit", "haircut"],
+    ["haricut", "haircut"],
+    ["hair cutt", "haircut"],
+    ["colur", "colour"],
+    ["colr", "colour"],
+    ["colourr", "colour"],
+    ["balyage", "balayage"],
+    ["baleyage", "balayage"],
+    ["baliage", "balayage"],
+    ["highlites", "highlights"],
+    ["higlights", "highlights"],
+    ["hilights", "highlights"],
+    ["extenstions", "extensions"],
+    ["extentions", "extensions"],
+    ["extentions", "extensions"],
+    ["keratine", "keratin"],
+    ["keritain", "keratin"],
+    ["beard trimm", "beard trim"],
+    ["facail", "facial"],
+    ["facal", "facial"],
+    ["lasheses", "lashes"],
+    ["brouw", "brow"],
+    ["waxxing", "waxing"],
+    ["pedacure", "pedicure"],
+    ["manacure", "manicure"]
   ];
   for (const [wrong, correct] of aliases) {
     q = q.replaceAll(wrong, correct);
@@ -5047,17 +5149,40 @@ function extractLexiIntroducedName(text) {
   if (!match) return "";
   const name = String(match[1] || "").trim();
   if (!name) return "";
+  const blockedMatches = new Set([
+    "looking",
+    "wanting",
+    "want",
+    "trying",
+    "here",
+    "booking",
+    "book",
+    "getting",
+    "interested",
+    "thinking",
+    "needing",
+    "after"
+  ]);
+  if (blockedMatches.has(name.toLowerCase())) return "";
   return `${name.charAt(0).toUpperCase()}${name.slice(1).toLowerCase()}`;
 }
 
 function extractLexiTimeFromQuestion(text) {
   const q = normalizeLexiTypos(String(text || "").toLowerCase());
   if (!q) return "";
-  const ampmMatch = q.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/);
+  const ampmMatch = q.match(/\b(\d{1,2})(?:(?::|\.)(\d{2}))?\s*(am|pm)\b/);
   if (ampmMatch) {
     const hour = Number(ampmMatch[1]);
     const minute = String(ampmMatch[2] || "00").padStart(2, "0");
     return `${hour}:${minute}${ampmMatch[3]}`;
+  }
+  const bareTimeMatch = q.match(/\b(\d{1,2})(?:(?::|\.)(\d{2}))\b/);
+  if (bareTimeMatch) {
+    const hour = Number(bareTimeMatch[1]);
+    const minute = String(bareTimeMatch[2] || "00").padStart(2, "0");
+    if (hour >= 0 && hour <= 23) {
+      return `${hour}:${minute}`;
+    }
   }
   const twentyFourMatch = q.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
   if (twentyFourMatch) {
@@ -5066,10 +5191,155 @@ function extractLexiTimeFromQuestion(text) {
   return "";
 }
 
+function extractLexiRequestedService(text, business) {
+  const raw = String(text || "").trim();
+  if (!raw) return null;
+  const q = normalizeLexiTypos(raw.toLowerCase());
+  const genericMap = [
+    ["hair cut and colour", "Cut and Colour"],
+    ["hair cut and color", "Cut and Colour"],
+    ["haircut and colour", "Cut and Colour"],
+    ["haircut and color", "Cut and Colour"],
+    ["cut and colour", "Cut and Colour"],
+    ["cut and color", "Cut and Colour"],
+    ["cut & colour", "Cut and Colour"],
+    ["cut & color", "Cut and Colour"],
+    ["hair cut", "Haircut"],
+    ["haircut", "Haircut"],
+    ["cut and finish", "Cut and Finish"],
+    ["trim", "Trim"],
+    ["blow dry", "Blow Dry"],
+    ["blowout", "Blowout"],
+    ["color refresh", "Color Refresh"],
+    ["colour refresh", "Color Refresh"],
+    ["colour", "Colour Service"],
+    ["color", "Colour Service"],
+    ["balayage", "Balayage"],
+    ["highlights", "Highlights"],
+    ["fade", "Fade"],
+    ["skin fade", "Skin Fade"],
+    ["beard trim", "Beard Trim"],
+    ["facial", "Facial"],
+    ["brow", "Brow Treatment"],
+    ["lashes", "Lash Treatment"],
+    ["wax", "Waxing"],
+    ["manicure", "Manicure"],
+    ["pedicure", "Pedicure"]
+  ];
+  const genericMatch = genericMap.find(([needle]) => q.includes(needle));
+  if (genericMatch) {
+    return { name: genericMatch[1], matched: "generic-service" };
+  }
+  const services = Array.isArray(business?.services) ? business.services : [];
+  const exactMatch = services.find((service) => {
+    const name = normalizeLexiTypos(String(service?.name || "").toLowerCase());
+    return name && q.includes(name);
+  });
+  if (exactMatch) {
+    return { name: String(exactMatch.name || "").trim(), matched: "business-service" };
+  }
+  return null;
+}
+
+function lexiIncludesAny(text, phrases = []) {
+  const q = normalizeLexiTypos(String(text || "").toLowerCase());
+  return phrases.some((phrase) => q.includes(normalizeLexiTypos(String(phrase || "").toLowerCase())));
+}
+
+const LEXI_APP_HELP_PHRASES = [
+  "how does the app work",
+  "how does lexi work",
+  "what can this app do",
+  "what can lexi do",
+  "what does lexi do",
+  "how do i use the app",
+  "how do i use lexi",
+  "what is this app",
+  "how do bookings work",
+  "what happens after i book",
+  "customer account",
+  "customer login",
+  "customer sign in",
+  "customer sign up",
+  "create account",
+  "sign in",
+  "sign up",
+  "login",
+  "register",
+  "dashboard",
+  "admin",
+  "subscriber",
+  "customer",
+  "front desk",
+  "receptionist",
+  "waitlist",
+  "calendar",
+  "diary",
+  "notifications",
+  "billing",
+  "subscription",
+  "privacy",
+  "gdpr",
+  "data protection"
+];
+
+const LEXI_BOOKING_HELP_PHRASES = [
+  "book",
+  "booking",
+  "appointment",
+  "availability",
+  "available",
+  "slot",
+  "slots",
+  "reschedule",
+  "change my booking",
+  "move my booking",
+  "cancel my booking",
+  "cancel appointment",
+  "book me in",
+  "fit me in",
+  "what times do you have",
+  "what have you got",
+  "next slot",
+  "next available"
+];
+
+const LEXI_AUTH_HELP_PHRASES = [
+  "account",
+  "need an account",
+  "customer account",
+  "sign in",
+  "signin",
+  "log in",
+  "login",
+  "sign up",
+  "signup",
+  "register",
+  "create account",
+  "already have an account"
+];
+
+const LEXI_POLICY_HELP_PHRASES = [
+  "privacy",
+  "gdpr",
+  "data protection",
+  "personal data",
+  "my data",
+  "billing",
+  "subscription",
+  "refund",
+  "refunds",
+  "deposit",
+  "cancellation policy",
+  "late policy",
+  "no show"
+];
+
 function isLexiAppQuestion(text) {
   const q = normalizeLexiTypos(String(text || "").toLowerCase());
   if (!q) return false;
-  return /(app|lexi|dashboard|signup|sign up|register|login|log in|\bbook\b|booking|bookings|appointment|calendar|diary|waitlist|module|modules|subscriber|customer|admin|receptionist|front desk|feature|features|demo mode|notifications?|confirm|confirmation|gdpr|privacy|data protection|billing|plan|subscription|how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
+  return lexiIncludesAny(q, [...LEXI_APP_HELP_PHRASES, ...LEXI_BOOKING_HELP_PHRASES, ...LEXI_AUTH_HELP_PHRASES, ...LEXI_POLICY_HELP_PHRASES])
+    || /(how .*work|what can .*do|find .*salon|find .*barber|find .*beauty|search .*salon|search .*barber|search .*beauty|subscribed businesses?)/.test(q);
 }
 
 function isLexiPublicAvailabilityQuestion(text) {
@@ -5210,7 +5480,161 @@ async function searchPublicSubscribedBusinesses({ query = "", location = "", ser
   return rows.map(mapPublicBusinessProfile);
 }
 
-async function buildPublicLexiFallbackReply(message, business, history = []) {
+function normalizeLexiConversationMemory(input = {}) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    businessId: String(source.businessId || "").trim(),
+    businessName: String(source.businessName || "").trim(),
+    service: String(source.service || "").trim(),
+    date: String(source.date || "").trim(),
+    time: String(source.time || "").trim(),
+    name: String(source.name || "").trim(),
+    phone: String(source.phone || "").trim(),
+    email: String(source.email || "").trim(),
+    confirmed: Boolean(source.confirmed)
+  };
+}
+
+function buildLexiDraftSummary(memory, fallbackBusinessName = "the salon") {
+  const safeMemory = normalizeLexiConversationMemory(memory);
+  const businessName = safeMemory.businessName || fallbackBusinessName;
+  const parts = [];
+  if (safeMemory.service) parts.push(safeMemory.service);
+  if (safeMemory.date) parts.push(`on ${safeMemory.date}`);
+  if (safeMemory.time) parts.push(`at ${safeMemory.time}`);
+  return {
+    businessName,
+    summary: parts.join(" ").trim(),
+    hasName: Boolean(safeMemory.name),
+    hasPhone: Boolean(safeMemory.phone),
+    hasEmail: Boolean(safeMemory.email),
+    confirmed: Boolean(safeMemory.confirmed)
+  };
+}
+
+function buildLexiBookingDraftState({
+  business,
+  memory,
+  serviceReplyHint,
+  recentDateKey,
+  recentTimeHint,
+  currentName = "",
+  currentPhone = "",
+  currentEmail = ""
+} = {}) {
+  const safeMemory = normalizeLexiConversationMemory(memory);
+  const businessName = safeMemory.businessName || String(business?.name || "the salon").trim() || "the salon";
+  const service = String(serviceReplyHint?.name || safeMemory.service || "").trim();
+  const dateKey = String(recentDateKey || "").trim();
+  const time = String(recentTimeHint || "").trim();
+  const name = String(currentName || safeMemory.name || "").trim();
+  const phone = String(currentPhone || safeMemory.phone || "").trim();
+  const email = String(currentEmail || safeMemory.email || "").trim();
+  return {
+    businessId: safeMemory.businessId || String(business?.id || "").trim(),
+    businessName,
+    service,
+    dateKey,
+    time,
+    name,
+    phone,
+    email,
+    confirmed: Boolean(safeMemory.confirmed),
+    hasService: Boolean(service),
+    hasDate: Boolean(dateKey),
+    hasTime: Boolean(time),
+    hasContact: Boolean(name && phone),
+    dateLabel: dateKey ? formatLexiBookingDate(dateKey, { weekday: true }) : "",
+    summary: [service, dateKey ? `on ${formatLexiBookingDate(dateKey, { weekday: true })}` : "", time ? `at ${time}` : ""].filter(Boolean).join(" ")
+  };
+}
+
+function extractLexiPhoneFromText(text) {
+  const match = String(text || "").match(/(?:\+?\d[\d\s().-]{7,24}\d)/);
+  return match ? String(match[0] || "").trim() : "";
+}
+
+function extractLexiNameFromDetails(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return "";
+  const direct = extractLexiIntroducedName(raw);
+  if (direct) return direct;
+  const beforeNumber = raw.split(/\b(?:and\s+)?(?:my\s+number\s+is|my\s+phone\s+is|phone\s+is|number\s+is)\b/i)[0] || "";
+  const cleaned = beforeNumber
+    .replace(/^[,\s]+|[,\s]+$/g, "")
+    .replace(/\b(?:it'?s|its|this is)\b/gi, "")
+    .trim();
+  if (!cleaned || cleaned.length > 50 || /\d/.test(cleaned)) return "";
+  if (!/^[A-Za-z][A-Za-z' -]{1,48}$/.test(cleaned)) return "";
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (!parts.length || parts.length > 4) return "";
+  return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()).join(" ");
+}
+
+function isLexiBookingIntentSignal(qLower, draft) {
+  return Boolean(
+    draft?.hasService
+    || draft?.hasDate
+    || draft?.hasTime
+    || /(book|booking|appointment|slot|slots|availability|available|time|today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|haircut|trim|blow dry|blowout|balayage|highlights|facial|wax|lashes|brow|fade|beard)/.test(qLower)
+  );
+}
+
+function isLexiSalonInfoIntent(qLower) {
+  return /(do you do|what do you offer|what services|speciali[sz]e|hair type|curly|natural hair|fine hair|thick hair|textured hair|coily|afro|wavy|consultation|consultations|major change|big change|price|cost|pricing|price range|charge extra|free consultation|package|membership|policy|deposit|late|cancellation|cancelation|walk-?ins?|book in advance|book ahead|availability this week|how long does|specific stylist|choose a stylist|pick a stylist|how experienced|best stylist|who is best|photos of previous work|portfolio|what should i get|where are you|location|address|parking|payment methods|forms of payment|card|cash|aftercare|product|products|shampoo|conditioner|hair mask|styling product|sulfate|ingredients|ammonia-?free|organic colour|organic color|sell products|retail products|maintain my hair|prepare for my appointment|first appointment|wash my hair before|new client discount|first time client)/.test(qLower);
+}
+
+async function maybeBuildLexiBookingReply({ qLower, draft, business, lastAssistantText = "" }) {
+  if (!draft?.businessId || !business?.id || !isLexiBookingIntentSignal(qLower, draft)) return null;
+  if (isLexiSalonInfoIntent(qLower) && !/(book|booking|slot|slots|availability|available|time works|what time|can i have|i'll take|ill take|works best|book that|book it|confirm)/.test(qLower)) {
+    return null;
+  }
+  const normalizedLastAssistant = normalizeLexiTypos(String(lastAssistantText || "").toLowerCase());
+  const lastAssistantAskedToBook = /would you like me to book that for you/.test(normalizedLastAssistant);
+  const wantsConfirmation = /(^(ok|okay|yes|yeah|yep|sure|great|perfect|fine|good)$|^(ok|okay)\s+(great|good|fine|perfect|works)$|^(yes|yeah|yep|sure)\s+(great|good|fine|perfect|works)$|yes\b.*(book|confirm)|yes\b.*(great|fine|good|perfect|works)|that sounds good|sounds good|sounds great|that's great|thats great|that's fine|thats fine|that's good|thats good|book that|book it|book that for me|can i book that|can you book that|please book that|please book it|confirm that|confirm it|lock it in|lock that in|go ahead|yes please|that works|do it|sort that|sort that out|make that booking|get that booked|put that in|reserve that|hold that|is that booked|is that all booked|is that confirmed|is that all set)/.test(qLower)
+    || (lastAssistantAskedToBook && /^(ok|okay|yes|yeah|yep|sure|great|perfect|fine|good|sounds good|sounds great|that works)$/.test(qLower));
+
+  if (draft.hasService && draft.hasDate && !draft.hasTime) {
+    const wantsAvailability = /(available|availability|slot|slots|space|can i|get|looking|need|want|book|appointment|what have you got|what do you have)/.test(qLower);
+    if (wantsAvailability) {
+      const slots = await getAvailableSlotsForBusiness(business, 14);
+      const filtered = slots.filter((slot) => String(slot).startsWith(draft.dateKey)).slice(0, 6);
+      if (!filtered.length) {
+        return `I can't see any open times for a ${draft.service} at ${draft.businessName} on ${draft.dateLabel}. If you want, I can check another day.`;
+      }
+      return `Yes. For a ${draft.service} at ${draft.businessName} on ${draft.dateLabel}, I can do ${filtered.map(formatLexiSlotLabelForDisplay).join(", ")}. Which time works best?`;
+    }
+    return `${draft.service} is fine. What time works best on ${draft.dateLabel}?`;
+  }
+
+  if (draft.hasService && !draft.hasDate) {
+    return `${draft.service} is fine. What day would you like?`;
+  }
+
+  if (!draft.hasService && draft.hasDate && draft.hasTime) {
+    return `I've got ${draft.dateLabel} at ${draft.time}. What service would you like to book?`;
+  }
+
+  if (draft.hasService && draft.hasDate && draft.hasTime) {
+    if (draft.confirmed) {
+      return `You're all set for ${draft.service} at ${draft.businessName} on ${draft.dateLabel} at ${draft.time}.`;
+    }
+    if (wantsConfirmation && !draft.hasContact) {
+      return `Almost there. I've got your ${draft.service} at ${draft.businessName} on ${draft.dateLabel} at ${draft.time}. I just need your name and phone number to book it in properly.`;
+    }
+    if (wantsConfirmation && draft.hasContact) {
+      return `Perfect. I've got everything for your ${draft.service} at ${draft.businessName} on ${draft.dateLabel} at ${draft.time}. Tell me to confirm it and I'll finish the booking.`;
+    }
+    if (!draft.hasContact) {
+      return `Perfect. I've got your ${draft.service} at ${draft.businessName} on ${draft.dateLabel} at ${draft.time}. Would you like me to book that for you?`;
+    }
+    return `Perfect. I've got your ${draft.service} at ${draft.businessName} on ${draft.dateLabel} at ${draft.time}. Would you like me to book that for you?`;
+  }
+
+  return null;
+}
+
+async function buildPublicLexiFallbackReply(message, business, history = [], memory = {}) {
   const q = String(message || "").trim();
   const qLower = normalizeLexiTypos(q.toLowerCase());
   const bizName = String(business?.name || "the salon").trim() || "the salon";
@@ -5218,6 +5642,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   const serviceNames = services.map((s) => String(s?.name || "").trim()).filter(Boolean);
   const serviceExamples = serviceNames.length ? serviceNames.slice(0, 4).join(", ") : "haircuts, colour, barber services, and beauty treatments";
   const safeHistory = Array.isArray(history) ? history : [];
+  const safeMemory = normalizeLexiConversationMemory(memory);
   const priorMessages = safeHistory
     .filter((entry) => entry && typeof entry.content === "string" && (entry.role === "user" || entry.role === "assistant"))
     .slice(-8);
@@ -5230,10 +5655,37 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   const introducedName = extractLexiIntroducedName(q);
   const currentDateKey = resolveLexiDateKeyFromQuestion(qLower);
   const currentTimeHint = extractLexiTimeFromQuestion(qLower);
-  const recentDateKey = currentDateKey || resolveLexiDateKeyFromQuestion(recentUserText);
-  const recentTimeHint = currentTimeHint || extractLexiTimeFromQuestion(recentUserText);
+  const memoryDateKey = resolveLexiDateKeyFromQuestion(safeMemory.date);
+  const memoryTimeHint = extractLexiTimeFromQuestion(safeMemory.time);
+  const recentDateKey = currentDateKey || memoryDateKey || resolveLexiDateKeyFromQuestion(recentUserText);
+  const recentTimeHint = currentTimeHint || memoryTimeHint || extractLexiTimeFromQuestion(recentUserText);
+  const currentPhone = extractLexiPhoneFromText(q);
+  const currentName = extractLexiNameFromDetails(q);
+  const currentEmail = String((q.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i) || [])[0] || "").trim().toLowerCase();
+  const serviceReplyHint = extractLexiRequestedService(q, business)
+    || (safeMemory.service ? { name: safeMemory.service, matched: "memory-service" } : null)
+    || extractLexiRequestedService(recentUserText, business);
+  const hasPendingBookingContext = Boolean((safeMemory.businessId || business?.id) && serviceReplyHint?.name && recentDateKey && recentTimeHint);
+  const draftSummary = buildLexiDraftSummary({
+    ...safeMemory,
+    businessName: safeMemory.businessName || bizName,
+    service: serviceReplyHint?.name || safeMemory.service,
+    date: recentDateKey || safeMemory.date,
+    time: recentTimeHint || safeMemory.time
+  }, bizName);
+  const bookingDraft = buildLexiBookingDraftState({
+    business,
+    memory: safeMemory,
+    serviceReplyHint,
+    recentDateKey,
+    recentTimeHint,
+    currentName,
+    currentPhone,
+    currentEmail
+  });
+  const isGreetingOnly = /^(hi|hello|hey|hiya|hey lexi|hi lexi)[!.]?\s*$/i.test(q);
 
-  if (!introducedName && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+  if (!introducedName && isGreetingOnly) {
     return "Hi, I'm Lexi. Lovely to hear from you. How can I help today?";
   }
   if (false && !q) {
@@ -5246,16 +5698,85 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   if (!q) {
     return "Hi, I'm Lexi. How can I help today?";
   }
-  if (!introducedName && /^(hi|hello|hey|hiya|hey lexi|hi lexi)\b/.test(qLower)) {
+  if (!introducedName && isGreetingOnly) {
     return "Hi, I'm Lexi. How can I help today?";
   }
-  if (introducedName) {
+  if (introducedName && !hasPendingBookingContext) {
     const displayName = introducedName.charAt(0).toUpperCase() + introducedName.slice(1);
     return `Hi ${displayName}, lovely to meet you. How can I help today?`;
+  }
+  const draftDrivenReply = await maybeBuildLexiBookingReply({ qLower, draft: bookingDraft, business, lastAssistantText });
+  if (draftDrivenReply) {
+    return draftDrivenReply;
+  }
+  if (/(is that all booked in|is that booked in|is that booked|is that confirmed|is that all set|book that in|book it in|confirm that|confirm it)/.test(qLower) && hasPendingBookingContext) {
+    const labelDate = formatLexiBookingDate(recentDateKey, { weekday: true });
+    const targetBusinessName = safeMemory.businessName || bizName;
+    const targetService = String(serviceReplyHint?.name || "").trim();
+    if (safeMemory.confirmed) {
+      return `Yes, your ${targetService} at ${targetBusinessName} is booked for ${labelDate} at ${recentTimeHint}.`;
+    }
+    if (!safeMemory.name || !safeMemory.phone) {
+      return `Not yet. I have your ${targetService} at ${targetBusinessName} on ${labelDate} at ${recentTimeHint}, but I still need your name and phone number to confirm it.`;
+    }
+    return `Almost. I have your ${targetService} at ${targetBusinessName} on ${labelDate} at ${recentTimeHint}. Ask me to confirm the booking and I'll book it with the details you've given.`;
+  }
+  if (hasPendingBookingContext && /(book|booking|appointment|all set|sorted|done|confirm|confirmed|booked in|booked)/.test(qLower)) {
+    const labelDate = formatLexiBookingDate(recentDateKey, { weekday: true });
+    const targetBusinessName = draftSummary.businessName;
+    const targetService = String(serviceReplyHint?.name || "").trim();
+    if (safeMemory.confirmed) {
+      return `Yes, you're booked in for ${targetService} at ${targetBusinessName} on ${labelDate} at ${recentTimeHint}.`;
+    }
+    if (!draftSummary.hasName || !draftSummary.hasPhone) {
+      return `I've got your ${targetService} at ${targetBusinessName} on ${labelDate} at ${recentTimeHint}. I just need your name and phone number to lock it in.`;
+    }
+    return `I've got everything for your ${targetService} at ${targetBusinessName} on ${labelDate} at ${recentTimeHint}. Tell me to confirm it and I'll finish the booking.`;
+  }
+  if (serviceReplyHint && lastAssistantText && business?.id) {
+    const assistantDateKey = resolveLexiDateKeyFromQuestion(lastAssistantText);
+    const targetDateKey = recentDateKey || assistantDateKey;
+    const lastAssistantLower = normalizeLexiTypos(lastAssistantText.toLowerCase());
+    if (targetDateKey && /(bookings? i can see are|available slots i can see are|here are some times|check another day)/.test(lastAssistantLower)) {
+      const slots = await getAvailableSlotsForBusiness(business, 14);
+      const filtered = slots.filter((slot) => String(slot).startsWith(targetDateKey)).slice(0, 8);
+      const labelDate = formatLexiBookingDate(targetDateKey, { weekday: true });
+      const targetService = String(serviceReplyHint.name || "").trim();
+      if (!filtered.length) {
+        return `I can help with a ${targetService} at ${bizName}, but I can't see any open slots on ${labelDate}. If you want, I can check another day.`;
+      }
+      return `Yes, a ${targetService} is fine. For ${bizName} on ${labelDate}, the next times I can offer are ${filtered.map(formatLexiSlotLabelForDisplay).join(", ")}. Tell me which time you want.`;
+    }
   }
   const shortReplyWordCount = q.split(/\s+/).filter(Boolean).length;
   if (shortReplyWordCount > 0 && shortReplyWordCount <= 6 && lastAssistantText) {
     const lastAssistantLower = normalizeLexiTypos(lastAssistantText.toLowerCase());
+    if (/(what service|which service can i book|what service would you like)/.test(lastAssistantLower) && recentDateKey && recentTimeHint && serviceReplyHint?.name) {
+      return `Perfect. I've got your ${serviceReplyHint.name} at ${bizName} on ${formatLexiBookingDate(recentDateKey, { weekday: true })} at ${recentTimeHint}. Would you like me to book that for you?`;
+    }
+    if (/(available slots|here are some times|next available slots)/.test(lastAssistantLower) && recentTimeHint) {
+      const targetDateKey = recentDateKey || resolveLexiDateKeyFromQuestion(lastAssistantText);
+      if (targetDateKey) {
+        const labelDate = formatLexiBookingDate(targetDateKey, { weekday: true });
+        if (serviceReplyHint?.name) {
+          return `Perfect. I've got your ${serviceReplyHint.name} at ${bizName} on ${labelDate} at ${recentTimeHint}. Would you like me to book that for you?`;
+        }
+        return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
+      }
+      if (serviceReplyHint?.name) {
+        return `Perfect, ${recentTimeHint} for a ${serviceReplyHint.name}. What day or date would you like?`;
+      }
+      return `Perfect, ${recentTimeHint} sounds good. What service would you like to book?`;
+    }
+    if (/(what time|which time|what time suits you best|tell me the time)/.test(lastAssistantLower)) {
+      if (recentTimeHint && recentDateKey && serviceReplyHint?.name) {
+        const labelDate = formatLexiBookingDate(recentDateKey, { weekday: true });
+        return `Perfect. I've got your ${serviceReplyHint.name} at ${bizName} on ${labelDate} at ${recentTimeHint}. Would you like me to book that for you?`;
+      }
+      if (recentTimeHint && serviceReplyHint?.name) {
+        return `Perfect, ${recentTimeHint} for a ${serviceReplyHint.name}. What day or date would you like?`;
+      }
+    }
     if (/(which one|which business|tell me which one|what business)/.test(lastAssistantLower)) {
       return `Perfect, ${q} sounds good. What day or date would you like? I’ll check the available slots for you.`;
     }
@@ -5273,14 +5794,14 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     }
     if (/(what day|which day|what date|tell me the day|tell me the date)/.test(lastAssistantLower)) {
       if (currentDateKey && recentTimeHint) {
-        const labelDate = formatDisplayDateWithWeekdayGb(currentDateKey);
+        const labelDate = formatLexiBookingDate(currentDateKey, { weekday: true });
         return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
       }
       return "Perfect. What time would suit you best? I’ll check the best options for you.";
     }
     if (/(what time|which time|what time suits you best|tell me the time)/.test(lastAssistantLower)) {
       if (recentTimeHint && recentDateKey) {
-        const labelDate = formatDisplayDateWithWeekdayGb(recentDateKey);
+        const labelDate = formatLexiBookingDate(recentDateKey, { weekday: true });
         return `Perfect, ${labelDate} at ${recentTimeHint}. What service would you like to book?`;
       }
     }
@@ -5290,6 +5811,42 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   }
   if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !isLexiSalonBeautyQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
     return "Ask me anything public-facing about salons, services, bookings, or how the app works. I just can't share private or personal data in chat.";
+  }
+  if (lexiIncludesAny(qLower, LEXI_AUTH_HELP_PHRASES)) {
+    if (/(do i need|need an account|have to sign in|have to sign up|without an account|guest)/.test(qLower)) {
+      if (serviceReplyHint?.name && recentDateKey && !recentTimeHint) {
+        return `You don't need an account to chat with me. When you're ready to lock in the booking, I'll open sign in or sign up. What time would you like for ${serviceReplyHint.name} on ${formatLexiBookingDate(recentDateKey, { weekday: true })}?`;
+      }
+      if (serviceReplyHint?.name && recentDateKey && recentTimeHint) {
+        return `You don't need an account to chat with me. When you're ready to lock in the booking, I'll open sign in or sign up. I've got ${serviceReplyHint.name} on ${formatLexiBookingDate(recentDateKey, { weekday: true })} at ${recentTimeHint}.`;
+      }
+      return "You don't need an account to chat with me. When you're ready to lock in a booking, I'll open sign in or sign up for you. What service would you like, and what day works best?";
+    }
+    if (/(already have an account|existing account|returning customer)/.test(qLower)) {
+      return "If you already have a customer account, just sign in when Lexi opens the customer access popup and she can carry your booking through from there.";
+    }
+    return "If you're a customer, Lexi can guide you into sign in or sign up when you're ready to confirm a booking. Once you're in, the app helps you manage bookings and appointment history without sharing personal data publicly.";
+  }
+  if (/(cancel|cancellation|cancel my booking|reschedule|change my booking|move my booking|change appointment|move appointment)/.test(qLower)) {
+    if (/(cancel|cancellation|cancel my booking)/.test(qLower)) {
+      return "Yes, if you already have a booking, sign in to your customer account and you can cancel it from there. If you want, I can also help you choose a new slot instead of cancelling outright.";
+    }
+    if (/(reschedule|change my booking|move my booking|change appointment|move appointment)/.test(qLower)) {
+      return "Yes, if you're changing an existing booking, sign in to your customer account and you can reschedule it there. If you're still deciding on a new time, I can help you find a better slot first.";
+    }
+    return "Yes, Lexi can help with booking changes. If you already have a booking, sign in to your customer account to manage it, and if you're still arranging a new appointment I can help you choose a better day or time first.";
+  }
+  if (/(what can .*do|what does .*do|how .*work|how to use|how do i use|features|feature|modules?)/.test(qLower) || lexiIncludesAny(qLower, ["what can this app do", "what can lexi do", "how does lexi work", "how does the app work"])) {
+    return "Lexi can answer salon and treatment questions, check live availability, guide bookings, and move customers into the right sign-in or sign-up flow when it is time to confirm. The app then gives customers booking access, and subscribers/admins get dashboard tools.";
+  }
+  if (lexiIncludesAny(qLower, LEXI_POLICY_HELP_PHRASES)) {
+    if (/(privacy|gdpr|data protection|personal data)/.test(qLower)) {
+      return "I can explain how the app handles privacy and customer access at a public level, but I won't expose anyone's personal data, account details, or internal system information in chat.";
+    }
+    if (/(billing|subscription|refund|refunds)/.test(qLower)) {
+      return "I can explain the public billing and refund flow, but I won't expose payment details or account-specific billing data in chat.";
+    }
+    return "I can explain public-facing policy topics like privacy, billing flow, cancellations, and how customer access works. I just won't expose personal data, account secrets, or internal system details in chat.";
   }
   if (/(find|search|show).*(salon|barber|barbershop|beauty)/.test(qLower)) {
     const locationMatch = q.match(/\b(?:in|near)\s+([a-zA-Z\s'-]{2,40})$/i);
@@ -5342,7 +5899,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     }
     const slots = await getAvailableSlotsForBusiness(targetBusiness, 14);
     const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
-    const labelDate = formatDisplayDateWithWeekdayGb(dateKey);
+    const labelDate = formatLexiBookingDate(dateKey, { weekday: true });
     const filteredDisplay = filtered.map(formatLexiSlotLabelForDisplay);
     if (!filtered.length) {
       return `I can’t see any available slots for ${targetBusiness.name} on ${labelDate}. If you want, I can check another day or help you find another subscribed business.`;
@@ -5351,7 +5908,8 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   }
   if (/(are there|any|do you have).*(booking|bookings).*(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|\bbookings?\s+for\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/.test(qLower)) {
     const weekday = weekdayFromText(qLower);
-    if (weekday !== null && business?.id) {
+    const isAvailabilityIntent = /(available|availability|slot|slots|space|free)/.test(qLower);
+    if (weekday !== null && business?.id && !isAvailabilityIntent) {
       const target = nextDateForWeekday(weekday);
       const dateKey = target.toISOString().slice(0, 10);
       const rows = await prisma.booking.findMany({
@@ -5361,7 +5919,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       });
       const active = rows.filter((r) => String(r.status || "").toLowerCase() !== "cancelled");
       const cancelled = rows.length - active.length;
-      const label = formatDisplayDateWithWeekdayGb(dateKey);
+      const label = formatLexiBookingDate(dateKey, { weekday: true });
       if (!rows.length) {
         return `I can’t see any bookings for ${bizName} on ${label} yet. If you want, I can help you check availability or suggest a good time to book.`;
       }
@@ -5376,7 +5934,7 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
       const dateKey = target.toISOString().slice(0, 10);
       const slots = await getAvailableSlotsForBusiness(business, 14);
       const filtered = slots.filter((slot) => String(slot).startsWith(dateKey)).slice(0, 8);
-      const label = formatDisplayDateWithWeekdayGb(dateKey);
+      const label = formatLexiBookingDate(dateKey, { weekday: true });
       const filteredDisplay = filtered.map(formatLexiSlotLabelForDisplay);
       if (!filtered.length) {
         return `I can’t see any available slots for ${bizName} on ${label} right now. If you want, I can check another day.`;
@@ -5404,26 +5962,111 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
     }
     return "I can help with today’s revenue/takings, but I need a business context to check booking-based revenue.";
   }
-  if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower)) {
-    return `Lovely. What service would you like at ${bizName}, and what day and time would suit you best? Once I have that, I'll check the best options for you.`;
+  if (/(book|booking|appointment|slot|availability|available time|what time)/.test(qLower) && !isLexiSalonInfoIntent(qLower)) {
+    if (draftSummary.summary && draftSummary.summary !== `on ${recentDateKey}`) {
+      if (!draftSummary.hasName || !draftSummary.hasPhone) {
+        return `I've got ${draftSummary.summary} at ${draftSummary.businessName}. I just need your name and phone number to finish the booking.`;
+      }
+      if (!draftSummary.confirmed) {
+        return `I've got ${draftSummary.summary} at ${draftSummary.businessName}. If you're happy with that, tell me to confirm it.`;
+      }
+      return `You're already booked in for ${draftSummary.summary} at ${draftSummary.businessName}.`;
+    }
+    if (recentDateKey && !serviceReplyHint?.name && !recentTimeHint) {
+      return `Yes. ${formatDisplayDateGb(recentDateKey, { day: "2-digit", month: "2-digit", year: "numeric" })} works. What service would you like, and what time suits you best?`;
+    }
+    if (recentDateKey && !serviceReplyHint?.name) {
+      return `I've got ${formatLexiBookingDate(recentDateKey, { weekday: true })} at ${recentTimeHint}. What service would you like to book?`;
+    }
+    if (recentDateKey && serviceReplyHint?.name && !recentTimeHint) {
+      return `I've got ${serviceReplyHint.name} on ${formatLexiBookingDate(recentDateKey, { weekday: true })}. What time would you like?`;
+    }
+    return `Yes. What service would you like, and what day works best?`;
   }
-  if (/(service|services|do you do|what do you offer|treatment)/.test(qLower)) {
+  if (/balayage/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, balayage is a good option if you want softer, lower-maintenance colour. A consultation is a good idea if this is your first balayage, you're lifting from darker colour, or you want help choosing the right tone.";
+  }
+  if (/highlights?/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, highlights are absolutely an option. A consultation helps if you want a big change, you're correcting old colour, or you're not sure how bright or high-maintenance you want to go.";
+  }
+  if (/keratin/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, keratin treatments can be a strong option for smoothing and cutting down styling time. A consultation is useful if you're pregnant, colour-treated, or deciding between smoothing and straightening results.";
+  }
+  if (/extensions?/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, extensions usually start with a consultation so the colour match, method, length, and upkeep are planned properly. That's the best first step before booking the full appointment.";
+  }
+  if (/(colour correction|color correction)/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, colour correction normally starts with a consultation. It helps assess what's already on the hair, what's realistically achievable, and how much time will be needed safely.";
+  }
+  if (/(bridal|event styling|updo)/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes, special-occasion styling is something Lexi can help with. A consultation or trial is usually the best first step so the look, timing, and any prep are planned properly.";
+  }
+  if (/(balayage|highlights|keratin|extensions|colour correction|color correction|bridal|event styling|updo)/.test(qLower) && /(do you do|consultation|consultations|need|major change|big change)/.test(qLower)) {
+    return "Yes. A consultation is usually the right first step if you're making a big change, correcting old work, or you want help choosing the best option for your hair and upkeep level.";
+  }
+  if (/(speciali[sz]e|hair type|curly|natural hair|fine hair|thick hair|textured hair|coily|afro|wavy)/.test(qLower)) {
+    return "Yes. Tell me your hair type, thickness, length, and the result you want, and I'll guide you towards the right service, upkeep level, and whether a consultation makes sense first.";
+  }
+  if (/balayage/.test(qLower)) {
+    return "Balayage gives a softer lived-in finish and usually grows out more gently than full highlights. If you want, tell me the look you're after and I’ll help with maintenance, timing, and whether a consultation makes sense.";
+  }
+  if (/highlights?/.test(qLower)) {
+    return "Highlights are good if you want more lift and brightness from root to end. Tell me how blonde or low-maintenance you want it, and I’ll help narrow down the right option.";
+  }
+  if (/keratin/.test(qLower)) {
+    return "Keratin is mainly about smoothing, taming frizz, and making styling easier. If you tell me your hair type and the result you want, I’ll help you decide if it’s the right fit.";
+  }
+  if (/extensions?/.test(qLower)) {
+    return "Extensions can work really well for extra length, fullness, or both. The main things are colour match, method, upkeep, and budget, so tell me what you want the end result to feel like.";
+  }
+  if (/(colour correction|color correction)/.test(qLower)) {
+    return "Colour correction is usually more involved than a standard colour appointment, so the safest approach is to assess the current colour, condition, and target result first. Tell me what’s happened so far and I’ll guide the next step.";
+  }
+  if (/(bridal|event styling|updo)/.test(qLower)) {
+    return "Event styling is usually about the look, how long it needs to hold, and whether you want a trial first. Tell me the occasion and the style you have in mind and I’ll guide you from there.";
+  }
+  if (/(consultation|consultations|major change|big change|before i change|before a big colour|before a big color)/.test(qLower)) {
+    return "Yes, a consultation is the right first step before a major change. Tell me what you're thinking about and I'll guide the best next step.";
+  }
+  if (/(service|services|what do you offer|treatment)/.test(qLower)) {
     return `${bizName} offers services like ${serviceExamples}. Tell me the result you're after and I'll point you to the best option.`;
   }
   if (/(price|cost|how much|pricing)/.test(qLower)) {
     return "Prices can vary depending on the service, hair length or density, and the time needed, so I won't guess if exact pricing isn't listed. Tell me what you're considering and I'll explain what usually affects the price.";
   }
+  if (/(price range|colour price|color price|long hair|thick hair surcharge|charge extra|consultations free|free consultation|package deal|package deals|membership|memberships)/.test(qLower)) {
+    return "Usually it depends on the service, time needed, and hair length or thickness. Tell me the service you're thinking about and I'll explain the likely pricing factors clearly.";
+  }
   if (/(policy|deposit|late|cancellation|cancelation|no show|no-show|grace period)/.test(qLower)) {
     return "Most salons have policies around deposits, late arrivals, cancellations, and no-shows. Tell me which one you want to check and I'll walk you through it clearly.";
   }
+  if (/(book in advance|book ahead|walk-?ins?|availability this week|this week availability|how long does .* take|how long .* service .* take)/.test(qLower)) {
+    return "Usually the key things are the service, how flexible you are on timing, and whether you want a specific stylist. Tell me the service and day you want, and I'll keep it simple with the best next booking option.";
+  }
+  if (/(specific stylist|choose a stylist|pick a stylist|how experienced|experience of stylists|best stylist|who is best|photos of previous work|previous work|portfolio)/.test(qLower)) {
+    return "I can help with stylist guidance in a general way, but I won't invent staff details that aren't listed. Tell me the result you want, like blonde work, colour correction, or curly cutting, and I'll point you in the right direction.";
+  }
   if (/(don'?t know what i want|not sure what i want|unsure what i want|recommend.*service|what should i get)/.test(qLower)) {
     return "Let's narrow it down. Tell me your goal, how much upkeep you want, and any recent colour or chemical history, and I'll suggest a few strong options.";
+  }
+  if (/(where are you located|where are you|location|address|parking|payment methods|forms of payment|card|cash)/.test(qLower)) {
+    const addressBits = [business?.address, business?.city, business?.postcode].filter(Boolean).join(", ");
+    if (addressBits) {
+      return `${bizName} is at ${addressBits}. If you want, I can also help with the best day, time, or booking step from here.`;
+    }
+    return `I can help with location, parking, and payment questions for ${bizName}. If the full public details are not listed yet, I can still help with the booking side straight away.`;
   }
   if (/(open|opening hours|hours|closing time|when are you open)/.test(qLower)) {
     return `I can help with opening-hours questions for ${bizName} if the business profile includes them. If you don’t see the hours listed yet, I can still help you plan the best day/time to book.`;
   }
   if (/(shampoo|conditioner|product|aftercare|hair mask|styling product|sulfate|ingredients)/.test(qLower)) {
     return "Yes, I can help with product and aftercare questions. Tell me your hair type (for example curly, fine, colour-treated, dry, oily scalp) and what you’re trying to improve, and I’ll give practical guidance.";
+  }
+  if (/(first appointment|before my appointment|before my first visit|before my first appointment)/.test(qLower)) {
+    return "For a first appointment, bring a clear idea of the result you want and a couple of reference photos if you have them. If you’ve had recent colour, extensions, allergies, or scalp sensitivity, mention that straight away so the appointment can be planned properly.";
+  }
+  if (/(ammonia-?free|organic colour|organic color|sell products|retail products|products in salon|maintain my hair|prepare for my appointment|wash my hair before|new client discount|first time client)/.test(qLower)) {
+    return "Yes. Tell me the service you're planning and I'll give you the most useful prep, product, or aftercare guidance first.";
   }
   if (/(skin|allergy|reaction|medical|rash|infection|burn)/.test(qLower)) {
     return "I can give general beauty and aftercare guidance, but I can’t give medical advice. If you describe the treatment type and what happened, I can suggest safe next steps and when to contact a qualified professional.";
@@ -5438,9 +6081,9 @@ async function buildPublicLexiFallbackReply(message, business, history = []) {
   return "Tell me what you need, and I'll keep it simple. If you're booking, just send the service, date, and time you want.";
 }
 
-async function buildPublicLexiFallbackReplySafe(message, business, history = []) {
+async function buildPublicLexiFallbackReplySafe(message, business, history = [], memory = {}) {
   try {
-    return normalizeLexiReplyText(await buildPublicLexiFallbackReply(message, business, history), { maxSentences: 2, maxChars: 320 });
+    return normalizeLexiReplyText(await buildPublicLexiFallbackReply(message, business, history, memory), { maxSentences: 2, maxChars: 320 });
   } catch (error) {
     console.error("Lexi fallback reply error:", error?.message || error);
     return "I can still help. I hit a temporary issue just now, so ask again or tell me the service and date you want.";
@@ -5479,6 +6122,9 @@ Expertise:
 - face shapes, haircut suitability, maintenance expectations
 - hair textures and curl patterns from 1A to 4C
 - aftercare and premium salon product guidance
+- public salon FAQs including pricing factors, consultations, appointment timing, cancellations, deposits, late policies, parking, payments, and first-visit prep
+- stylist guidance, specialty matching, service suitability, and realistic maintenance expectations
+- clear answers for customers comparing services, asking what suits them, or needing help choosing between options
 
 Consultation rules:
 - Ask clarifying questions before recommending when information is missing.
@@ -7222,9 +7868,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   let userMessage = "";
   let business = null;
   let history = [];
+  let memory = {};
   try {
     userMessage = String(req.body?.message || "").trim();
     history = Array.isArray(req.body?.history) ? req.body.history : [];
+    memory = normalizeLexiConversationMemory(req.body?.memory);
     const businessId = String(req.body?.businessId || "").trim();
     const canUseOpenAi = Boolean(openai) && !isOpenAiQuotaCircuitActive();
     if (!userMessage) return res.status(400).json({ error: "Message is required." });
@@ -7294,7 +7942,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     }
     if (!canUseOpenAi) {
       return res.json({
-        reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history),
+        reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history, memory),
         fallback: true,
         fallbackMode: isOpenAiQuotaCircuitActive() ? "quota" : "local"
       });
@@ -7569,7 +8217,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       try {
         if (business) {
           return res.json({
-            reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history),
+            reply: await buildPublicLexiFallbackReplySafe(userMessage, business, history, memory),
             fallback: true
           });
         }

@@ -17,6 +17,9 @@ const heroLexiBookingsCount = document.getElementById("heroLexiBookingsCount");
 const heroLexiBookingsRevenue = document.getElementById("heroLexiBookingsRevenue");
 const heroLexiSuggestedPrompt = document.getElementById("heroLexiSuggestedPrompt");
 const heroLexiPromptHint = document.getElementById("heroLexiPromptHint");
+const headerLexiAskBtn = document.getElementById("headerLexiAskBtn");
+const headerLexiBookBtn = document.getElementById("headerLexiBookBtn");
+const headerLexiPromptButtons = Array.from(document.querySelectorAll("[data-header-lexi-prompt]"));
 const homeLexiLaunchBtn = document.getElementById("homeLexiLaunchBtn");
 const homeLexiLaunchBookingBtn = document.getElementById("homeLexiLaunchBookingBtn");
 const lexiChatGuideHint = document.getElementById("lexiChatGuideHint");
@@ -123,6 +126,7 @@ const homeCustomerSignupPanel = document.getElementById("homeCustomerSignupPanel
 const homeCustomerSigninForm = document.getElementById("homeCustomerSigninForm");
 const homeCustomerSigninEmail = document.getElementById("homeCustomerSigninEmail");
 const homeCustomerSigninPassword = document.getElementById("homeCustomerSigninPassword");
+const homeCustomerSigninPhone = document.getElementById("homeCustomerSigninPhone");
 const homeCustomerSigninSubmit = document.getElementById("homeCustomerSigninSubmit");
 const homeCustomerSigninMsg = document.getElementById("homeCustomerSigninMsg");
 const homeCustomerSignupForm = document.getElementById("homeCustomerSignupForm");
@@ -139,6 +143,7 @@ const homeCustomerSignupUpdates = document.getElementById("homeCustomerSignupUpd
 const homeCustomerSignupSubmit = document.getElementById("homeCustomerSignupSubmit");
 const homeCustomerSignupMsg = document.getElementById("homeCustomerSignupMsg");
 const homeCustomerModeSwitchers = Array.from(document.querySelectorAll("[data-home-customer-mode]"));
+const passwordPeekToggles = Array.from(document.querySelectorAll("[data-password-toggle]"));
 
 const history = [];
 let llmEnabled = false;
@@ -166,6 +171,7 @@ let homeLexiAvatarSession = null;
 let homeLexiAvatarRoom = null;
 let homeLexiLivekitScriptPromise = null;
 let lexiBookingGuideState = createLexiBookingGuideState();
+let pendingLexiCustomerBookingDraft = null;
 const HomeSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 const homeDemoDisplayValues = {
   revenue: 0,
@@ -173,10 +179,19 @@ const homeDemoDisplayValues = {
   targetPct: 0
 };
 
-const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi. What are we thinking today: a booking, a service question, or a bit of advice?";
+const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi. The quickest way to book here is with me, not by calling. Tell me the service, day, or question and I'll move it forward straight away.";
+const LEXI_BOOKING_NOTES_PREFIX = "LEXI_CONTEXT_V1:";
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
 const GENERIC_SERVICE_KEYWORDS = [
+  "haircut and colour",
+  "haircut and color",
+  "hair cut and colour",
+  "hair cut and color",
+  "cut and colour",
+  "cut and color",
+  "cut & colour",
+  "cut & color",
   "haircut",
   "cut and finish",
   "blow dry",
@@ -204,6 +219,33 @@ const GENERIC_SERVICE_KEYWORDS = [
   "manicure",
   "pedicure"
 ];
+
+function normalizeLexiClientTypos(text) {
+  return cleanLexiValue(text)
+    .toLowerCase()
+    .replaceAll("haiecut", "haircut")
+    .replaceAll("haircuit", "haircut")
+    .replaceAll("haricut", "haircut")
+    .replaceAll("colur", "colour")
+    .replaceAll("colr", "colour")
+    .replaceAll("balyage", "balayage")
+    .replaceAll("baleyage", "balayage")
+    .replaceAll("highlites", "highlights")
+    .replaceAll("hilights", "highlights")
+    .replaceAll("extenstions", "extensions")
+    .replaceAll("keritain", "keratin")
+    .replaceAll("facail", "facial")
+    .replaceAll("waxxing", "waxing")
+    .replaceAll("bok", "book")
+    .replaceAll("bookng", "booking")
+    .replaceAll("confrim", "confirm")
+    .replaceAll("greatt", "great")
+    .replaceAll("goood", "good")
+    .replaceAll("okee", "okay")
+    .replaceAll("okkk", "ok")
+    .replaceAll("yees", "yes")
+    .replaceAll("yess", "yes");
+}
 
 const HOME_TRIAL_TEMPLATES = {
   hair_salon: {
@@ -310,6 +352,26 @@ function saveSessionAuth(token, user) {
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
+}
+
+function getSessionUser() {
+  try {
+    return JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function togglePasswordPeek(button) {
+  if (!(button instanceof HTMLButtonElement)) return;
+  const targetId = String(button.dataset.passwordToggle || "").trim();
+  if (!targetId) return;
+  const input = document.getElementById(targetId);
+  if (!(input instanceof HTMLInputElement)) return;
+  const show = input.type === "password";
+  input.type = show ? "text" : "password";
+  button.textContent = show ? "Hide" : "Show";
+  button.setAttribute("aria-label", show ? "Hide password" : "Show password");
 }
 
 function setHomeTrialMessage(text, state = "") {
@@ -719,9 +781,171 @@ function resetLexiBookingGuide(business = null) {
   renderLexiBookingGuide();
 }
 
+function getLexiConversationMemory() {
+  return {
+    businessId: cleanLexiValue(lexiBookingGuideState.businessId || selectedBusinessId),
+    businessName: cleanLexiValue(lexiBookingGuideState.businessName || getSelectedBusinessRecord()?.name || ""),
+    service: cleanLexiValue(lexiBookingGuideState.service),
+    date: cleanLexiValue(lexiBookingGuideState.date),
+    time: cleanLexiValue(lexiBookingGuideState.time),
+    name: cleanLexiValue(lexiBookingGuideState.name),
+    phone: cleanLexiValue(lexiBookingGuideState.phone),
+    email: cleanLexiValue(lexiBookingGuideState.email),
+    confirmed: Boolean(lexiBookingGuideState.confirmed)
+  };
+}
+
+function lexiMessageRequestsBookingConfirmation(message) {
+  const q = normalizeLexiClientTypos(message)
+    .replaceAll("bookin", "booking")
+    .replaceAll("confim", "confirm")
+    .replaceAll("cnfirm", "confirm");
+  return /(^(ok|okay|yes|yeah|yep|sure)$|^(ok|okay)\s+(great|good|fine|perfect|works)$|^(yes|yeah|yep|sure)\s+(great|good|fine|perfect|works)$|book that|book it|book that for me|can i book that|can you book that|please book that|please book it|yes book|yes\b.*(great|fine|good|perfect|works)|that sounds good|sounds good|sounds great|that's great|thats great|that's fine|thats fine|that's good|thats good|confirm that|confirm it|is that booked|is that confirmed|lock it in|lock that in|go ahead|sort that|sort that out|make that booking|get that booked|put that in|reserve that|hold that)/.test(q);
+}
+
+function getPendingLexiBookingDraft() {
+  const memory = getLexiConversationMemory();
+  if (!memory.businessId || !memory.service || !memory.date || !memory.time) return null;
+  return {
+    businessId: memory.businessId,
+    businessName: memory.businessName || getSelectedBusinessRecord()?.name || "this business",
+    service: memory.service,
+    date: memory.date,
+    time: memory.time,
+    name: memory.name,
+    phone: memory.phone,
+    email: memory.email,
+    lexiSummary: buildLexiSalonBookingSummary(memory),
+    lexiNotes: buildLexiBookingNotesPayload(memory)
+  };
+}
+
+function getLexiBookingTranscriptEntries() {
+  return history
+    .filter((entry) => entry && (entry.role === "user" || entry.role === "assistant") && cleanLexiValue(entry.content))
+    .slice(-16)
+    .map((entry) => ({
+      role: entry.role === "assistant" ? "assistant" : "user",
+      content: cleanLexiValue(String(entry.content || "")).slice(0, 240)
+    }));
+}
+
+function buildLexiSalonBookingSummary(memory = getLexiConversationMemory()) {
+  const safeMemory = memory || {};
+  const service = cleanLexiValue(safeMemory.service);
+  const date = cleanLexiValue(safeMemory.date);
+  const time = cleanLexiValue(safeMemory.time);
+  const businessName = cleanLexiValue(safeMemory.businessName);
+  const firstCustomerQuestion = getLexiBookingTranscriptEntries()
+    .filter((entry) => entry.role === "user")
+    .map((entry) => entry.content)
+    .find(Boolean);
+  const summaryParts = [
+    service ? `Lexi booked ${service}${businessName ? ` at ${businessName}` : ""}${date ? ` for ${date}` : ""}${time ? ` at ${time}` : ""}` : "",
+    firstCustomerQuestion ? `Customer first asked: "${firstCustomerQuestion}"` : ""
+  ].filter(Boolean);
+  return summaryParts.join(". ").trim();
+}
+
+function buildLexiBookingNotesPayload(memory = getLexiConversationMemory()) {
+  const transcript = getLexiBookingTranscriptEntries();
+  const payload = {
+    version: 1,
+    source: "lexi",
+    summary: buildLexiSalonBookingSummary(memory),
+    businessName: cleanLexiValue(memory?.businessName),
+    service: cleanLexiValue(memory?.service),
+    date: cleanLexiValue(memory?.date),
+    time: cleanLexiValue(memory?.time),
+    customerName: cleanLexiValue(memory?.name),
+    customerPhone: cleanLexiValue(memory?.phone),
+    customerEmail: cleanLexiValue(memory?.email),
+    transcript
+  };
+  return `${LEXI_BOOKING_NOTES_PREFIX}${JSON.stringify(payload)}`;
+}
+
+function mapLexiServiceToSignupOption(service) {
+  const lower = cleanLexiValue(service).toLowerCase();
+  if (!lower) return "";
+  if (lower.includes("hair")) return "haircut";
+  if (/(colour|color|balayage|highlights|toner)/.test(lower)) return "colour";
+  if (/(fade|beard|barber)/.test(lower)) return "barber";
+  if (/(facial|wax|lash|brow|beauty|manicure|pedicure)/.test(lower)) return "beauty";
+  return "";
+}
+
+function prepareLexiCustomerAccessHandoff(draft) {
+  if (!draft) return;
+  pendingLexiCustomerBookingDraft = draft;
+  if (homeCustomerSignupName && draft.name) homeCustomerSignupName.value = draft.name;
+  if (homeCustomerSignupEmail && draft.email) homeCustomerSignupEmail.value = draft.email;
+  if (homeCustomerSignupPhone && draft.phone) homeCustomerSignupPhone.value = draft.phone;
+  if (homeCustomerSignupService) homeCustomerSignupService.value = mapLexiServiceToSignupOption(draft.service);
+  if (homeCustomerSignupNotes) {
+    homeCustomerSignupNotes.value = draft.lexiSummary || `Lexi booking draft: ${draft.service} on ${draft.date} at ${draft.time} with ${draft.businessName}.`;
+  }
+  if (homeCustomerSigninEmail && draft.email) homeCustomerSigninEmail.value = draft.email;
+  if (homeCustomerSigninPhone && draft.phone) homeCustomerSigninPhone.value = draft.phone;
+  setHomeCustomerSigninMessage("Already have an account? Sign in here and Lexi will carry this booking through after that.", "");
+  setHomeCustomerSignupMessage("Create your customer account here and Lexi will use these details to finish the booking.", "");
+  setHomeCustomerAccessMode("signup");
+  openHomeCustomerAccessModal();
+  setAppStatus("Lexi needs customer access details to complete this booking.", false, 3000);
+}
+
+async function finalizeLexiCustomerBooking(user, overrides = {}) {
+  if (!pendingLexiCustomerBookingDraft) return false;
+  const draft = pendingLexiCustomerBookingDraft;
+  const customerName = cleanLexiValue(overrides.name || draft.name || user?.name || "");
+  const customerPhone = cleanLexiValue(overrides.phone || draft.phone || "");
+  const customerEmail = cleanLexiValue(overrides.email || draft.email || user?.email || "").toLowerCase();
+  if (!customerName || !customerPhone) {
+    appendMessage("assistant", `I still need your name and phone number to finish booking your ${draft.service} at ${draft.businessName} on ${draft.date} at ${draft.time}.`);
+    setAppStatus("Lexi still needs your name and phone number to complete the booking.", true, 3200);
+    return false;
+  }
+  const response = await fetch("/api/bookings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      businessId: draft.businessId,
+      customerName,
+      customerPhone,
+      customerEmail,
+      service: draft.service,
+      date: draft.date,
+      time: draft.time,
+      source: "lexi",
+      notes: draft.lexiNotes || buildLexiBookingNotesPayload({
+        ...getLexiConversationMemory(),
+        name: customerName,
+        phone: customerPhone,
+        email: customerEmail
+      })
+    })
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(String(data?.error || "Unable to finish the booking."));
+  }
+  lexiBookingGuideState.name = customerName;
+  lexiBookingGuideState.phone = customerPhone;
+  lexiBookingGuideState.email = customerEmail;
+  lexiBookingGuideState.confirmed = true;
+  renderLexiBookingGuide();
+  appendMessage("assistant", data?.reply || `You're all set. ${draft.service} is booked at ${draft.businessName} on ${draft.date} at ${draft.time}.`);
+  history.push({ role: "assistant", content: data?.reply || `Booking confirmed for ${draft.service} on ${draft.date} at ${draft.time}.` });
+  pendingLexiCustomerBookingDraft = null;
+  closeHomeCustomerAccessModal();
+  await loadBookings();
+  setAppStatus("Booking confirmed.", false, 2600);
+  return true;
+}
+
 function parseLexiBookingText(text, business = getSelectedBusinessRecord()) {
   const source = cleanLexiValue(text);
-  const lower = source.toLowerCase();
+  const lower = normalizeLexiClientTypos(source);
   const parsed = {
     service: "",
     date: "",
@@ -753,7 +977,7 @@ function parseLexiBookingText(text, business = getSelectedBusinessRecord()) {
     }
   }
 
-  const timeMatch = source.match(/\b\d{1,2}(?::\d{2})?\s?(?:am|pm)\b/i) || source.match(/\b(?:morning|afternoon|evening)\b/i);
+  const timeMatch = source.match(/\b\d{1,2}(?:(?::|\.)\d{2})?\s?(?:am|pm)\b/i) || source.match(/\b(?:morning|afternoon|evening)\b/i);
   if (timeMatch) parsed.time = cleanLexiValue(timeMatch[0]);
 
   const nameMatch = source.match(/\b(?:my name is|name is|i am|i'm)\s+([a-z][a-z' -]{1,40})/i);
@@ -1314,12 +1538,12 @@ function renderHeroLexiCalendarStar() {
       : "Can you help me book an appointment this week?";
   }
   if (heroLexiPromptHint) {
-    heroLexiPromptHint.textContent = `Lexi gives short, clear replies and helps move the booking forward for ${featuredBusinessHint}.`;
+    heroLexiPromptHint.textContent = `Lexi gives customers a quicker way to book with ${featuredBusinessHint} than waiting on a call back.`;
   }
   if (heroLexiCalendarSummary) {
     heroLexiCalendarSummary.textContent = nextDate
-      ? `Live booking activity is loaded. Ask Lexi for the best time on ${formatDisplayDate(nextDate)} or to start a booking request now.`
-      : "See live booking movement and ask Lexi the next best question in one view.";
+      ? `Live booking activity is loaded. Ask Lexi for the best time on ${formatDisplayDate(nextDate)} and let customers book here instead of calling.`
+      : "See live booking movement and give customers one clear place to ask Lexi and book fast.";
   }
 }
 
@@ -2091,14 +2315,14 @@ async function loadConfig() {
     const featuredMeta = `${featured.name} ? ${featured.phone} ? ${featured.location.address}, ${featured.location.city} ? Cancellation: ${policyText}`;
     salonMeta.textContent = featuredMeta;
     if (heroSalonMeta) {
-      heroSalonMeta.textContent = "Lexi can answer service questions, check available slots, and start booking requests using your business profile, services, and front desk details.";
+      heroSalonMeta.textContent = "Lexi gives customers a faster way to book than calling the salon, with service answers, live slot checks, and instant booking handoff in one place.";
     }
     liveBookingSummary.textContent = `${featured.availableSlots.length} slots available today at ${featured.name}.`;
     selectedBusinessId = featured.id;
   } else {
     salonMeta.textContent = `No featured business configured yet. Cancellation: ${policyText}`;
     if (heroSalonMeta) {
-      heroSalonMeta.textContent = "No featured business is set yet. Add your business profile to show Lexi's front-desk experience, availability view, and service guidance on the homepage.";
+      heroSalonMeta.textContent = "No featured business is set yet. Add your business profile to show Lexi as the easiest way for customers to book without calling.";
     }
     liveBookingSummary.textContent = "No live availability is showing yet. Add businesses to display slots.";
     selectedBusinessId = "";
@@ -2119,6 +2343,10 @@ heroLexiAskBtn?.addEventListener("click", () => {
   openHomeLexiPopup();
 });
 
+headerLexiAskBtn?.addEventListener("click", () => {
+  openHomeLexiPopup();
+});
+
 homeLexiLaunchBtn?.addEventListener("click", () => {
   openHomeLexiPopup();
 });
@@ -2129,10 +2357,26 @@ heroLexiBookBtn?.addEventListener("click", () => {
   setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
 });
 
+headerLexiBookBtn?.addEventListener("click", () => {
+  chatInput.value = "I want to book an appointment this week.";
+  openHomeLexiPopup();
+  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+});
+
 homeLexiLaunchBookingBtn?.addEventListener("click", () => {
   chatInput.value = "I want to book an appointment this week.";
   openHomeLexiPopup();
   setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+});
+
+headerLexiPromptButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const prompt = String(button.getAttribute("data-header-lexi-prompt") || "").trim();
+    if (!prompt) return;
+    chatInput.value = prompt;
+    openHomeLexiPopup();
+    setAppStatus("Prompt added to Ask Lexi.", false, 1800);
+  });
 });
 
 async function loadBookings() {
@@ -2158,8 +2402,43 @@ chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const message = chatInput.value.trim();
   if (!message) return;
+  const wantsBookingConfirmation = lexiMessageRequestsBookingConfirmation(message);
+  const sessionUser = getSessionUser();
 
   syncLexiBookingGuideFromMessage(message);
+  const immediateDraft = getPendingLexiBookingDraft();
+  if (wantsBookingConfirmation && immediateDraft && sessionUser?.role === "customer") {
+    appendMessage("user", message);
+    history.push({ role: "user", content: message });
+    chatInput.value = "";
+    pendingLexiCustomerBookingDraft = immediateDraft;
+    try {
+      const completed = await finalizeLexiCustomerBooking(sessionUser, {
+        email: cleanLexiValue(sessionUser?.email || ""),
+        name: cleanLexiValue(sessionUser?.name || ""),
+        phone: cleanLexiValue(sessionUser?.phone || "")
+      });
+      if (completed) return;
+      appendMessage("assistant", "I still need your phone number to finish that booking. Use the customer sign-in panel and add it there, or tell me the number here.");
+      history.push({ role: "assistant", content: "I still need your phone number to finish that booking. Use the customer sign-in panel and add it there, or tell me the number here." });
+      return;
+    } catch (bookingError) {
+      const bookingErrorMessage = String(bookingError?.message || "I couldn't finish the booking just now.");
+      appendMessage("assistant", bookingErrorMessage);
+      history.push({ role: "assistant", content: bookingErrorMessage });
+      setAppStatus(bookingErrorMessage, true);
+      return;
+    }
+  }
+  if (wantsBookingConfirmation && immediateDraft && (!sessionUser || sessionUser.role !== "customer")) {
+    appendMessage("user", message);
+    history.push({ role: "user", content: message });
+    chatInput.value = "";
+    prepareLexiCustomerAccessHandoff(immediateDraft);
+    appendMessage("assistant", `I've got your ${immediateDraft.service} at ${immediateDraft.businessName} on ${immediateDraft.date} at ${immediateDraft.time}. Sign in or sign up in the popup and I'll finish the booking from there.`);
+    history.push({ role: "assistant", content: `I've got your ${immediateDraft.service} at ${immediateDraft.businessName} on ${immediateDraft.date} at ${immediateDraft.time}. Sign in or sign up in the popup and I'll finish the booking from there.` });
+    return;
+  }
   appendMessage("user", message);
   history.push({ role: "user", content: message });
   chatInput.value = "";
@@ -2174,7 +2453,7 @@ chatForm.addEventListener("submit", async (event) => {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history, businessId: selectedBusinessId })
+      body: JSON.stringify({ message, history, businessId: selectedBusinessId, memory: getLexiConversationMemory() })
     });
     const data = await response.json();
     if (!response.ok) {
@@ -2187,6 +2466,12 @@ chatForm.addEventListener("submit", async (event) => {
     history.push({ role: "assistant", content: reply });
     syncLexiBookingGuideFromMessage(reply, { bookingCreated: Boolean(data.bookingCreated) });
     setAppStatus(data.bookingCreated ? "Booking request captured successfully." : "Lexi has replied.");
+    if (wantsBookingConfirmation && !data.bookingCreated) {
+      const draft = getPendingLexiBookingDraft();
+      if (draft && (!sessionUser || sessionUser.role !== "customer")) {
+        prepareLexiCustomerAccessHandoff(draft);
+      }
+    }
 
     if (data.bookingCreated) await loadBookings();
   } catch (error) {
@@ -2199,6 +2484,7 @@ chatForm.addEventListener("submit", async (event) => {
 
 chatClear?.addEventListener("click", () => {
   history.length = 0;
+  pendingLexiCustomerBookingDraft = null;
   if (chatWindow) chatWindow.innerHTML = "";
   appendMessage("assistant", CHATBOT_WELCOME_MESSAGE);
   resetLexiBookingGuide(getSelectedBusinessRecord());
@@ -2513,6 +2799,7 @@ homeCustomerSigninForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const email = String(homeCustomerSigninEmail?.value || "").trim();
   const password = String(homeCustomerSigninPassword?.value || "");
+  const phone = String(homeCustomerSigninPhone?.value || "").trim();
   if (!email || !password) return;
 
   setHomeCustomerSigninMessage("Signing in...", "");
@@ -2530,6 +2817,24 @@ homeCustomerSigninForm?.addEventListener("submit", async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to sign in.");
     saveSessionAuth(data.token, data.user);
+    if (pendingLexiCustomerBookingDraft) {
+      try {
+        const completed = await finalizeLexiCustomerBooking(data.user, {
+          email,
+          name: String(data?.user?.name || "").trim(),
+          phone: phone || String(data?.user?.phone || "").trim()
+        });
+        if (completed) {
+          setHomeCustomerSigninMessage("Signed in and booking confirmed.", "success");
+          return;
+        }
+        setHomeCustomerSigninMessage("Signed in, but I still need your phone number to finish the booking. Add it above and try again.", "error");
+        return;
+      } catch (bookingError) {
+        setHomeCustomerSigninMessage(String(bookingError?.message || "Signed in, but Lexi could not finish the booking just now."), "error");
+        return;
+      }
+    }
     setHomeCustomerSigninMessage("Signed in. Redirecting...", "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
   } catch (error) {
@@ -2572,6 +2877,22 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Registration failed.");
     saveSessionAuth(data.token, data.user);
+    if (pendingLexiCustomerBookingDraft) {
+      try {
+        const completed = await finalizeLexiCustomerBooking(data.user, {
+          name,
+          phone,
+          email
+        });
+        if (completed) {
+          setHomeCustomerSignupMessage("Account created and booking confirmed.", "success");
+          return;
+        }
+      } catch (bookingError) {
+        setHomeCustomerSignupMessage(String(bookingError?.message || "Account created, but Lexi could not finish the booking just now."), "error");
+        return;
+      }
+    }
     setHomeCustomerSignupMessage("Account created. Redirecting...", "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
   } catch (error) {
@@ -2582,6 +2903,10 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
 });
 
 renderHomeTrialTemplatePreview();
+
+passwordPeekToggles.forEach((button) => {
+  button.addEventListener("click", () => togglePasswordPeek(button));
+});
 
 try {
   await loadConfig();
@@ -2594,12 +2919,4 @@ await loadBookings();
 await searchBusinesses();
 initializeHomeDemoDashboard();
 setupRevealAnimations();
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
-}
-
-
 

@@ -317,10 +317,8 @@ let closeModulePopupActive = null;
 let billingSummary = null;
 let dashboardDemoFillModeEnabled = false;
 const MANAGE_MODE_STORAGE_KEY = "salon_ai_manage_mode_v1";
-const DASHBOARD_THEME_MODE_STORAGE_KEY = "salon_ai_dashboard_theme_mode_v1";
 const DASHBOARD_DEMO_FILL_MODE_STORAGE_KEY = "salon_ai_dashboard_demo_fill_mode_v1";
 const DASHBOARD_DEMO_FILL_SESSION_KEY = "salon_ai_dashboard_demo_fill_session_v1";
-const SHARED_THEME_STORAGE_KEY = "salonTheme";
 const SUBSCRIPTION_AUTORENEW_PREF_STORAGE_KEY = "salon_ai_subscription_autorenew_pref_v1";
 const CONTACT_ADMIN_MESSAGES_STORAGE_KEY = "salon_ai_contact_admin_messages_v1";
 const STAFF_ROTA_OVERRIDES_STORAGE_KEY = "salon_ai_staff_rota_overrides_v1";
@@ -1654,39 +1652,20 @@ async function askAdminCopilot(question) {
 }
 
 function loadUiDensityPreference() {
-  try {
-    const value = String(localStorage.getItem(DASHBOARD_THEME_MODE_STORAGE_KEY) || "").trim().toLowerCase();
-    if (value === "light" || value === "dark") return value;
-    const sharedTheme = String(localStorage.getItem(SHARED_THEME_STORAGE_KEY) || "").trim().toLowerCase();
-    if (sharedTheme === "classic") return "light";
-    if (sharedTheme === "vibrant") return "dark";
-  } catch {
-    // ignore
-  }
-  return document.body?.classList.contains("dashboard-light-mode") ? "light" : "dark";
+  return "light";
 }
 
-function setUiDensity(mode) {
-  const next = String(mode || "").trim().toLowerCase() === "light" ? "light" : "dark";
+function setUiDensity() {
   if (document.body) {
-    document.body.classList.toggle("dashboard-light-mode", next === "light");
-    // Keep dashboard theme isolated from the shared homepage/site theme system.
+    document.body.classList.add("dashboard-light-mode");
     document.body.classList.remove("theme-vibrant");
-    document.body.removeAttribute("data-theme");
-    document.body.removeAttribute("data-theme-mode");
-  }
-  if (uiDensityToggle && uiDensityToggle.value !== next) {
-    uiDensityToggle.value = next;
-  }
-  try {
-    localStorage.setItem(DASHBOARD_THEME_MODE_STORAGE_KEY, next);
-  } catch {
-    // Ignore storage errors.
+    document.body.dataset.theme = "classic";
+    document.body.dataset.themeMode = "light";
   }
 }
 
 function initializeUiDensity() {
-  setUiDensity(loadUiDensityPreference());
+  setUiDensity();
 }
 
 dashboardDemoFillModeEnabled = loadDashboardDemoFillPreference();
@@ -10803,6 +10782,10 @@ function renderBookings(bookings) {
     const pendingConfirmation = isPendingConfirmationStatus(b?.status);
     const statusLabel = formatBookingStatusLabel(b?.status);
     const isCancelled = normalizeText(b?.status) === "cancelled";
+    const lexiContext = parseLexiBookingContextNotes(b?.notes);
+    const lexiTranscriptHtml = (lexiContext?.transcript || [])
+      .map((entry) => `<div style="margin-top:0.35rem;"><strong>${escapeHtml(entry.role === "assistant" ? "Lexi" : "Customer")}:</strong> ${escapeHtml(entry.content || "")}</div>`)
+      .join("");
     const li = document.createElement("li");
     if (pendingConfirmation) li.classList.add("booking-row-pending");
     li.innerHTML = `
@@ -10814,6 +10797,8 @@ function renderBookings(bookings) {
         <span class="booking-status-badge ${pendingConfirmation ? "pending" : ""}">${escapeHtml(statusLabel)}</span>
       </div>
       ${pendingConfirmation ? '<div class="booking-pending-note">Subscriber action required: confirm or contact the customer with an alternative slot.</div>' : ""}
+      ${lexiContext?.summary ? `<div style="margin-top:0.45rem;padding:0.65rem 0.8rem;border-radius:12px;background:rgba(80,110,150,0.12);border:1px solid rgba(112,150,204,0.16);"><strong>Lexi Summary</strong><div style="margin-top:0.25rem;color:var(--muted);">${escapeHtml(lexiContext.summary)}</div></div>` : ""}
+      ${lexiTranscriptHtml ? `<details style="margin-top:0.45rem;"><summary style="cursor:pointer;color:var(--muted);">View Lexi conversation</summary><div style="margin-top:0.45rem;padding:0.1rem 0.2rem 0.1rem 0;">${lexiTranscriptHtml}</div></details>` : ""}
       <div style="margin-top:0.4rem;display:flex;gap:0.4rem;flex-wrap:wrap;">
         <button class="btn btn-ghost manage-only cancel-booking" data-id="${b.id}" ${b.status === "cancelled" ? "disabled" : ""}>Delete</button>
         <button class="btn btn-ghost manage-only reschedule-booking" data-id="${b.id}" ${b.status === "cancelled" ? "disabled" : ""}>Edit</button>
@@ -10826,6 +10811,27 @@ function renderBookings(bookings) {
 
 function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
+}
+
+function parseLexiBookingContextNotes(notes) {
+  const raw = String(notes || "").trim();
+  if (!raw.startsWith("LEXI_CONTEXT_V1:")) return null;
+  try {
+    const parsed = JSON.parse(raw.slice("LEXI_CONTEXT_V1:".length));
+    return {
+      summary: String(parsed?.summary || "").trim(),
+      transcript: Array.isArray(parsed?.transcript)
+        ? parsed.transcript
+          .map((entry) => ({
+            role: entry?.role === "assistant" ? "assistant" : "user",
+            content: String(entry?.content || "").trim()
+          }))
+          .filter((entry) => entry.content)
+        : []
+    };
+  } catch (_error) {
+    return null;
+  }
 }
 
 function isPendingConfirmationStatus(status) {
@@ -11256,8 +11262,7 @@ logoutBtn.addEventListener("click", () => {
   sessionStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
-  localStorage.removeItem(DASHBOARD_THEME_MODE_STORAGE_KEY);
-  localStorage.removeItem(SHARED_THEME_STORAGE_KEY);
+  localStorage.removeItem("salonTheme");
   window.location.href = "/";
 });
 
@@ -11432,10 +11437,6 @@ manageModeToggle?.addEventListener("click", () => {
 
 demoModeToggle?.addEventListener("click", () => {
   setDashActionStatus("Demo Mode has been removed from dashboards.", true);
-});
-
-uiDensityToggle?.addEventListener("change", () => {
-  setUiDensity(uiDensityToggle.value);
 });
 
 accountingBookingExportBtn?.addEventListener("click", async () => {

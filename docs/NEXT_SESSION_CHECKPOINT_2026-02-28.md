@@ -3,6 +3,18 @@
 ## Current Product State
 
 - Homepage and dashboard have been visually redesigned into a more unified Lexi-led product.
+- Ask Lexi popup redesign is now the current stable UI direction.
+- The same shared Ask Lexi popup direction is now used across:
+  - homepage
+  - customer dashboard
+  - subscriber dashboard
+  - admin dashboard
+- Push-to-talk control is now small and kept in the chat control row, not over Lexi's image.
+- Popup dark/light mode theming was corrected after the redesign:
+  - dark mode uses dark popup/chat surfaces again
+  - light mode uses light popup/chat surfaces again
+  - chat text and background colors now match each theme properly
+- The blue orb overlay over Lexi's image was removed.
 - Deploy caching issue was fixed:
   - `public/sw.js` now uses fresher frontend cache behavior
   - `server.js` now sends stricter cache headers for HTML/core assets
@@ -93,13 +105,24 @@ Recommended rollout order:
 
 ## Next Steps
 
-1. Review the latest homepage/dashboard/mobile UI in both dark and light mode.
-2. Push any remaining light-mode cleanup if still pending locally.
-3. Decide whether to push the latest Lexi popup/human-tone changes if not already pushed.
+1. Review the latest homepage/dashboard/mobile UI in both dark and light mode and decide what still feels weak visually.
+2. Improve the actual Lexi product logic inside the popup now that the shared UI shell is stable.
+3. Make the 7 Business Hub modules feel more distinct inside their popup flows if needed.
 4. Connect a real provider stack into the avatar scaffold:
    - improve transcript/rendering reliability across browsers
    - decide whether subscriber popup gets the same live voice path immediately
    - fallback behavior for unsupported/mobile cases
+
+## Latest Stable Stop Point
+
+- Latest pushed commit:
+  - `e88d94d` `Fix Lexi popup theme styling`
+- This commit includes the latest stable Ask Lexi state:
+  - shared popup redesign is live
+  - same popup direction across homepage/admin/subscriber/customer
+  - mic button placement is corrected
+  - dark/light popup theme fix is live
+  - Lexi image styling is corrected
 
 ## Key Files For Next Session
 
