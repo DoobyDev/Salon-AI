@@ -199,6 +199,7 @@
         color: var(--muted);
         font-size: 0.82rem;
       }
+      .admin-scope input,
       .admin-scope select {
         border: 1px solid var(--line);
         border-radius: 10px;
@@ -209,6 +210,149 @@
       }
       .admin-scope small {
         color: var(--muted);
+      }
+      .admin-platform-shell {
+        display: grid;
+        gap: 1rem;
+      }
+      .admin-platform-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .admin-platform-kicker {
+        margin: 0 0 0.25rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .admin-platform-subtitle {
+        margin: 0.35rem 0 0;
+        color: var(--muted);
+        max-width: 760px;
+      }
+      .admin-platform-actions {
+        display: flex;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .admin-platform-metric-grid,
+      .admin-revenue-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+      }
+      .admin-platform-metric-card,
+      .admin-platform-summary-card,
+      .admin-platform-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(9, 15, 28, 0.72);
+        padding: 0.85rem;
+      }
+      .admin-platform-metric-card p,
+      .admin-platform-summary-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .admin-platform-metric-card strong,
+      .admin-platform-summary-card strong {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 1.25rem;
+        color: var(--ink);
+      }
+      .admin-platform-split {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 0.9rem;
+      }
+      .admin-platform-card {
+        display: grid;
+        gap: 0.85rem;
+      }
+      .admin-platform-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+      .admin-platform-card-head h3 {
+        margin: 0;
+      }
+      .admin-platform-card-head p {
+        margin: 0.3rem 0 0;
+        color: var(--muted);
+      }
+      .admin-revenue-monthly-list {
+        display: grid;
+        gap: 0.55rem;
+      }
+      .admin-revenue-month-row {
+        display: grid;
+        gap: 0.35rem;
+      }
+      .admin-revenue-month-copy {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .admin-revenue-month-copy small,
+      .admin-platform-note,
+      .admin-managed-focus small,
+      .admin-managed-list {
+        color: var(--muted);
+      }
+      .admin-revenue-month-bar {
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.07);
+        overflow: hidden;
+      }
+      .admin-revenue-month-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(109,185,255,0.95), rgba(124,234,216,0.9));
+      }
+      .admin-managed-focus {
+        display: grid;
+        gap: 0.25rem;
+      }
+      .admin-managed-actions {
+        display: flex;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+      }
+      .admin-managed-list {
+        margin: 0;
+        padding-left: 1rem;
+        display: grid;
+        gap: 0.45rem;
+      }
+      body.dashboard-light-mode .admin-scope input,
+      body.dashboard-light-mode .admin-scope select,
+      body.dashboard-light-mode .admin-platform-metric-card,
+      body.dashboard-light-mode .admin-platform-summary-card,
+      body.dashboard-light-mode .admin-platform-card {
+        background: rgba(255,255,255,0.96);
+      }
+      body.dashboard-light-mode .admin-revenue-month-bar {
+        background: rgba(22,34,52,0.08);
+      }
+      @media (max-width: 900px) {
+        .admin-platform-split {
+          grid-template-columns: 1fr;
+        }
       }
       .dash-grid {
         display: grid;
@@ -1079,6 +1223,68 @@
       .billing-actions .btn {
         margin: 0.15rem;
       }
+      [data-open-subscriber-lexi],
+      #workspaceStarAskLexiBtn,
+      #subscriberCopilotOpenPopup,
+      #adminCopilotOpenPopup,
+      #subscriberCopilotSend,
+      #adminCopilotSend,
+      #customerLexiLaunchBtn,
+      #customerLexiAskNextBest,
+      [data-calendar-diary-action="ask-lexi"],
+      .calendar-lexi-action[data-lexi-calendar-action="plan-day"],
+      [data-customer-lexi-action="week-plan"],
+      [data-customer-lexi-action="month-plan"],
+      [data-customer-lexi-action="day-slots"],
+      [data-customer-lexi-action="day-booking"],
+      a.btn[href="#customerReceptionSection"] {
+        border-color: rgba(211, 219, 227, 0.95) !important;
+        background: rgba(243, 246, 249, 0.98) !important;
+        color: #304656 !important;
+        box-shadow: none !important;
+      }
+      [data-open-subscriber-lexi]:hover,
+      #workspaceStarAskLexiBtn:hover,
+      #subscriberCopilotOpenPopup:hover,
+      #adminCopilotOpenPopup:hover,
+      #subscriberCopilotSend:hover,
+      #adminCopilotSend:hover,
+      #customerLexiLaunchBtn:hover,
+      #customerLexiAskNextBest:hover,
+      [data-calendar-diary-action="ask-lexi"]:hover,
+      .calendar-lexi-action[data-lexi-calendar-action="plan-day"]:hover,
+      [data-customer-lexi-action="week-plan"]:hover,
+      [data-customer-lexi-action="month-plan"]:hover,
+      [data-customer-lexi-action="day-slots"]:hover,
+      [data-customer-lexi-action="day-booking"]:hover,
+      a.btn[href="#customerReceptionSection"]:hover {
+        border-color: rgba(190, 201, 212, 0.98) !important;
+        background: rgba(236, 241, 245, 0.98) !important;
+        color: #304656 !important;
+      }
+      .calendar-lexi-action[data-lexi-calendar-action="plan-day"][disabled],
+      [data-open-subscriber-lexi][disabled],
+      [data-calendar-diary-action="ask-lexi"][disabled] {
+        box-shadow: none;
+        opacity: 0.6;
+      }
+      .billing-actions .btn[data-open-subscriber-lexi="booking_diary"],
+      body.dashboard-light-mode .billing-actions .btn[data-open-subscriber-lexi="booking_diary"] {
+        border-color: var(--brand-orange-border) !important;
+        background: var(--brand-orange) !important;
+        background-image: none !important;
+        background-color: var(--brand-orange) !important;
+        color: var(--brand-orange-text) !important;
+        box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+      }
+      .billing-actions .btn[data-open-subscriber-lexi="booking_diary"]:hover,
+      body.dashboard-light-mode .billing-actions .btn[data-open-subscriber-lexi="booking_diary"]:hover {
+        border-color: var(--brand-orange-border-hover) !important;
+        background: var(--brand-orange-hover) !important;
+        background-image: none !important;
+        background-color: var(--brand-orange-hover) !important;
+        color: var(--brand-orange-text) !important;
+      }
       .dash-role-hint {
         margin: 0.3rem 0 0;
         color: #ffffff;
@@ -1200,6 +1406,45 @@
         padding: 0.85rem;
         display: grid;
         gap: 0.75rem;
+      }
+      .business-hub-shell {
+        display: grid;
+        gap: 1rem;
+      }
+      .business-hub-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .business-hub-kicker {
+        margin: 0 0 0.25rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .business-hub-subtitle {
+        margin: 0.35rem 0 0;
+        color: var(--muted);
+        max-width: 760px;
+      }
+      .business-hub-navigator {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+      .business-hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.85rem;
+      }
+      .business-hub-grid .module-card {
+        min-height: 172px;
+        text-align: left;
+        justify-content: space-between;
       }
       .hub-module-head {
         display: flex;
@@ -2055,7 +2300,7 @@
         border: 1px solid rgba(167, 193, 255, 0.18);
         border-radius: 12px;
         background-color: rgba(255,255,255,0.06);
-        background-image: url("/Salon_AI_IMG.png");
+        background-image: url("/LEXI_IMG.png");
         background-position: center 18%;
         background-size: cover;
         background-repeat: no-repeat;
@@ -2212,7 +2457,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+        background: url("/LEXI_IMG.png") center 18% / cover no-repeat;
         filter: brightness(1.1) saturate(1.15) contrast(1.04);
       }
       .lexi-pending-popup-media::after {
@@ -4833,7 +5078,7 @@
         body[data-role="subscriber"] .dash > #subscriberCalendarSection,
         body[data-role="admin"] .dash > #subscriberCalendarSection {
           order: 3;
-          grid-column: 1 / span 8;
+          grid-column: 1 / -1;
         }
         body[data-role="subscriber"] .dash > #subscriberCalendarSection .calendar-grid,
         body[data-role="admin"] .dash > #subscriberCalendarSection .calendar-grid {
@@ -4846,7 +5091,7 @@
         }
         body[data-role="subscriber"] .dash > #subscriberCalendarSection .calendar-day,
         body[data-role="admin"] .dash > #subscriberCalendarSection .calendar-day {
-          min-height: 92px;
+          min-height: 74px;
         }
         body[data-role="subscriber"] .dash > #subscriberCopilotSection,
         body[data-role="admin"] .dash > #adminCopilotSection {
@@ -6327,7 +6572,7 @@
         padding: 0.8rem;
         min-height: 104px;
         background-color: rgba(255,255,255,0.06);
-        background-image: url("/Salon_AI_IMG.png");
+        background-image: url("/LEXI_IMG.png");
         background-position: center 18%;
         background-size: cover;
         background-repeat: no-repeat;
@@ -8125,7 +8370,7 @@
         border-radius: 14px;
         border: 1px solid rgba(255,255,255,0.11);
         background-color: rgba(255,255,255,0.06);
-        background-image: url("/Salon_AI_IMG.png");
+        background-image: url("/LEXI_IMG.png");
         background-position: center 18%;
         background-size: cover;
         background-repeat: no-repeat;
@@ -8135,7 +8380,7 @@
       body.dashboard-light-mode #customerReceptionSection .customer-chat-box {
         border-color: rgba(145, 114, 144, 0.16);
         background-color: rgba(255,255,255,0.82);
-        background-image: url("/Salon_AI_IMG.png");
+        background-image: url("/LEXI_IMG.png");
         background-position: center 18%;
         background-size: cover;
         background-repeat: no-repeat;
@@ -8796,21 +9041,215 @@
         padding: 0.2rem 0.48rem;
         font-size: 0.72rem;
       }
+      #subscriberCalendarSection .calendar-diary-toolbar {
+        margin-top: 0.65rem;
+        border: 1px solid rgba(205, 214, 223, 0.9);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245, 248, 251, 0.97));
+        padding: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.8),
+          0 10px 24px rgba(15, 23, 42, 0.06);
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar-copy {
+        display: grid;
+        gap: 0.22rem;
+        max-width: 680px;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar-copy h3 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar-copy p {
+        margin: 0;
+        color: rgba(42, 62, 56, 0.82);
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar-copy h3 {
+        color: #243630;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar .calendar-wow-kicker {
+        color: #4f7a6c;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar-actions {
+        display: flex;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+      }
+      #subscriberCalendarSection .calendar-diary-week-strip {
+        margin-top: 0.7rem;
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+      #subscriberCalendarSection .calendar-week-focus-card {
+        border: 1px solid rgba(167, 193, 255, 0.14);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.03);
+        padding: 0.7rem 0.65rem;
+        display: grid;
+        gap: 0.28rem;
+        text-align: left;
+        appearance: none;
+        width: 100%;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      #subscriberCalendarSection .calendar-week-focus-card.is-selected {
+        border-color: rgba(109, 185, 255, 0.42);
+        background:
+          radial-gradient(circle at 100% 0%, rgba(109, 185, 255, 0.12), transparent 46%),
+          rgba(255,255,255,0.04);
+        box-shadow: inset 0 0 0 1px rgba(109, 185, 255, 0.14);
+      }
+      #subscriberCalendarSection .calendar-week-focus-card strong,
+      #subscriberCalendarSection .calendar-week-focus-card span,
+      #subscriberCalendarSection .calendar-week-focus-card small {
+        display: block;
+      }
+      #subscriberCalendarSection .calendar-week-focus-card span {
+        color: #9cf5e8;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      #subscriberCalendarSection .calendar-week-focus-card strong {
+        font-size: 1rem;
+      }
+      #subscriberCalendarSection .calendar-week-focus-card small {
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda {
+        margin-top: 0.7rem;
+        border: 1px solid rgba(205, 214, 223, 0.9);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245, 248, 251, 0.97));
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.85),
+          0 10px 24px rgba(15, 23, 42, 0.06);
+        padding: 0.8rem;
+        display: grid;
+        gap: 0.7rem;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-head h3,
+      #subscriberCalendarSection .calendar-diary-rota-panel h3 {
+        margin: 0;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-meta {
+        color: rgba(79, 93, 109, 0.9);
+        font-size: 0.8rem;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-list,
+      #subscriberCalendarSection .calendar-diary-staff-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-list li,
+      #subscriberCalendarSection .calendar-diary-staff-list li {
+        border: 1px solid rgba(223, 229, 236, 0.95);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.96);
+        padding: 0.7rem;
+        display: grid;
+        gap: 0.35rem;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-row,
+      #subscriberCalendarSection .calendar-diary-staff-head,
+      #subscriberCalendarSection .calendar-diary-agenda-actions,
+      #subscriberCalendarSection .calendar-diary-rota-actions,
+      #subscriberCalendarSection .calendar-diary-staff-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-row strong,
+      #subscriberCalendarSection .calendar-diary-agenda-row small,
+      #subscriberCalendarSection .calendar-diary-agenda-empty strong,
+      #subscriberCalendarSection .calendar-diary-agenda-empty small {
+        display: block;
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-row small,
+      #subscriberCalendarSection .calendar-diary-agenda-empty small,
+      #subscriberCalendarSection .calendar-diary-staff-note {
+        color: rgba(79, 93, 109, 0.9);
+      }
+      #subscriberCalendarSection .calendar-diary-agenda-chip {
+        border-radius: 999px;
+        border: 1px solid rgba(211, 219, 227, 0.95);
+        background: rgba(243, 246, 249, 0.98);
+        color: #355161;
+        padding: 0.18rem 0.48rem;
+        font-size: 0.7rem;
+        white-space: nowrap;
+      }
+      #subscriberCalendarSection .calendar-diary-rota-panel {
+        border: 1px solid rgba(205, 214, 223, 0.9);
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245, 248, 251, 0.97));
+        padding: 0.7rem;
+        display: grid;
+        gap: 0.6rem;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.85),
+          0 10px 24px rgba(15, 23, 42, 0.05);
+      }
+      #subscriberCalendarSection .calendar-diary-staff-note {
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar .btn,
+      #subscriberCalendarSection .calendar-diary-agenda .btn,
+      #subscriberCalendarSection .calendar-diary-rota-panel .btn {
+        border-color: rgba(211, 219, 227, 0.95);
+        background: rgba(243, 246, 249, 0.98);
+        color: #304656;
+        box-shadow: none;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar .btn:hover,
+      #subscriberCalendarSection .calendar-diary-agenda .btn:hover,
+      #subscriberCalendarSection .calendar-diary-rota-panel .btn:hover {
+        border-color: rgba(190, 201, 212, 0.98);
+        background: rgba(236, 241, 245, 0.98);
+        transform: none;
+      }
+      #subscriberCalendarSection .calendar-diary-toolbar .btn.btn-ghost,
+      #subscriberCalendarSection .calendar-diary-agenda .btn.btn-ghost,
+      #subscriberCalendarSection .calendar-diary-rota-panel .btn.btn-ghost {
+        color: #496273;
+      }
 
       #subscriberCalendarSection .calendar-feature-shell {
         margin-top: 0.7rem;
-        grid-template-columns: minmax(0, 1.95fr) minmax(280px, 1fr);
-        gap: 0.75rem;
-        flex: 1;
-        align-items: stretch;
+        display: block;
       }
       #subscriberCalendarSection {
         display: flex;
         flex-direction: column;
       }
-      #subscriberCalendarSection .calendar-feature-main,
-      #subscriberCalendarSection .calendar-stage {
-        height: 100%;
+      #subscriberCalendarSection .calendar-feature-main {
+        display: grid;
+        gap: 0.55rem;
       }
       #subscriberCalendarSection .calendar-stage {
         border-color: rgba(124, 234, 216, 0.2);
@@ -8822,11 +9261,12 @@
         box-shadow:
           inset 0 1px 0 rgba(255,255,255,0.04),
           0 18px 34px rgba(0,0,0,0.24);
-        padding: 0.62rem;
+        padding: 0.48rem;
+        height: auto;
       }
       #subscriberCalendarSection .calendar-weekdays,
       #subscriberCalendarSection .calendar-grid {
-        gap: 0.5rem;
+        gap: 0.34rem;
       }
       #subscriberCalendarSection .calendar-weekdays span {
         border-radius: 8px;
@@ -8836,8 +9276,8 @@
         letter-spacing: 0.08em;
       }
       #subscriberCalendarSection .calendar-day {
-        min-height: 96px;
-        border-radius: 14px;
+        min-height: 72px;
+        border-radius: 12px;
         border-color: rgba(167, 193, 255, 0.16);
         background:
           radial-gradient(circle at 100% 0%, rgba(109, 185, 255, 0.04), transparent 46%),
@@ -8845,7 +9285,7 @@
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
       }
       #subscriberCalendarSection .calendar-day strong {
-        font-size: 0.98rem;
+        font-size: 0.9rem;
       }
       #subscriberCalendarSection .calendar-day.has-bookings {
         border-color: rgba(124, 234, 216, 0.42);
@@ -8872,24 +9312,10 @@
           inset 0 1px 0 rgba(255,255,255,0.03),
           0 12px 22px rgba(0,0,0,0.2);
       }
-      #subscriberCalendarSection .calendar-feature-rail {
-        border-radius: 18px;
-        border-color: rgba(167, 193, 255, 0.16);
-        background:
-          radial-gradient(circle at 100% 0%, rgba(109, 185, 255, 0.1), transparent 46%),
-          radial-gradient(circle at 0% 100%, rgba(124, 234, 216, 0.08), transparent 46%),
-          rgba(9, 14, 25, 0.78);
-        box-shadow:
-          inset 0 1px 0 rgba(255,255,255,0.03),
-          0 16px 30px rgba(0,0,0,0.22);
-        padding: 0.7rem;
-        gap: 0.6rem;
-        align-content: start;
-      }
       #subscriberCalendarSection .calendar-feature-meta,
       #subscriberCalendarSection .calendar-selected-day-card {
         border-radius: 14px;
-        padding: 0.6rem;
+        padding: 0.5rem;
       }
       #subscriberCalendarSection .calendar-feature-meta {
         border-color: rgba(255,255,255,0.08);
@@ -9084,6 +9510,10 @@
         50% { opacity: 0.95; }
       }
 
+      #subscriberCopilotSection {
+        display: none !important;
+      }
+
       #subscriberCopilotSection .copilot-shell,
       #adminCopilotSection .copilot-shell {
         gap: 0.85rem;
@@ -9126,7 +9556,7 @@
         border: 1px solid rgba(255,255,255,0.07);
         background:
           linear-gradient(180deg, rgba(4, 7, 13, 0.08), rgba(4, 7, 13, 0.18)),
-          url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+          url("/LEXI_IMG.png") center 18% / cover no-repeat;
         min-height: 130px;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
       }
@@ -9365,6 +9795,16 @@
           border-radius: 12px;
           padding: 0.4rem;
         }
+        #subscriberCalendarSection .calendar-diary-toolbar,
+        #subscriberCalendarSection .calendar-diary-agenda-head,
+        #subscriberCalendarSection .calendar-diary-agenda-row,
+        #subscriberCalendarSection .calendar-diary-staff-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        #subscriberCalendarSection .calendar-diary-week-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
         #subscriberCalendarSection .calendar-spotlight-head {
           align-items: flex-start;
           flex-direction: column;
@@ -9414,7 +9854,7 @@
         border: 1px solid rgba(255,255,255,0.07);
         background:
           linear-gradient(180deg, rgba(4,7,13,0.08), rgba(4,7,13,0.2)),
-          url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
+          url("/LEXI_IMG.png") center 18% / cover no-repeat;
       }
       .customer-lexi-card .kicker {
         margin: 0;
@@ -10244,6 +10684,865 @@
       .dash-top.actions-only .billing-actions {
         margin-left: auto;
       }
+      #adminExecutiveControlMount {
+        display: grid;
+        gap: 0.85rem;
+        margin-bottom: 0.35rem;
+      }
+      #adminExecutiveControlMount .admin-platform-shell {
+        gap: 0.9rem;
+      }
+      #adminExecutiveControlMount .admin-platform-head {
+        gap: 0.8rem;
+        align-items: end;
+      }
+      #adminExecutiveControlMount .admin-platform-head h2 {
+        font-size: 1.18rem;
+        letter-spacing: -0.03em;
+      }
+      #adminExecutiveControlMount .admin-platform-subtitle {
+        margin-top: 0.28rem;
+        font-size: 0.82rem;
+        max-width: 68ch;
+      }
+      #adminExecutiveControlMount .admin-overview-hero {
+        border: 1px solid rgba(245, 158, 11, 0.14);
+        border-radius: 20px;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.14), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+        padding: 0.88rem;
+        display: grid;
+        gap: 0.8rem;
+      }
+      #adminExecutiveControlMount .admin-overview-hero-copy {
+        display: grid;
+        gap: 0.2rem;
+      }
+      #adminExecutiveControlMount .admin-overview-hero-copy strong {
+        color: #142033;
+        font-size: 1rem;
+      }
+      #adminExecutiveControlMount .admin-overview-hero-copy p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.78rem;
+        max-width: 64ch;
+      }
+      #adminExecutiveControlMount .admin-platform-metric-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      #adminExecutiveControlMount .admin-platform-metric-card,
+      #adminExecutiveControlMount .admin-platform-summary-card {
+        padding: 0.72rem 0.78rem;
+        border-radius: 16px;
+        border: 1px solid rgba(245, 158, 11, 0.1);
+        background: rgba(255,255,255,0.98);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+      }
+      #adminExecutiveControlMount .admin-platform-metric-card strong,
+      #adminExecutiveControlMount .admin-platform-summary-card strong {
+        margin-top: 0.28rem;
+        font-size: 1.08rem;
+      }
+      #adminExecutiveControlMount .admin-platform-metric-card p,
+      #adminExecutiveControlMount .admin-platform-summary-card p {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #adminExecutiveControlMount .admin-analytics-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+        gap: 0.85rem;
+      }
+      #adminExecutiveControlMount .admin-platform-card {
+        gap: 0.82rem;
+        padding: 0.9rem;
+        border-radius: 20px;
+        border: 1px solid rgba(245, 158, 11, 0.12);
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99));
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+      }
+      #adminExecutiveControlMount .admin-platform-card-head {
+        gap: 0.65rem;
+      }
+      #adminExecutiveControlMount .admin-platform-card-head h3 {
+        font-size: 1.02rem;
+        letter-spacing: -0.02em;
+      }
+      #adminExecutiveControlMount .admin-platform-card-head p {
+        margin-top: 0.18rem;
+        font-size: 0.78rem;
+      }
+      #adminExecutiveControlMount .workspace-actions-badge {
+        padding: 0.18rem 0.5rem;
+        font-size: 0.66rem;
+        background: rgba(255, 244, 230, 0.98);
+        color: #b45309;
+        border-color: rgba(245, 158, 11, 0.18);
+      }
+      #adminExecutiveControlMount .admin-revenue-command-card {
+        align-content: start;
+      }
+      #adminExecutiveControlMount .admin-usage-command-card {
+        align-content: start;
+      }
+      .admin-revenue-visual-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin: 0.95rem 0;
+      }
+      #adminExecutiveControlMount .admin-revenue-visual-grid {
+        gap: 0.68rem;
+        margin: 0.15rem 0 0.2rem;
+      }
+      .admin-revenue-visual-card {
+        grid-column: span 4;
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        border-radius: 18px;
+        background: rgba(248, 250, 252, 0.98);
+        padding: 0.9rem;
+        display: grid;
+        gap: 0.7rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-visual-card {
+        padding: 0.82rem;
+        border-radius: 18px;
+        gap: 0.62rem;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(249,250,251,0.99));
+        box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.06);
+      }
+      .admin-revenue-visual-card-wide {
+        grid-column: span 12;
+      }
+      .admin-revenue-visual-head {
+        display: grid;
+        gap: 0.18rem;
+      }
+      .admin-revenue-visual-head strong {
+        color: #142033;
+      }
+      .admin-revenue-visual-head small {
+        color: #64748b;
+      }
+      .admin-revenue-donut {
+        --revenue-fill: 72;
+        position: relative;
+        min-height: 220px;
+        display: grid;
+        place-items: center;
+      }
+      #adminExecutiveControlMount .admin-revenue-donut {
+        min-height: 198px;
+      }
+      .admin-revenue-donut-chart {
+        width: 172px;
+        height: 172px;
+        border-radius: 999px;
+        background: conic-gradient(#f59e0b 0 calc(var(--revenue-fill) * 1%), rgba(241, 245, 249, 0.98) 0 100%);
+        display: grid;
+        place-items: center;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+      }
+      #adminExecutiveControlMount .admin-revenue-donut-chart {
+        width: 150px;
+        height: 150px;
+      }
+      .admin-revenue-donut-chart::after {
+        content: "";
+        width: 104px;
+        height: 104px;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+      }
+      #adminExecutiveControlMount .admin-revenue-donut-chart::after {
+        width: 88px;
+        height: 88px;
+      }
+      .admin-revenue-donut-copy {
+        position: absolute;
+        display: grid;
+        gap: 0.15rem;
+        text-align: center;
+      }
+      .admin-revenue-donut-copy strong,
+      .admin-revenue-gauge-copy strong {
+        color: #142033;
+        font-size: 1.5rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-donut-copy strong,
+      #adminExecutiveControlMount .admin-revenue-gauge-copy strong {
+        font-size: 1.24rem;
+      }
+      .admin-revenue-donut-copy small,
+      .admin-revenue-gauge-copy small {
+        color: #64748b;
+        font-size: 0.72rem;
+      }
+      .admin-revenue-donut-meta {
+        display: grid;
+        gap: 0.45rem;
+      }
+      .admin-revenue-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        font-size: 0.84rem;
+        color: #475569;
+      }
+      .admin-revenue-meta-row span:last-child {
+        color: #142033;
+        font-weight: 700;
+      }
+      .admin-revenue-gauge {
+        display: grid;
+        gap: 0.85rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-gauge {
+        gap: 0.65rem;
+      }
+      .admin-revenue-gauge-track {
+        --gauge-fill: 78;
+        position: relative;
+        height: 108px;
+        overflow: hidden;
+      }
+      #adminExecutiveControlMount .admin-revenue-gauge-track {
+        height: 88px;
+      }
+      .admin-revenue-gauge-track::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 220px 220px 0 0;
+        background: conic-gradient(from 180deg, #f59e0b 0 calc(var(--gauge-fill) * 1.8deg), rgba(226, 232, 240, 0.92) 0 180deg);
+      }
+      .admin-revenue-gauge-track::after {
+        content: "";
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        top: 22px;
+        bottom: -22px;
+        border-radius: 220px 220px 0 0;
+        background: #ffffff;
+      }
+      .admin-revenue-gauge-copy {
+        margin-top: -3.7rem;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        display: grid;
+        gap: 0.15rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-gauge-copy {
+        margin-top: -3rem;
+      }
+      .admin-revenue-gauge-legend {
+        display: grid;
+        gap: 0.45rem;
+      }
+      .admin-revenue-trend-graph {
+        min-height: 220px;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        align-items: end;
+        gap: 0.65rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-trend-graph {
+        min-height: 168px;
+        gap: 0.55rem;
+      }
+      .admin-revenue-trend-bar {
+        min-height: 180px;
+        display: grid;
+        align-items: end;
+        gap: 0.45rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-trend-bar {
+        min-height: 148px;
+        gap: 0.34rem;
+      }
+      .admin-revenue-trend-bar span {
+        display: block;
+        border-radius: 14px 14px 8px 8px;
+        background: linear-gradient(180deg, rgba(245, 158, 11, 0.95), rgba(251, 191, 36, 0.72));
+        min-height: 14px;
+        box-shadow: 0 10px 22px rgba(245, 158, 11, 0.18);
+      }
+      .admin-revenue-trend-bar strong {
+        color: #142033;
+        font-size: 0.8rem;
+      }
+      .admin-revenue-trend-bar small {
+        color: #64748b;
+        font-size: 0.74rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-trend-bar strong {
+        font-size: 0.74rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-trend-bar small {
+        font-size: 0.68rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-detail-panel {
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.98);
+        padding: 0.82rem;
+        display: grid;
+        gap: 0.55rem;
+      }
+      #adminExecutiveControlMount .admin-usage-command-layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.68rem;
+        align-items: stretch;
+      }
+      #adminExecutiveControlMount .admin-usage-primary-panel {
+        min-height: 100%;
+      }
+      #adminExecutiveControlMount .admin-usage-secondary-panel {
+        min-height: 100%;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.48rem;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-card,
+      #adminExecutiveControlMount .admin-usage-weekday-card,
+      #adminExecutiveControlMount .admin-usage-role-card {
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.92);
+        padding: 0.62rem;
+        display: grid;
+        gap: 0.16rem;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-card strong,
+      #adminExecutiveControlMount .admin-usage-weekday-card strong,
+      #adminExecutiveControlMount .admin-usage-role-card strong {
+        color: #142033;
+        font-size: 0.84rem;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-card small,
+      #adminExecutiveControlMount .admin-usage-weekday-card small,
+      #adminExecutiveControlMount .admin-usage-role-card small {
+        color: #64748b;
+        font-size: 0.68rem;
+        line-height: 1.3;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-bar,
+      #adminExecutiveControlMount .admin-usage-weekday-bar,
+      #adminExecutiveControlMount .admin-usage-role-bar {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.85);
+        overflow: hidden;
+        margin-top: 0.22rem;
+      }
+      #adminExecutiveControlMount .admin-usage-hour-bar span,
+      #adminExecutiveControlMount .admin-usage-weekday-bar span,
+      #adminExecutiveControlMount .admin-usage-role-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.95), rgba(251, 191, 36, 0.72));
+      }
+      #adminExecutiveControlMount .admin-usage-weekday-grid,
+      #adminExecutiveControlMount .admin-usage-role-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.48rem;
+      }
+      #adminExecutiveControlMount .admin-usage-operations-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      #adminExecutiveControlMount .admin-usage-operations-card {
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.92);
+        padding: 0.72rem;
+        display: grid;
+        gap: 0.22rem;
+      }
+      #adminExecutiveControlMount .admin-usage-operations-card p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #adminExecutiveControlMount .admin-usage-operations-card strong {
+        color: #142033;
+        font-size: 0.88rem;
+        line-height: 1.28;
+      }
+      #adminExecutiveControlMount .admin-usage-operations-card small {
+        color: #64748b;
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
+      #adminExecutiveControlMount .admin-revenue-monthly-list {
+        gap: 0.48rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-row {
+        gap: 0.26rem;
+        padding: 0.52rem 0.58rem;
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.92);
+      }
+      #adminExecutiveControlMount .admin-revenue-month-copy strong {
+        font-size: 0.8rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-copy small,
+      #adminExecutiveControlMount .admin-platform-note {
+        font-size: 0.72rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-bar {
+        height: 8px;
+        background: rgba(226, 232, 240, 0.8);
+      }
+      #adminExecutiveControlMount .admin-platform-actions .btn {
+        min-height: 36px;
+        padding: 0.32rem 0.68rem;
+        font-size: 0.74rem;
+      }
+      #adminExecutiveControlMount + .executive-pulse-grid {
+        margin-top: 0.32rem;
+      }
+      .subscriber-control-hero,
+      .customer-control-hero {
+        border: 1px solid rgba(245, 158, 11, 0.14);
+        border-radius: 20px;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.14), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+        padding: 0.88rem;
+        display: grid;
+        gap: 0.8rem;
+      }
+      .subscriber-control-hero-copy,
+      .customer-control-hero-copy {
+        display: grid;
+        gap: 0.2rem;
+      }
+      .subscriber-control-hero-copy strong,
+      .customer-control-hero-copy strong {
+        color: #142033;
+        font-size: 1rem;
+      }
+      .subscriber-control-hero-copy p,
+      .customer-control-hero-copy p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.78rem;
+        max-width: 64ch;
+      }
+      .customer-control-metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      .customer-control-metric-card {
+        padding: 0.72rem 0.78rem;
+        border-radius: 16px;
+        border: 1px solid rgba(245, 158, 11, 0.1);
+        background: rgba(255,255,255,0.98);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+        display: grid;
+        gap: 0.25rem;
+        align-content: start;
+      }
+      .customer-control-metric-card p {
+        margin: 0;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+      }
+      .customer-control-metric-card strong {
+        color: #142033;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+      .customer-control-metric-card small {
+        color: #64748b;
+        font-size: 0.76rem;
+        line-height: 1.4;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-head,
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-head {
+        align-items: end;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection {
+        border: 1px solid rgba(245, 158, 11, 0.14) !important;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98)) !important;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-subtitle,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-head small,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card p,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-action-list small,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-meta,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat p,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat small {
+        color: #64748b !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-meta,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-toolbar,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-tabs {
+        border-color: rgba(245, 158, 11, 0.12) !important;
+        background: rgba(255,255,255,0.88) !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-tabs button {
+        color: #64748b !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-tabs button.is-active {
+        background: rgba(255, 244, 230, 0.98) !important;
+        color: #b45309 !important;
+        border-color: rgba(245, 158, 11, 0.18) !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .subscriber-control-hero {
+        margin-top: 0.1rem;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-action-list li,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat {
+        border-color: rgba(245, 158, 11, 0.1) !important;
+        background: rgba(255,255,255,0.98) !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card strong,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card h3,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge-label,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat strong,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-action-list strong {
+        color: #142033 !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card small,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge-sub,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat.positive strong {
+        color: #b45309 !important;
+      }
+      body[data-role="subscriber"] #businessGrowthSection .business-hub-shell,
+      body[data-role="subscriber"] #moduleNavigatorSection,
+      body[data-role="subscriber"] #businessGrowthSection .module-card {
+        background-image: none !important;
+      }
+      body[data-role="subscriber"] #businessGrowthSection .module-card {
+        border: 1px solid rgba(245, 158, 11, 0.1) !important;
+        background: rgba(255,255,255,0.98) !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+      }
+      body[data-role="subscriber"] #businessGrowthSection .module-card strong,
+      body[data-role="subscriber"] #businessGrowthSection .business-hub-kicker,
+      body[data-role="subscriber"] #businessGrowthSection h2 {
+        color: #142033 !important;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection {
+        border: 1px solid rgba(245, 158, 11, 0.14) !important;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98)) !important;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-link,
+      body[data-role="customer"] #customerSearchSection,
+      body[data-role="customer"] #customerReceptionSection,
+      body[data-role="customer"] #customerLexiCalendarSection,
+      body[data-role="customer"] #customerSlotsSection,
+      body[data-role="customer"] #customerHistorySection,
+      body[data-role="customer"] #customerAnalyticsSection {
+        border: 1px solid rgba(245, 158, 11, 0.12) !important;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99)) !important;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.07);
+      }
+      body[data-role="customer"] #customerJourneyActionsSection h2,
+      body[data-role="customer"] #customerSearchSection h2,
+      body[data-role="customer"] #customerReceptionSection h2,
+      body[data-role="customer"] #customerLexiCalendarSection h2,
+      body[data-role="customer"] #customerSlotsSection h2,
+      body[data-role="customer"] #customerHistorySection h2,
+      body[data-role="customer"] #customerAnalyticsSection h2,
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-card h3 {
+        color: #142033 !important;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection p,
+      body[data-role="customer"] #customerSearchSection p,
+      body[data-role="customer"] #customerReceptionSection p,
+      body[data-role="customer"] #customerLexiCalendarSection p,
+      body[data-role="customer"] #customerSlotsSection p,
+      body[data-role="customer"] #customerHistorySection p,
+      body[data-role="customer"] #customerAnalyticsSection p,
+      body[data-role="customer"] #customerJourneyActionsSection small,
+      body[data-role="customer"] #customerSearchSection small,
+      body[data-role="customer"] #customerReceptionSection small,
+      body[data-role="customer"] #customerLexiCalendarSection small,
+      body[data-role="customer"] #customerSlotsSection small,
+      body[data-role="customer"] #customerHistorySection small,
+      body[data-role="customer"] #customerAnalyticsSection small {
+        color: #64748b !important;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-link {
+        border-radius: 18px;
+        padding: 0.95rem;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.58rem;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-link strong {
+        color: #142033;
+      }
+      body[data-role="customer"] #customerJourneyActionsSection .customer-control-metric-card,
+      body[data-role="customer"] #customerJourneyActionsSection .customer-journey-link {
+        min-height: 132px;
+        align-content: start;
+      }
+      body[data-role="customer"] #customerSearchSection .customer-search-form input,
+      body[data-role="customer"] #customerSearchSection .customer-search-form select,
+      body[data-role="customer"] #customerReceptionSection .customer-chat-form input,
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-view-tab,
+      body[data-role="customer"] #customerLexiCalendarSection .calendar-nav .btn {
+        border-color: rgba(245, 158, 11, 0.1) !important;
+        background: rgba(255,255,255,0.96) !important;
+        color: #142033 !important;
+      }
+      body[data-role="customer"] #customerSearchSection .customer-results li,
+      body[data-role="customer"] #customerSlotsSection .customer-slots li,
+      body[data-role="customer"] #customerHistorySection .customer-history li,
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-card,
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-calendar-panel,
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-summary-panel,
+      body[data-role="customer"] #customerReceptionSection .lexi-launch-panel,
+      body[data-role="customer"] #customerReceptionSection .customer-chat-shell,
+      body[data-role="customer"] #customerReceptionSection .customer-chat-box,
+      body[data-role="customer"] #customerAnalyticsSection .dash-card {
+        border: 1px solid rgba(245, 158, 11, 0.1) !important;
+        background: rgba(255,255,255,0.98) !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+      }
+      body[data-role="customer"] #customerAnalyticsSection .dash-card p {
+        color: #64748b !important;
+      }
+      body[data-role="customer"] #customerAnalyticsSection .dash-card strong {
+        color: #142033 !important;
+      }
+      body[data-role="customer"] #customerSearchSection .customer-select-salon,
+      body[data-role="customer"] #customerReceptionSection .lexi-launch-actions .btn,
+      body[data-role="customer"] #customerLexiCalendarSection #customerLexiAskNextBest {
+        min-height: 38px;
+      }
+      body[data-role="customer"] #customerLexiCalendarSection .customer-lexi-view-tab.is-active {
+        background: rgba(255, 244, 230, 0.98) !important;
+        color: #b45309 !important;
+        border-color: rgba(245, 158, 11, 0.18) !important;
+      }
+      @media (max-width: 1100px) {
+        .customer-control-metric-grid,
+        body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-grid,
+        body[data-role="customer"] #customerJourneyActionsSection .customer-journey-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 700px) {
+        .customer-control-metric-grid,
+        body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-grid,
+        body[data-role="customer"] #customerJourneyActionsSection .customer-journey-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .admin-account-support-shell {
+        display: grid;
+        gap: 0.9rem;
+      }
+      .admin-account-support-head,
+      .admin-account-support-toolbar,
+      .admin-account-support-card-head,
+      .admin-account-support-card-row,
+      .admin-account-support-action-row,
+      .admin-account-support-visit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+      }
+      .admin-account-support-scope {
+        color: #64748b;
+      }
+      .admin-account-support-toolbar input {
+        flex: 1 1 300px;
+        min-height: 48px;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(255, 255, 255, 0.98);
+        color: #142033;
+        padding: 0 0.9rem;
+      }
+      .admin-account-support-layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.95fr) minmax(0, 1.05fr);
+        gap: 0.9rem;
+      }
+      .admin-account-support-results,
+      .admin-account-support-detail {
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        border-radius: 18px;
+        background: rgba(248, 250, 252, 0.98);
+        padding: 0.9rem;
+      }
+      .admin-account-support-results {
+        display: grid;
+        gap: 0.7rem;
+        align-content: start;
+        max-height: 560px;
+        overflow: auto;
+      }
+      .admin-account-support-card {
+        width: 100%;
+        text-align: left;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 0.85rem;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .admin-account-support-card.is-selected {
+        border-color: rgba(245, 158, 11, 0.42);
+        box-shadow: 0 12px 28px rgba(245, 158, 11, 0.12);
+      }
+      .admin-account-support-role-pill,
+      .admin-account-support-stat-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.24rem 0.58rem;
+        font-size: 0.74rem;
+        background: rgba(241, 245, 249, 0.98);
+        color: #475569;
+      }
+      .admin-account-support-role-pill.is-subscriber {
+        background: rgba(255, 237, 213, 0.98);
+        color: #9a3412;
+      }
+      .admin-account-support-role-pill.is-customer {
+        background: rgba(224, 242, 254, 0.98);
+        color: #0c4a6e;
+      }
+      .admin-account-support-card strong,
+      .admin-account-support-detail strong {
+        color: #142033;
+      }
+      .admin-account-support-card small,
+      .admin-account-support-detail small {
+        color: #64748b;
+      }
+      .admin-account-support-detail {
+        display: grid;
+        gap: 0.9rem;
+        align-content: start;
+      }
+      .admin-account-support-detail-empty {
+        min-height: 280px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: #64748b;
+      }
+      .admin-account-support-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.7rem;
+      }
+      .admin-account-support-stats article,
+      .admin-account-support-visit-list,
+      .admin-account-support-notes {
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 14px;
+        background: #ffffff;
+        padding: 0.8rem;
+      }
+      .admin-account-support-stats p,
+      .admin-account-support-visit-list p,
+      .admin-account-support-notes p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.76rem;
+      }
+      .admin-account-support-stats strong {
+        display: block;
+        margin-top: 0.18rem;
+        font-size: 1.12rem;
+      }
+      .admin-account-support-visit-list {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .admin-account-support-visit-row {
+        align-items: flex-start;
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+      }
+      .admin-account-support-visit-row:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      @media (max-width: 980px) {
+        #adminExecutiveControlMount .admin-analytics-layout {
+          grid-template-columns: 1fr;
+        }
+        #adminExecutiveControlMount .admin-usage-command-layout {
+          grid-template-columns: 1fr;
+        }
+        #adminExecutiveControlMount .admin-usage-hour-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        #adminExecutiveControlMount .admin-usage-weekday-grid,
+        #adminExecutiveControlMount .admin-usage-role-grid,
+        #adminExecutiveControlMount .admin-usage-operations-grid {
+          grid-template-columns: 1fr;
+        }
+        #adminExecutiveControlMount .admin-platform-metric-grid,
+        #adminExecutiveControlMount .admin-revenue-summary-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .admin-revenue-visual-card,
+        .admin-revenue-visual-card-wide {
+          grid-column: 1 / -1;
+        }
+        .admin-account-support-layout {
+          grid-template-columns: 1fr;
+        }
+        .admin-account-support-stats {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -10288,31 +11587,23 @@
         <div class="calendar-head">
           <h2 style="margin:0;">Booking Diary</h2>
           <div class="calendar-nav">
-            <button type="button" class="btn" data-open-subscriber-lexi="booking_diary">Ask Lexi</button>
+            <button id="calendarDiaryTodayBtn" class="btn btn-ghost" type="button">Today</button>
+            <button id="calendarDiaryAddWalkInBtn" class="btn" type="button">Add Walk-in</button>
+            <button id="calendarDiaryOpenStaffBtn" class="btn btn-ghost" type="button">Open Staff Rota</button>
             <button id="calendarPrev" class="btn btn-ghost" type="button" aria-label="Previous month">&lt;</button>
             <p id="calendarMonthLabel" class="calendar-label">Month</p>
             <button id="calendarNext" class="btn btn-ghost" type="button" aria-label="Next month">&gt;</button>
           </div>
         </div>
-        <p id="calendarLegend" class="calendar-legend">Days with bookings are highlighted.</p>
-        <div class="calendar-wow-strip" aria-label="Lexi calendar planning overview">
-          <div class="calendar-wow-strip-head">
-            <p class="calendar-wow-kicker">Lexi Calendar Command</p>
-            <h3>Plan the day, spot pressure early, and stay ahead of the diary.</h3>
-            <p>
-              Use the diary with Lexi to spot busy periods, empty slots, staffing gaps, and same-day recovery opportunities.
-              before they become problems.</p>
-          </div>
-          <div class="calendar-wow-strip-pills" aria-label="Calendar outcomes">
-            <span>Daily capacity view</span>
-            <span>Gap recovery opportunities</span>
-            <span>Staffing pressure signals</span>
-            <span>Revenue-aware planning</span>
-          </div>
+        <div id="calendarDiaryWeekStrip" class="calendar-diary-week-strip" aria-live="polite">
+          <article class="calendar-week-focus-card">
+            <span>Week focus</span>
+            <strong>Loading diary week...</strong>
+            <small>Diary availability and booking totals will appear here.</small>
+          </article>
         </div>
         <div class="calendar-feature-shell">
           <div class="calendar-feature-main">
-            <div id="bookingCalendarStaffLegend" class="calendar-staff-legend" aria-label="Staff rota legend"></div>
             <div class="calendar-stage">
               <div class="calendar-weekdays" aria-hidden="true">
                 <span>Mon</span>
@@ -10325,21 +11616,7 @@
               </div>
               <div id="bookingCalendarGrid" class="calendar-grid"></div>
             </div>
-          </div>
-          <aside class="calendar-feature-rail" aria-label="Calendar summary and selected day details">
-            <div id="calendarFeatureMeta" class="calendar-feature-meta">Lexi is loading your calendar summary...</div>
-            <div id="calendarFeatureStats" class="calendar-feature-stats"></div>
-            <div id="calendarSelectedDaySummary" class="calendar-selected-day-card">
-              <h3>Selected Day Summary</h3>
-              <p>Click a date to see bookings, staffing, and revenue context for that day.</p>
-            </div>
-          </aside>
-        </div>
-        <div id="calendarLexiCommandDeck" class="calendar-lexi-command-deck" aria-live="polite">
-          <div class="calendar-lexi-command-card">
-            <p class="calendar-lexi-command-kicker">Lexi Command Deck</p>
-            <h4>Lexi's calendar actions will appear here</h4>
-            <p>Pick a date and Lexi will suggest planning actions, gap-fill ideas, and useful client communication prompts.</p>
+            <div id="bookingCalendarStaffLegend" class="calendar-staff-legend" aria-label="Staff rota legend"></div>
           </div>
         </div>
       </section>
@@ -10410,7 +11687,7 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="subscriberCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
+            <button id="subscriberCopilotOpenPopup" class="btn ask-lexi-btn" type="button">Ask Lexi</button>
             <span class="copilot-guardrail">Lexi can answer salon and beauty questions and use your salon dashboard context when it helps. This chat does not run platform admin checks.</span>
           </div>
           <div id="subscriberCopilotPopup" class="copilot-chat-popup-overlay home-lexi-popup-overlay" aria-hidden="true">
@@ -10458,7 +11735,7 @@
                     <input id="subscriberCopilotInput" type="text" placeholder="Example: What should I focus on today, or what ingredients should I avoid for color-treated hair?" required />
                     <button class="btn lexi-mic-btn" id="subscriberCopilotMicBtn" type="button">Push to Talk</button>
                     <button class="btn btn-ghost lexi-mic-btn" id="subscriberCopilotMicStopBtn" type="button" disabled>Stop</button>
-                    <button id="subscriberCopilotSend" class="btn" type="submit">Ask Lexi</button>
+                    <button id="subscriberCopilotSend" class="btn ask-lexi-btn" type="submit">Ask Lexi</button>
                     <button id="subscriberCopilotClear" class="btn btn-ghost" type="button">Clear</button>
                     <span class="copilot-guardrail business-lexi-guardrail">One Lexi mode: salon and beauty guidance plus your salon dashboard context when helpful.</span>
                   </form>
@@ -10534,7 +11811,7 @@
             </div>
           </section>
           <div class="copilot-launch-row">
-            <button id="adminCopilotOpenPopup" class="btn" type="button">Ask Lexi</button>
+            <button id="adminCopilotOpenPopup" class="btn ask-lexi-btn" type="button">Ask Lexi</button>
             <span class="copilot-guardrail">Lexi can answer salon/beauty questions and use admin/managed-business context when relevant. No auto-fix actions.</span>
           </div>
           <div id="adminCopilotPopup" class="copilot-chat-popup-overlay home-lexi-popup-overlay" aria-hidden="true">
@@ -10582,7 +11859,7 @@
                     <input id="adminCopilotInput" type="text" placeholder="Example: Why are subscriber bookings lower today, or what should a salon do to reduce no-shows?" required />
                     <button class="btn lexi-mic-btn" id="adminCopilotMicBtn" type="button">Push to Talk</button>
                     <button class="btn btn-ghost lexi-mic-btn" id="adminCopilotMicStopBtn" type="button" disabled>Stop</button>
-                    <button id="adminCopilotSend" class="btn" type="submit">Ask Lexi</button>
+                    <button id="adminCopilotSend" class="btn ask-lexi-btn" type="submit">Ask Lexi</button>
                     <button id="adminCopilotClear" class="btn btn-ghost" type="button">Clear</button>
                     <span class="copilot-guardrail business-lexi-guardrail">One Lexi mode: admin diagnostics + general salon, beauty, and business guidance.</span>
                   </form>
@@ -10874,6 +12151,7 @@
           <p id="dashActionStatus" class="dash-action-status" aria-live="polite"></p>
           <div id="adminBusinessScope" class="admin-scope">
             <label for="adminBusinessSelect">Managed business</label>
+            <input id="adminBusinessSearch" type="search" placeholder="Search salon or business" aria-label="Search salon or business" />
             <select id="adminBusinessSelect" aria-label="Select managed business"></select>
             <small id="adminBusinessStatus"></small>
           </div>
@@ -10884,6 +12162,119 @@
         </div>
       </section>
 
+      <section class="panel" id="adminPlatformSection" hidden>
+        <div class="admin-platform-shell">
+          <div class="admin-platform-head">
+            <div>
+              <p class="admin-platform-kicker">Platform oversight</p>
+              <h2 style="margin:0;">Admin Control Center</h2>
+              <p class="admin-platform-subtitle">One control center for app revenue, subscriber movement, booking demand, and live platform usage so admin can spot what changed fast.</p>
+            </div>
+            <div class="admin-platform-actions">
+              <button id="adminPlatformExportBtn" class="btn btn-ghost" type="button">Export Revenue CSV</button>
+            </div>
+          </div>
+          <section class="admin-overview-hero" aria-label="Platform overview snapshot">
+            <div class="admin-overview-hero-copy">
+              <strong>Platform Revenue & Analytics</strong>
+              <p>Track where revenue is growing, where cancellations are dragging, and when the platform is safest to update.</p>
+            </div>
+            <div id="adminPlatformMetricGrid" class="admin-platform-metric-grid" aria-live="polite"></div>
+          </section>
+          <div class="admin-analytics-layout">
+            <section class="admin-platform-card admin-revenue-command-card" aria-labelledby="adminRevenueOverviewTitle">
+              <div class="admin-platform-card-head">
+                <div>
+                  <h3 id="adminRevenueOverviewTitle">Revenue Command</h3>
+                  <p>App-wide subscription performance, retained value, churn drag, and monthly pace.</p>
+                </div>
+                <span id="adminRevenuePeriodPill" class="workspace-actions-badge">Last 6 months</span>
+              </div>
+              <div id="adminRevenueSummaryGrid" class="admin-revenue-summary-grid" aria-live="polite"></div>
+              <div class="admin-revenue-visual-grid">
+                <article class="admin-revenue-visual-card">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Revenue Mix</strong>
+                    <small>Retained value vs churn drag</small>
+                  </div>
+                  <div id="adminRevenueMixChart" class="admin-revenue-donut" aria-live="polite"></div>
+                </article>
+                <article class="admin-revenue-visual-card">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Retention Gauge</strong>
+                    <small>Subscriber health signal</small>
+                  </div>
+                  <div id="adminRevenueHealthGauge" class="admin-revenue-gauge" aria-live="polite"></div>
+                </article>
+                <article class="admin-revenue-visual-card">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Booking Yield</strong>
+                    <small>Conversion vs cancellations</small>
+                  </div>
+                  <div id="adminRevenueYieldGauge" class="admin-revenue-gauge" aria-live="polite"></div>
+                </article>
+                <article class="admin-revenue-visual-card admin-revenue-visual-card-wide">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Monthly Revenue Trend</strong>
+                    <small>Subscription pace across the platform</small>
+                  </div>
+                  <div id="adminRevenueTrendGraph" class="admin-revenue-trend-graph" aria-live="polite"></div>
+                </article>
+              </div>
+              <section class="admin-revenue-detail-panel" aria-label="Monthly revenue detail">
+                <div class="admin-revenue-visual-head">
+                  <strong>Monthly Breakdown</strong>
+                  <small>Revenue and cancellation movement by month</small>
+                </div>
+                <div id="adminRevenueMonthlyList" class="admin-revenue-monthly-list" aria-live="polite"></div>
+              </section>
+              <p id="adminRevenueNote" class="admin-platform-note"></p>
+            </section>
+            <section class="admin-platform-card admin-usage-command-card" aria-labelledby="adminUsageOverviewTitle">
+              <div class="admin-platform-card-head">
+                <div>
+                  <h3 id="adminUsageOverviewTitle">Usage Intelligence</h3>
+                  <p>Use live app behaviour to pick safer update windows and understand when the platform is busiest.</p>
+                </div>
+                <span id="adminUsagePeriodPill" class="workspace-actions-badge">Last 14 days</span>
+              </div>
+              <div id="adminUsageSummaryGrid" class="admin-revenue-summary-grid" aria-live="polite"></div>
+              <div class="admin-usage-command-layout">
+                <section class="admin-revenue-detail-panel admin-usage-primary-panel">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Hourly Load Map</strong>
+                    <small>Busiest and quietest hours across the app</small>
+                  </div>
+                  <div id="adminUsageHourlyList" class="admin-usage-hour-grid" aria-live="polite"></div>
+                </section>
+                <section class="admin-revenue-detail-panel admin-usage-secondary-panel">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Weekday Pattern</strong>
+                    <small>Activity pattern by day of week</small>
+                  </div>
+                  <div id="adminUsageWeekdayList" class="admin-usage-weekday-grid" aria-live="polite"></div>
+                </section>
+                <section class="admin-revenue-detail-panel admin-usage-secondary-panel">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Role Activity Split</strong>
+                    <small>Who is driving platform traffic</small>
+                  </div>
+                  <div id="adminUsageRoleGrid" class="admin-usage-role-grid" aria-live="polite"></div>
+                </section>
+                <section class="admin-revenue-detail-panel admin-usage-secondary-panel" aria-label="Platform operations insight">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Operations Insight</strong>
+                    <small>What admin should watch right now</small>
+                  </div>
+                  <div id="adminUsageOperationsGrid" class="admin-usage-operations-grid" aria-live="polite"></div>
+                </section>
+              </div>
+              <p id="adminUsageNote" class="admin-platform-note">Usage windows are based on recorded dashboard and app activity in UTC.</p>
+            </section>
+          </div>
+        </div>
+      </section>
+
       <section class="panel workspace-actions" id="dashboardQuickActionsSection" aria-label="Top workspace actions">
         <div class="workspace-actions-head">
           <div>
@@ -10891,7 +12282,6 @@
             <p>Run the salon from one place with Lexi, the diary, and the business hub working together.</p>
           </div>
           <div class="workspace-actions-meta">
-            <button type="button" class="btn" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
             <button id="workspaceBackToDashboardBtn" class="btn btn-ghost workspace-back-btn" type="button">Back to Dashboard</button>
             <span class="workspace-actions-badge">Fast actions</span>
           </div>
@@ -10904,7 +12294,7 @@
               <p id="workspaceStarSummary">Check the diary, then let Lexi tell you what needs attention, who needs follow-up, and where revenue is exposed.</p>
             </div>
             <div class="workspace-star-actions">
-              <button type="button" class="btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
+              <button type="button" class="btn ask-lexi-btn" id="workspaceStarAskLexiBtn">Ask Lexi</button>
               <button type="button" class="btn btn-ghost" id="workspaceStarOpenCalendarBtn">Open Calendar</button>
             </div>
           </div>
@@ -11007,14 +12397,20 @@
       <section class="panel customer-journey-actions" id="customerJourneyActionsSection" aria-label="Customer booking journey">
         <div class="customer-journey-head">
           <div>
-            <h2>Customer Control</h2>
-            <p>Search, ask Lexi, choose a time, and manage bookings in a simple order.</p>
+            <h2>Customer Control Center</h2>
+            <p>Search, ask Lexi, choose a time, and manage your bookings in one clean customer view.</p>
           </div>
           <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
-            <a class="btn" href="#customerReceptionSection">Ask Lexi</a>
             <span class="workspace-actions-badge">Daily flow</span>
           </div>
         </div>
+        <section class="customer-control-hero" aria-label="Customer overview">
+          <div class="customer-control-hero-copy">
+            <strong>Your Booking View</strong>
+            <p>See your booking activity, selected salon status, and next move before you search or ask Lexi.</p>
+          </div>
+          <div id="customerControlMetricGrid" class="customer-control-metric-grid" aria-live="polite"></div>
+        </section>
         <div class="customer-journey-grid">
           <a class="customer-journey-link" href="#customerSearchSection">
             <strong>Find a Business</strong>
@@ -11042,29 +12438,36 @@
             <section class="panel executive-pulse" id="subscriberExecutivePulseSection">
         <div class="executive-pulse-head">
           <div>
-            <h2 style="margin:0;">Business Pulse</h2>
+            <h2 id="executivePulseTitle" style="margin:0;">Business Pulse</h2>
             <p id="executivePulseSubtitle" class="executive-pulse-subtitle">
               Quick read on bookings, cancellations, revenue and next steps.
             </p>
           </div>
           <div class="executive-pulse-badge">
-            <button type="button" class="btn" data-open-subscriber-lexi="executive_pulse">Ask Lexi</button>
             <span class="live-pill"><i class="live-dot"></i> Live</span>
           </div>
         </div>
         <div class="executive-pulse-toolbar" aria-label="Daily pulse controls">
           <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Pulse range">
-            <button type="button" class="is-active" data-exec-range="day" role="tab" aria-selected="true">Day</button>
+            <button type="button" class="is-active" data-exec-range="all" role="tab" aria-selected="true">All Time</button>
+            <button type="button" data-exec-range="day" role="tab" aria-selected="false">Day</button>
             <button type="button" data-exec-range="week" role="tab" aria-selected="false">Week</button>
             <button type="button" data-exec-range="month" role="tab" aria-selected="false">Month</button>
             <button type="button" data-exec-range="year" role="tab" aria-selected="false">Year</button>
           </div>
           <div class="executive-pulse-toolbar-actions">
-            <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing today</div>
+            <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing all time</div>
             <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save View</button>
           </div>
         </div>
-        <div id="executivePulseSignals" class="executive-signal-grid"></div>
+        <section class="subscriber-control-hero" aria-label="Subscriber business overview">
+          <div class="subscriber-control-hero-copy">
+            <strong>Salon Revenue & Operations</strong>
+            <p>Your own bookings, revenue, confirmations, and trading pressure in one control surface.</p>
+          </div>
+          <div id="executivePulseSignals" class="executive-signal-grid"></div>
+        </section>
+        <div id="adminExecutiveControlMount"></div>
         <div class="executive-pulse-grid">
           <article class="executive-card executive-card-primary">
             <div class="executive-card-head">
@@ -11112,74 +12515,38 @@
         </div>
       </section>
       <section class="panel" id="businessGrowthSection">
-        <div class="growth-grid">
-          <article class="growth-card growth-card-onboarding growth-card-feature" id="businessSetupHubCard">
-            <h3>Business Hub</h3>
-            <p style="margin:0;color:var(--muted);">Run setup, updates and business controls from one place.</p>
-            <div style="display:flex;justify-content:flex-end;margin-top:0.45rem;">
-              <button type="button" class="btn" data-open-subscriber-lexi="hub_setup">Ask Lexi</button>
+        <div class="business-hub-shell">
+          <div class="business-hub-header">
+            <div>
+              <p id="businessHubKicker" class="business-hub-kicker">Subscriber workspace</p>
+              <h2 id="businessHubTitle" style="margin:0;">Business Hub</h2>
+              <p id="moduleNavigatorIntro" class="business-hub-subtitle">Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.</p>
             </div>
-            <section class="hub-command-deck" aria-label="AI Business Command Deck">
-              <div class="hub-command-head">
-                <div>
-                  <h4>Command Deck</h4>
-                  <p>Review the signals that matter, then run the next action fast.</p>
-                </div>
-                <span class="hub-module-badge">Priority view</span>
-              </div>
-              <div id="hubCommandSignalGrid" class="hub-command-signal-grid" aria-live="polite"></div>
-              <div class="hub-command-columns">
-                <section class="hub-command-panel" aria-labelledby="hubReportCenterTitle">
-                  <div class="hub-command-panel-head">
-                    <div>
-                      <h5 id="hubReportCenterTitle">Business Report Center</h5>
-                      <small>Print or email a clean business report.</small>
-                    </div>
-                    <span id="hubReportStatusPill" class="hub-command-pill muted">Ready</span>
-                  </div>
-                  <div class="hub-report-actions">
-                    <button id="hubPrintReportBtn" type="button" class="btn">Print PDF Report</button>
-                    <button id="hubEmailReportBtn" type="button" class="btn btn-ghost">Email Report</button>
-                  </div>
-                  <ul id="hubReportHighlights" class="hub-command-list"></ul>
-                  <p id="hubReportStatusText" class="hub-command-note">Builds from live dashboard data (bookings, staff rota, waitlist, finance and setup signals).</p>
-                </section>
-                <section class="hub-command-panel" aria-labelledby="hubPriorityTitle">
-                  <div class="hub-command-panel-head">
-                    <div>
-                      <h5 id="hubPriorityTitle">Priorities</h5>
-                      <small>Daily actions and automations for the salon.</small>
-                    </div>
-                    <button id="hubRunPrioritySweepBtn" type="button" class="btn btn-ghost">AI Sweep</button>
-                  </div>
-                  <ul id="hubPriorityList" class="hub-command-list"></ul>
-                  <div id="hubAutoRoutines" class="hub-auto-routines" aria-live="polite"></div>
-                </section>
-              </div>
-            </section>
-            <section class="hub-module-shell" aria-label="Business Modules Workspace">
-              <div class="hub-module-head">
-                <div>
-                  <h4>Workspaces</h4>
-                  <p>Open the part of the business you want to work on now.</p>
-                </div>
-                <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;justify-content:flex-end;">
-                  <button type="button" class="btn" data-open-subscriber-lexi="business_modules">Ask Lexi</button>
-                  <span class="hub-module-badge">Main workspace</span>
-                </div>
-              </div>
-              <section class="module-navigator module-navigator-inline" id="moduleNavigatorSection">
-                <div>
-                  <h2 style="margin:0;">Business Hub</h2>
-                  <p id="moduleNavigatorIntro" style="margin:0.35rem 0 0;color:var(--muted);">
-                    Pick a workspace and go straight into the task.
-                  </p>
-                </div>
-                <div id="moduleCards" class="module-grid"></div>
-                <article id="moduleDetails" class="module-info"></article>
-              </section>
-            </section>
-          </article>
+          </div>
+          <section class="module-navigator module-navigator-inline business-hub-navigator" id="moduleNavigatorSection">
+            <div id="moduleCards" class="module-grid business-hub-grid"></div>
+            <article id="moduleDetails" class="module-info" hidden></article>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel" id="adminAccountSupportSection" style="display:none;">
+        <div class="admin-account-support-shell">
+          <div class="admin-account-support-head">
+            <div>
+              <h3 style="margin:0;">Account Support</h3>
+              <p style="margin:0.35rem 0 0;color:var(--muted);">Search subscriber or customer accounts, review activity, and make safe admin edits.</p>
+            </div>
+            <small id="adminAccountSupportScope" class="admin-account-support-scope">Admin support popup</small>
+          </div>
+          <div class="admin-account-support-toolbar">
+            <input id="adminAccountSupportSearch" type="search" placeholder="Search by name, email, salon, or city" aria-label="Search accounts" />
+            <button id="adminAccountSupportRefreshBtn" class="btn btn-ghost" type="button">Refresh</button>
+          </div>
+          <div class="admin-account-support-layout">
+            <div id="adminAccountSupportResults" class="admin-account-support-results" aria-live="polite"></div>
+            <div id="adminAccountSupportDetail" class="admin-account-support-detail" aria-live="polite"></div>
+          </div>
         </div>
       </section>
 
@@ -11276,7 +12643,7 @@
             <small>Ask about services, get the best time, and move into booking from one live popup.</small>
           </div>
           <div class="lexi-launch-actions">
-            <button class="btn" type="button" id="customerLexiLaunchBtn">Ask Lexi</button>
+            <button class="btn ask-lexi-btn" type="button" id="customerLexiLaunchBtn">Ask Lexi</button>
             <button class="btn btn-ghost" type="button" id="customerLexiLaunchBookingBtn">Book with Lexi</button>
           </div>
         </section>
@@ -11314,7 +12681,7 @@
               <span>Service timing</span>
               <span>Visit planning</span>
             </div>
-            <button id="customerLexiAskNextBest" class="btn btn-ghost" type="button">Ask Lexi for my next best slot</button>
+            <button id="customerLexiAskNextBest" class="btn ask-lexi-btn" type="button">Ask Lexi for my next best slot</button>
           </aside>
           <div class="customer-lexi-calendar-panel" aria-label="Customer booking and availability calendar">
             <div class="customer-lexi-calendar-head">
@@ -11354,7 +12721,7 @@
 
       <section class="panel" id="customerHistorySection">
         <h2 style="margin:0;">Booking History</h2>
-        <p style="margin:0.35rem 0 0;color:var(--muted);">View your previous and upcoming appointments in one place.</p>
+        <p id="customerHistoryIntro" style="margin:0.35rem 0 0;color:var(--muted);">View your previous and upcoming appointments in one place.</p>
         <ul id="customerBookingHistory" class="customer-history" style="margin-top:0.75rem;"></ul>
       </section>
 
@@ -11662,13 +13029,9 @@
         <span class="mobile-nav-icon" aria-hidden="true">D</span>
         <span class="mobile-nav-label">Diary</span>
       </button>
-      <button class="mobile-bottom-nav-item subscriber-only" type="button" data-mobile-nav-section="subscriberCopilotSection" data-mobile-nav-module="subscriber_copilot">
+      <button class="mobile-bottom-nav-item admin-only" type="button" data-mobile-nav-section="subscriberExecutivePulseSection">
         <span class="mobile-nav-icon" aria-hidden="true">C</span>
-        <span class="mobile-nav-label">Copilot</span>
-      </button>
-      <button class="mobile-bottom-nav-item admin-only" type="button" data-mobile-nav-section="adminCopilotSection" data-mobile-nav-module="admin_copilot">
-        <span class="mobile-nav-icon" aria-hidden="true">C</span>
-        <span class="mobile-nav-label">Copilot</span>
+        <span class="mobile-nav-label">Control</span>
       </button>
       <button class="mobile-bottom-nav-item quick-action" type="button" data-mobile-nav-action="quick-sheet" aria-label="Open quick actions">
         <span class="mobile-nav-icon" aria-hidden="true">+</span>
@@ -12131,11 +13494,11 @@
       body .customer-lexi-summary-actions .btn:not(.btn-ghost),
       body .subscriber-demo-launchers .btn:not(.btn-ghost),
       body .home-lexi-popup .btn:not(.btn-ghost) {
-        background: #e3a16f !important;
+        background: var(--brand-orange) !important;
         background-image: none !important;
-        background-color: #e3a16f !important;
-        border-color: rgba(79, 68, 59, 0.28) !important;
-        color: #3b2d23 !important;
+        background-color: var(--brand-orange) !important;
+        border-color: var(--brand-orange-border) !important;
+        color: var(--brand-orange-text) !important;
       }
 
       body .btn:not(.btn-ghost):hover,
@@ -12143,11 +13506,11 @@
       body a.btn:not(.btn-ghost):hover,
       body input.btn:not(.btn-ghost):hover,
       body .home-lexi-popup .btn:not(.btn-ghost):hover {
-        background: #d99663 !important;
+        background: var(--brand-orange-hover) !important;
         background-image: none !important;
-        background-color: #d99663 !important;
-        border-color: rgba(79, 68, 59, 0.34) !important;
-        color: #3b2d23 !important;
+        background-color: var(--brand-orange-hover) !important;
+        border-color: var(--brand-orange-border-hover) !important;
+        color: var(--brand-orange-text) !important;
       }
 
       body .btn.btn-ghost,
@@ -12177,11 +13540,11 @@
       body .home-lexi-popup .msg.user,
       body .home-lexi-popup .customer-chat-msg.user,
       body .home-lexi-popup .business-lexi-chat-box .customer-chat-msg.user {
-        background: #e3a16f !important;
+        background: rgba(243, 246, 249, 0.98) !important;
         background-image: none !important;
-        background-color: #e3a16f !important;
-        color: #3b2d23 !important;
-        border-color: rgba(173, 117, 78, 0.28) !important;
+        background-color: rgba(243, 246, 249, 0.98) !important;
+        color: #304656 !important;
+        border-color: rgba(211, 219, 227, 0.95) !important;
         box-shadow: none !important;
       }
 
@@ -12380,4 +13743,5 @@
     <script type="module" src="/dashboard.js?v=20260302-neutral2"></script>
   </body>
 </html>
+
 

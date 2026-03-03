@@ -27,6 +27,10 @@ if (document.body) {
   document.body.setAttribute("data-role", currentRole);
 }
 
+function t(key, fallback, vars) {
+  return String(fallback || "");
+}
+
 const dashTitle = document.getElementById("dashTitle");
 const dashUser = document.getElementById("dashUser");
 const dashRoleHint = document.getElementById("dashRoleHint");
@@ -68,9 +72,11 @@ const customerSelectedSalonLabel = document.getElementById("customerSelectedSalo
 const customerSalonContact = document.getElementById("customerSalonContact");
 const customerAvailableSlots = document.getElementById("customerAvailableSlots");
 const customerHistorySection = document.getElementById("customerHistorySection");
+const customerHistoryIntro = document.getElementById("customerHistoryIntro");
 const customerBookingHistory = document.getElementById("customerBookingHistory");
 const customerAnalyticsSection = document.getElementById("customerAnalyticsSection");
 const customerAnalyticsGrid = document.getElementById("customerAnalyticsGrid");
+const customerControlMetricGrid = document.getElementById("customerControlMetricGrid");
 const metricsGrid = document.getElementById("metricsGrid");
 const subscriberCommandCenterSection = document.getElementById("subscriberCommandCenterSection");
 const commandCenterCards = document.getElementById("commandCenterCards");
@@ -147,10 +153,15 @@ const calendarFeatureMeta = document.getElementById("calendarFeatureMeta");
 const calendarFeatureStats = document.getElementById("calendarFeatureStats");
 const calendarSelectedDaySummary = document.getElementById("calendarSelectedDaySummary");
 const calendarLexiCommandDeck = document.getElementById("calendarLexiCommandDeck");
+const calendarDiaryWeekStrip = document.getElementById("calendarDiaryWeekStrip");
+const calendarDiaryTodayBtn = document.getElementById("calendarDiaryTodayBtn");
+const calendarDiaryAddWalkInBtn = document.getElementById("calendarDiaryAddWalkInBtn");
+const calendarDiaryOpenStaffBtn = document.getElementById("calendarDiaryOpenStaffBtn");
 const calendarPrev = document.getElementById("calendarPrev");
 const calendarNext = document.getElementById("calendarNext");
 const subscriberExecutivePulseSection = document.getElementById("subscriberExecutivePulseSection");
 const executivePulseSubtitle = document.getElementById("executivePulseSubtitle");
+const executivePulseTitle = document.getElementById("executivePulseTitle");
 const executivePulseSignals = document.getElementById("executivePulseSignals");
 const executivePulseGauges = document.getElementById("executivePulseGauges");
 const executivePulseBars = document.getElementById("executivePulseBars");
@@ -241,19 +252,57 @@ const subscriptionCurrentPlanLabel = document.getElementById("subscriptionCurren
 const subscriptionCurrentPlanMeta = document.getElementById("subscriptionCurrentPlanMeta");
 const subscriptionAutoRenewToggle = document.getElementById("subscriptionAutoRenewToggle");
 const adminBusinessScope = document.getElementById("adminBusinessScope");
+const adminBusinessSearch = document.getElementById("adminBusinessSearch");
 const adminBusinessSelect = document.getElementById("adminBusinessSelect");
 const adminBusinessStatus = document.getElementById("adminBusinessStatus");
+const adminPlatformSection = document.getElementById("adminPlatformSection");
+const adminExecutiveControlMount = document.getElementById("adminExecutiveControlMount");
+const adminPlatformMetricGrid = document.getElementById("adminPlatformMetricGrid");
+const adminRevenueSummaryGrid = document.getElementById("adminRevenueSummaryGrid");
+const adminRevenueMixChart = document.getElementById("adminRevenueMixChart");
+const adminRevenueHealthGauge = document.getElementById("adminRevenueHealthGauge");
+const adminRevenueYieldGauge = document.getElementById("adminRevenueYieldGauge");
+const adminRevenueTrendGraph = document.getElementById("adminRevenueTrendGraph");
+const adminRevenueMonthlyList = document.getElementById("adminRevenueMonthlyList");
+const adminRevenuePeriodPill = document.getElementById("adminRevenuePeriodPill");
+const adminRevenueNote = document.getElementById("adminRevenueNote");
+const adminUsageSummaryGrid = document.getElementById("adminUsageSummaryGrid");
+const adminUsageHourlyList = document.getElementById("adminUsageHourlyList");
+const adminUsageWeekdayList = document.getElementById("adminUsageWeekdayList");
+const adminUsageRoleGrid = document.getElementById("adminUsageRoleGrid");
+const adminUsageOperationsGrid = document.getElementById("adminUsageOperationsGrid");
+const adminUsagePeriodPill = document.getElementById("adminUsagePeriodPill");
+const adminUsageNote = document.getElementById("adminUsageNote");
+const adminPlatformExportBtn = document.getElementById("adminPlatformExportBtn");
+const adminManagedBusinessLabel = document.getElementById("adminManagedBusinessLabel");
+const adminManagedBusinessMeta = document.getElementById("adminManagedBusinessMeta");
+const adminManagedOpenCalendarBtn = document.getElementById("adminManagedOpenCalendarBtn");
+const adminManagedOpenHubBtn = document.getElementById("adminManagedOpenHubBtn");
+const adminManagedOpenProfileBtn = document.getElementById("adminManagedOpenProfileBtn");
+const adminManagedAskLexiBtn = document.getElementById("adminManagedAskLexiBtn");
+const adminAccountSupportSection = document.getElementById("adminAccountSupportSection");
+const adminAccountSupportScope = document.getElementById("adminAccountSupportScope");
+const adminAccountSupportSearch = document.getElementById("adminAccountSupportSearch");
+const adminAccountSupportRefreshBtn = document.getElementById("adminAccountSupportRefreshBtn");
+const adminAccountSupportResults = document.getElementById("adminAccountSupportResults");
+const adminAccountSupportDetail = document.getElementById("adminAccountSupportDetail");
 const accountingBookingExportBtn = document.getElementById("accountingBookingExportBtn");
 const accountingPlatformExportBtn = document.getElementById("accountingPlatformExportBtn");
 let bookingRows = [];
 let nextBookingsCursor = null;
+let adminPlatformAnalytics = null;
+let adminRevenueAnalytics = null;
+let adminUsageAnalytics = null;
+let adminAccountSupportResultsCache = [];
+let adminAccountSupportSelectedId = "";
+let adminAccountSupportSearchTimerId = null;
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 let calendarTodayRefreshTimerId = null;
 let bookingDateFilterLabel = "All dates";
 let bookingDateFilterKeys = null;
 let bookingDateFilterPreset = "";
 let selectedCalendarDateKey = "";
-let executivePulseRange = "day";
+let executivePulseRange = "all";
 let latestExecutivePulseSnapshotDraft = null;
 let accountingRows = [];
 let accountingLivePayload = null;
@@ -991,6 +1040,9 @@ if (currentRole === "subscriber") {
 hideSection(dashRoleHint);
 hideSection(dashActionStatus);
 hideSection(adminBusinessScope);
+if (currentRole === "admin") {
+  showSection(adminBusinessScope);
+}
 showSection(dashIdentityBlock);
 dashboardOverviewSection?.classList.remove("actions-only");
 
@@ -1252,7 +1304,7 @@ function setBusinessLexiMicButtonState(role, listening = false) {
   const supported = dashboardMicSupported();
   if (refs.micBtn instanceof HTMLButtonElement) {
     refs.micBtn.disabled = !supported;
-    refs.micBtn.textContent = listening ? "Listening..." : "Push to Talk";
+    refs.micBtn.textContent = listening ? t("dashboard.listening", "Listening...") : t("common.push_to_talk", "Push to Talk");
   }
   if (refs.stopBtn instanceof HTMLButtonElement) {
     refs.stopBtn.disabled = !supported || !listening;
@@ -1313,8 +1365,8 @@ function startBusinessLexiMicCapture(role) {
       "idle",
       "Push-to-talk is ready.",
       finalTranscript
-        ? "Review your words in the chat box, then press Ask Lexi."
-        : "Press Push to Talk when you want to speak."
+        ? t("dashboard.review_words_then_press_ask", "Review your words in the chat box, then press Ask Lexi.")
+        : t("common.push_to_talk_ready_prompt", "Press Push to Talk when you want to speak.")
     );
     refs.input.focus();
   };
@@ -1335,7 +1387,7 @@ function appendCopilotChatMessage(role, kind, text, options = {}) {
 function ensureCopilotChatSeed(role) {
   const refs = copilotPopupRefs(role);
   if (!refs.messages || refs.messages.childElementCount > 0) return;
-  appendCopilotChatMessage(role, "assistant", String(refs.answer?.textContent || "Ask Lexi a question and I'll help."));
+  appendCopilotChatMessage(role, "assistant", String(refs.answer?.textContent || t("dashboard.ask_lexi_help", "Ask Lexi a question and I'll help.")));
 }
 
 function resetCopilotChat(role, introText) {
@@ -1427,14 +1479,14 @@ function closeBusinessAiChatPopup(role) {
 
 function renderSubscriberCopilotResponse(payload, options = {}) {
   if (subscriberCopilotAnswer) {
-    subscriberCopilotAnswer.textContent = String(payload?.answer || "No reply came back yet.");
+    subscriberCopilotAnswer.textContent = String(payload?.answer || t("dashboard.no_reply_yet", "No reply came back yet."));
   }
   renderSubscriberCopilotLinks(buildSubscriberCopilotLinks(payload, options.question));
 }
 
 function renderAdminCopilotResponse(payload) {
   if (adminCopilotAnswer) {
-    adminCopilotAnswer.textContent = String(payload?.answer || "No reply came back yet.");
+    adminCopilotAnswer.textContent = String(payload?.answer || t("dashboard.no_reply_yet", "No reply came back yet."));
   }
   renderCopilotList(adminCopilotFindings, payload?.findings, "No findings.");
   renderCopilotList(adminCopilotFixes, payload?.suggestedFixes, "No suggested fixes.");
@@ -1465,6 +1517,200 @@ function selectedCalendarDateSummary() {
     staffCount: staff.length,
     staffNames: staff.map((s) => s.name).slice(0, 6)
   };
+}
+
+function getCalendarDiaryFocusDateKey() {
+  return String(selectedCalendarDateKey || todayDateKeyLocal()).trim();
+}
+
+function getCalendarDiaryFocusDate() {
+  return parseDateKeyToDate(getCalendarDiaryFocusDateKey()) || new Date();
+}
+
+function getCalendarDiaryServiceOptions() {
+  try {
+    return parseServiceEditorText(String(businessProfileServices?.value || "")).map((service) => ({
+      value: String(service.name || "").trim(),
+      label: `${String(service.name || "").trim()} • ${Number(service.durationMin || 0)} min • ${formatMoney(Number(service.price || 0))}`
+    })).filter((option) => option.value);
+  } catch {
+    return [];
+  }
+}
+
+function jumpToCalendarDate(dateKey, options = {}) {
+  const safeDateKey = String(dateKey || "").trim();
+  if (!safeDateKey) return;
+  const dateObj = parseDateKeyToDate(safeDateKey);
+  if (dateObj) {
+    calendarMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+  }
+  setBookingDateFilter({
+    keys: new Set([safeDateKey]),
+    label: `Selected ${safeDateKey}`,
+    selectedDateKey: safeDateKey
+  });
+  applyBookingFilters();
+  renderSubscriberCalendar();
+  renderBusinessAiWorkspace("subscriber");
+  renderBusinessAiWorkspace("admin");
+  if (options.openDayWorkspace) {
+    openCalendarDayWorkspace(safeDateKey);
+  }
+}
+
+function renderCalendarDiaryWeekStrip() {
+  if (!calendarDiaryWeekStrip) return;
+  const focusDate = getCalendarDiaryFocusDate();
+  const start = new Date(focusDate.getFullYear(), focusDate.getMonth(), focusDate.getDate());
+  const day = start.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + mondayOffset);
+
+  const cards = [];
+  for (let index = 0; index < 7; index += 1) {
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
+    const dateKey = toDateKey(date);
+    const rows = getBookingsForDateKey(dateKey);
+    const staffWorking = getStaffWorkingForDate(date);
+    const isSelected = dateKey === getCalendarDiaryFocusDateKey();
+    const topLine = rows.length ? `${rows.length} booking${rows.length === 1 ? "" : "s"}` : "No bookings";
+    const detail = staffWorking.length
+      ? `${staffWorking.length} staff on rota`
+      : "No rota cover set";
+    cards.push(`
+      <button type="button" class="calendar-week-focus-card${isSelected ? " is-selected" : ""}" data-date-key="${escapeHtml(dateKey)}">
+        <span>${escapeHtml(date.toLocaleDateString("en-GB", { weekday: "short" }))}</span>
+        <strong>${escapeHtml(date.toLocaleDateString("en-GB", { day: "numeric", month: "short" }))}</strong>
+        <small>${escapeHtml(topLine)} • ${escapeHtml(detail)}</small>
+      </button>
+    `);
+  }
+  calendarDiaryWeekStrip.innerHTML = cards.join("");
+}
+
+function renderCalendarDiaryAgenda() {
+  if (!calendarDiaryAgenda) return;
+  const focusDateKey = getCalendarDiaryFocusDateKey();
+  const rows = getBookingsForDateKey(focusDateKey);
+  const title = formatCalendarDayTitle(focusDateKey);
+  const scheduleSummary = summarizeCalendarDaySchedule(rows);
+  const openGapText = scheduleSummary.largestGapMins != null
+    ? `Largest gap ${scheduleSummary.largestGapMins} mins`
+    : "No major 45+ minute gaps";
+  const items = rows.length
+    ? rows.slice(0, 8).map((row) => {
+        const status = String(row?.status || "pending").trim() || "pending";
+        const service = String(row?.service || "Service").trim() || "Service";
+        const customer = String(row?.customerName || "Customer").trim() || "Customer";
+        const contact = [String(row?.customerPhone || "").trim(), String(row?.customerEmail || "").trim()].filter(Boolean).join(" • ") || "No contact saved";
+        return `
+          <li>
+            <div class="calendar-diary-agenda-row">
+              <div>
+                <strong>${escapeHtml(String(row?.time || "Time not set"))} • ${escapeHtml(customer)}</strong>
+                <small>${escapeHtml(service)}</small>
+              </div>
+              <span class="calendar-diary-agenda-chip">${escapeHtml(status)}</span>
+            </div>
+            <small>${escapeHtml(contact)}</small>
+          </li>
+        `;
+      }).join("")
+    : `
+      <li class="calendar-diary-agenda-empty">
+        <strong>No bookings yet for this day.</strong>
+        <small>Add a walk-in, keep this date open for same-day demand, or ask Lexi how to fill it.</small>
+      </li>
+    `;
+
+  calendarDiaryAgenda.innerHTML = `
+    <div class="calendar-diary-agenda-head">
+      <div>
+        <p class="calendar-wow-kicker" style="margin-bottom:0.2rem;">Selected day agenda</p>
+        <h3>${escapeHtml(title)}</h3>
+      </div>
+      <div class="calendar-diary-agenda-meta">${escapeHtml(rows.length ? `${rows.length} bookings loaded • ${openGapText}` : "Use this panel to work the selected day.")}</div>
+    </div>
+    <div class="calendar-diary-agenda-actions">
+      <button class="btn" type="button" data-calendar-diary-action="add-walk-in" data-date-key="${escapeHtml(focusDateKey)}">Add Walk-in</button>
+      <button class="btn btn-ghost" type="button" data-calendar-diary-action="open-day" data-date-key="${escapeHtml(focusDateKey)}">Open Day Workspace</button>
+      <button class="btn ask-lexi-btn" type="button" data-calendar-diary-action="ask-lexi" data-date-key="${escapeHtml(focusDateKey)}">Ask Lexi About This Day</button>
+    </div>
+    <ul class="calendar-diary-agenda-list">${items}</ul>
+  `;
+}
+
+function renderCalendarDiaryRotaPanel() {
+  if (!calendarDiaryRotaPanel) return;
+  const focusDate = getCalendarDiaryFocusDate();
+  const focusDateKey = toDateKey(focusDate);
+  const staffWorking = getStaffWorkingForDate(focusDate);
+  const rows = staffWorking.slice(0, 4).map((staff) => {
+    const member = staffRosterRows.find((row) => getStaffMemberId(row) === staff.id);
+    const availability = String(member?.availability || "on_duty").trim() || "on_duty";
+    const nextAvailability = availability === "on_duty" ? "off_duty" : "on_duty";
+    return `
+      <li>
+        <div class="calendar-diary-staff-head">
+          <div>
+            <strong>${escapeHtml(staff.name)}</strong>
+            <small>${escapeHtml(staff.status === "covering" ? "Covering shift" : "Scheduled to work")}</small>
+          </div>
+          <span class="calendar-diary-agenda-chip">${escapeHtml(availability === "on_duty" ? "On duty" : "Off duty")}</span>
+        </div>
+        <div class="calendar-diary-staff-actions">
+          <button class="btn btn-ghost" type="button" data-calendar-rota-action="sick" data-staff-id="${escapeHtml(staff.id)}">Report Sick</button>
+          <button class="btn btn-ghost" type="button" data-calendar-rota-action="toggle" data-staff-id="${escapeHtml(staff.id)}" data-next="${escapeHtml(nextAvailability)}">${escapeHtml(nextAvailability === "off_duty" ? "Set Off Duty" : "Set Available")}</button>
+        </div>
+      </li>
+    `;
+  }).join("");
+
+  calendarDiaryRotaPanel.innerHTML = `
+    <h3>Staff cover for ${escapeHtml(focusDate.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }))}</h3>
+    <p class="calendar-diary-staff-note">${escapeHtml(staffWorking.length ? `${staffWorking.length} team member${staffWorking.length === 1 ? "" : "s"} available for the selected day.` : "No rota cover is set for this day yet.")}</p>
+    ${rows ? `<ul class="calendar-diary-staff-list">${rows}</ul>` : ""}
+    <div class="calendar-diary-rota-actions">
+      <button class="btn btn-ghost" type="button" data-calendar-rota-action="open-staff">Open Staff Rota</button>
+      <button class="btn btn-ghost" type="button" data-calendar-rota-action="open-day" data-date-key="${escapeHtml(focusDateKey)}">Open Day Workspace</button>
+    </div>
+  `;
+}
+
+async function openCalendarDiaryWalkIn(defaultDateKey = getCalendarDiaryFocusDateKey()) {
+  if (!(user.role === "subscriber" || user.role === "admin")) return;
+  if (!manageModeEnabled) {
+    showManageToast("Turn on Edit Mode to add a walk-in.", "error");
+    focusModuleByKey("booking_ops");
+    return;
+  }
+  const businessId = String(managedBusinessId || user.businessId || "").trim();
+  if (!businessId) {
+    showManageToast("No business selected yet.", "error");
+    return;
+  }
+  const serviceOptions = getCalendarDiaryServiceOptions();
+  const values = await openManageForm({
+    title: `Add Walk-in (${defaultDateKey})`,
+    submitLabel: "Create Walk-in",
+    fields: [
+      { id: "customerName", label: "Customer Name", required: true },
+      { id: "customerPhone", label: "Customer Phone", required: true, placeholder: "+447700900123" },
+      { id: "customerEmail", label: "Customer Email" },
+      serviceOptions.length
+        ? { id: "service", label: "Service", type: "select", required: true, value: serviceOptions[0].value, options: serviceOptions }
+        : { id: "service", label: "Service", required: true },
+      { id: "date", label: "Date", type: "date", required: true, value: defaultDateKey },
+      { id: "time", label: "Time", type: "time", required: true },
+      { id: "notes", label: "Notes", type: "textarea", rows: 2 }
+    ]
+  });
+  if (!values) return;
+  await createBooking({ businessId, ...values, source: "walk_in" });
+  await refreshBookingsAfterDayPopupMutation();
+  jumpToCalendarDate(String(values.date || defaultDateKey).trim() || defaultDateKey);
+  showManageToast("Walk-in added to the diary.");
 }
 
 function businessAiContextString(role) {
@@ -1628,7 +1874,9 @@ async function askSubscriberCopilot(question) {
   const res = await fetch("/api/copilot/subscriber", {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({ question: String(question || "").trim() })
+    body: JSON.stringify({
+      question: String(question || "").trim()
+    })
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Subscriber copilot is unavailable.");
@@ -1693,6 +1941,554 @@ function setAdminBusinessStatus(message, isError = false) {
   if (!adminBusinessStatus) return;
   adminBusinessStatus.textContent = message || "";
   adminBusinessStatus.style.color = isError ? "#ffadb5" : "var(--muted)";
+}
+
+function filteredAdminBusinessOptions() {
+  const query = normalizeText(adminBusinessSearch?.value || "");
+  if (!query) return adminBusinessOptions.slice();
+  return adminBusinessOptions.filter((business) => {
+    const blob = [
+      business?.name,
+      business?.type,
+      business?.city,
+      business?.country
+    ].map((value) => normalizeText(value)).join(" ");
+    return blob.includes(query);
+  });
+}
+
+function renderAdminBusinessSelect(options = adminBusinessOptions, { syncState = true } = {}) {
+  if (!adminBusinessSelect) return;
+  const rows = Array.isArray(options) ? options : [];
+  const previousValue = String(managedBusinessId || adminBusinessSelect.value || "").trim();
+  adminBusinessSelect.innerHTML = "";
+  rows.forEach((business) => {
+    const option = document.createElement("option");
+    option.value = String(business.id || "");
+    const location = [business.city, business.country].filter(Boolean).join(", ");
+    option.textContent = location ? `${business.name} (${location})` : String(business.name || "Unnamed business");
+    adminBusinessSelect.appendChild(option);
+  });
+  const selected = rows.find((business) => String(business.id || "") === previousValue) || rows[0] || null;
+  if (selected) {
+    if (syncState) {
+      managedBusinessId = String(selected.id || "").trim();
+      adminBusinessSelect.value = managedBusinessId;
+    } else {
+      adminBusinessSelect.value = String(selected.id || "").trim();
+    }
+  }
+}
+
+function renderAdminManagedBusinessSummary() {
+  if (user.role !== "admin") return;
+  const business = adminBusinessOptions.find((row) => String(row?.id || "") === String(managedBusinessId || "").trim()) || null;
+  if (adminManagedBusinessLabel) {
+    adminManagedBusinessLabel.textContent = business?.name || "No business selected";
+  }
+  if (adminManagedBusinessMeta) {
+    if (!business) {
+      adminManagedBusinessMeta.textContent = "Select a subscriber business to load its diary, business hub, profile, and support tools.";
+    } else {
+      const bits = [business.type, business.city, business.country].filter(Boolean);
+      adminManagedBusinessMeta.textContent = bits.length
+        ? `${bits.join(" • ")} • Admin can open and edit the managed business tools below.`
+        : "Admin can open and edit the managed business tools below.";
+    }
+  }
+}
+
+function renderAdminPlatformOverview() {
+  if (user.role !== "admin") return;
+  if (adminExecutiveControlMount && adminPlatformSection?.firstElementChild && adminPlatformSection.firstElementChild.parentNode !== adminExecutiveControlMount) {
+    adminExecutiveControlMount.appendChild(adminPlatformSection.firstElementChild);
+  }
+  if (adminPlatformMetricGrid) {
+    const analytics = adminPlatformAnalytics?.analytics || {};
+    const cards = [
+      ["Businesses", String(analytics.totalBusinesses || 0)],
+      ["Users", String(analytics.totalUsers || 0)],
+      ["Bookings", String(analytics.totalBookings || 0)],
+      ["Cancelled", String(analytics.cancelledBookings || 0)],
+      ["Conversion", `${Number(analytics.conversionRate || 0).toFixed(1)}%`]
+    ];
+    adminPlatformMetricGrid.innerHTML = cards.map(([label, value]) => `
+      <article class="admin-platform-metric-card">
+        <p>${escapeHtml(label)}</p>
+        <strong>${escapeHtml(value)}</strong>
+      </article>
+    `).join("");
+  }
+
+  if (adminRevenueSummaryGrid) {
+    const summary = adminRevenueAnalytics?.summary || {};
+    const rows = [
+      ["Active subscriptions", String(summary.activeSubscriptions || 0)],
+      ["Estimated MRR", formatMoney(summary.estimatedMrr || 0)],
+      ["Avg plan value", formatMoney(summary.avgPlanValue || 0)],
+      [`Revenue (${summary.periodMonths || 6}m)`, formatMoney(summary.estimatedRevenueInPeriod || 0)],
+      ["Subscriber churn", String(summary.subscriptionCancellationsInPeriod || 0)],
+      ["Booking cancellations", String(summary.bookingCancellationsInPeriod || 0)]
+    ];
+    adminRevenueSummaryGrid.innerHTML = rows.map(([label, value]) => `
+      <article class="admin-platform-summary-card">
+        <p>${escapeHtml(label)}</p>
+        <strong>${escapeHtml(value)}</strong>
+      </article>
+    `).join("");
+  }
+  if (adminRevenueMixChart) {
+    const summary = adminRevenueAnalytics?.summary || {};
+    const retainedValue = Number(summary.estimatedRevenueInPeriod || 0);
+    const lostValue = Math.max(0, Number(summary.avgPlanValue || 0) * Number(summary.subscriptionCancellationsInPeriod || 0));
+    const total = Math.max(1, retainedValue + lostValue);
+    const retainedPct = Math.max(0, Math.min(100, Math.round((retainedValue / total) * 100)));
+    adminRevenueMixChart.style.setProperty("--revenue-fill", String(retainedPct));
+    adminRevenueMixChart.innerHTML = `
+      <div class="admin-revenue-donut-chart" aria-hidden="true"></div>
+      <div class="admin-revenue-donut-copy">
+        <strong>${escapeHtml(`${retainedPct}%`)}</strong>
+        <small>retained value</small>
+      </div>
+      <div class="admin-revenue-donut-meta">
+        <div class="admin-revenue-meta-row"><span>Revenue in period</span><span>${escapeHtml(formatMoney(retainedValue))}</span></div>
+        <div class="admin-revenue-meta-row"><span>Estimated churn drag</span><span>${escapeHtml(formatMoney(lostValue))}</span></div>
+      </div>
+    `;
+  }
+  if (adminRevenueHealthGauge) {
+    const summary = adminRevenueAnalytics?.summary || {};
+    const activeSubscriptions = Number(summary.activeSubscriptions || 0);
+    const cancelledSubscriptions = Number(summary.subscriptionCancellationsInPeriod || 0);
+    const retentionScore = Math.max(0, Math.min(100, Math.round((activeSubscriptions / Math.max(1, activeSubscriptions + cancelledSubscriptions)) * 100)));
+    adminRevenueHealthGauge.innerHTML = `
+      <div class="admin-revenue-gauge-track" style="--gauge-fill:${retentionScore};" aria-hidden="true"></div>
+      <div class="admin-revenue-gauge-copy">
+        <strong>${escapeHtml(`${retentionScore}%`)}</strong>
+        <small>subscriber retention signal</small>
+      </div>
+      <div class="admin-revenue-gauge-legend">
+        <div class="admin-revenue-meta-row"><span>Active subscriptions</span><span>${escapeHtml(String(activeSubscriptions))}</span></div>
+        <div class="admin-revenue-meta-row"><span>Cancelled in period</span><span>${escapeHtml(String(cancelledSubscriptions))}</span></div>
+      </div>
+    `;
+  }
+  if (adminRevenueYieldGauge) {
+    const summary = adminRevenueAnalytics?.summary || {};
+    const totalBookings = Number(adminPlatformAnalytics?.analytics?.totalBookings || 0);
+    const cancelledBookings = Number(adminPlatformAnalytics?.analytics?.cancelledBookings || 0);
+    const conversionRate = Number(adminPlatformAnalytics?.analytics?.conversionRate || 0);
+    const yieldScore = Math.max(0, Math.min(100, Math.round(conversionRate)));
+    adminRevenueYieldGauge.innerHTML = `
+      <div class="admin-revenue-gauge-track" style="--gauge-fill:${yieldScore};" aria-hidden="true"></div>
+      <div class="admin-revenue-gauge-copy">
+        <strong>${escapeHtml(`${yieldScore}%`)}</strong>
+        <small>booking yield signal</small>
+      </div>
+      <div class="admin-revenue-gauge-legend">
+        <div class="admin-revenue-meta-row"><span>Total bookings</span><span>${escapeHtml(String(totalBookings))}</span></div>
+        <div class="admin-revenue-meta-row"><span>Cancelled bookings</span><span>${escapeHtml(String(cancelledBookings))}</span></div>
+        <div class="admin-revenue-meta-row"><span>Revenue period</span><span>${escapeHtml(formatMoney(Number(summary.estimatedRevenueInPeriod || 0)))}</span></div>
+      </div>
+    `;
+  }
+  if (adminRevenueTrendGraph) {
+    const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
+    const maxRevenue = Math.max(1, ...monthly.map((row) => Number(row?.estimatedSubscriptionRevenue || 0)));
+    adminRevenueTrendGraph.innerHTML = monthly.map((row) => {
+      const revenue = Number(row?.estimatedSubscriptionRevenue || 0);
+      const heightPct = Math.max(8, Math.round((revenue / maxRevenue) * 100));
+      return `
+        <article class="admin-revenue-trend-bar">
+          <span style="height:${heightPct}%;"></span>
+          <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
+          <small>${escapeHtml(formatMoney(revenue))}</small>
+        </article>
+      `;
+    }).join("");
+  }
+
+  if (adminRevenueMonthlyList) {
+    const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
+    const maxRevenue = Math.max(1, ...monthly.map((row) => Number(row?.estimatedSubscriptionRevenue || 0)));
+    adminRevenueMonthlyList.innerHTML = monthly.map((row) => {
+      const revenue = Number(row?.estimatedSubscriptionRevenue || 0);
+      const widthPct = Math.max(8, Math.round((revenue / maxRevenue) * 100));
+      const cancelCount = Number(row?.subscriptionCancellations || 0) + Number(row?.bookingCancellations || 0);
+      return `
+        <article class="admin-revenue-month-row">
+          <div class="admin-revenue-month-copy">
+            <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
+            <small>${escapeHtml(`${formatMoney(revenue)} • ${cancelCount} cancellations`)}</small>
+          </div>
+          <div class="admin-revenue-month-bar">
+            <span style="width:${widthPct}%"></span>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  if (adminRevenuePeriodPill) {
+    adminRevenuePeriodPill.textContent = `Last ${Number(adminRevenueAnalytics?.summary?.periodMonths || 6)} months`;
+  }
+  if (adminRevenueNote) {
+    adminRevenueNote.textContent = String(adminRevenueAnalytics?.note || "");
+  }
+  if (adminUsageSummaryGrid) {
+    const summary = adminUsageAnalytics?.summary || {};
+    const rows = [
+      ["Activity window", `${Number(summary.periodDays || 14)} days`],
+      ["Busiest hour", `${summary.busiestHourLabel || "00:00"} UTC`],
+      ["Quietest hour", `${summary.quietestHourLabel || "00:00"} UTC`],
+      ["Best update window", `${summary.bestUpdateWindowLabel || "00:00-03:00"} UTC`],
+      ["Subscriber events", String(summary.roleCounts?.subscriber || 0)],
+      ["Customer events", String(summary.roleCounts?.customer || 0)]
+    ];
+    adminUsageSummaryGrid.innerHTML = rows.map(([label, value]) => `
+      <article class="admin-platform-summary-card">
+        <p>${escapeHtml(label)}</p>
+        <strong>${escapeHtml(value)}</strong>
+      </article>
+    `).join("");
+  }
+  if (adminUsageHourlyList) {
+    const hourly = Array.isArray(adminUsageAnalytics?.hourly) ? adminUsageAnalytics.hourly : [];
+    const maxHourly = Math.max(1, ...hourly.map((row) => Number(row?.total || 0)));
+    adminUsageHourlyList.innerHTML = hourly.map((row) => `
+      <article class="admin-revenue-month-row">
+        <div class="admin-revenue-month-copy">
+          <strong>${escapeHtml(String(row?.label || "00:00"))}</strong>
+          <small>${escapeHtml(`${Number(row?.total || 0)} events • ${Number(row?.loginCount || 0)} logins • ${Number(row?.lexiCount || 0)} Lexi`)}</small>
+        </div>
+        <div class="admin-revenue-month-bar">
+          <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxHourly) * 100))}%"></span>
+        </div>
+      </article>
+    `).join("");
+  }
+  if (adminUsageWeekdayList) {
+    const weekdays = Array.isArray(adminUsageAnalytics?.weekdays) ? adminUsageAnalytics.weekdays : [];
+    const maxWeekday = Math.max(1, ...weekdays.map((row) => Number(row?.total || 0)));
+    adminUsageWeekdayList.innerHTML = weekdays.map((row) => `
+      <article class="admin-revenue-month-row">
+        <div class="admin-revenue-month-copy">
+          <strong>${escapeHtml(String(row?.label || "Day"))}</strong>
+          <small>${escapeHtml(`${Number(row?.total || 0)} recorded activity events`)}</small>
+        </div>
+        <div class="admin-revenue-month-bar">
+          <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxWeekday) * 100))}%"></span>
+        </div>
+      </article>
+      `).join("");
+  }
+  if (adminUsageOperationsGrid) {
+    const usageSummary = adminUsageAnalytics?.summary || {};
+    const analytics = adminPlatformAnalytics?.analytics || {};
+    const bestWindow = String(usageSummary.bestUpdateWindowLabel || "00:00-03:00").trim();
+    const busiestHour = String(usageSummary.busiestHourLabel || "00:00").trim();
+    const subscriberEvents = Number(usageSummary.roleCounts?.subscriber || 0);
+    const customerEvents = Number(usageSummary.roleCounts?.customer || 0);
+    const roleLead = subscriberEvents >= customerEvents ? "Subscribers" : "Customers";
+    const roleGap = Math.abs(subscriberEvents - customerEvents);
+    const cancellationRate = Number(analytics.totalBookings || 0)
+      ? Number((((Number(analytics.cancelledBookings || 0) / Math.max(1, Number(analytics.totalBookings || 0))) * 100)).toFixed(1))
+      : 0;
+    const cards = [
+      {
+        label: "Best update slot",
+        title: `${bestWindow} UTC`,
+        note: `Quietest 3-hour block based on ${Number(usageSummary.bestUpdateWindowEvents || 0)} recorded events.`
+      },
+      {
+        label: "Peak support cover",
+        title: `${busiestHour} UTC`,
+        note: "This is the busiest hour in the app, so support/admin visibility matters most here."
+      },
+      {
+        label: "Primary traffic",
+        title: `${roleLead} lead by ${roleGap}`,
+        note: `${subscriberEvents} subscriber events vs ${customerEvents} customer events in the current window.`
+      },
+      {
+        label: "Booking risk",
+        title: `${cancellationRate}% cancellation rate`,
+        note: "Useful for deciding whether admin should focus on subscriber support, recovery, or product changes."
+      },
+      {
+        label: "Platform load",
+        title: `${Number(analytics.totalBookings || 0)} bookings`,
+        note: "Daily top calendar and platform revenue should be reviewed together when this starts climbing."
+      },
+      {
+        label: "Revenue watch",
+        title: formatMoney(Number(adminRevenueAnalytics?.summary?.estimatedMrr || 0)),
+        note: "MRR is the fastest health signal for platform growth and churn pressure."
+      }
+    ];
+    adminUsageOperationsGrid.innerHTML = cards.map((card) => `
+      <article class="admin-usage-operations-card">
+        <p>${escapeHtml(card.label)}</p>
+        <strong>${card.title}</strong>
+        <small>${escapeHtml(card.note)}</small>
+      </article>
+    `).join("");
+  }
+  if (adminUsagePeriodPill) {
+    adminUsagePeriodPill.textContent = `Last ${Number(adminUsageAnalytics?.summary?.periodDays || 14)} days`;
+  }
+  if (adminUsageNote) {
+    const summary = adminUsageAnalytics?.summary || {};
+    adminUsageNote.textContent = `Best low-activity update window: ${summary.bestUpdateWindowLabel || "00:00-03:00"} UTC, based on ${Number(summary.bestUpdateWindowEvents || 0)} recorded events across the quietest 3-hour block.`;
+  }
+  renderAdminUsageIntelligenceContent();
+  renderAdminManagedBusinessSummary();
+}
+
+function renderAdminUsageIntelligenceContent() {
+  if (user.role !== "admin") return;
+  if (adminUsageHourlyList) {
+    const hourly = Array.isArray(adminUsageAnalytics?.hourly) ? adminUsageAnalytics.hourly : [];
+    const maxHourly = Math.max(1, ...hourly.map((row) => Number(row?.total || 0)));
+    adminUsageHourlyList.innerHTML = hourly.map((row) => `
+      <article class="admin-usage-hour-card">
+        <strong>${escapeHtml(String(row?.label || "00:00"))}</strong>
+        <small>${escapeHtml(`${Number(row?.total || 0)} events`)}</small>
+        <small>${escapeHtml(`${Number(row?.loginCount || 0)} logins • ${Number(row?.lexiCount || 0)} Lexi`)}</small>
+        <div class="admin-usage-hour-bar">
+          <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxHourly) * 100))}%"></span>
+        </div>
+      </article>
+    `).join("");
+  }
+  if (adminUsageWeekdayList) {
+    const weekdays = Array.isArray(adminUsageAnalytics?.weekdays) ? adminUsageAnalytics.weekdays : [];
+    const maxWeekday = Math.max(1, ...weekdays.map((row) => Number(row?.total || 0)));
+    adminUsageWeekdayList.innerHTML = weekdays.map((row) => `
+      <article class="admin-usage-weekday-card">
+        <strong>${escapeHtml(String(row?.label || "Day"))}</strong>
+        <small>${escapeHtml(`${Number(row?.total || 0)} recorded activity events`)}</small>
+        <div class="admin-usage-weekday-bar">
+          <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxWeekday) * 100))}%"></span>
+        </div>
+      </article>
+    `).join("");
+  }
+  if (adminUsageRoleGrid) {
+    const roleCounts = adminUsageAnalytics?.summary?.roleCounts || {};
+    const rows = [
+      ["Subscribers", Number(roleCounts.subscriber || 0)],
+      ["Customers", Number(roleCounts.customer || 0)],
+      ["Admins", Number(roleCounts.admin || 0)],
+      ["Anonymous", Number(roleCounts.anonymous || 0)]
+    ];
+    const maxRole = Math.max(1, ...rows.map(([, value]) => value));
+    adminUsageRoleGrid.innerHTML = rows.map(([label, value]) => `
+      <article class="admin-usage-role-card">
+        <strong>${escapeHtml(label)}</strong>
+        <small>${escapeHtml(`${value} activity events`)}</small>
+        <div class="admin-usage-role-bar">
+          <span style="width:${Math.max(8, Math.round((value / maxRole) * 100))}%"></span>
+        </div>
+      </article>
+    `).join("");
+  }
+}
+
+function adminAccountSupportSelectedAccount() {
+  return adminAccountSupportResultsCache.find((account) => String(account?.id || "") === String(adminAccountSupportSelectedId || "").trim()) || null;
+}
+
+function renderAdminAccountSupportModule() {
+  if (user.role !== "admin" || !adminAccountSupportSection) return;
+  const selected = adminAccountSupportSelectedAccount();
+  if (adminAccountSupportScope) {
+    adminAccountSupportScope.textContent = selected
+      ? `${selected.role === "subscriber" ? "Subscriber" : "Customer"} account loaded`
+      : "Admin support popup";
+  }
+  if (adminAccountSupportResults) {
+    if (!adminAccountSupportResultsCache.length) {
+      adminAccountSupportResults.innerHTML = `
+        <div class="admin-account-support-detail-empty">
+          <div>
+            <strong>No accounts loaded yet</strong>
+            <p>Search for a subscriber or customer account to review it here.</p>
+          </div>
+        </div>
+      `;
+    } else {
+      adminAccountSupportResults.innerHTML = adminAccountSupportResultsCache.map((account) => {
+        const isSelected = String(account?.id || "") === String(adminAccountSupportSelectedId || "").trim();
+        const summary = account?.role === "subscriber"
+          ? [account?.business?.name, account?.business?.city, account?.business?.country].filter(Boolean).join(" • ")
+          : `Visits ${Number(account?.stats?.visitCount || 0)} • Linked salons ${Number(account?.stats?.linkedBusinesses || 0)}`;
+        return `
+          <button type="button" class="admin-account-support-card${isSelected ? " is-selected" : ""}" data-admin-account-id="${escapeHtml(String(account?.id || ""))}">
+            <div class="admin-account-support-card-head">
+              <strong>${escapeHtml(String(account?.name || "Unnamed account"))}</strong>
+              <span class="admin-account-support-role-pill is-${escapeHtml(String(account?.role || "").toLowerCase())}">${escapeHtml(String(account?.role || "account"))}</span>
+            </div>
+            <small>${escapeHtml(String(account?.email || ""))}</small>
+            <div class="admin-account-support-card-row">
+              <span class="admin-account-support-stat-pill">${escapeHtml(summary || "Open this account")}</span>
+              <small>${escapeHtml(account?.createdAt ? formatDateShort(account.createdAt) : "")}</small>
+            </div>
+          </button>
+        `;
+      }).join("");
+    }
+  }
+  if (adminAccountSupportDetail) {
+    if (!selected) {
+      adminAccountSupportDetail.innerHTML = `
+        <div class="admin-account-support-detail-empty">
+          <div>
+            <strong>Select an account</strong>
+            <p>Use this popup to search, review, and edit subscriber or customer accounts.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    const stats = selected?.stats || {};
+    const subscriberMeta = selected?.role === "subscriber"
+      ? [selected?.business?.name, selected?.business?.type, selected?.business?.city, selected?.business?.country].filter(Boolean).join(" • ")
+      : "";
+    const recentVisits = Array.isArray(selected?.recentVisits) ? selected.recentVisits : [];
+    const visitRows = recentVisits.length
+      ? recentVisits.map((visit) => `
+          <div class="admin-account-support-visit-row">
+            <div>
+              <strong>${escapeHtml(String(visit?.businessName || visit?.service || "Visit"))}</strong>
+              <small>${escapeHtml([visit?.service, visit?.date, visit?.time].filter(Boolean).join(" • "))}</small>
+            </div>
+            <small>${escapeHtml(String(visit?.status || ""))}</small>
+          </div>
+        `).join("")
+      : `<div class="admin-account-support-visit-row"><div><strong>No recent visits</strong><small>This account has no recent linked activity yet.</small></div></div>`;
+    adminAccountSupportDetail.innerHTML = `
+      <div class="admin-account-support-card-head">
+        <div>
+          <strong>${escapeHtml(String(selected?.name || "Unnamed account"))}</strong>
+          <div class="admin-account-support-card-row">
+            <span class="admin-account-support-role-pill is-${escapeHtml(String(selected?.role || "").toLowerCase())}">${escapeHtml(String(selected?.role || "account"))}</span>
+            <small>${escapeHtml(String(selected?.email || ""))}</small>
+          </div>
+          ${subscriberMeta ? `<small>${escapeHtml(subscriberMeta)}</small>` : ""}
+        </div>
+        <div class="admin-account-support-action-row">
+          ${selected?.role === "subscriber" && selected?.business?.id ? '<button class="btn" type="button" data-admin-account-action="open-dashboard">Open Dashboard</button>' : ""}
+          ${selected?.role === "subscriber" && selected?.business?.id ? '<button class="btn btn-ghost" type="button" data-admin-account-action="open-profile">Edit Business Info</button>' : ""}
+          <button class="btn btn-ghost" type="button" data-admin-account-action="edit-account">Edit Account</button>
+        </div>
+      </div>
+      <div class="admin-account-support-stats">
+        <article>
+          <p>${escapeHtml(selected?.role === "subscriber" ? "Bookings" : "Visits")}</p>
+          <strong>${escapeHtml(String(stats.visitCount || stats.bookingCount || 0))}</strong>
+        </article>
+        <article>
+          <p>${escapeHtml(selected?.role === "subscriber" ? "Active Plan" : "Upcoming")}</p>
+          <strong>${escapeHtml(String(stats.planLabel || stats.upcomingCount || "0"))}</strong>
+        </article>
+        <article>
+          <p>${escapeHtml(selected?.role === "subscriber" ? "Revenue Signal" : "Linked Salons")}</p>
+          <strong>${escapeHtml(selected?.role === "subscriber" ? formatMoney(Number(stats.revenue || 0)) : String(stats.linkedBusinesses || 0))}</strong>
+        </article>
+      </div>
+      <section class="admin-account-support-visit-list">
+        <p>${escapeHtml(selected?.role === "subscriber" ? "Subscriber snapshot" : "Recent visits")}</p>
+        ${selected?.role === "subscriber"
+          ? `
+            <div class="admin-account-support-visit-row">
+              <div>
+                <strong>${escapeHtml(String(selected?.business?.name || "Subscriber business"))}</strong>
+                <small>${escapeHtml(String(stats.planStatus || "No billing data"))}</small>
+              </div>
+              <small>${escapeHtml(String(stats.lastBookingAt ? formatDateShort(stats.lastBookingAt) : "No recent booking"))}</small>
+            </div>
+            <div class="admin-account-support-visit-row">
+              <div>
+                <strong>Managed dashboard access</strong>
+                <small>Open their Booking Diary and Business Hub in the admin dashboard below.</small>
+              </div>
+            </div>
+          `
+          : visitRows}
+      </section>
+      <section class="admin-account-support-notes">
+        <p>${escapeHtml(selected?.role === "subscriber" ? "Admin note" : "Customer note")}</p>
+        <strong>${escapeHtml(selected?.role === "subscriber"
+          ? "Dashboard edits continue through the managed subscriber views below."
+          : "Editing the account here keeps future customer sign-in and visit history aligned.")}</strong>
+      </section>
+    `;
+  }
+}
+
+async function loadAdminAccountSupport(query = adminAccountSupportSearch?.value || "") {
+  if (user.role !== "admin") return;
+  const q = String(query || "").trim();
+  const endpoint = q ? `/api/admin/accounts?query=${encodeURIComponent(q)}` : "/api/admin/accounts";
+  const res = await fetch(endpoint, { headers: headers() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Unable to load admin account support data.");
+  adminAccountSupportResultsCache = Array.isArray(data?.accounts) ? data.accounts : [];
+  const selectedStillExists = adminAccountSupportResultsCache.some((account) => String(account?.id || "") === String(adminAccountSupportSelectedId || "").trim());
+  adminAccountSupportSelectedId = selectedStillExists
+    ? adminAccountSupportSelectedId
+    : String(adminAccountSupportResultsCache[0]?.id || "").trim();
+  renderAdminAccountSupportModule();
+}
+
+async function openAdminAccountSupportEditForm() {
+  const account = adminAccountSupportSelectedAccount();
+  if (!account) return;
+  const fields = [
+    { id: "name", label: "Name", required: true, value: String(account?.name || "") },
+    { id: "email", label: "Email", required: true, value: String(account?.email || "") }
+  ];
+  if (account.role === "subscriber") {
+    fields.push({ id: "businessName", label: "Business Name", required: true, value: String(account?.business?.name || "") });
+  }
+  const values = await openManageForm({
+    title: `Edit ${account.role === "subscriber" ? "Subscriber" : "Customer"} Account`,
+    submitLabel: "Save Changes",
+    fields
+  });
+  if (!values) return;
+  const res = await fetch(`/api/admin/accounts/${encodeURIComponent(String(account.id || ""))}`, {
+    method: "PATCH",
+    headers: headers(),
+    body: JSON.stringify(values)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Unable to update account.");
+  if (account.role === "subscriber") {
+    await loadAdminBusinessOptions();
+    if (String(account?.business?.id || "") === String(managedBusinessId || "").trim()) {
+      await reloadAdminManagedDashboard();
+    }
+  }
+  await loadAdminAccountSupport(adminAccountSupportSearch?.value || "");
+  setDashActionStatus(`${account.role === "subscriber" ? "Subscriber" : "Customer"} account updated.`);
+}
+
+async function loadAdminPlatformOverview() {
+  if (user.role !== "admin") return;
+  const [analyticsRes, revenueRes] = await Promise.all([
+    fetch("/api/dashboard/admin", { headers: headers() }),
+    fetch("/api/dashboard/admin/revenue-analytics", { headers: headers() })
+  ]);
+  const analyticsData = await analyticsRes.json();
+  const revenueData = await revenueRes.json();
+  if (!analyticsRes.ok) throw new Error(analyticsData.error || "Unable to load admin platform analytics.");
+  if (!revenueRes.ok) throw new Error(revenueData.error || "Unable to load admin revenue analytics.");
+  adminPlatformAnalytics = analyticsData || null;
+  adminUsageAnalytics = analyticsData?.usage || null;
+  adminRevenueAnalytics = revenueData || null;
+  renderAdminPlatformOverview();
 }
 
 function parseExportFileName(disposition, fallback = "accounting_export.csv") {
@@ -2187,6 +2983,7 @@ function showSection(sectionEl) {
 
 function isPopupOnlyBusinessModuleKey(moduleKey) {
   return [
+    "account_support",
     "business_information",
     "staff_setup",
     "salon_features",
@@ -2211,6 +3008,14 @@ function isPopupMountedBusinessSection(sectionEl) {
 
 function renderPopupOnlyBusinessModule(moduleKey) {
   switch (String(moduleKey || "").trim()) {
+    case "account_support":
+      if (!adminAccountSupportResultsCache.length) {
+        loadAdminAccountSupport().catch((error) => {
+          setDashActionStatus(error.message || "Unable to load account support.", true);
+        });
+      }
+      renderAdminAccountSupportModule();
+      break;
     case "cancellations":
     case "operations":
       renderOperationsInsights();
@@ -2241,6 +3046,7 @@ function renderSubscriberFullDemoModePanel() {
 }
 
 function enforceDashboardRoleLayoutVisibility() {
+  hideSection(adminAccountSupportSection);
   if (user.role !== "subscriber") {
     hideSection(contactAdminBtn);
     if (subscriptionQuickPanel) subscriptionQuickPanel.style.display = "none";
@@ -2878,6 +3684,18 @@ function moduleDefinitionsForRole() {
       }
     ];
     const curatedModules = [
+      ...(user.role === "admin" ? [{
+        key: "account_support",
+        section: adminAccountSupportSection,
+        label: "Account Support",
+        popupMode: "interactive",
+        popupSize: "xl",
+        cadence: "Use daily",
+        navSummary: "Search subscriber or customer accounts, review activity, and handle admin edits from one popup.",
+        features: ["Account search", "Subscriber dashboard handoff", "Safe admin edits"],
+        howItWorks: "Search across subscriber and customer accounts, then open the account record you need to support.",
+        howItHelps: "Gives admin one clean support module instead of a separate managed-business control panel."
+      }] : []),
       {
         key: "business_information",
         section: businessProfileSection,
@@ -2972,6 +3790,7 @@ function moduleGroupForRole(mod) {
   if (!mod || !mod.key) return "Modules";
   const key = String(mod.key);
   const map = {
+    account_support: "Business Hub",
     business_information: "Business Hub",
     staff_setup: "Business Hub",
     salon_features: "Business Hub",
@@ -3018,7 +3837,11 @@ function moduleGroupForRole(mod) {
 }
 
 function groupedModulesForCurrentRole() {
-  const modules = moduleDefinitionsForRole().filter((mod) => mod && mod.hideInNavigator !== true);
+  const modules = moduleDefinitionsForRole().filter((mod) => {
+    if (!mod || mod.hideInNavigator === true) return false;
+    if (user.role === "subscriber" && mod.key === "subscriber_copilot") return false;
+    return true;
+  });
   const groupOrder = ["Business Hub", "Home", "Copilot", "Operations", "Growth", "Finance", "Modules"];
   const groups = new Map();
   modules.forEach((mod) => {
@@ -3037,10 +3860,62 @@ function formatModuleGroupHeading(groupName) {
   return group;
 }
 
+function businessHubModulesForCurrentRole() {
+  if (!(user.role === "subscriber" || user.role === "admin")) return [];
+  const preferredKeys = user.role === "admin"
+    ? [
+        "account_support",
+        "business_information",
+        "staff_setup",
+        "salon_features",
+        "social_media",
+        "accounting",
+        "finance",
+        "cancellations"
+      ]
+    : [
+        "business_information",
+        "staff_setup",
+        "salon_features",
+        "social_media",
+        "accounting",
+        "finance",
+        "cancellations"
+      ];
+  const moduleMap = new Map(moduleDefinitionsForRole().map((mod) => [String(mod?.key || "").trim(), mod]));
+  return preferredKeys.map((key) => moduleMap.get(key)).filter(Boolean);
+}
+
+function buildModuleCardButton(mod) {
+  const isPinned = isPinnedBusinessModule(mod);
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = `module-card${mod.key === activeModuleKey ? " active" : ""}`;
+  btn.setAttribute("data-module-key", mod.key);
+  const status = moduleOperationalStatus(mod);
+  const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || status.note || "").trim();
+  const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
+  const usage = moduleUsageSummary(mod);
+  const usageText = usage.label === "Not used yet" ? "Opens in a focused popup." : (usage.detail || usage.label);
+  btn.innerHTML = `
+    <strong>${mod.label}</strong>
+    <small class="module-card-summary">${escapeHtml(summaryText)}</small>
+    <div class="module-card-meta">
+      ${isPinned ? '<span class="module-card-pill accent">Pinned</span>' : ""}
+      ${mod.startHere ? '<span class="module-card-pill accent">Start here</span>' : ""}
+      <span class="module-card-pill ${cadenceClass.includes("weekly") ? "soft" : ""}">${escapeHtml(mod.cadence || "Use daily")}</span>
+      ${renderModuleStatusPill(status, { compact: true })}
+    </div>
+    <small class="module-card-usage">${escapeHtml(usageText)}</small>
+  `;
+  return btn;
+}
+
 function renderModuleNavigator() {
-  if (!moduleNavigatorSection || !moduleCards || !moduleDetails) return;
-  const grouped = groupedModulesForCurrentRole();
-  const modules = grouped.flatMap((entry) => entry.modules);
+  if (!moduleNavigatorSection || !moduleCards) return;
+  const modules = user.role === "subscriber" || user.role === "admin"
+    ? businessHubModulesForCurrentRole()
+    : groupedModulesForCurrentRole().flatMap((entry) => entry.modules);
   if (!modules.length) {
     hideSection(moduleNavigatorSection);
     return;
@@ -3049,48 +3924,38 @@ function renderModuleNavigator() {
   if (moduleNavigatorIntro) {
     moduleNavigatorIntro.textContent = user.role === "customer"
       ? "Move between customer tools here."
-      : "Open a workspace and go straight to the task.";
+      : "Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.";
   }
 
   moduleCards.innerHTML = "";
-  grouped.forEach(({ group, modules: groupModules }) => {
-    const wrapper = document.createElement("section");
-    wrapper.className = "module-group";
-    wrapper.innerHTML = `<header class="module-group-head"><h3>${escapeHtml(formatModuleGroupHeading(group))}</h3></header>`;
-    const grid = document.createElement("div");
-    grid.className = "module-group-grid";
-    groupModules.forEach((mod) => {
-      const isPinned = isPinnedBusinessModule(mod);
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `module-card${mod.key === activeModuleKey ? " active" : ""}`;
-      btn.setAttribute("data-module-key", mod.key);
-      const status = moduleOperationalStatus(mod);
-      const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || status.note || "").trim();
-      const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
-      const usage = moduleUsageSummary(mod);
-      const usageText = usage.label === "Not used yet" ? "Open when you need it." : (usage.detail || usage.label);
-      btn.innerHTML = `
-        <strong>${mod.label}</strong>
-        <small class="module-card-summary">${escapeHtml(summaryText)}</small>
-        <div class="module-card-meta">
-          ${isPinned ? '<span class="module-card-pill accent">Pinned</span>' : ""}
-          ${mod.startHere ? '<span class="module-card-pill accent">Start here</span>' : ""}
-          <span class="module-card-pill ${cadenceClass.includes("weekly") ? "soft" : ""}">${escapeHtml(mod.cadence || "Use daily")}</span>
-          ${renderModuleStatusPill(status, { compact: true })}
-        </div>
-        <small class="module-card-usage">${escapeHtml(usageText)}</small>
-      `;
-      grid.appendChild(btn);
+  if (user.role === "subscriber" || user.role === "admin") {
+    moduleCards.classList.add("business-hub-grid");
+    modules.forEach((mod) => {
+      moduleCards.appendChild(buildModuleCardButton(mod));
     });
-    wrapper.appendChild(grid);
-    moduleCards.appendChild(wrapper);
-  });
+  } else {
+    moduleCards.classList.remove("business-hub-grid");
+    const grouped = groupedModulesForCurrentRole();
+    grouped.forEach(({ group, modules: groupModules }) => {
+      const wrapper = document.createElement("section");
+      wrapper.className = "module-group";
+      wrapper.innerHTML = `<header class="module-group-head"><h3>${escapeHtml(formatModuleGroupHeading(group))}</h3></header>`;
+      const grid = document.createElement("div");
+      grid.className = "module-group-grid";
+      groupModules.forEach((mod) => {
+        grid.appendChild(buildModuleCardButton(mod));
+      });
+      wrapper.appendChild(grid);
+      moduleCards.appendChild(wrapper);
+    });
+  }
 
   const active = modules.find((mod) => mod.key === activeModuleKey) || modules[0];
   activeModuleKey = active.key;
-  hideSection(moduleDetails);
-  moduleDetails.innerHTML = "";
+  if (moduleDetails) {
+    hideSection(moduleDetails);
+    moduleDetails.innerHTML = "";
+  }
 }
 
 function moduleDefinitionByKey(moduleKey) {
@@ -3295,6 +4160,13 @@ function moduleOperationalStatus(mod) {
   const setup = (label, note) => ({ label, note, tone: "setup" });
 
   switch (key) {
+    case "account_support":
+      return ready(
+        adminAccountSupportResultsCache.length ? "Live" : "Ready",
+        adminAccountSupportResultsCache.length
+          ? `${adminAccountSupportResultsCache.length} account result${adminAccountSupportResultsCache.length === 1 ? "" : "s"} loaded for admin support.`
+          : "Search subscriber or customer accounts and open the record you need."
+      );
     case "business_profile":
       return profileName && servicesCount > 0
         ? ready("Configured", `${servicesCount} services listed and profile details present.`)
@@ -3441,6 +4313,12 @@ function modulePopupSnapshotItems(mod) {
   }).length;
 
   switch (key) {
+    case "account_support":
+      return [
+        "Search scope: subscriber and customer accounts",
+        `Loaded results: ${adminAccountSupportResultsCache.length}`,
+        `Selected account: ${adminAccountSupportSelectedAccount()?.name || "None"}`
+      ];
     case "overview":
       return [
         `Visible KPI cards: ${metricsGrid?.children?.length ?? 0}`,
@@ -3600,7 +4478,6 @@ function isPinnedBusinessModule(mod) {
   if (!(user.role === "subscriber" || user.role === "admin")) return false;
   const key = String(mod.key || "");
   if (key === "calendar") return true;
-  if (user.role === "subscriber" && key === "subscriber_copilot") return true;
   if (user.role === "admin" && key === "admin_copilot") return true;
   return false;
 }
@@ -4626,6 +5503,7 @@ function openModuleInfoModal(moduleKey) {
   const roleLabel = user.role === "admin" ? "Admin area" : user.role === "subscriber" ? "Salon owner area" : "Customer area";
   const moduleStatus = moduleOperationalStatus(mod);
   const operator = moduleOperatorBlueprint(mod);
+  const canUseLexiAssist = user.role === "subscriber" || user.role === "admin";
   const isCustomerMinimal = user.role === "customer";
   const operatorActionButtons = (Array.isArray(operator?.quickActions) ? operator.quickActions : [])
     .slice(0, isCustomerMinimal ? 1 : 3)
@@ -4720,6 +5598,7 @@ function openModuleInfoModal(moduleKey) {
       <small class="module-info-hint">Press Esc or click outside to close.</small>
       <button type="button" class="btn btn-ghost module-info-dashboard-btn">Back to Dashboard</button>
       <button type="button" class="btn btn-ghost module-info-close-btn">Close</button>
+      ${canUseLexiAssist ? '<button type="button" class="btn ask-lexi-btn module-info-lexi-btn">Ask Lexi</button>' : ""}
       <button type="button" class="btn module-info-open-btn">${isActive ? "Open Current Module" : "Open Module"}</button>
     </div>
   `;
@@ -4754,6 +5633,9 @@ function openModuleInfoModal(moduleKey) {
     returnToDashboardHomeView();
   });
   shell.querySelector(".module-info-close-btn")?.addEventListener("click", close);
+  shell.querySelector(".module-info-lexi-btn")?.addEventListener("click", () => {
+    openLexiModuleAssist(mod, { trigger: shell.querySelector(".module-info-lexi-btn"), blueprint: operator });
+  });
   shell.querySelectorAll(".module-operator-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (!(btn instanceof HTMLElement)) return;
@@ -4829,6 +5711,7 @@ function openInteractiveModulePopup(moduleKey) {
   const roleLabel = user.role === "admin" ? "Admin area" : "Salon owner area";
   const moduleStatus = moduleOperationalStatus(mod);
   const operator = moduleOperatorBlueprint(mod);
+  const canUseLexiAssist = user.role === "subscriber" || user.role === "admin";
   const lexiWorkspaceBriefHtml = renderModuleLexiBriefPanel(mod, operator, { compact: true });
   const purposeStripHtml = renderModulePurposeStrip(mod);
   shell.innerHTML = `
@@ -4850,6 +5733,7 @@ function openInteractiveModulePopup(moduleKey) {
       <small class="module-info-hint">Press Esc or click outside to close.</small>
       <button type="button" class="btn btn-ghost module-workspace-dashboard-btn">Back to Dashboard</button>
       <button type="button" class="btn btn-ghost module-workspace-close-btn">Close</button>
+      ${canUseLexiAssist ? '<button type="button" class="btn ask-lexi-btn module-workspace-lexi-btn">Ask Lexi</button>' : ""}
       <button type="button" class="btn module-workspace-open-btn">Open Full View</button>
     </div>
   `;
@@ -4909,6 +5793,9 @@ function openInteractiveModulePopup(moduleKey) {
     returnToDashboardHomeView();
   });
   shell.querySelector(".module-workspace-close-btn")?.addEventListener("click", close);
+  shell.querySelector(".module-workspace-lexi-btn")?.addEventListener("click", () => {
+    openLexiModuleAssist(mod, { trigger: shell.querySelector(".module-workspace-lexi-btn"), blueprint: operator });
+  });
   shell.querySelectorAll(".module-operator-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (!(btn instanceof HTMLElement)) return;
@@ -5102,10 +5989,8 @@ function initializeMobileBottomNav() {
       return;
     }
     if (action === "copilot") {
-      const copilotKey = user.role === "admin" ? "admin_copilot" : "subscriber_copilot";
-      const copilotSectionId = user.role === "admin" ? "adminCopilotSection" : "subscriberCopilotSection";
-      focusModuleByKey(copilotKey);
-      setActiveMobileNavButtonBySection(copilotSectionId);
+      openDashboardLexiForCurrentRole(null, "booking_diary");
+      setActiveMobileNavButtonBySection(user.role === "admin" ? "subscriberExecutivePulseSection" : "subscriberCalendarSection");
       return;
     }
     if (action === "hub") {
@@ -5153,14 +6038,13 @@ function initializeMobileBottomNav() {
     subscriber: [
       "dashboardOverviewSection",
       "subscriberCalendarSection",
-      "subscriberCopilotSection",
       "businessGrowthSection",
       "bookingOperationsSection"
     ],
     admin: [
       "dashboardOverviewSection",
       "subscriberCalendarSection",
-      "adminCopilotSection",
+      "subscriberExecutivePulseSection",
       "businessGrowthSection",
       "bookingOperationsSection"
     ]
@@ -5245,7 +6129,19 @@ function renderBusinessGrowthPanel() {
     return;
   }
   showSection(businessGrowthSection);
-  renderBusinessHubCommandDeck();
+  const businessHubKicker = document.getElementById("businessHubKicker");
+  const businessHubTitle = document.getElementById("businessHubTitle");
+  if (businessHubKicker) {
+    businessHubKicker.textContent = user.role === "admin" ? "Managed business workspace" : "Subscriber workspace";
+  }
+  if (businessHubTitle) {
+    businessHubTitle.textContent = user.role === "admin" ? "Managed Business Hub" : "Business Hub";
+  }
+  if (moduleNavigatorIntro) {
+    moduleNavigatorIntro.textContent = user.role === "admin"
+      ? "Open a card to review or edit the selected subscriber business. Every popup includes Ask Lexi for support."
+      : "Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.";
+  }
 
   if (billingLiveBanner) {
     const status = String(billingSummary?.status || "inactive").toLowerCase();
@@ -5988,6 +6884,27 @@ function writeExecutivePulseSnapshots(rows) {
 function getExecutivePulseRangeConfig(range = "day") {
   const now = new Date();
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  if (range === "all") {
+    const datedRows = bookingRows
+      .map((row) => parseBookingDate(row?.date))
+      .filter((dt) => dt instanceof Date && Number.isFinite(dt.getTime()))
+      .sort((a, b) => a.getTime() - b.getTime());
+    const firstBooking = datedRows[0] || now;
+    const start = new Date(firstBooking.getFullYear(), firstBooking.getMonth(), 1, 0, 0, 0, 0);
+    const monthSpan = Math.max(
+      1,
+      ((end.getFullYear() - start.getFullYear()) * 12) + (end.getMonth() - start.getMonth()) + 1
+    );
+    return {
+      key: "all",
+      label: "All time",
+      chartLabel: monthSpan > 24 ? "Yearly trend" : "Monthly trend",
+      start,
+      end,
+      groupBy: monthSpan > 24 ? "year" : "month",
+      bucketCount: monthSpan > 24 ? Math.max(1, end.getFullYear() - start.getFullYear() + 1) : Math.min(24, monthSpan)
+    };
+  }
   if (range === "year") {
     const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
     return { key: "year", label: "This year", chartLabel: "Monthly trend", start, end, groupBy: "month", bucketCount: 12 };
@@ -6137,7 +7054,10 @@ function getExecutivePulseBuckets(rows, rangeConfig, profitMarginPct) {
     if (dt < rangeConfig.start || dt > rangeConfig.end) return;
     let key = "";
     let label = "";
-    if (rangeConfig.groupBy === "month") {
+    if (rangeConfig.groupBy === "year") {
+      key = `${dt.getFullYear()}`;
+      label = String(dt.getFullYear());
+    } else if (rangeConfig.groupBy === "month") {
       key = `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}`;
       label = dt.toLocaleDateString("en-GB", { month: "short" });
     } else if (rangeConfig.groupBy === "week") {
@@ -6320,6 +7240,9 @@ function renderExecutivePulse() {
     return;
   }
   showSection(subscriberExecutivePulseSection);
+  if (executivePulseTitle) {
+    executivePulseTitle.textContent = user.role === "admin" ? "Admin Control Center" : "Subscriber Control Center";
+  }
 
   const rangeConfig = getExecutivePulseRangeConfig(executivePulseRange);
   const allRows = Array.isArray(bookingRows) ? bookingRows : [];
@@ -6355,17 +7278,25 @@ function renderExecutivePulse() {
   });
   if (executivePulseRangeMeta) executivePulseRangeMeta.textContent = `${rangeConfig.label} - ${bookingCount} bookings`;
   if (executivePulseSubtitle) {
-    const roleLabel = user.role === "admin" ? "Admin view" : "Owner view";
-    executivePulseSubtitle.textContent = `${roleLabel}: quick read for ${rangeConfig.label.toLowerCase()} bookings, cancellations, revenue and next steps.`;
+    executivePulseSubtitle.textContent = user.role === "admin"
+      ? `${rangeConfig.label} platform view: app-wide bookings, revenue, usage windows and managed-business support in one place.`
+      : `${rangeConfig.label} business view: your own bookings, revenue, cancellations and next actions in one control center.`;
   }
   if (executivePulseFinanceWindowLabel) executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} finance and booking summary`;
 
-  const signalCards = [
-    { label: rangeConfig.key === "day" ? "Today Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
-    { label: "Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg ticket`, down: false },
-    { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
-    { label: "Pending Confirmations", value: String(pendingCount), delta: pendingCount ? "Front desk follow-up needed" : "No pending confirmations", down: pendingCount > 0 }
-  ];
+  const signalCards = user.role === "admin"
+    ? [
+        { label: rangeConfig.key === "day" ? "App Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
+        { label: "App Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg booking value`, down: false },
+        { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
+        { label: "Managed Businesses", value: String(adminBusinessOptions.length || 0), delta: managedBusinessId ? "Business support scope loaded" : "Select a business to support", down: !managedBusinessId }
+      ]
+    : [
+        { label: rangeConfig.key === "day" ? "Today Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
+        { label: "Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg ticket`, down: false },
+        { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
+        { label: "Pending Confirmations", value: String(pendingCount), delta: pendingCount ? "Front desk follow-up needed" : "No pending confirmations", down: pendingCount > 0 }
+      ];
   executivePulseSignals.innerHTML = "";
   signalCards.forEach((card) => {
     const el = document.createElement("article");
@@ -6416,12 +7347,22 @@ function renderExecutivePulse() {
   }
 
   const actionItems = [];
-  if (pendingCount > 0) actionItems.push({ title: "Confirm bookings", detail: `${pendingCount} booking${pendingCount === 1 ? "" : "s"} need confirmation or a callback.` });
-  if (cancelRate >= 10) actionItems.push({ title: "Refill cancellations", detail: "Use Waitlist Recovery and reminder follow-up to refill lost slots quickly." });
-  if (selectedCalendarDateKey) {
-    actionItems.push({ title: "Work selected day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} bookings). Ask Lexi for a short action plan.` });
+  if (user.role === "admin") {
+    if (cancelRate >= 10) actionItems.push({ title: "Platform cancellations rising", detail: "Review cancellation pressure and use the managed business selector to support the affected subscriber." });
+    if (selectedCalendarDateKey) {
+      actionItems.push({ title: "Inspect selected app day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} app bookings). Use the calendar as the site-wide booking heatmap.` });
+    } else {
+      actionItems.push({ title: "Pick a day", detail: "Select a date in the calendar to see total bookings across the app for that day." });
+    }
+    actionItems.push({ title: "Support managed business", detail: managedBusinessId ? "Use the managed business controls below to open the selected subscriber workspace." : "Select a managed business to jump into its subscriber tools." });
   } else {
-    actionItems.push({ title: "Pick a day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
+    if (pendingCount > 0) actionItems.push({ title: "Confirm bookings", detail: `${pendingCount} booking${pendingCount === 1 ? "" : "s"} need confirmation or a callback.` });
+    if (cancelRate >= 10) actionItems.push({ title: "Refill cancellations", detail: "Use Waitlist Recovery and reminder follow-up to refill lost slots quickly." });
+    if (selectedCalendarDateKey) {
+      actionItems.push({ title: "Work selected day", detail: `${selectedCalendarDateKey} is selected (${selectedRows.length} bookings). Ask Lexi for a short action plan.` });
+    } else {
+      actionItems.push({ title: "Pick a day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
+    }
   }
   if (!actionItems.length) actionItems.push({ title: "Steady flow", detail: "No urgent issues. Focus on service quality, rebooking, and filling quiet windows." });
   executivePulseActions.innerHTML = "";
@@ -6571,7 +7512,7 @@ window.openDashboardLexiForRole = (role, source = "", triggerId = "") => {
 };
 
 function renderSubscriberCalendar() {
-  if (!bookingCalendarGrid || !calendarMonthLabel || !calendarLegend) return;
+  if (!bookingCalendarGrid || !calendarMonthLabel) return;
 
   const year = calendarMonth.getFullYear();
   const month = calendarMonth.getMonth();
@@ -6667,10 +7608,12 @@ function renderSubscriberCalendar() {
     bookingCalendarGrid.appendChild(cell);
   }
 
-  calendarLegend.textContent =
-    monthlyBookings > 0
-      ? `${monthlyBookings} bookings across ${activeDays} day${activeDays === 1 ? "" : "s"} this month.`
-      : "No bookings in the diary this month yet.";
+  if (calendarLegend) {
+    calendarLegend.textContent =
+      monthlyBookings > 0
+        ? `${monthlyBookings} bookings across ${activeDays} day${activeDays === 1 ? "" : "s"} this month.`
+        : "No bookings in the diary this month yet.";
+  }
   renderCalendarFeatureSidebarLexi({
     monthLabel,
     monthlyBookings,
@@ -6678,6 +7621,7 @@ function renderSubscriberCalendar() {
     staffLegendCount: monthStaffLegendCount,
     selectedDay: selectedCalendarDateSummary()
   });
+  renderCalendarDiaryWeekStrip();
   updateBookingRangeControls();
   renderBusinessAiWorkspace("subscriber");
   renderBusinessAiWorkspace("admin");
@@ -7246,18 +8190,23 @@ async function openCalendarDayWorkspace(dateKey) {
             return;
           }
           if (action === "ask-copilot") {
-            const copilotKey = user.role === "admin" ? "admin_copilot" : "subscriber_copilot";
             const questionText = user.role === "admin"
               ? `Review ${safeDateKey}. What should I check for issues, cancellations, staffing pressure, or follow-up today?`
               : `Review ${safeDateKey}. What should I focus on today for bookings, cancellations, staffing pressure, waitlist recovery, and revenue?`;
-            if (user.role === "admin" && adminCopilotInput) adminCopilotInput.value = questionText;
-            if (user.role !== "admin" && subscriberCopilotInput) subscriberCopilotInput.value = questionText;
             close();
-            focusModuleByKey(copilotKey);
-            window.setTimeout(() => {
-              const input = user.role === "admin" ? adminCopilotInput : subscriberCopilotInput;
-              if (input instanceof HTMLElement) input.focus();
-            }, 160);
+            if (user.role === "admin") {
+              openBusinessAiChatPopup("admin", {
+                focusInput: false,
+                prompt: questionText
+              });
+              adminCopilotForm?.requestSubmit();
+            } else {
+              openBusinessAiChatPopup("subscriber", {
+                focusInput: false,
+                prompt: questionText
+              });
+              subscriberCopilotForm?.requestSubmit();
+            }
             return;
           }
           if (action === "copy-summary") {
@@ -7403,10 +8352,11 @@ function renderCustomerSelectedSalon() {
     }
     salon.availableSlots.forEach((slot) => {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${slot}</strong><br /><small>Ask Lexi to help you request this slot.</small>`;
+      li.innerHTML = `<strong>${slot}</strong><br /><small>${escapeHtml(t("dashboard.slot_request_help", "Ask Lexi to help you request this slot."))}</small>`;
       customerAvailableSlots.appendChild(li);
     });
   }
+  renderCustomerControlCenter(bookingRows);
   renderCustomerLexiCalendar();
 }
 
@@ -7676,7 +8626,7 @@ function setCustomerLexiMicButtonState(listening = false) {
   const supported = customerLexiMicSupported();
   if (voiceBtn instanceof HTMLButtonElement) {
     voiceBtn.disabled = !supported;
-    voiceBtn.textContent = listening ? "Listening..." : "Push to Talk";
+    voiceBtn.textContent = listening ? t("dashboard.listening", "Listening...") : t("common.push_to_talk", "Push to Talk");
   }
   if (stopBtn instanceof HTMLButtonElement) {
     stopBtn.disabled = !supported || !listening;
@@ -7734,8 +8684,8 @@ function toggleCustomerLexiMicCapture() {
       "idle",
       "Push-to-talk is ready.",
       finalTranscript
-        ? "Review your words in the chat box, then send them to Lexi."
-        : "Press Push to Talk when you want to speak."
+        ? t("dashboard.review_words_then_send", "Review your words in the chat box, then send them to Lexi.")
+        : t("common.push_to_talk_ready_prompt", "Press Push to Talk when you want to speak.")
     );
     customerReceptionInput?.focus();
   };
@@ -7913,6 +8863,11 @@ function resetCustomerLexiVoiceControls() {
   setCustomerLexiMicButtonState(false);
 }
 
+function getCustomerLexiVoiceButtonLabel(config = null) {
+  if (config?.avatarSessionReady && !config?.realtimeEnabled) return "Start Demo";
+  return t("common.push_to_talk", "Push to Talk");
+}
+
 function cleanupCustomerLexiRealtimeConnection() {
   const connection = customerLexiRealtimeConnection;
   if (!connection) return;
@@ -8074,6 +9029,7 @@ async function connectCustomerLexiRealtimeSession(sessionPayload) {
   };
 }
 
+
 async function hydrateCustomerLexiAvatarPanel() {
   if (!customerLexiPopupOverlay) return;
   setCustomerLexiAvatarPanelState(
@@ -8104,8 +9060,9 @@ async function hydrateCustomerLexiAvatarPanel() {
       : "Pick a business, then ask about services, timings, recommendations, aftercare, or booking help from this popup.";
   }
   if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !customerLexiMicSupported();
-    voiceBtn.textContent = "Push to Talk";
+    const demoReady = Boolean(config.avatarSessionReady && !config.realtimeEnabled);
+    voiceBtn.disabled = demoReady ? false : !customerLexiMicSupported();
+    voiceBtn.textContent = getCustomerLexiVoiceButtonLabel(config);
   }
   if (muteBtn instanceof HTMLButtonElement) {
     muteBtn.disabled = true;
@@ -8115,11 +9072,25 @@ async function hydrateCustomerLexiAvatarPanel() {
     "idle",
     customerLexiMicSupported()
       ? "Push-to-talk is ready in this popup."
-      : "Text booking mode is live now.",
+      : (config.avatarSessionReady ? "HeyGen demo mode is ready in this popup." : "Text booking mode is live now."),
     customerLexiMicSupported()
-      ? "Press Push to Talk, speak your question, then send the text to Lexi."
-      : "This browser does not support push-to-talk, but text chat still works."
+      ? t("dashboard.push_to_talk_then_send", "Press Push to Talk, speak your question, then send the text to Lexi.")
+      : (config.avatarSessionReady
+        ? "Start Demo to connect Lexi's live avatar. Text chat still works underneath."
+        : "This browser does not support push-to-talk, but text chat still works.")
   );
+}
+
+async function startCustomerLexiAvatarDemo(config = null) {
+  const avatarConfig = config || await loadCustomerLexiAvatarConfig();
+  if (!avatarConfig.avatarSessionReady) throw new Error("HeyGen demo mode is not configured yet.");
+  await connectCustomerLexiAvatarSession();
+  setCustomerLexiAvatarPanelState(
+    "speaking",
+    "Lexi demo avatar is live.",
+    "Lexi is connected in visual demo mode. Use text chat below while we validate the live avatar experience."
+  );
+  setDashActionStatus("Lexi demo avatar connected.", false, 2200);
 }
 
 async function startCustomerLexiVoicePreparation() {
@@ -8132,10 +9103,25 @@ async function startCustomerLexiVoicePreparation() {
     return;
   }
   const voiceBtn = customerLexiPopupOverlay?.querySelector("#customerLexiVoiceBtn");
+  let config = null;
   try {
+    config = await loadCustomerLexiAvatarConfig();
     if (voiceBtn instanceof HTMLButtonElement) {
       voiceBtn.disabled = true;
       voiceBtn.textContent = "Preparing...";
+    }
+    if (config.avatarSessionReady && !config.realtimeEnabled) {
+      setCustomerLexiAvatarPanelState(
+        "thinking",
+        "Lexi is preparing a HeyGen demo session.",
+        "Connecting the live avatar without OpenAI realtime voice yet."
+      );
+      await startCustomerLexiAvatarDemo(config);
+      if (voiceBtn instanceof HTMLButtonElement) {
+        voiceBtn.disabled = false;
+        voiceBtn.textContent = "Restart Demo";
+      }
+      return;
     }
     setCustomerLexiAvatarPanelState(
       "thinking",
@@ -8149,7 +9135,19 @@ async function startCustomerLexiVoicePreparation() {
       readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
     }
     if (!data.sessionReady) {
+      if (config.avatarSessionReady) {
+        await startCustomerLexiAvatarDemo(config);
+        if (voiceBtn instanceof HTMLButtonElement) {
+          voiceBtn.disabled = false;
+          voiceBtn.textContent = "Restart Demo";
+        }
+        return;
+      }
       resetCustomerLexiVoiceControls();
+      if (voiceBtn instanceof HTMLButtonElement) {
+        voiceBtn.disabled = !customerLexiMicSupported();
+        voiceBtn.textContent = getCustomerLexiVoiceButtonLabel(config);
+      }
       setCustomerLexiAvatarPanelState(
         "speaking",
         data.message || "Lexi voice session updated.",
@@ -8175,8 +9173,8 @@ async function startCustomerLexiVoicePreparation() {
     cleanupCustomerLexiRealtimeConnection();
     cleanupCustomerLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
-      voiceBtn.disabled = !customerLexiMicSupported();
-      voiceBtn.textContent = "Push to Talk";
+      voiceBtn.disabled = !(config?.avatarSessionReady && !config?.realtimeEnabled) && !customerLexiMicSupported();
+      voiceBtn.textContent = getCustomerLexiVoiceButtonLabel(config);
     }
     const readyChip = customerLexiPopupOverlay?.querySelector("#customerLexiAvatarReadyChip");
     if (readyChip) {
@@ -8373,7 +9371,7 @@ function renderCustomerLexiDaySummary(dataset) {
           .join("")}
       </ul>
       <div class="customer-lexi-summary-actions">
-        <button type="button" class="btn btn-ghost" data-customer-lexi-action="week-plan" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">Ask Lexi to review this week</button>
+        <button type="button" class="btn btn-ghost" data-customer-lexi-action="week-plan" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">${escapeHtml(t("dashboard.customer_week_review", "Ask Lexi to review this week"))}</button>
         <button type="button" class="btn" data-customer-lexi-action="jump-slots">Open available slots list</button>
       </div>
     `;
@@ -8410,7 +9408,7 @@ function renderCustomerLexiDaySummary(dataset) {
         }
       </ul>
       <div class="customer-lexi-summary-actions">
-        <button type="button" class="btn btn-ghost" data-customer-lexi-action="month-plan" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">Ask Lexi to review this month</button>
+        <button type="button" class="btn btn-ghost" data-customer-lexi-action="month-plan" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">${escapeHtml(t("dashboard.customer_month_review", "Ask Lexi to review this month"))}</button>
         <button type="button" class="btn" data-customer-lexi-action="jump-slots">Open available slots list</button>
       </div>
     `;
@@ -8425,7 +9423,7 @@ function renderCustomerLexiDaySummary(dataset) {
       <li><strong>${escapeHtml(salonName)}</strong><small>${escapeHtml(formatBusinessTypeLabel(dataset.salon?.businessType || ""))}${dataset.salon?.city ? ` • ${escapeHtml(dataset.salon.city)}` : ""} • ${escapeHtml(teamMembers.length ? `${teamMembers.length} staff listed` : "No staff listed")}</small></li>
     </ul>
     <div class="customer-lexi-summary-actions">
-      <button type="button" class="btn btn-ghost" data-customer-lexi-action="day-slots" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">Ask Lexi about this day's best slots</button>
+      <button type="button" class="btn btn-ghost" data-customer-lexi-action="day-slots" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">${escapeHtml(t("dashboard.customer_best_slots", "Ask Lexi about this day's best slots"))}</button>
       <button type="button" class="btn btn-ghost" data-customer-lexi-action="day-booking" data-date-key="${escapeHtml(dateKey)}" data-date-label="${escapeHtml(dateLabel)}">Let Lexi help me choose a time</button>
       <button type="button" class="btn" data-customer-lexi-action="jump-slots">Open available slots list</button>
     </div>
@@ -8525,6 +9523,11 @@ function renderCustomerLexiCalendar() {
 function renderCustomerBookingHistory(rows = []) {
   if (!customerBookingHistory) return;
   customerBookingHistory.innerHTML = "";
+  if (customerHistoryIntro) {
+    customerHistoryIntro.textContent = rows.length
+      ? `Showing previous salon visits and upcoming appointments linked to ${user.email || "your email address"}.`
+      : "Any walk-ins or appointments booked with this email will appear here automatically.";
+  }
   if (!rows.length) {
     customerBookingHistory.innerHTML = "<li>No visits booked yet.</li>";
     return;
@@ -8536,10 +9539,11 @@ function renderCustomerBookingHistory(rows = []) {
   sorted.forEach((row) => {
     const bookingDate = parseBookingDate(row.date);
     const isPast = bookingDate ? bookingDate < now : false;
+    const visitLabel = isPast ? "Previous salon visit" : "Upcoming appointment";
     const li = document.createElement("li");
     li.innerHTML = `
       <strong>${row.businessName || "Business"} | ${row.service || "Service"}</strong><br />
-      <small>${row.date || "N/A"} at ${row.time || "N/A"} ? ${row.status || "unknown"} ? ${isPast ? "Past visit" : "Upcoming booking"}</small>
+      <small>${row.date || "N/A"} at ${row.time || "N/A"} | ${formatBookingStatusLabel(row.status)} | ${visitLabel}</small>
     `;
     customerBookingHistory.appendChild(li);
   });
@@ -8573,8 +9577,57 @@ function renderCustomerAnalytics(rows = []) {
   });
 }
 
+function renderCustomerControlCenter(rows = []) {
+  if (!customerControlMetricGrid) return;
+  const salon = getSelectedCustomerSalon();
+  const total = rows.length;
+  const upcomingRows = rows.filter((row) => {
+    const date = parseBookingDate(row?.date);
+    return date && date >= new Date() && normalizeText(row?.status) !== "cancelled";
+  });
+  const uniqueSalons = new Set(rows.map((row) => normalizeText(row?.businessName)).filter(Boolean)).size;
+  const latestVisit = rows
+    .filter((row) => parseBookingDate(row?.date))
+    .sort((a, b) => parseBookingDate(b?.date) - parseBookingDate(a?.date))[0] || null;
+  const openSlots = Array.isArray(salon?.availableSlots) ? salon.availableSlots.length : 0;
+  const cards = [
+    {
+      label: "My Bookings",
+      value: String(total),
+      meta: total ? `${upcomingRows.length} upcoming` : "No bookings yet"
+    },
+    {
+      label: "Selected Salon",
+      value: salon?.name || "Choose a salon",
+      meta: salon ? `${salon.city} | ${openSlots} open slots` : "Pick a business to view live availability"
+    },
+    {
+      label: "Visit History",
+      value: latestVisit?.date || "No visits yet",
+      meta: latestVisit ? `${latestVisit.businessName || "Business"} | ${formatBookingStatusLabel(latestVisit.status)}` : "Your most recent booking will show here"
+    },
+    {
+      label: "Salons Visited",
+      value: String(uniqueSalons),
+      meta: uniqueSalons ? "Tracked from your booking history" : "Build up your profile as you book"
+    }
+  ];
+  customerControlMetricGrid.innerHTML = "";
+  cards.forEach((card) => {
+    const article = document.createElement("article");
+    article.className = "customer-control-metric-card";
+    article.innerHTML = `
+      <p>${escapeHtml(card.label)}</p>
+      <strong>${escapeHtml(card.value)}</strong>
+      <small>${escapeHtml(card.meta)}</small>
+    `;
+    customerControlMetricGrid.appendChild(article);
+  });
+}
+
 function refreshCustomerDashboard() {
   if (user.role !== "customer") return;
+  renderCustomerControlCenter(bookingRows);
   renderCustomerBookingHistory(bookingRows);
   renderCustomerAnalytics(bookingRows);
   renderCustomerLexiCalendar();
@@ -10988,18 +12041,11 @@ async function loadAdminBusinessOptions() {
   adminBusinessOptions = rows;
   if (!adminBusinessSelect) return;
 
-  adminBusinessSelect.innerHTML = "";
-  rows.forEach((business) => {
-    const option = document.createElement("option");
-    option.value = String(business.id || "");
-    const location = [business.city, business.country].filter(Boolean).join(", ");
-    option.textContent = location ? `${business.name} (${location})` : String(business.name || "Unnamed business");
-    adminBusinessSelect.appendChild(option);
-  });
-
   if (!rows.length) {
     managedBusinessId = "";
     setAdminBusinessStatus("No businesses available.", true);
+    renderAdminBusinessSelect([]);
+    renderAdminManagedBusinessSummary();
     return;
   }
 
@@ -11009,9 +12055,10 @@ async function loadAdminBusinessOptions() {
     rows[0].id;
 
   managedBusinessId = String(selected || "").trim();
-  adminBusinessSelect.value = managedBusinessId;
+  renderAdminBusinessSelect(filteredAdminBusinessOptions());
   syncAdminBusinessQueryParam();
   setAdminBusinessStatus(`Viewing ${rows.find((business) => business.id === managedBusinessId)?.name || "selected business"}.`);
+  renderAdminManagedBusinessSummary();
 }
 
 async function reloadAdminManagedDashboard() {
@@ -11044,6 +12091,7 @@ async function reloadAdminManagedDashboard() {
     }
     const selectedName = adminBusinessOptions.find((business) => business.id === managedBusinessId)?.name;
     setAdminBusinessStatus(`Viewing ${selectedName || "selected business"}.`);
+    renderAdminManagedBusinessSummary();
   } finally {
     if (adminBusinessSelect) adminBusinessSelect.disabled = false;
   }
@@ -11194,18 +12242,16 @@ function updateLoadMoreState(isLoading = false) {
 }
 
 async function loadBookings({ append = false } = {}) {
-  const params = new URLSearchParams({ limit: "50" });
-  if (user.role === "admin" && managedBusinessId) {
+  const params = new URLSearchParams({ limit: user.role === "admin" ? "500" : "50" });
+  const endpoint = user.role === "admin" ? "/api/bookings" : "/api/me/bookings";
+  if (user.role === "subscriber" && managedBusinessId) {
     params.set("businessId", managedBusinessId);
   }
   if (append && nextBookingsCursor) params.set("cursor", nextBookingsCursor);
-  const res = await fetch(`/api/me/bookings?${params.toString()}`, { headers: headers() });
+  const res = await fetch(`${endpoint}?${params.toString()}`, { headers: headers() });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Unable to load bookings.");
   const rows = Array.isArray(data.bookings) ? data.bookings : [];
-  if (user.role === "admin" && !managedBusinessId) {
-    managedBusinessId = String(rows.find((row) => row?.businessId)?.businessId || "").trim();
-  }
   bookingRows = append ? bookingRows.concat(rows) : rows;
   nextBookingsCursor = data?.pagination?.nextCursor || null;
   updateLoadMoreState(false);
@@ -11420,6 +12466,18 @@ loadMoreBookingsBtn?.addEventListener("click", async () => {
   }
 });
 
+adminBusinessSearch?.addEventListener("input", () => {
+  if (user.role !== "admin") return;
+  const rows = filteredAdminBusinessOptions();
+  renderAdminBusinessSelect(rows, { syncState: false });
+  const selectedName = adminBusinessOptions.find((business) => business.id === managedBusinessId)?.name;
+  setAdminBusinessStatus(
+    rows.length ? `Viewing ${selectedName || "selected business"}. Filtered ${rows.length} result${rows.length === 1 ? "" : "s"}.` : "No matching businesses found.",
+    !rows.length
+  );
+  renderAdminManagedBusinessSummary();
+});
+
 adminBusinessSelect?.addEventListener("change", async () => {
   if (user.role !== "admin") return;
   const nextBusinessId = String(adminBusinessSelect.value || "").trim();
@@ -11427,6 +12485,119 @@ adminBusinessSelect?.addEventListener("change", async () => {
   managedBusinessId = nextBusinessId;
   syncAdminBusinessQueryParam();
   await reloadAdminManagedDashboard();
+});
+
+adminPlatformExportBtn?.addEventListener("click", async () => {
+  if (user.role !== "admin") return;
+  try {
+    setDashActionStatus("Preparing platform revenue export...");
+    const res = await fetch("/api/dashboard/admin/revenue-analytics/export?format=csv", { headers: headers() });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Unable to export admin revenue analytics.");
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = parseExportFileName(res.headers.get("Content-Disposition"), "admin_revenue_analytics.csv");
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    setDashActionStatus("Platform revenue CSV exported.");
+  } catch (error) {
+    setDashActionStatus(error.message, true);
+  }
+});
+
+adminManagedOpenCalendarBtn?.addEventListener("click", () => {
+  if (user.role !== "admin" || !managedBusinessId) return;
+  showSection(subscriberCalendarSection);
+  subscriberCalendarSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+adminManagedOpenHubBtn?.addEventListener("click", () => {
+  if (user.role !== "admin" || !managedBusinessId) return;
+  showSection(businessGrowthSection);
+  businessGrowthSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+adminManagedOpenProfileBtn?.addEventListener("click", () => {
+  if (user.role !== "admin" || !managedBusinessId) return;
+  openInteractiveModulePopup("business_information");
+});
+
+adminManagedAskLexiBtn?.addEventListener("click", () => {
+  if (user.role !== "admin") return;
+  const business = adminBusinessOptions.find((row) => String(row?.id || "") === String(managedBusinessId || "").trim());
+  const name = String(business?.name || "the selected managed business").trim();
+  if (adminCopilotInput) {
+    adminCopilotInput.value = `Review ${name}. Tell me the top admin support actions, revenue risks, booking issues, and setup items I should check first.`;
+  }
+  openBusinessAiChatPopup("admin", { trigger: adminManagedAskLexiBtn });
+  adminCopilotForm?.requestSubmit();
+});
+
+adminAccountSupportRefreshBtn?.addEventListener("click", async () => {
+  if (user.role !== "admin") return;
+  try {
+    await loadAdminAccountSupport(adminAccountSupportSearch?.value || "");
+    setDashActionStatus("Account support refreshed.");
+  } catch (error) {
+    setDashActionStatus(error.message, true);
+  }
+});
+
+adminAccountSupportSearch?.addEventListener("input", () => {
+  if (user.role !== "admin") return;
+  if (adminAccountSupportSearchTimerId) window.clearTimeout(adminAccountSupportSearchTimerId);
+  adminAccountSupportSearchTimerId = window.setTimeout(() => {
+    loadAdminAccountSupport(adminAccountSupportSearch?.value || "").catch((error) => {
+      setDashActionStatus(error.message, true);
+    });
+  }, 220);
+});
+
+adminAccountSupportResults?.addEventListener("click", (event) => {
+  const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-id]") : null;
+  if (!(target instanceof HTMLElement)) return;
+  adminAccountSupportSelectedId = String(target.getAttribute("data-admin-account-id") || "").trim();
+  renderAdminAccountSupportModule();
+});
+
+adminAccountSupportDetail?.addEventListener("click", async (event) => {
+  const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-action]") : null;
+  if (!(target instanceof HTMLElement)) return;
+  const action = String(target.getAttribute("data-admin-account-action") || "").trim();
+  const account = adminAccountSupportSelectedAccount();
+  if (!account) return;
+  try {
+    if (action === "edit-account") {
+      await openAdminAccountSupportEditForm();
+      return;
+    }
+    if (action === "open-dashboard" && account.role === "subscriber" && account?.business?.id) {
+      managedBusinessId = String(account.business.id || "").trim();
+      if (adminBusinessSelect) adminBusinessSelect.value = managedBusinessId;
+      syncAdminBusinessQueryParam();
+      await reloadAdminManagedDashboard();
+      renderModuleNavigator();
+      if (typeof closeModulePopupActive === "function") closeModulePopupActive();
+      subscriberCalendarSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setDashActionStatus(`Loaded ${account.business.name || "subscriber"} dashboard.`);
+      return;
+    }
+    if (action === "open-profile" && account.role === "subscriber" && account?.business?.id) {
+      managedBusinessId = String(account.business.id || "").trim();
+      if (adminBusinessSelect) adminBusinessSelect.value = managedBusinessId;
+      syncAdminBusinessQueryParam();
+      await reloadAdminManagedDashboard();
+      openInteractiveModulePopup("business_information");
+    }
+  } catch (error) {
+    setDashActionStatus(error.message, true);
+  }
 });
 
 manageModeToggle?.addEventListener("click", () => {
@@ -11545,29 +12716,20 @@ if (user.role === "subscriber" || user.role === "admin") {
 if (user.role !== "admin") {
   hideSection(adminCopilotSection);
   hideSection(accountingPlatformExportBtn);
+  hideSection(adminPlatformSection);
 }
 if (user.role !== "subscriber") {
   hideSection(subscriberCopilotSection);
 }
 if (user.role === "admin") {
-  hideSection(subscriberCalendarSection);
-  hideSection(businessGrowthSection);
   hideSection(subscriberExecutivePulseSection);
-  hideSection(businessProfileSection);
-  hideSection(socialMediaSection);
-  hideSection(accountingIntegrationsSection);
-  hideSection(subscriberCommandCenterSection);
-  hideSection(staffRosterSection);
-  hideSection(waitlistSection);
-  hideSection(operationsInsightsSection);
-  hideSection(crmSection);
-  hideSection(commercialSection);
-  hideSection(revenueAttributionSection);
-  hideSection(profitabilitySection);
   hideSection(subscriberSubscriptionSection);
   hideSection(first7DaysSnapshotSection);
-  hideSection(bookingOperationsSection);
   hideSection(contactAdminBtn);
+  hideSection(dashboardQuickActionsSection);
+  showSection(subscriberCalendarSection);
+  showSection(businessGrowthSection);
+  hideSection(adminCopilotSection);
 }
 if (user.role === "subscriber" || user.role === "admin") {
   hideSection(metricsGrid);
@@ -11604,6 +12766,11 @@ if (user.role !== "subscriber" && user.role !== "admin") {
 }
 initializeModuleNavigator();
 renderBusinessGrowthPanel();
+if (user.role === "admin") {
+  showSection(subscriberCalendarSection);
+  showSection(businessGrowthSection);
+  hideSection(adminPlatformSection);
+}
 initializeMobileBottomNav();
 document.addEventListener("click", (event) => {
   const target = event.target;
@@ -12611,6 +13778,30 @@ bookingCalendarGrid?.addEventListener("click", (event) => {
   openCalendarDayWorkspace(dateKey);
 });
 
+calendarDiaryWeekStrip?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const button = target.closest("[data-date-key]");
+  if (!(button instanceof HTMLElement)) return;
+  const dateKey = String(button.getAttribute("data-date-key") || "").trim();
+  if (!dateKey) return;
+  jumpToCalendarDate(dateKey);
+});
+
+calendarDiaryTodayBtn?.addEventListener("click", () => {
+  jumpToCalendarDate(todayDateKeyLocal());
+});
+
+calendarDiaryAddWalkInBtn?.addEventListener("click", () => {
+  openCalendarDiaryWalkIn().catch((error) => {
+    showManageToast(error?.message || "Could not add walk-in.", "error");
+  });
+});
+
+calendarDiaryOpenStaffBtn?.addEventListener("click", () => {
+  focusModuleByKey("staff");
+});
+
 bookingRangeToday?.addEventListener("click", () => applyBookingDatePreset("today"));
 bookingRangeWeek?.addEventListener("click", () => applyBookingDatePreset("week"));
 bookingRangeMonth?.addEventListener("click", () => applyBookingDatePreset("month"));
@@ -12641,7 +13832,7 @@ executivePulseRangeTabs?.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof HTMLButtonElement)) return;
   const nextRange = String(target.getAttribute("data-exec-range") || "").trim().toLowerCase();
-  if (!["day", "week", "month", "year"].includes(nextRange)) return;
+  if (!["all", "day", "week", "month", "year"].includes(nextRange)) return;
   if (executivePulseRange === nextRange) return;
   executivePulseRange = nextRange;
   renderExecutivePulse();
@@ -12718,26 +13909,26 @@ adminCopilotForm?.addEventListener("submit", async (event) => {
   if (adminCopilotInput) adminCopilotInput.value = "";
   openBusinessAiChatPopup("admin", { focusInput: false });
   appendCopilotChatMessage("admin", "user", question);
-  const pending = appendCopilotChatMessage("admin", "assistant", "Give me a moment while I check platform health and pull together the key fixes.", { pending: true });
+  const pending = appendCopilotChatMessage("admin", "assistant", t("dashboard.admin_pending", "Give me a moment while I check platform health and pull together the key fixes."), { pending: true });
   if (adminCopilotSend) adminCopilotSend.disabled = true;
-  if (adminCopilotAnswer) adminCopilotAnswer.textContent = "Give me a moment while I check platform health and pull together the key fixes.";
+  if (adminCopilotAnswer) adminCopilotAnswer.textContent = t("dashboard.admin_pending", "Give me a moment while I check platform health and pull together the key fixes.");
   try {
     const payload = await askAdminCopilot(copilotPromptWithBusinessContext("admin", question));
     renderAdminCopilotResponse(payload);
     if (pending?.bubble) {
-      pending.bubble.textContent = String(payload?.answer || "No reply came back yet.");
+      pending.bubble.textContent = String(payload?.answer || t("dashboard.no_reply_yet", "No reply came back yet."));
       pending.row?.classList.remove("is-pending");
     }
   } catch (error) {
     const fallback = {
-      answer: error.message || "I couldn't complete that admin Lexi check just now.",
-      findings: ["I couldn't complete that admin request right now."],
+      answer: error.message || t("dashboard.admin_check_failed", "I couldn't complete that admin Lexi check just now."),
+      findings: [t("dashboard.admin_request_failed", "I couldn't complete that admin request right now.")],
       suggestedFixes: ["Check the AI service setup and server logs, then try again."],
       snapshot: null
     };
     renderAdminCopilotResponse(fallback);
     if (pending?.bubble) {
-      pending.bubble.textContent = String(fallback.answer || "I couldn't complete that admin Lexi check just now.");
+      pending.bubble.textContent = String(fallback.answer || t("dashboard.admin_check_failed", "I couldn't complete that admin Lexi check just now."));
       pending.row?.classList.remove("is-pending");
     }
   } finally {
@@ -12747,9 +13938,9 @@ adminCopilotForm?.addEventListener("submit", async (event) => {
 
 adminCopilotClear?.addEventListener("click", () => {
   if (adminCopilotInput) adminCopilotInput.value = "";
-  resetCopilotChat("admin", "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions.");
+  resetCopilotChat("admin", t("dashboard.admin_intro", "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions."));
   renderAdminCopilotResponse({
-    answer: "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions.",
+    answer: t("dashboard.admin_intro", "Ask Lexi about admin checks, managed businesses, bookings, or general salon, barber, and beauty questions."),
     findings: [],
     suggestedFixes: [],
     snapshot: null
@@ -12776,26 +13967,26 @@ subscriberCopilotForm?.addEventListener("submit", async (event) => {
   if (subscriberCopilotInput) subscriberCopilotInput.value = "";
   openBusinessAiChatPopup("subscriber", { focusInput: false });
   appendCopilotChatMessage("subscriber", "user", question);
-  const pending = appendCopilotChatMessage("subscriber", "assistant", "Give me a moment while I check today's bookings and business signals so I can give you clear advice.", { pending: true });
+  const pending = appendCopilotChatMessage("subscriber", "assistant", t("dashboard.subscriber_pending", "Give me a moment while I check today's bookings and business signals so I can give you clear advice."), { pending: true });
   if (subscriberCopilotSend) subscriberCopilotSend.disabled = true;
-  if (subscriberCopilotAnswer) subscriberCopilotAnswer.textContent = "Give me a moment while I check today's bookings and business signals so I can give you clear advice.";
+  if (subscriberCopilotAnswer) subscriberCopilotAnswer.textContent = t("dashboard.subscriber_pending", "Give me a moment while I check today's bookings and business signals so I can give you clear advice.");
   try {
     const payload = await askSubscriberCopilot(copilotPromptWithBusinessContext("subscriber", question));
     renderSubscriberCopilotResponse(payload, { question });
     if (pending?.bubble) {
-      pending.bubble.textContent = String(payload?.answer || "No reply came back yet.");
+      pending.bubble.textContent = String(payload?.answer || t("dashboard.no_reply_yet", "No reply came back yet."));
       pending.row?.classList.remove("is-pending");
     }
   } catch (error) {
     const fallback = {
-      answer: error.message || "I couldn't complete that Lexi check just now.",
-      findings: ["I couldn't complete that request right now."],
+      answer: error.message || t("dashboard.subscriber_check_failed", "I couldn't complete that Lexi check just now."),
+      findings: [t("dashboard.request_failed", "I couldn't complete that request right now.")],
       suggestedActions: ["Check the server logs and AI service setup, then try again."],
       snapshot: null
     };
     renderSubscriberCopilotResponse(fallback, { question });
     if (pending?.bubble) {
-      pending.bubble.textContent = String(fallback.answer || "I couldn't complete that Lexi check just now.");
+      pending.bubble.textContent = String(fallback.answer || t("dashboard.subscriber_check_failed", "I couldn't complete that Lexi check just now."));
       pending.row?.classList.remove("is-pending");
     }
   } finally {
@@ -12805,9 +13996,9 @@ subscriberCopilotForm?.addEventListener("submit", async (event) => {
 
 subscriberCopilotClear?.addEventListener("click", () => {
   if (subscriberCopilotInput) subscriberCopilotInput.value = "";
-  resetCopilotChat("subscriber", "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions.");
+  resetCopilotChat("subscriber", t("dashboard.subscriber_intro", "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions."));
   renderSubscriberCopilotResponse({
-    answer: "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions.",
+    answer: t("dashboard.subscriber_intro", "Ask Lexi about your dashboard, bookings, services, products, or day-to-day salon questions."),
     findings: [],
     suggestedActions: [],
     snapshot: null
@@ -12985,8 +14176,8 @@ function renderCalendarFeatureSidebarLexi(summary) {
         )}</p>
         ${
           selected
-            ? `<button type="button" class="btn btn-ghost calendar-lexi-action" data-lexi-calendar-action="plan-day" data-date-key="${escapeHtml(selected.dateKey)}" data-date-label="${escapeHtml(selected.label)}">Ask Lexi for the day plan</button>`
-            : `<button type="button" class="btn btn-ghost" disabled>Ask Lexi for the day plan</button>`
+            ? `<button type="button" class="btn ask-lexi-btn calendar-lexi-action" data-lexi-calendar-action="plan-day" data-date-key="${escapeHtml(selected.dateKey)}" data-date-label="${escapeHtml(selected.label)}">${escapeHtml(t("dashboard.day_plan", "Ask Lexi for the day plan"))}</button>`
+            : `<button type="button" class="btn ask-lexi-btn" disabled>${escapeHtml(t("dashboard.day_plan", "Ask Lexi for the day plan"))}</button>`
         }
       </div>
       <div class="calendar-lexi-command-card">
@@ -13021,7 +14212,7 @@ function renderCalendarFeatureSidebarLexi(summary) {
         </div>
         <p>Click a date to view bookings, staffing cover and revenue context for that day. Lexi will use it in the Business AI workspace automatically.</p>
         <div class="calendar-lexi-actions" aria-label="Lexi day actions">
-          <button type="button" class="btn btn-ghost calendar-lexi-action is-disabled" disabled>Ask Lexi to plan the day</button>
+          <button type="button" class="btn ask-lexi-btn calendar-lexi-action is-disabled" disabled>${escapeHtml(t("dashboard.day_plan", "Ask Lexi for the day plan"))}</button>
           <button type="button" class="btn btn-ghost calendar-lexi-action is-disabled" disabled>Find booking gaps</button>
         </div>
       `;
@@ -13050,9 +14241,9 @@ function renderCalendarFeatureSidebarLexi(summary) {
     )}</small></li>
       </ul>
       <div class="calendar-lexi-actions" aria-label="Lexi day actions">
-        <button type="button" class="btn btn-ghost calendar-lexi-action" data-lexi-calendar-action="plan-day" data-date-key="${escapeHtml(
+        <button type="button" class="btn ask-lexi-btn calendar-lexi-action" data-lexi-calendar-action="plan-day" data-date-key="${escapeHtml(
           selected.dateKey
-        )}" data-date-label="${escapeHtml(selected.label)}">Ask Lexi to plan this day</button>
+        )}" data-date-label="${escapeHtml(selected.label)}">${escapeHtml(t("dashboard.day_plan", "Ask Lexi for the day plan"))}</button>
         <button type="button" class="btn btn-ghost calendar-lexi-action" data-lexi-calendar-action="fill-gaps" data-date-key="${escapeHtml(
           selected.dateKey
         )}" data-date-label="${escapeHtml(selected.label)}">Find booking gaps</button>
@@ -13083,11 +14274,11 @@ function launchLexiCalendarActionFromButton(actionButton) {
   const dateLabel = String(actionButton.getAttribute("data-date-label") || "").trim();
   const role = user.role === "admin" ? "admin" : "subscriber";
   const prompt = buildLexiCalendarPrompt(action, dateLabel, dateKey);
-  const targetSection = role === "admin" ? adminCopilotSection : subscriberCopilotSection;
-
-  setBusinessAiPrompt(role, prompt);
-  targetSection?.scrollIntoView({ behavior: "smooth", block: "start" });
-  openBusinessAiChatPopup(role, { focusInput: false });
+  openBusinessAiChatPopup(role, {
+    trigger: actionButton,
+    focusInput: false,
+    prompt
+  });
   if (role === "admin") {
     adminCopilotForm?.requestSubmit();
   } else {
@@ -13968,7 +15159,7 @@ function loadMockDashboard() {
     websiteUrl: "https://lumenstudio.example",
     websiteTitle: "Lumen Studio",
     websiteSummary: "Premium color and styling salon with AI-assisted bookings and fast front-desk support.",
-    websiteImageUrl: "/Salon_AI_IMG.png",
+    websiteImageUrl: "/LEXI_IMG.png",
     hours: {
       monday: "09:00 - 18:00",
       tuesday: "09:00 - 18:00",
@@ -13994,7 +15185,7 @@ function loadMockDashboard() {
     socialLinkedin: "",
     socialTiktok: "https://tiktok.com/@lumenstudio.example",
     customSocial: "https://linktr.ee/lumenstudio",
-    socialImageUrl: "/Salon_AI_IMG.png"
+    socialImageUrl: "/LEXI_IMG.png"
   };
   setSocialMediaFormValues(mockSocial);
   renderSocialMediaPreview(mockSocial);
@@ -14321,6 +15512,7 @@ if (isMockMode || dashboardDemoFillModeEnabled) {
     if (user.role === "admin") {
       try {
         await loadAdminBusinessOptions();
+        await loadAdminPlatformOverview();
       } catch (error) {
         setAdminBusinessStatus(error.message, true);
       }
