@@ -117,10 +117,8 @@ const onboardingStatusList = document.getElementById("onboardingStatusList");
 const onboardingChecklist = document.getElementById("onboardingChecklist");
 const first7DaysGrid = document.getElementById("first7DaysGrid");
 const first7DaysSnapshotSection = document.getElementById("first7DaysSnapshotSection");
-const moduleNavigatorSection = document.getElementById("moduleNavigatorSection");
-const moduleNavigatorIntro = document.getElementById("moduleNavigatorIntro");
-const moduleCards = document.getElementById("moduleCards");
-const moduleDetails = document.getElementById("moduleDetails");
+const businessHubIntro = document.getElementById("businessHubIntro");
+const businessHubCardsGrid = document.getElementById("businessHubCardsGrid");
 const dashboardQuickActionsSection = document.getElementById("dashboardQuickActionsSection");
 const subscriberFullDemoModeSection = document.getElementById("subscriberFullDemoModeSection");
 const subscriberFullDemoModeSummary = document.getElementById("subscriberFullDemoModeSummary");
@@ -165,17 +163,24 @@ const executivePulseTitle = document.getElementById("executivePulseTitle");
 const executivePulseSignals = document.getElementById("executivePulseSignals");
 const executivePulseGauges = document.getElementById("executivePulseGauges");
 const executivePulseBars = document.getElementById("executivePulseBars");
+const executivePulseStorylineTitle = document.getElementById("executivePulseStorylineTitle");
 const executivePulseActions = document.getElementById("executivePulseActions");
 const executivePulseRangeTabs = document.getElementById("executivePulseRangeTabs");
+const executivePulseAdminMetricTabs = document.getElementById("executivePulseAdminMetricTabs");
 const executivePulseRangeMeta = document.getElementById("executivePulseRangeMeta");
 const executivePulseSaveSnapshotBtn = document.getElementById("executivePulseSaveSnapshotBtn");
+const executivePulseFinanceTitle = document.getElementById("executivePulseFinanceTitle");
 const executivePulseFinanceWindowLabel = document.getElementById("executivePulseFinanceWindowLabel");
 const executivePulseFinanceStats = document.getElementById("executivePulseFinanceStats");
 const executivePulseRevenueChart = document.getElementById("executivePulseRevenueChart");
 const executivePulseRevenueChartNote = document.getElementById("executivePulseRevenueChartNote");
 const executivePulseProfitChart = document.getElementById("executivePulseProfitChart");
 const executivePulseProfitChartNote = document.getElementById("executivePulseProfitChartNote");
+const executivePulseActionsTitle = document.getElementById("executivePulseActionsTitle");
+const executivePulseActionsSubtitle = document.getElementById("executivePulseActionsSubtitle");
 const executivePulseSnapshotList = document.getElementById("executivePulseSnapshotList");
+const executivePulseSnapshotsTitle = document.getElementById("executivePulseSnapshotsTitle");
+const executivePulseSnapshotsSubtitle = document.getElementById("executivePulseSnapshotsSubtitle");
 const subscriberCopilotSection = document.getElementById("subscriberCopilotSection");
 const subscriberCopilotForm = document.getElementById("subscriberCopilotForm");
 const subscriberCopilotInput = document.getElementById("subscriberCopilotInput");
@@ -264,6 +269,7 @@ const adminRevenueHealthGauge = document.getElementById("adminRevenueHealthGauge
 const adminRevenueYieldGauge = document.getElementById("adminRevenueYieldGauge");
 const adminRevenueTrendGraph = document.getElementById("adminRevenueTrendGraph");
 const adminRevenueMonthlyList = document.getElementById("adminRevenueMonthlyList");
+const adminRevenueSignalList = document.getElementById("adminRevenueSignalList");
 const adminRevenuePeriodPill = document.getElementById("adminRevenuePeriodPill");
 const adminRevenueNote = document.getElementById("adminRevenueNote");
 const adminUsageSummaryGrid = document.getElementById("adminUsageSummaryGrid");
@@ -302,7 +308,8 @@ let bookingDateFilterLabel = "All dates";
 let bookingDateFilterKeys = null;
 let bookingDateFilterPreset = "";
 let selectedCalendarDateKey = "";
-let executivePulseRange = "all";
+let executivePulseRange = "day";
+let executivePulseAdminMetricView = "bookings";
 let latestExecutivePulseSnapshotDraft = null;
 let accountingRows = [];
 let accountingLivePayload = null;
@@ -326,6 +333,7 @@ let waitlistSummary = null;
 let operationsInsights = null;
 let crmSegmentsPayload = null;
 let commercialPayload = null;
+let merchImageUploadData = "";
 let revenueAttributionPayload = null;
 let profitabilityPayload = null;
 let managedBusinessId = "";
@@ -488,6 +496,19 @@ const giftBalanceInput = document.getElementById("giftBalanceInput");
 const giftExpiresInput = document.getElementById("giftExpiresInput");
 const giftCardList = document.getElementById("giftCardList");
 const commercialStatusNote = document.getElementById("commercialStatusNote");
+const merchSection = document.getElementById("merchSection");
+const merchSummaryCards = document.getElementById("merchSummaryCards");
+const merchForm = document.getElementById("merchForm");
+const merchNameInput = document.getElementById("merchNameInput");
+const merchPriceInput = document.getElementById("merchPriceInput");
+const merchInventoryInput = document.getElementById("merchInventoryInput");
+const merchImageUrlInput = document.getElementById("merchImageUrlInput");
+const merchImageFileInput = document.getElementById("merchImageFileInput");
+const merchDescriptionInput = document.getElementById("merchDescriptionInput");
+const merchShippingInput = document.getElementById("merchShippingInput");
+const merchShippingCostInput = document.getElementById("merchShippingCostInput");
+const merchList = document.getElementById("merchList");
+const merchStatusNote = document.getElementById("merchStatusNote");
 const revenueAttributionSection = document.getElementById("revenueAttributionSection");
 const revenueSummaryCards = document.getElementById("revenueSummaryCards");
 const revenueSpendForm = document.getElementById("revenueSpendForm");
@@ -608,6 +629,7 @@ const subscriberFullDemoModuleGuide = [
   { name: "Staff Rota & Capacity", detail: "Manage team availability, rota cover, and capacity across the week." },
   { name: "CRM & Campaigns", detail: "Run customer follow-ups, reactivation campaigns, and retention actions to drive repeat bookings." },
   { name: "Commercial Controls", detail: "Manage packages, memberships, and offers to increase repeat spend and customer value." },
+  { name: "Merch", detail: "Sell in-salon retail products with product images, sale prices, and customer shipping records." },
   { name: "Accounting / Revenue / Profitability", detail: "Track takings, revenue signals, and profitability with realistic mock data in demo mode." }
 ];
 
@@ -2000,9 +2022,6 @@ function renderAdminManagedBusinessSummary() {
 
 function renderAdminPlatformOverview() {
   if (user.role !== "admin") return;
-  if (adminExecutiveControlMount && adminPlatformSection?.firstElementChild && adminPlatformSection.firstElementChild.parentNode !== adminExecutiveControlMount) {
-    adminExecutiveControlMount.appendChild(adminPlatformSection.firstElementChild);
-  }
   if (adminPlatformMetricGrid) {
     const analytics = adminPlatformAnalytics?.analytics || {};
     const cards = [
@@ -2128,7 +2147,158 @@ function renderAdminPlatformOverview() {
       `;
     }).join("");
   }
-
+  if (adminRevenueSignalList) {
+    const summary = adminRevenueAnalytics?.summary || {};
+    const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
+    const sortedByRevenue = [...monthly].sort((a, b) => Number(b?.estimatedSubscriptionRevenue || 0) - Number(a?.estimatedSubscriptionRevenue || 0));
+    const strongestMonth = sortedByRevenue[0] || null;
+    const weakestMonth = sortedByRevenue[sortedByRevenue.length - 1] || null;
+    const periodMonths = Number(summary.periodMonths || 6);
+    const cancelledSubscriptions = Number(summary.subscriptionCancellationsInPeriod || 0);
+    const cancelledBookings = Number(summary.bookingCancellationsInPeriod || 0);
+    const activeSubscriptions = Number(summary.activeSubscriptions || 0);
+    const revenueInPeriod = Number(summary.estimatedRevenueInPeriod || 0);
+    const estimatedMrr = Number(summary.estimatedMrr || 0);
+    const avgPlanValue = Number(summary.avgPlanValue || 0);
+    const churnDrag = Math.max(0, cancelledSubscriptions * avgPlanValue);
+    const cancelPressure = cancelledBookings > 0
+      ? `${cancelledBookings} booking cancellations in period`
+      : "No booking cancellation pressure in this period";
+    const strongestRevenue = Number(strongestMonth?.estimatedSubscriptionRevenue || 0);
+    const weakestRevenue = Number(weakestMonth?.estimatedSubscriptionRevenue || 0);
+    const monthlyGap = Math.max(0, strongestRevenue - weakestRevenue);
+    const averageMonthlyRevenue = periodMonths > 0 ? revenueInPeriod / periodMonths : revenueInPeriod;
+    const revenuePerSubscriber = activeSubscriptions > 0 ? estimatedMrr / activeSubscriptions : 0;
+    const cancellationRate = activeSubscriptions + cancelledSubscriptions > 0
+      ? Math.round((cancelledSubscriptions / (activeSubscriptions + cancelledSubscriptions)) * 100)
+      : 0;
+    const focusNote = churnDrag > monthlyGap
+      ? "Subscriber churn is dragging more value than month-to-month pace swings."
+      : "Revenue pacing is the bigger watchpoint than subscriber churn right now.";
+    const signalCards = [
+      {
+        label: "MRR Watch",
+        title: formatMoney(estimatedMrr),
+        detail: `${activeSubscriptions} active subscriptions contributing to current recurring revenue.`
+      },
+      {
+        label: "Average Monthly Pace",
+        title: formatMoney(averageMonthlyRevenue),
+        detail: `Average revenue across the last ${periodMonths} month${periodMonths === 1 ? "" : "s"}.`
+      },
+      {
+        label: "Best Month",
+        title: strongestMonth ? `${strongestMonth.label}: ${formatMoney(strongestRevenue)}` : "No month loaded",
+        detail: strongestMonth ? "Use this month as the pace benchmark for subscriber retention and plan growth." : "Revenue history has not loaded yet."
+      },
+      {
+        label: "Weakest Month",
+        title: weakestMonth ? `${weakestMonth.label}: ${formatMoney(weakestRevenue)}` : "No month loaded",
+        detail: weakestMonth ? `Gap to strongest month: ${formatMoney(monthlyGap)}.` : "Revenue history has not loaded yet."
+      },
+      {
+        label: "Churn Drag",
+        title: formatMoney(churnDrag),
+        detail: `${cancelledSubscriptions} subscriber cancellations across ${periodMonths} months.`
+      },
+      {
+        label: "Cancellation Pressure",
+        title: cancelPressure,
+        detail: revenueInPeriod > 0 ? `${formatMoney(revenueInPeriod)} tracked in the same period.` : "No revenue tracked yet in this period."
+      },
+      {
+        label: "Plan Value",
+        title: formatMoney(avgPlanValue),
+        detail: revenuePerSubscriber > 0
+          ? `${formatMoney(revenuePerSubscriber)} MRR per active subscriber.`
+          : "Per-subscriber revenue will appear once active subscriptions are loaded."
+      },
+      {
+        label: "Retention Rate",
+        title: `${Math.max(0, 100 - cancellationRate)}%`,
+        detail: cancellationRate > 0
+          ? `${cancellationRate}% cancellation rate across active and cancelled subscriptions in this window.`
+          : "No subscription churn in this window."
+      },
+      {
+        label: "Revenue Spread",
+        title: formatMoney(monthlyGap),
+        detail: strongestMonth && weakestMonth
+          ? `${strongestMonth.label} is outperforming ${weakestMonth.label} by ${formatMoney(monthlyGap)}.`
+          : "Monthly spread appears once revenue history is loaded."
+      },
+      {
+        label: "Admin Focus",
+        title: focusNote,
+        detail: "Review retention, cancellation spikes, and plan-value protection together before product or pricing changes."
+      }
+    ];
+    adminRevenueSignalList.innerHTML = signalCards.map((card) => `
+      <article class="admin-revenue-signal-card">
+        <p>${escapeHtml(card.label)}</p>
+        <strong>${escapeHtml(card.title)}</strong>
+        <small>${escapeHtml(card.detail)}</small>
+      </article>
+    `).join("");
+  }
+  if (adminRevenueMonthlyList) {
+    const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
+    const maxRevenue = Math.max(1, ...monthly.map((row) => Number(row?.estimatedSubscriptionRevenue || 0)));
+    const periodRevenue = Math.max(1, Number(adminRevenueAnalytics?.summary?.estimatedRevenueInPeriod || 0));
+    adminRevenueMonthlyList.innerHTML = monthly.map((row, index) => {
+      const revenue = Number(row?.estimatedSubscriptionRevenue || 0);
+      const subscriptionCancellations = Number(row?.subscriptionCancellations || 0);
+      const bookingCancellations = Number(row?.bookingCancellations || 0);
+      const cancelCount = subscriptionCancellations + bookingCancellations;
+      const widthPct = Math.max(8, Math.round((revenue / maxRevenue) * 100));
+      const retainedPct = Math.max(0, Math.min(100, 100 - Math.round((cancelCount / Math.max(1, cancelCount + 12)) * 100)));
+      const revenueSharePct = Math.max(1, Math.round((revenue / periodRevenue) * 100));
+      const accentClass = `is-accent-${(index % 4) + 1}`;
+      return `
+        <article class="admin-revenue-month-row ${accentClass}">
+          <div class="admin-revenue-month-head">
+            <div class="admin-revenue-month-copy">
+              <p>Revenue Window</p>
+              <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
+            </div>
+            <div class="admin-revenue-month-hero">
+              <span>${escapeHtml(formatMoney(revenue))}</span>
+              <small>${escapeHtml(`${revenueSharePct}% of period revenue`)}</small>
+            </div>
+          </div>
+          <div class="admin-revenue-month-bar">
+            <span style="width:${widthPct}%"></span>
+          </div>
+          <div class="admin-revenue-month-stats">
+            <article class="admin-revenue-month-stat">
+              <p>Month Share</p>
+              <strong>${escapeHtml(`${widthPct}%`)}</strong>
+              <small>Compared with the top month in this view</small>
+            </article>
+            <article class="admin-revenue-month-stat">
+              <p>Subscriber Churn</p>
+              <strong>${escapeHtml(String(subscriptionCancellations))}</strong>
+              <small>Subscription cancellations recorded in this month</small>
+            </article>
+            <article class="admin-revenue-month-stat">
+              <p>Booking Loss</p>
+              <strong>${escapeHtml(String(bookingCancellations))}</strong>
+              <small>Booking cancellations affecting app revenue flow</small>
+            </article>
+            <article class="admin-revenue-month-stat">
+              <p>Retention Signal</p>
+              <strong>${escapeHtml(`${retainedPct}%`)}</strong>
+              <small>Higher values mean lower cancellation drag in this window</small>
+            </article>
+          </div>
+          <div class="admin-revenue-month-meta">
+            <small>${escapeHtml(`${cancelCount} total cancellations this month`)}</small>
+            <small>${escapeHtml(`Revenue rank: ${widthPct >= 80 ? "Top tier" : widthPct >= 55 ? "Mid range" : "Recovery needed"}`)}</small>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
   if (adminRevenuePeriodPill) {
     adminRevenuePeriodPill.textContent = `Last ${Number(adminRevenueAnalytics?.summary?.periodMonths || 6)} months`;
   }
@@ -3562,6 +3732,18 @@ function moduleDefinitionsForRole() {
         howItHelps: "Supports repeat spend and steadier cash flow."
       },
       {
+        key: "merch",
+        section: merchSection,
+        label: "Merch",
+        popupMode: "interactive",
+        popupSize: "xl",
+        cadence: "Weekly check",
+        navSummary: "Sell in-salon retail products with images, descriptions, sale prices, and shipment tracking.",
+        features: ["Product catalog", "Image and description", "Ship to customer"],
+        howItWorks: "Add products you stock in the salon, attach product imagery, set pricing, and create shipment records for customers.",
+        howItHelps: "Makes retail product sales easier to manage without leaving the subscriber dashboard."
+      },
+      {
         key: "offers_packages",
         section: commercialSection,
         label: "Offers & Packages",
@@ -3683,105 +3865,7 @@ function moduleDefinitionsForRole() {
         howItHelps: "Reduces finance surprises and makes month-end checks faster."
       }
     ];
-    const curatedModules = [
-      ...(user.role === "admin" ? [{
-        key: "account_support",
-        section: adminAccountSupportSection,
-        label: "Account Support",
-        popupMode: "interactive",
-        popupSize: "xl",
-        cadence: "Use daily",
-        navSummary: "Search subscriber or customer accounts, review activity, and handle admin edits from one popup.",
-        features: ["Account search", "Subscriber dashboard handoff", "Safe admin edits"],
-        howItWorks: "Search across subscriber and customer accounts, then open the account record you need to support.",
-        howItHelps: "Gives admin one clean support module instead of a separate managed-business control panel."
-      }] : []),
-      {
-        key: "business_information",
-        section: businessProfileSection,
-        label: "Business Information",
-        popupMode: "interactive",
-        popupSize: "xl",
-        cadence: "Use daily",
-        navSummary: "Review and update the business details Lexi, customers, and the dashboard rely on every day.",
-        features: ["Business details", "Opening hours", "Contact setup"],
-        howItWorks: "Opens the business profile workspace so you can update the core information your salon runs on.",
-        howItHelps: "Keeps the business profile accurate for bookings, customer trust, and daily operations."
-      },
-      {
-        key: "staff_setup",
-        section: staffRosterSection,
-        label: "Staff Setup",
-        popupMode: "interactive",
-        popupSize: "large",
-        cadence: "Use daily",
-        navSummary: "Manage the team rota, shift cover, and availability in one focused workspace.",
-        features: ["Rota control", "Availability", "Cover planning"],
-        howItWorks: "Opens the staff workspace so you can edit rota coverage and keep capacity aligned with bookings.",
-        howItHelps: "Reduces scheduling confusion and keeps the day easier to manage."
-      },
-      {
-        key: "salon_features",
-        section: businessProfileSection,
-        label: "Salon Features",
-        popupMode: "interactive",
-        popupSize: "xl",
-        cadence: "Weekly check",
-        navSummary: "Control the services and salon features Lexi and customers should see.",
-        features: ["Service visibility", "Salon capabilities", "Feature control"],
-        howItWorks: "Uses the business profile workspace to manage the services, features, and options the salon actually offers.",
-        howItHelps: "Keeps Lexi and the booking journey aligned with the real business."
-      },
-      {
-        key: "social_media",
-        section: socialMediaSection,
-        label: "Social Media",
-        popupMode: "interactive",
-        popupSize: "large",
-        cadence: "Weekly check",
-        navSummary: "Keep the salon's linked social accounts, brand links, and public profile touchpoints tidy.",
-        features: ["Linked socials", "Profile links", "Brand consistency"],
-        howItWorks: "Opens the social workspace so you can manage the accounts and links connected to the business.",
-        howItHelps: "Makes the salon easier to find and keeps brand presentation consistent."
-      },
-      {
-        key: "accounting",
-        section: accountingIntegrationsSection,
-        label: "Accounting",
-        popupMode: "interactive",
-        popupSize: "xl",
-        cadence: "Weekly check",
-        navSummary: "Send revenue information to accounting and manage connected finance tools from one place.",
-        features: ["Provider links", "Exports", "Accountant-ready data"],
-        howItWorks: "Opens the accounting workspace so you can link providers, export reports, and keep records cleaner.",
-        howItHelps: "Reduces manual finance admin and keeps reconciliation easier."
-      },
-      {
-        key: "finance",
-        section: accountingIntegrationsSection,
-        label: "Finance",
-        popupMode: "interactive",
-        popupSize: "xl",
-        cadence: "Use daily",
-        navSummary: "See day, week, month, and custom revenue views without digging through complex reports.",
-        features: ["Daily revenue", "Weekly and monthly views", "Fast money check"],
-        howItWorks: "Uses the accounting workspace to show a simpler revenue view for the business.",
-        howItHelps: "Gives owners a faster way to understand how the salon is performing."
-      },
-      {
-        key: "cancellations",
-        section: operationsInsightsSection,
-        label: "Cancellations",
-        popupMode: "interactive",
-        popupSize: "large",
-        cadence: "Use daily",
-        navSummary: "Review cancellation pressure, no-show risk, and recovery actions in one popup workspace.",
-        features: ["Cancellation risk", "Rebooking prompts", "Recovery actions"],
-        howItWorks: "Uses the operations workspace to review cancellation and no-show pressure, then move into recovery actions with Lexi.",
-        howItHelps: "Helps protect revenue and keep empty chairs from building up."
-      }
-    ];
-    return curatedModules.map(normalizeModuleConfig).filter((mod) => mod?.enabled !== false);
+    return modules.map(normalizeModuleConfig).filter((mod) => mod?.enabled !== false);
   }
   return [];
 }
@@ -3790,14 +3874,7 @@ function moduleGroupForRole(mod) {
   if (!mod || !mod.key) return "Modules";
   const key = String(mod.key);
   const map = {
-    account_support: "Business Hub",
-    business_information: "Business Hub",
-    staff_setup: "Business Hub",
-    salon_features: "Business Hub",
-    social_media: "Business Hub",
-    accounting: "Business Hub",
-    finance: "Business Hub",
-    cancellations: "Business Hub",
+    account_support: "Operations",
     admin_copilot: "Copilot",
     subscriber_copilot: "Copilot",
     home: "Home",
@@ -3813,6 +3890,7 @@ function moduleGroupForRole(mod) {
     crm: "Growth",
     client_retention: "Growth",
     offers_packages: "Growth",
+    merch: "Growth",
     social: "Growth",
     reviews_reputation: "Growth",
     referrals_partnerships: "Growth",
@@ -3842,7 +3920,7 @@ function groupedModulesForCurrentRole() {
     if (user.role === "subscriber" && mod.key === "subscriber_copilot") return false;
     return true;
   });
-  const groupOrder = ["Business Hub", "Home", "Copilot", "Operations", "Growth", "Finance", "Modules"];
+  const groupOrder = ["Home", "Copilot", "Operations", "Growth", "Finance", "Modules"];
   const groups = new Map();
   modules.forEach((mod) => {
     const group = moduleGroupForRole(mod);
@@ -3860,102 +3938,238 @@ function formatModuleGroupHeading(groupName) {
   return group;
 }
 
+const BUSINESS_HUB_CARD_CONFIG = [
+  {
+    key: "business_profile",
+    title: "Business Information",
+    kicker: "Core setup",
+    summary: "Business name, contact details, hours, services, and the setup data Lexi and customers rely on.",
+    details: [
+      "Update the salon profile, hours, and service information.",
+      "Keep booking-facing details accurate for clients and staff.",
+      "Review the business details Lexi uses in guidance and answers."
+    ]
+  },
+  {
+    key: "staff",
+    title: "Staff Setup",
+    kicker: "Team control",
+    summary: "Team members, shift cover, capacity planning, and the staffing details behind your diary.",
+    details: [
+      "Add or review staff records and working patterns.",
+      "Check cover and capacity before busy dates create pressure.",
+      "Keep the rota aligned with bookings and service demand."
+    ]
+  },
+  {
+    key: "frontdesk",
+    title: "Salon Features",
+    kicker: "Customer view",
+    summary: "What customers see about the salon, including front-desk presentation, services, and trust-building details.",
+    details: [
+      "Review the public-facing service setup and salon presentation.",
+      "Check that the front desk experience looks clear and polished.",
+      "Keep the booking journey aligned with the salon brand."
+    ]
+  },
+  {
+    key: "social",
+    title: "Social Media",
+    kicker: "Brand links",
+    summary: "Linked socials, brand touchpoints, and the public profile links tied to the business.",
+    details: [
+      "Keep social links and public brand touchpoints current.",
+      "Make sure profile destinations match the salon brand.",
+      "Check visibility details customers use before booking."
+    ]
+  },
+  {
+    key: "merch",
+    title: "Merch",
+    kicker: "Retail sales",
+    summary: "Retail products, pricing, images, and shipment records for in-salon product sales.",
+    details: [
+      "Add products with pricing, images, and descriptions.",
+      "Track what is being sold from the salon dashboard.",
+      "Create shipment records when products need to be sent to customers."
+    ]
+  },
+  {
+    key: "accounting",
+    title: "Accounting",
+    kicker: "Money admin",
+    summary: "Revenue exports, provider links, and the bookkeeping side of the business.",
+    details: [
+      "Review revenue activity and exported finance data.",
+      "Check accounting integrations and reconciliation support.",
+      "Keep finance admin tidy without leaving the dashboard."
+    ]
+  },
+  {
+    key: "profitability",
+    title: "Finance",
+    kicker: "Margin view",
+    summary: "Break-even, payroll impact, costs, and the numbers that show what is driving profit.",
+    details: [
+      "Track payroll and cost inputs against revenue.",
+      "Check margin pressure and break-even position.",
+      "Use the numbers to support pricing and staffing decisions."
+    ]
+  },
+  {
+    key: "operations",
+    title: "Cancellations",
+    kicker: "Recovery actions",
+    summary: "No-show risk, rebooking opportunities, and the actions that help protect chair time.",
+    details: [
+      "Review cancellation and no-show pressure quickly.",
+      "Spot rebooking opportunities and recovery work.",
+      "Use one focused view to protect appointments and repeat visits."
+    ]
+  }
+];
+
 function businessHubModulesForCurrentRole() {
   if (!(user.role === "subscriber" || user.role === "admin")) return [];
-  const preferredKeys = user.role === "admin"
-    ? [
-        "account_support",
-        "business_information",
-        "staff_setup",
-        "salon_features",
-        "social_media",
-        "accounting",
-        "finance",
-        "cancellations"
-      ]
-    : [
-        "business_information",
-        "staff_setup",
-        "salon_features",
-        "social_media",
-        "accounting",
-        "finance",
-        "cancellations"
-      ];
-  const moduleMap = new Map(moduleDefinitionsForRole().map((mod) => [String(mod?.key || "").trim(), mod]));
-  return preferredKeys.map((key) => moduleMap.get(key)).filter(Boolean);
+  return BUSINESS_HUB_CARD_CONFIG.map((item) => {
+    const mod = moduleDefinitionByKey(item.key);
+    if (!mod) return null;
+    return { ...item, mod };
+  }).filter(Boolean);
 }
 
-function buildModuleCardButton(mod) {
-  const isPinned = isPinnedBusinessModule(mod);
+function buildBusinessHubCardButton(item) {
+  const { mod } = item;
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = `module-card${mod.key === activeModuleKey ? " active" : ""}`;
-  btn.setAttribute("data-module-key", mod.key);
+  btn.className = "module-card";
+  btn.setAttribute("data-business-hub-key", item.key);
   const status = moduleOperationalStatus(mod);
-  const summaryText = String(mod.navSummary || mod.howItHelps || mod.howItWorks || status.note || "").trim();
-  const cadenceClass = String(mod.cadence || "").toLowerCase().replace(/\s+/g, "-");
-  const usage = moduleUsageSummary(mod);
-  const usageText = usage.label === "Not used yet" ? "Opens in a focused popup." : (usage.detail || usage.label);
   btn.innerHTML = `
-    <strong>${mod.label}</strong>
-    <small class="module-card-summary">${escapeHtml(summaryText)}</small>
+    <strong>${escapeHtml(item.title)}</strong>
+    <small class="module-card-summary">${escapeHtml(item.summary)}</small>
     <div class="module-card-meta">
-      ${isPinned ? '<span class="module-card-pill accent">Pinned</span>' : ""}
-      ${mod.startHere ? '<span class="module-card-pill accent">Start here</span>' : ""}
-      <span class="module-card-pill ${cadenceClass.includes("weekly") ? "soft" : ""}">${escapeHtml(mod.cadence || "Use daily")}</span>
+      <span class="module-card-pill accent">${escapeHtml(item.kicker)}</span>
       ${renderModuleStatusPill(status, { compact: true })}
     </div>
-    <small class="module-card-usage">${escapeHtml(usageText)}</small>
+    <small class="module-card-usage">Opens a simple popup with module info, Lexi help, and the full workspace.</small>
   `;
+  btn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openBusinessHubModulePopup(item.key);
+  });
   return btn;
 }
 
+function openBusinessHubModulePopup(moduleKey) {
+  const hubCard = businessHubModulesForCurrentRole().find((item) => item.key === moduleKey);
+  const mod = hubCard?.mod || moduleDefinitionByKey(moduleKey);
+  if (!hubCard || !mod) return;
+  markModuleUsed(mod.key, "open");
+  if (typeof closeModulePopupActive === "function") closeModulePopupActive();
+
+  const overlay = ensureManageModalOverlay();
+  overlay.innerHTML = "";
+  overlay.style.display = "flex";
+
+  const shell = document.createElement("section");
+  shell.className = "module-info-modal size-medium";
+  shell.setAttribute("role", "dialog");
+  shell.setAttribute("aria-modal", "true");
+  shell.setAttribute("aria-labelledby", "businessHubModulePopupTitle");
+
+  const roleLabel = user.role === "admin" ? "Admin workspace" : "Subscriber workspace";
+  const status = moduleOperationalStatus(mod);
+  const features = (Array.isArray(mod.features) ? mod.features : [])
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("") || "<li>Open the workspace to review and manage this business area.</li>";
+
+  shell.innerHTML = `
+    <div class="module-info-modal-head">
+      <div>
+        <h3 id="businessHubModulePopupTitle">${escapeHtml(hubCard.title)}</h3>
+        <div class="module-info-modal-meta">
+          <span class="module-chip">${escapeHtml(roleLabel)}</span>
+          <span class="module-chip">${escapeHtml(hubCard.kicker)}</span>
+          <span class="module-chip module-chip-status ${status.tone === "good" ? "is-good" : status.tone === "attention" ? "is-attention" : "is-setup"}">${escapeHtml(status.label || "Available")}</span>
+        </div>
+      </div>
+      <button type="button" class="module-info-close" aria-label="Close business hub popup">x</button>
+    </div>
+    <div class="module-info-scroll">
+      <section class="module-info-pane">
+        <h4>What This Covers</h4>
+        <p>${escapeHtml(hubCard.summary)}</p>
+      </section>
+      <section class="module-info-pane">
+        <h4>Why It Matters</h4>
+        <ul class="module-info-feature-list">${hubCard.details.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      </section>
+      <section class="module-info-pane">
+        <h4>Inside This Module</h4>
+        <ul class="module-info-feature-list">${features}</ul>
+      </section>
+    </div>
+    <div class="module-info-actions">
+      <small class="module-info-hint">Press Esc or click outside to close.</small>
+      <button type="button" class="btn btn-ghost hub-popup-close-btn">Close</button>
+      <button type="button" class="btn ask-lexi-btn hub-popup-lexi-btn">Ask Lexi</button>
+      <button type="button" class="btn hub-popup-open-btn">Open Module</button>
+    </div>
+  `;
+
+  overlay.appendChild(shell);
+
+  const close = () => {
+    if (typeof closeModulePopupActive !== "function") return;
+    document.removeEventListener("keydown", onKeyDown);
+    overlay.removeEventListener("click", onOverlayClick);
+    overlay.style.display = "none";
+    overlay.innerHTML = "";
+    closeModulePopupActive = null;
+  };
+  const onKeyDown = (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    }
+  };
+  const onOverlayClick = (event) => {
+    if (event.target === overlay) close();
+  };
+
+  closeModulePopupActive = close;
+  document.addEventListener("keydown", onKeyDown);
+  overlay.addEventListener("click", onOverlayClick);
+  shell.querySelector(".module-info-close")?.addEventListener("click", close);
+  shell.querySelector(".hub-popup-close-btn")?.addEventListener("click", close);
+  shell.querySelector(".hub-popup-lexi-btn")?.addEventListener("click", () => {
+    openLexiModuleAssist(mod, { trigger: shell.querySelector(".hub-popup-lexi-btn") });
+  });
+  shell.querySelector(".hub-popup-open-btn")?.addEventListener("click", () => {
+    close();
+    setWorkspaceBackButtonVisible(mod.key !== "home");
+    focusModuleByKey(mod.key);
+  });
+
+  const closeButton = shell.querySelector(".module-info-close");
+  if (closeButton instanceof HTMLElement) closeButton.focus();
+}
+
+function renderBusinessHubCards() {
+  if (!businessHubCardsGrid) return;
+  const cards = businessHubModulesForCurrentRole();
+  businessHubCardsGrid.innerHTML = "";
+  cards.forEach((item) => {
+    businessHubCardsGrid.appendChild(buildBusinessHubCardButton(item));
+  });
+}
+
 function renderModuleNavigator() {
-  if (!moduleNavigatorSection || !moduleCards) return;
-  const modules = user.role === "subscriber" || user.role === "admin"
-    ? businessHubModulesForCurrentRole()
-    : groupedModulesForCurrentRole().flatMap((entry) => entry.modules);
-  if (!modules.length) {
-    hideSection(moduleNavigatorSection);
-    return;
-  }
-  showSection(moduleNavigatorSection);
-  if (moduleNavigatorIntro) {
-    moduleNavigatorIntro.textContent = user.role === "customer"
-      ? "Move between customer tools here."
-      : "Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.";
-  }
-
-  moduleCards.innerHTML = "";
-  if (user.role === "subscriber" || user.role === "admin") {
-    moduleCards.classList.add("business-hub-grid");
-    modules.forEach((mod) => {
-      moduleCards.appendChild(buildModuleCardButton(mod));
-    });
-  } else {
-    moduleCards.classList.remove("business-hub-grid");
-    const grouped = groupedModulesForCurrentRole();
-    grouped.forEach(({ group, modules: groupModules }) => {
-      const wrapper = document.createElement("section");
-      wrapper.className = "module-group";
-      wrapper.innerHTML = `<header class="module-group-head"><h3>${escapeHtml(formatModuleGroupHeading(group))}</h3></header>`;
-      const grid = document.createElement("div");
-      grid.className = "module-group-grid";
-      groupModules.forEach((mod) => {
-        grid.appendChild(buildModuleCardButton(mod));
-      });
-      wrapper.appendChild(grid);
-      moduleCards.appendChild(wrapper);
-    });
-  }
-
-  const active = modules.find((mod) => mod.key === activeModuleKey) || modules[0];
-  activeModuleKey = active.key;
-  if (moduleDetails) {
-    hideSection(moduleDetails);
-    moduleDetails.innerHTML = "";
-  }
+  return;
 }
 
 function moduleDefinitionByKey(moduleKey) {
@@ -5859,6 +6073,13 @@ function setWorkspaceBackButtonVisible(isVisible) {
 
 function returnToDashboardHomeView() {
   setWorkspaceBackButtonVisible(false);
+  if (user.role === "subscriber" || user.role === "admin") {
+    const businessHubSection = document.getElementById("businessGrowthSection");
+    const overviewSection = document.getElementById("dashboardOverviewSection");
+    const target = businessHubSection || overviewSection || dashboardQuickActionsSection;
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   focusModuleByKey("home");
   dashboardQuickActionsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -6095,32 +6316,16 @@ function initializeModuleNavigator() {
   const modules = groupedModulesForCurrentRole().flatMap((entry) => entry.modules);
   const sectionModules = modules.filter((mod) => Boolean(mod?.section));
   if (!modules.length) {
-    hideSection(moduleNavigatorSection);
     return;
   }
   if (!activeModuleKey || !sectionModules.some((mod) => mod.key === activeModuleKey)) {
     activeModuleKey = (sectionModules.find((mod) => mod.startHere) || sectionModules[0] || modules[0]).key;
   }
   applyModuleVisibility();
-  moduleCards?.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    const card = target.closest("[data-module-key]");
-    if (!(card instanceof HTMLElement)) return;
-    const next = String(card.getAttribute("data-module-key") || "").trim();
-    if (!next) return;
-    const mod = moduleDefinitionByKey(next);
-    if (!mod) return;
-    if (moduleUsesInteractivePopup(mod)) {
-      openInteractiveModulePopup(next);
-      return;
-    }
-    if (moduleUsesInfoPopup(mod)) {
-      openModuleInfoModal(next);
-      return;
-    }
-    focusModuleByKey(next);
-  });
+  if (user.role === "subscriber" || user.role === "admin") {
+    renderBusinessHubCards();
+    return;
+  }
 }
 
 function renderBusinessGrowthPanel() {
@@ -6137,11 +6342,12 @@ function renderBusinessGrowthPanel() {
   if (businessHubTitle) {
     businessHubTitle.textContent = user.role === "admin" ? "Managed Business Hub" : "Business Hub";
   }
-  if (moduleNavigatorIntro) {
-    moduleNavigatorIntro.textContent = user.role === "admin"
-      ? "Open a card to review or edit the selected subscriber business. Every popup includes Ask Lexi for support."
-      : "Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.";
+  if (businessHubIntro) {
+    businessHubIntro.textContent = user.role === "admin"
+      ? "Open a card to see what this business area controls, then launch the full workspace or Ask Lexi for help."
+      : "Open a card to see what this business area does, then launch the full workspace or Ask Lexi for help.";
   }
+  renderBusinessHubCards();
 
   if (billingLiveBanner) {
     const status = String(billingSummary?.status || "inactive").toLowerCase();
@@ -6404,9 +6610,9 @@ function setManageMode(enabled) {
 }
 
 function initializeManageMode() {
-  // Edit Mode is disabled across dashboards.
+  // Separate edit mode is removed; manager actions are available by default.
   if (manageModeToggle) hideSection(manageModeToggle);
-  setManageMode(false);
+  setManageMode(true);
 }
 
 function ensureManageToastStack() {
@@ -6890,42 +7096,46 @@ function getExecutivePulseRangeConfig(range = "day") {
       .filter((dt) => dt instanceof Date && Number.isFinite(dt.getTime()))
       .sort((a, b) => a.getTime() - b.getTime());
     const firstBooking = datedRows[0] || now;
-    const start = new Date(firstBooking.getFullYear(), firstBooking.getMonth(), 1, 0, 0, 0, 0);
-    const monthSpan = Math.max(
-      1,
-      ((end.getFullYear() - start.getFullYear()) * 12) + (end.getMonth() - start.getMonth()) + 1
-    );
+    const start = new Date(firstBooking.getFullYear(), firstBooking.getMonth(), firstBooking.getDate(), 0, 0, 0, 0);
+    const daySpan = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
     return {
       key: "all",
       label: "All time",
-      chartLabel: monthSpan > 24 ? "Yearly trend" : "Monthly trend",
+      chartLabel: "Daily revenue line",
       start,
       end,
-      groupBy: monthSpan > 24 ? "year" : "month",
-      bucketCount: monthSpan > 24 ? Math.max(1, end.getFullYear() - start.getFullYear() + 1) : Math.min(24, monthSpan)
+      groupBy: "day",
+      bucketCount: daySpan
     };
   }
   if (range === "year") {
     const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
-    return { key: "year", label: "This year", chartLabel: "Monthly trend", start, end, groupBy: "month", bucketCount: 12 };
+    const yearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+    const daysInYear = Math.round((yearEnd.getTime() - start.getTime()) / 86400000) + 1;
+    return { key: "year", label: "This year", chartLabel: "365-day revenue line", start, end: yearEnd, groupBy: "day", bucketCount: daysInYear };
   }
   if (range === "month") {
     const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-    return { key: "month", label: "This month", chartLabel: "Weekly trend", start, end, groupBy: "week", bucketCount: 8 };
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const monthEnd = new Date(now.getFullYear(), now.getMonth(), daysInMonth, 23, 59, 59, 999);
+    return { key: "month", label: "This month", chartLabel: "Full month revenue line", start, end: monthEnd, groupBy: "day", bucketCount: daysInMonth };
   }
   if (range === "week") {
-    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6, 0, 0, 0, 0);
-    return { key: "week", label: "Last 7 days", chartLabel: "Daily trend", start, end, groupBy: "day", bucketCount: 7 };
+    const dayOfWeek = now.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + mondayOffset, 0, 0, 0, 0);
+    const weekEnd = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6, 23, 59, 59, 999);
+    return { key: "week", label: "This week", chartLabel: "Working-week revenue lollipops", start, end: weekEnd, groupBy: "day", bucketCount: 7, onlyWorkingDays: true };
   }
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   const workingHours = getExecutivePulseWorkingHoursForDate(start);
   const hourStartMin = Number.isFinite(workingHours?.startMinutes) ? workingHours.startMinutes : 8 * 60;
-  const hourEndMin = Number.isFinite(workingHours?.endMinutes) ? workingHours.endMinutes : 20 * 60;
+  const hourEndMin = Number.isFinite(workingHours?.endMinutes) ? workingHours.endMinutes : 18 * 60;
   const bucketCount = Math.max(1, Math.min(16, Math.ceil((hourEndMin - hourStartMin) / 60)));
   return {
     key: "day",
     label: "Today",
-    chartLabel: "Hourly flow",
+    chartLabel: "Hourly revenue lollipops",
     start,
     end,
     groupBy: "hour",
@@ -7047,6 +7257,21 @@ function getExecutivePulseBuckets(rows, rangeConfig, profitMarginPct) {
       addBucket(hourKey, label);
     }
   }
+  if (rangeConfig.groupBy === "day") {
+    const cursor = new Date(rangeConfig.start.getFullYear(), rangeConfig.start.getMonth(), rangeConfig.start.getDate());
+    const endDate = new Date(rangeConfig.end.getFullYear(), rangeConfig.end.getMonth(), rangeConfig.end.getDate());
+    while (cursor <= endDate) {
+      const hours = getExecutivePulseWorkingHoursForDate(cursor);
+      if (!rangeConfig.onlyWorkingDays || hours) {
+        const key = toDateKey(cursor);
+        const label = rangeConfig.onlyWorkingDays
+          ? cursor.toLocaleDateString("en-GB", { weekday: "short" })
+          : cursor.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
+        addBucket(key, label);
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  }
 
   rows.forEach((row) => {
     const dt = parseBookingDate(row?.date);
@@ -7065,8 +7290,11 @@ function getExecutivePulseBuckets(rows, rangeConfig, profitMarginPct) {
       key = `w-${toDateKey(weekStart)}`;
       label = weekStart.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     } else if (rangeConfig.groupBy === "day") {
+      if (rangeConfig.onlyWorkingDays && !getExecutivePulseWorkingHoursForDate(dt)) return;
       key = toDateKey(dt);
-      label = dt.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
+      label = rangeConfig.onlyWorkingDays
+        ? dt.toLocaleDateString("en-GB", { weekday: "short" })
+        : dt.toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     } else {
       const rowMinutes = parseExecutiveBookingRowTimeMinutes(row);
       const fallbackMinutes = Number.isFinite(rangeConfig.hourStartMin) ? rangeConfig.hourStartMin : 12 * 60;
@@ -7117,6 +7345,261 @@ function renderExecutivePulseMiniBars(container, buckets, valueKey, { emptyText 
     `;
     container.appendChild(col);
   });
+}
+
+function buildExecutiveStoryPolylinePoints(values = [], width = 640, height = 190, padding = 18) {
+  if (!Array.isArray(values) || !values.length) return [];
+  const maxValue = Math.max(1, ...values.map((value) => Number(value || 0)));
+  const usableWidth = Math.max(1, width - (padding * 2));
+  const usableHeight = Math.max(1, height - (padding * 2));
+  return values.map((value, index) => {
+    const x = padding + (values.length === 1 ? usableWidth / 2 : (usableWidth * index) / Math.max(1, values.length - 1));
+    const y = height - padding - ((Number(value || 0) / maxValue) * usableHeight);
+    return { x, y };
+  });
+}
+
+function buildExecutiveStoryAreaPath(points = [], width = 640, height = 190, padding = 18) {
+  if (!Array.isArray(points) || !points.length) return "";
+  const line = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
+  const first = points[0];
+  const last = points[points.length - 1];
+  return `${line} L ${last.x.toFixed(1)} ${(height - padding).toFixed(1)} L ${first.x.toFixed(1)} ${(height - padding).toFixed(1)} Z`;
+}
+
+function renderExecutiveStoryLineChart(container, buckets, {
+  valueKey = "bookings",
+  widthPerPoint = 44,
+  minWidth = 640,
+  stroke = "rgba(14,165,233,0.95)",
+  fillTop = "rgba(14,165,233,0.28)",
+  pointFill = "rgba(245,158,11,0.95)",
+  axisClass = "is-month",
+  labelStep = 1,
+  scrollable = true,
+  chartPadding = 18,
+  axisLabels = null,
+  axisColumns = null
+} = {}) {
+  const values = buckets.map((bucket) => Number(bucket?.[valueKey] || 0));
+  const svgWidth = Math.max(minWidth, buckets.length * widthPerPoint);
+  const points = buildExecutiveStoryPolylinePoints(values, svgWidth, 190, chartPadding);
+  const areaPath = buildExecutiveStoryAreaPath(points, svgWidth, 190, chartPadding);
+  const linePath = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
+  const gradientId = `execStoryGradient${Math.random().toString(36).slice(2, 8)}`;
+  const renderedAxisLabels = Array.isArray(axisLabels) && axisLabels.length
+    ? axisLabels
+    : buckets.map((bucket, index) => (index % Math.max(1, labelStep) === 0 ? String(bucket.label || "") : ""));
+  const renderedAxisColumns = Math.max(1, Number(axisColumns) || renderedAxisLabels.length || buckets.length);
+  return `
+    <div class="executive-story-chart">
+      <div class="${scrollable ? "executive-story-scroll" : "executive-story-static"}">
+        <svg viewBox="0 0 ${svgWidth} 190" role="img" aria-label="Booking storyline">
+          <defs>
+            <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${fillTop}"></stop>
+              <stop offset="100%" stop-color="rgba(255,255,255,0.02)"></stop>
+            </linearGradient>
+          </defs>
+          <path d="${areaPath}" fill="url(#${gradientId})"></path>
+          <path d="${linePath}" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+          ${points.map((point) => `<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="4.5" fill="${pointFill}"></circle>`).join("")}
+        </svg>
+      </div>
+      <div class="executive-story-axis ${axisClass}" style="grid-template-columns: repeat(${renderedAxisColumns}, minmax(0, 1fr));">
+        ${renderedAxisLabels.map((label) => `<span>${label ? escapeHtml(String(label)) : "&nbsp;"}</span>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderExecutiveStoryLollipopChart(buckets, {
+  valueKey = "revenue",
+  className = "is-day-lollipop",
+  columnVar = "--story-columns",
+  minFillPct = 8,
+  amountFormatter = (value) => formatMoney(value),
+  detailFormatter = (bucket) => `${Number(bucket?.bookings || 0)} booking${Number(bucket?.bookings || 0) === 1 ? "" : "s"}`
+} = {}) {
+  const maxValue = Math.max(1, ...buckets.map((bucket) => Number(bucket?.[valueKey] || 0)));
+  return {
+    className,
+    styleProperty: columnVar,
+    styleValue: String(Math.max(1, buckets.length)),
+    markup: buckets.map((bucket) => {
+      const value = Number(bucket?.[valueKey] || 0);
+      const fillPct = Math.max(minFillPct, Math.round((value / maxValue) * 100));
+      return `
+        <article class="executive-hour-col ${className === "is-week-lollipop" ? "is-week" : "is-day"}">
+          <strong>${escapeHtml(String(bucket.label || ""))}</strong>
+          <div class="executive-hour-track">
+            <span class="executive-hour-fill" style="--hour-fill:${fillPct}%;"></span>
+            <span class="executive-hour-dot" aria-hidden="true"></span>
+          </div>
+          <small>${escapeHtml(amountFormatter(value, bucket))}</small>
+          <small>${escapeHtml(detailFormatter(bucket))}</small>
+        </article>
+      `;
+    }).join("")
+  };
+}
+
+function renderExecutivePulseStoryline(container, buckets, rangeConfig) {
+  if (!container) return;
+  container.innerHTML = "";
+  container.className = "executive-bars managed-command-bars";
+  container.style.removeProperty("--week-columns");
+  container.style.removeProperty("--day-columns");
+  if (!Array.isArray(buckets) || !buckets.length) {
+    container.classList.add("is-empty");
+    container.innerHTML = `<small class="executive-storyline-note">No booking activity in ${escapeHtml(rangeConfig?.label?.toLowerCase?.() || "this range")} yet.</small>`;
+    return;
+  }
+
+  const key = String(rangeConfig?.key || "").toLowerCase();
+  if (key === "day") {
+    const chart = renderExecutiveStoryLollipopChart(buckets, {
+      valueKey: "revenue",
+      className: "is-day-lollipop",
+      columnVar: "--day-columns",
+      amountFormatter: (value) => formatMoney(value),
+      detailFormatter: (bucket) => `${Number(bucket?.bookings || 0)} booking${Number(bucket?.bookings || 0) === 1 ? "" : "s"}`
+    });
+    container.classList.add(chart.className);
+    container.style.setProperty(chart.styleProperty, chart.styleValue);
+    container.innerHTML = chart.markup;
+    return;
+  }
+
+  if (key === "week") {
+    const chart = renderExecutiveStoryLollipopChart(buckets, {
+      valueKey: "revenue",
+      className: "is-week-lollipop",
+      columnVar: "--week-columns",
+      amountFormatter: (value) => formatMoney(value),
+      detailFormatter: (bucket) => `${Number(bucket?.bookings || 0)} booking${Number(bucket?.bookings || 0) === 1 ? "" : "s"}`
+    });
+    container.classList.add(chart.className);
+    container.style.setProperty(chart.styleProperty, chart.styleValue);
+    container.innerHTML = chart.markup;
+    return;
+  }
+
+  if (key === "month") {
+    container.classList.add("is-month");
+    container.innerHTML = renderExecutiveStoryLineChart(container, buckets, {
+      valueKey: "revenue",
+      widthPerPoint: 24,
+      minWidth: 760,
+      stroke: "rgba(14,165,233,0.95)",
+      fillTop: "rgba(14,165,233,0.22)",
+      pointFill: "rgba(16,185,129,0.95)",
+      axisClass: "is-year",
+      labelStep: Math.max(1, Math.ceil(buckets.length / 12)),
+      scrollable: false,
+      chartPadding: 10
+    });
+    return;
+  }
+
+  if (key === "year") {
+    const yearStart = rangeConfig?.start instanceof Date ? rangeConfig.start : new Date(new Date().getFullYear(), 0, 1);
+    const yearAxisLabels = Array.from({ length: 12 }, (_, index) =>
+      new Date(yearStart.getFullYear(), index, 1).toLocaleDateString("en-GB", { month: "short" })
+    );
+    container.classList.add("is-year");
+    container.innerHTML = renderExecutiveStoryLineChart(container, buckets, {
+      valueKey: "revenue",
+      widthPerPoint: 4,
+      minWidth: 920,
+      stroke: "rgba(99,102,241,0.95)",
+      fillTop: "rgba(99,102,241,0.18)",
+      pointFill: "rgba(245,158,11,0.9)",
+      axisClass: "is-year",
+      labelStep: 30,
+      scrollable: false,
+      chartPadding: 8,
+      axisLabels: yearAxisLabels,
+      axisColumns: 12
+    });
+    return;
+  }
+
+  container.classList.add("is-all");
+  container.innerHTML = renderExecutiveStoryLineChart(container, buckets, {
+    valueKey: "revenue",
+    widthPerPoint: 8,
+    minWidth: 920,
+    stroke: "rgba(16,185,129,0.95)",
+    fillTop: "rgba(16,185,129,0.24)",
+    pointFill: "rgba(245,158,11,0.95)",
+    axisClass: "is-year",
+    labelStep: Math.max(1, Math.ceil(buckets.length / 14)),
+    scrollable: false,
+    chartPadding: 8
+  });
+}
+
+function computeSubscriberMerchAnalytics() {
+  const merch = Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : [];
+  const items = merch.filter((item) => String(item?.status || "active").toLowerCase() !== "inactive");
+  const shipments = items.flatMap((item) =>
+    (Array.isArray(item?.shipments) ? item.shipments : []).map((shipment) => ({
+      itemName: String(item?.name || "Product"),
+      salePrice: Number(item?.salePrice || 0),
+      baseShippingCost: Number(item?.shippingCost || 0),
+      shippingFee: Number(shipment?.shippingFee ?? item?.shippingCost ?? 0),
+      shippingStatus: String(shipment?.status || "preparing").trim().toLowerCase(),
+      customerName: String(shipment?.customerName || "Customer"),
+      trackingRef: String(shipment?.trackingRef || "").trim(),
+      createdAt: shipment?.createdAt || null
+    }))
+  );
+  const soldUnits = shipments.length;
+  const revenue = shipments.reduce((sum, shipment) => sum + shipment.salePrice + shipment.shippingFee, 0);
+  const cost = shipments.reduce((sum, shipment) => sum + shipment.baseShippingCost, 0);
+  const profit = revenue - cost;
+  const catalogValue = items.reduce((sum, item) => sum + Number(item?.salePrice || 0) * Number(item?.inventory || 0), 0);
+  const topProducts = items
+    .map((item) => {
+      const productShipments = Array.isArray(item?.shipments) ? item.shipments : [];
+      const sold = productShipments.length;
+      const productRevenue = productShipments.reduce(
+        (sum, shipment) => sum + Number(item?.salePrice || 0) + Number(shipment?.shippingFee ?? item?.shippingCost ?? 0),
+        0
+      );
+      return {
+        name: String(item?.name || "Product"),
+        sold,
+        stock: Math.max(0, Number(item?.inventory || 0)),
+        revenue: productRevenue,
+        shippingAvailable: Boolean(item?.shippingAvailable)
+      };
+    })
+    .sort((a, b) => b.sold - a.sold || b.revenue - a.revenue);
+  const preparing = shipments.filter((shipment) => shipment.shippingStatus === "preparing").length;
+  const shipped = shipments.filter((shipment) => shipment.shippingStatus === "shipped").length;
+  const delivered = shipments.filter((shipment) => shipment.shippingStatus === "delivered").length;
+  const lowStock = topProducts.filter((item) => item.stock > 0 && item.stock <= 3).length;
+  const recentShipments = shipments
+    .slice()
+    .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")))
+    .slice(0, 4);
+  return {
+    items,
+    shipments,
+    soldUnits,
+    revenue,
+    cost,
+    profit,
+    catalogValue,
+    topProducts,
+    preparing,
+    shipped,
+    delivered,
+    lowStock,
+    recentShipments
+  };
 }
 
 function renderExecutivePulseSnapshotsList(items) {
@@ -7243,7 +7726,11 @@ function renderExecutivePulse() {
   if (executivePulseTitle) {
     executivePulseTitle.textContent = user.role === "admin" ? "Admin Control Center" : "Subscriber Control Center";
   }
+  if (executivePulseStorylineTitle) {
+    executivePulseStorylineTitle.textContent = "Storyline";
+  }
 
+  const isAdmin = user.role === "admin";
   const rangeConfig = getExecutivePulseRangeConfig(executivePulseRange);
   const allRows = Array.isArray(bookingRows) ? bookingRows : [];
   const rowsInRange = allRows.filter((row) => {
@@ -7268,6 +7755,23 @@ function renderExecutivePulse() {
   const todayRows = allRows.filter((row) => String(row?.date || "").trim() === todayKey);
   const todayRevenue = todayRows.reduce((sum, row) => sum + (statusOf(row) === "cancelled" ? 0 : getExecutiveRowRevenueEstimate(row)), 0);
   const selectedRows = selectedCalendarDateKey ? allRows.filter((row) => String(row?.date || "").trim() === selectedCalendarDateKey) : [];
+  const adminAnalytics = adminPlatformAnalytics?.analytics || {};
+  const adminRevenueSummary = adminRevenueAnalytics?.summary || {};
+  const platformTodayBookings = Number(adminAnalytics.todayBookings || 0);
+  const activeSubscriptions = Number(adminRevenueSummary.activeSubscriptions || 0);
+  const totalCustomers = Number(adminAnalytics.totalCustomers || 0);
+  const totalSubscribers = Number(adminAnalytics.totalSubscribers || 0);
+  const customerSignupsThisMonth = Number(adminAnalytics.customerSignupsThisMonth || 0);
+  const customerSignupsThisYear = Number(adminAnalytics.customerSignupsThisYear || 0);
+  const subscriberSignupsThisMonth = Number(adminAnalytics.subscriberSignupsThisMonth || 0);
+  const subscriberSignupsThisYear = Number(adminAnalytics.subscriberSignupsThisYear || 0);
+  const estimatedMrr = Number(adminRevenueSummary.estimatedMrr || 0);
+  const avgPlanValue = Number(adminRevenueSummary.avgPlanValue || 0);
+  const annualRecurringRevenue = estimatedMrr * 12;
+  const adminSubscriberRetentionPct = activeSubscriptions + Number(adminRevenueSummary.subscriptionCancellationsInPeriod || 0) > 0
+    ? Math.round((activeSubscriptions / Math.max(1, activeSubscriptions + Number(adminRevenueSummary.subscriptionCancellationsInPeriod || 0))) * 100)
+    : 0;
+  const merchAnalytics = computeSubscriberMerchAnalytics();
   const buckets = getExecutivePulseBuckets(rowsInRange, rangeConfig, marginPct);
 
   executivePulseRangeTabs?.querySelectorAll("button[data-exec-range]").forEach((btn) => {
@@ -7276,21 +7780,65 @@ function renderExecutivePulse() {
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-selected", active ? "true" : "false");
   });
-  if (executivePulseRangeMeta) executivePulseRangeMeta.textContent = `${rangeConfig.label} - ${bookingCount} bookings`;
+  if (executivePulseAdminMetricTabs) {
+    executivePulseAdminMetricTabs.hidden = !isAdmin;
+    executivePulseAdminMetricTabs.querySelectorAll("button[data-admin-metric-view]").forEach((btn) => {
+      const key = String(btn.getAttribute("data-admin-metric-view") || "");
+      const active = key === executivePulseAdminMetricView;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  }
+  if (executivePulseRangeMeta) {
+    executivePulseRangeMeta.textContent = isAdmin
+      ? `${rangeConfig.label} - ${bookingCount} bookings • View: ${executivePulseAdminMetricView === "subscriber_revenue" ? "Subscriber Revenue" : executivePulseAdminMetricView === "customer_signup" ? "Customer Signup" : "Bookings"}`
+      : `${rangeConfig.label} - ${bookingCount} bookings`;
+  }
   if (executivePulseSubtitle) {
     executivePulseSubtitle.textContent = user.role === "admin"
-      ? `${rangeConfig.label} platform view: app-wide bookings, revenue, usage windows and managed-business support in one place.`
+      ? `${rangeConfig.label} platform view: use the quick toggle to switch between booking data, subscriber revenue, and customer signup metrics.`
       : `${rangeConfig.label} business view: your own bookings, revenue, cancellations and next actions in one control center.`;
   }
-  if (executivePulseFinanceWindowLabel) executivePulseFinanceWindowLabel.textContent = `${rangeConfig.label} finance and booking summary`;
+  if (executivePulseFinanceTitle) {
+    executivePulseFinanceTitle.textContent = "Merch Sales Pulse";
+  }
+  if (executivePulseFinanceWindowLabel) {
+    executivePulseFinanceWindowLabel.textContent = "Revenue, fulfilment cost, and profit across merch sales";
+  }
+  if (executivePulseActionsTitle) {
+    executivePulseActionsTitle.textContent = "Merch Movers";
+  }
+  if (executivePulseActionsSubtitle) {
+    executivePulseActionsSubtitle.textContent = "Best sellers, stock pressure, and catalog momentum";
+  }
+  if (executivePulseSnapshotsTitle) {
+    executivePulseSnapshotsTitle.textContent = "Shipment Radar";
+  }
+  if (executivePulseSnapshotsSubtitle) {
+    executivePulseSnapshotsSubtitle.textContent = "Recent orders, shipping flow, and dispatch visibility";
+  }
 
   const signalCards = user.role === "admin"
-    ? [
-        { label: rangeConfig.key === "day" ? "App Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
-        { label: "App Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg booking value`, down: false },
-        { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
-        { label: "Managed Businesses", value: String(adminBusinessOptions.length || 0), delta: managedBusinessId ? "Business support scope loaded" : "Select a business to support", down: !managedBusinessId }
-      ]
+    ? executivePulseAdminMetricView === "subscriber_revenue"
+      ? [
+          { label: "Subscriber MRR", value: formatMoney(estimatedMrr), delta: `${activeSubscriptions} active subscribers`, down: false },
+          { label: "Projected Annual Revenue", value: formatMoney(annualRecurringRevenue), delta: `${formatMoney(avgPlanValue)} average plan value`, down: false },
+          { label: "Subscriber Signups This Month", value: String(subscriberSignupsThisMonth), delta: `${subscriberSignupsThisYear} this year`, down: false },
+          { label: "Subscriber Retention", value: `${adminSubscriberRetentionPct}%`, delta: `${Number(adminRevenueSummary.subscriptionCancellationsInPeriod || 0)} subscriber cancellations in period`, down: false }
+        ]
+      : executivePulseAdminMetricView === "customer_signup"
+        ? [
+            { label: "Signed-up Customers", value: String(totalCustomers || 0), delta: `${totalSubscribers || activeSubscriptions} subscriber accounts`, down: false },
+            { label: "Customer Signups This Month", value: String(customerSignupsThisMonth), delta: `${customerSignupsThisYear} this year`, down: false },
+            { label: "Subscriber Signups This Month", value: String(subscriberSignupsThisMonth), delta: `${subscriberSignupsThisYear} this year`, down: false },
+            { label: "Today Bookings", value: String(platformTodayBookings), delta: `${Number(adminAnalytics.totalBookings || 0)} bookings app-wide`, down: false }
+          ]
+        : [
+            { label: rangeConfig.key === "day" ? "App Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
+            { label: "App Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg booking value`, down: false },
+            { label: "Cancellation Rate", value: `${cancelRate.toFixed(1)}%`, delta: `${cancelledCount} cancelled`, down: cancelRate >= 10 },
+            { label: "Today Bookings", value: String(platformTodayBookings), delta: `${Number(adminAnalytics.totalBookings || 0)} bookings app-wide`, down: false }
+          ]
     : [
         { label: rangeConfig.key === "day" ? "Today Bookings" : `${rangeConfig.label} Bookings`, value: String(bookingCount), delta: `${confirmedCount} confirmed/completed`, down: false },
         { label: "Revenue", value: formatMoney(revenue), delta: `${formatMoney(avgTicket)} avg ticket`, down: false },
@@ -7309,42 +7857,48 @@ function renderExecutivePulse() {
   const confirmationPct = bookingCount ? Math.round((confirmedCount / bookingCount) * 100) : 0;
   const cancelPct = bookingCount ? Math.round((cancelledCount / bookingCount) * 100) : 0;
   const gaugeCards = [
-    { label: "Completed", value: `${completionPct}%`, progress: completionPct, sub: `${completedCount} completed` },
-    { label: "Confirmed Mix", value: `${confirmationPct}%`, progress: confirmationPct, sub: `${confirmedCount} confirmed/completed` },
-    { label: "Cancellation Pressure", value: `${cancelPct}%`, progress: cancelPct, sub: `${formatMoney(cancellationValue)} at risk` }
-  ];
+        {
+          label: "Completed",
+          value: `${completionPct}%`,
+          progress: completionPct,
+          sub: `${completedCount} completed`,
+          tone: "success",
+          kicker: bookingCount ? `${bookingCount - completedCount} still in play` : "No completed bookings yet"
+        },
+        {
+          label: "Confirmed Mix",
+          value: `${confirmationPct}%`,
+          progress: confirmationPct,
+          sub: `${confirmedCount} confirmed/completed`,
+          tone: "info",
+          kicker: pendingCount ? `${pendingCount} pending confirmation` : "Confirmation flow is stable"
+        },
+        {
+          label: "Cancellation Pressure",
+          value: `${cancelPct}%`,
+          progress: cancelPct,
+          sub: `${formatMoney(cancellationValue)} at risk`,
+          tone: cancelPct >= 10 ? "danger" : "warning",
+          kicker: cancelledCount ? `${cancelledCount} cancelled bookings` : "No cancelled bookings in range"
+        }
+      ];
   executivePulseGauges.innerHTML = "";
   gaugeCards.forEach((g) => {
     const card = document.createElement("article");
-    card.className = "executive-gauge";
+    card.className = `executive-gauge tone-${escapeHtml(g.tone || "info")}`;
     card.innerHTML = `
       <div class="gauge-ring" style="--gauge-progress:${Math.min(100, Math.max(0, Number(g.progress || 0)))}">
         <span>${escapeHtml(g.value)}</span>
       </div>
       <div class="executive-gauge-label">${escapeHtml(g.label)}</div>
       <div class="executive-gauge-sub">${escapeHtml(g.sub)}</div>
+      <div class="executive-gauge-kicker">${escapeHtml(g.kicker || "")}</div>
     `;
     executivePulseGauges.appendChild(card);
   });
 
   executivePulseBars.innerHTML = "";
-  if (!buckets.length) {
-    executivePulseBars.innerHTML = `<small style="color:var(--muted);grid-column:1 / -1;">No booking activity in ${escapeHtml(rangeConfig.label.toLowerCase())} yet.</small>`;
-  } else {
-    const maxBucket = Math.max(1, ...buckets.map((b) => Number(b.bookings || 0)));
-    buckets.forEach((bucket) => {
-      const count = Number(bucket.bookings || 0);
-      const height = Math.max(10, Math.round((count / maxBucket) * 110));
-      const col = document.createElement("article");
-      col.className = "executive-bar-col";
-      col.innerHTML = `
-        <div class="executive-bar" style="--exec-bar-height:${height}px" title="${escapeHtml(String(bucket.label))}: ${count} bookings"></div>
-        <small>${escapeHtml(String(bucket.label))}</small>
-        <small>${count}</small>
-      `;
-      executivePulseBars.appendChild(col);
-    });
-  }
+  renderExecutivePulseStoryline(executivePulseBars, buckets, rangeConfig);
 
   const actionItems = [];
   if (user.role === "admin") {
@@ -7364,20 +7918,30 @@ function renderExecutivePulse() {
       actionItems.push({ title: "Pick a day", detail: "Select a date in the diary to sync Booking Operations and Lexi guidance." });
     }
   }
-  if (!actionItems.length) actionItems.push({ title: "Steady flow", detail: "No urgent issues. Focus on service quality, rebooking, and filling quiet windows." });
-  executivePulseActions.innerHTML = "";
-  actionItems.slice(0, 4).forEach((item) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small>`;
-    executivePulseActions.appendChild(li);
-  });
+  const merchTop = Array.isArray(merchAnalytics?.topProducts) ? merchAnalytics.topProducts.slice(0, 4) : [];
+  if (!merchTop.length) {
+    executivePulseActions.innerHTML = `<li class="merch-command-empty">Add merch products and create shipments to start seeing sales analytics here.</li>`;
+  } else {
+    const maxSold = Math.max(1, ...merchTop.map((item) => Number(item.sold || 0)));
+    executivePulseActions.innerHTML = merchTop.map((item) => {
+      const fillPct = Math.max(12, Math.round((Number(item.sold || 0) / maxSold) * 100));
+      return `
+        <li class="merch-command-card">
+          <p>${escapeHtml(item.shippingAvailable ? "Shippable merch" : "Collection merch")}</p>
+          <strong>${escapeHtml(item.name)}</strong>
+          <small>${escapeHtml(`${item.sold} sold • ${formatMoney(item.revenue)} revenue • ${item.stock} left in stock`)}</small>
+          <div class="merch-command-progress" aria-hidden="true"><span style="width:${fillPct}%;"></span></div>
+        </li>
+      `;
+    }).join("");
+  }
 
   if (executivePulseFinanceStats) {
     const cards = [
-      { label: `${rangeConfig.label} Revenue`, value: formatMoney(revenue), meta: `${bookingCount} bookings`, tone: "positive" },
-      { label: "Estimated Profit", value: formatMoney(estimatedProfit), meta: `${Math.round(marginPct)}% margin signal`, tone: estimatedProfit < 0 ? "negative" : "neutral" },
-      { label: "Today Revenue", value: formatMoney(todayRevenue), meta: `${todayRows.length} today bookings`, tone: "neutral" },
-      { label: "Cancellation Risk", value: formatMoney(cancellationValue), meta: `${cancelledCount} cancelled in range`, tone: cancelledCount ? "negative" : "neutral" }
+      { label: "Merch Revenue", value: formatMoney(merchAnalytics?.revenue || 0), meta: `${Number(merchAnalytics?.soldUnits || 0)} units sold`, tone: "positive" },
+      { label: "Fulfilment Cost", value: formatMoney(merchAnalytics?.cost || 0), meta: `${Number(merchAnalytics?.preparing || 0)} preparing • ${Number(merchAnalytics?.shipped || 0)} shipped`, tone: "negative" },
+      { label: "Merch Profit", value: formatMoney(merchAnalytics?.profit || 0), meta: `${formatMoney(merchAnalytics?.catalogValue || 0)} catalog value`, tone: Number(merchAnalytics?.profit || 0) > 0 ? "positive" : "neutral" },
+      { label: "Low Stock Risk", value: String(Number(merchAnalytics?.lowStock || 0)), meta: `${Number(merchAnalytics?.delivered || 0)} delivered shipments`, tone: Number(merchAnalytics?.lowStock || 0) > 0 ? "negative" : "neutral" }
     ];
     executivePulseFinanceStats.innerHTML = "";
     cards.forEach((card) => {
@@ -7397,14 +7961,46 @@ function renderExecutivePulse() {
     range: rangeConfig.key,
     rangeLabel: rangeConfig.label,
     headline: `${rangeConfig.label} pulse summary`,
-    revenue: formatMoney(revenue),
-    profit: formatMoney(estimatedProfit),
-    bookings: bookingCount,
-    confirmed: confirmedCount,
+    revenue: formatMoney(
+      isAdmin && executivePulseAdminMetricView === "subscriber_revenue"
+        ? estimatedMrr
+        : !isAdmin
+          ? Number(merchAnalytics?.revenue || 0)
+          : revenue
+    ),
+    profit: formatMoney(
+      isAdmin && executivePulseAdminMetricView === "subscriber_revenue"
+        ? annualRecurringRevenue
+        : !isAdmin
+          ? Number(merchAnalytics?.profit || 0)
+          : estimatedProfit
+    ),
+    bookings: isAdmin ? platformTodayBookings : bookingCount,
+    confirmed: isAdmin ? platformTodayBookings : confirmedCount,
     cancelled: cancelledCount,
     cancelRate: `${cancelRate.toFixed(1)}%`
   };
-  renderExecutivePulseSnapshotsList(readExecutivePulseSnapshots());
+  const recentShipments = Array.isArray(merchAnalytics?.recentShipments) ? merchAnalytics.recentShipments : [];
+  if (!recentShipments.length) {
+    executivePulseSnapshotList.innerHTML = `<div class="merch-command-empty">Shipment activity will appear here once merch orders start moving through dispatch.</div>`;
+  } else {
+    executivePulseSnapshotList.innerHTML = `
+      <div class="merch-command-grid">
+        <article class="merch-command-card">
+          <p>Shipment pipeline</p>
+          <strong>${escapeHtml(`${Number(merchAnalytics?.preparing || 0)} preparing • ${Number(merchAnalytics?.shipped || 0)} shipped • ${Number(merchAnalytics?.delivered || 0)} delivered`)}</strong>
+          <small>${escapeHtml(`${Number(merchAnalytics?.items?.length || 0)} products in catalog • ${Number(merchAnalytics?.shipments?.length || 0)} shipment records total`)}</small>
+        </article>
+        ${recentShipments.map((shipment) => `
+          <article class="merch-command-shipment">
+            <strong>${escapeHtml(`${shipment.customerName} • ${shipment.itemName}`)}</strong>
+            <small>${escapeHtml(`${shipment.shippingStatus} • ${formatMoney(shipment.salePrice + shipment.shippingFee)} order value`)}</small>
+            <small>${escapeHtml(shipment.trackingRef ? `Tracking: ${shipment.trackingRef}` : "Tracking not added yet")}</small>
+          </article>
+        `).join("")}
+      </div>
+    `;
+  }
 }
 function renderWorkspaceStarPanel() {
   if (!workspaceStarPanel) return;
@@ -11248,6 +11844,20 @@ function setCommercialStatus(message, isError = false) {
   commercialStatusNote.style.color = isError ? "#ffadb5" : "var(--muted)";
 }
 
+function setMerchStatus(message, isError = false) {
+  if (!merchStatusNote) return;
+  merchStatusNote.textContent = message || "";
+  merchStatusNote.style.color = isError ? "#ffadb5" : "var(--muted)";
+}
+
+function formatShipmentStatusLabel(value) {
+  return String(value || "preparing")
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function renderCommercialControls() {
   if (!commercialSection || !commercialSummaryCards || !membershipList || !packageList || !giftCardList) return;
   if (!canManageBusinessModules() || !isPopupMountedBusinessSection(commercialSection)) {
@@ -11260,13 +11870,16 @@ function renderCommercialControls() {
   const memberships = Array.isArray(commercialPayload?.memberships) ? commercialPayload.memberships : [];
   const packages = Array.isArray(commercialPayload?.packages) ? commercialPayload.packages : [];
   const giftCards = Array.isArray(commercialPayload?.giftCards) ? commercialPayload.giftCards : [];
+  const merch = (Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : []).filter((item) => item.status !== "inactive");
 
   commercialSummaryCards.innerHTML = "";
   [
     { label: "Active Memberships", value: String(summary.activeMemberships || 0) },
     { label: "Active Packages", value: String(summary.activePackages || 0) },
     { label: "Active Gift Cards", value: String(summary.activeGiftCards || 0) },
-    { label: "Outstanding Gift Balance", value: formatMoney(summary.outstandingGiftBalance || 0) }
+    { label: "Outstanding Gift Balance", value: formatMoney(summary.outstandingGiftBalance || 0) },
+    { label: "Active Merch", value: String(summary.activeMerchItems || merch.filter((item) => item.status === "active").length || 0) },
+    { label: "Pending Shipments", value: String(summary.pendingMerchShipments || 0) }
   ].forEach((card) => {
     const article = document.createElement("article");
     article.innerHTML = `<p>${card.label}</p><strong>${card.value}</strong>`;
@@ -11332,14 +11945,76 @@ function renderCommercialControls() {
   }
 }
 
+function renderMerchControls() {
+  if (!merchSection || !merchSummaryCards || !merchList) return;
+  if (!canManageBusinessModules() || !isPopupMountedBusinessSection(merchSection)) {
+    hideSection(merchSection);
+    return;
+  }
+  showSection(merchSection);
+
+  const summary = commercialPayload?.summary || {};
+  const merch = Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : [];
+
+  merchSummaryCards.innerHTML = "";
+  [
+    { label: "Active Products", value: String(summary.activeMerchItems || 0) },
+    { label: "Shippable Products", value: String(summary.shippableMerchItems || 0) },
+    { label: "Pending Shipments", value: String(summary.pendingMerchShipments || 0) },
+    { label: "Catalog Value", value: formatMoney(summary.merchCatalogValue || 0) }
+  ].forEach((card) => {
+    const article = document.createElement("article");
+    article.innerHTML = `<p>${card.label}</p><strong>${card.value}</strong>`;
+    merchSummaryCards.appendChild(article);
+  });
+
+  merchList.innerHTML = "";
+  if (!merch.length) {
+    merchList.innerHTML = "<li><small>No merch products added yet.</small></li>";
+    return;
+  }
+
+  merch.forEach((item) => {
+    const latestShipment = Array.isArray(item.shipments) && item.shipments.length ? item.shipments[0] : null;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="merch-card-head">
+        <img class="merch-card-thumb" src="${escapeHtml(item.imageUrl || "/icons/barber.svg")}" alt="${escapeHtml(item.name || "Product")}" />
+        <div class="merch-card-copy">
+          <strong>${escapeHtml(item.name)}</strong>
+          <small>${formatMoney(item.salePrice)} • Stock: ${escapeHtml(String(item.inventory || 0))} • ${escapeHtml(String(item.status || "active"))}</small>
+          <p>${escapeHtml(item.description || "No description set.")}</p>
+        </div>
+      </div>
+      <div class="merch-chip-row">
+        <span>${item.shippingAvailable ? `Shipping on • ${formatMoney(item.shippingCost || 0)}` : "Collection only"}</span>
+        <span>${escapeHtml(String((item.shipments || []).length))} shipment${(item.shipments || []).length === 1 ? "" : "s"}</span>
+      </div>
+      <p class="merch-shipment-note">${
+        latestShipment
+          ? `Latest shipment: ${escapeHtml(latestShipment.customerName || "Customer")} • ${escapeHtml(formatShipmentStatusLabel(latestShipment.status))}${latestShipment.trackingRef ? ` • Tracking: ${escapeHtml(latestShipment.trackingRef)}` : ""}`
+          : "No shipments created yet for this product."
+      }</p>
+      <div class="commercial-actions manage-only">
+        <button class="btn btn-ghost merch-edit" type="button" data-merch-id="${item.id}">Edit</button>
+        <button class="btn btn-ghost merch-ship" type="button" data-merch-id="${item.id}" ${item.shippingAvailable ? "" : "disabled"}>Ship to Customer</button>
+        <button class="btn btn-ghost merch-delete" type="button" data-merch-id="${item.id}">Delete</button>
+      </div>
+    `;
+    merchList.appendChild(li);
+  });
+}
+
 function applyCommercialPayload(data) {
   commercialPayload = {
     memberships: Array.isArray(data?.memberships) ? data.memberships : [],
     packages: Array.isArray(data?.packages) ? data.packages : [],
     giftCards: Array.isArray(data?.giftCards) ? data.giftCards : [],
+    merch: Array.isArray(data?.merch) ? data.merch : [],
     summary: data?.summary || null
   };
   renderCommercialControls();
+  renderMerchControls();
 }
 
 async function loadCommercialControls() {
@@ -11391,6 +12066,28 @@ async function redeemGiftCard(giftCardId, amount) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Unable to redeem gift card.");
+  applyCommercialPayload(data);
+}
+
+async function upsertMerchItem(payload) {
+  const res = await fetch(withManagedBusiness("/api/commercial-controls/merch/upsert"), {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify(payload || {})
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Unable to save merch product.");
+  applyCommercialPayload(data);
+}
+
+async function createMerchShipment(merchId, payload) {
+  const res = await fetch(withManagedBusiness(`/api/commercial-controls/merch/${encodeURIComponent(merchId)}/ship`), {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify(payload || {})
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Unable to create shipment.");
   applyCommercialPayload(data);
 }
 
@@ -11770,6 +12467,19 @@ function setupManagedSectionActions() {
       heading.parentElement.insertBefore(row, heading.nextSibling);
     } else {
       commercialSection.prepend(row);
+    }
+  }
+
+  if (merchSection && !document.getElementById("merchManageRow")) {
+    const row = document.createElement("div");
+    row.id = "merchManageRow";
+    row.className = "manage-row manage-only";
+    row.innerHTML = '<button id="manageAddMerchProduct" class="btn btn-ghost" type="button">Add Product</button>';
+    const heading = merchSection.querySelector("h2");
+    if (heading?.parentElement) {
+      heading.parentElement.insertBefore(row, heading.nextSibling);
+    } else {
+      merchSection.prepend(row);
     }
   }
 
@@ -12699,6 +13409,7 @@ if (user.role !== "subscriber" && user.role !== "admin") {
   hideSection(operationsInsightsSection);
   hideSection(crmSection);
   hideSection(commercialSection);
+  hideSection(merchSection);
   hideSection(revenueAttributionSection);
   hideSection(profitabilitySection);
 }
@@ -12777,9 +13488,7 @@ document.addEventListener("click", (event) => {
   if (!(target instanceof HTMLElement)) return;
   const backBtn = target.closest("#workspaceBackToDashboardBtn");
   if (backBtn instanceof HTMLElement) {
-    setWorkspaceBackButtonVisible(false);
-    focusModuleByKey("home");
-    dashboardQuickActionsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+    returnToDashboardHomeView();
     return;
   }
   const trigger = target.closest("[data-module-jump]");
@@ -13318,6 +14027,13 @@ document.addEventListener("click", async (event) => {
     return;
   }
 
+  if (target.id === "manageAddMerchProduct") {
+    focusModuleByKey("merch");
+    if (merchNameInput instanceof HTMLElement) merchNameInput.focus();
+    setMerchStatus("Add product details, attach an image, then save the item.");
+    return;
+  }
+
   if (target.classList.contains("commercial-edit-membership")) {
     const membershipId = String(target.getAttribute("data-membership-id") || "").trim();
     if (!membershipId) return;
@@ -13438,6 +14154,135 @@ document.addEventListener("click", async (event) => {
       showManageToast("Package deleted.");
     } catch (error) {
       setCommercialStatus(error.message, true);
+      showManageToast(error.message, "error");
+    }
+    return;
+  }
+
+  if (target.classList.contains("merch-edit")) {
+    const merchId = String(target.getAttribute("data-merch-id") || "").trim();
+    const merchItems = Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : [];
+    const item = merchItems.find((row) => String(row?.id || "") === merchId);
+    if (!item) return;
+    const values = await openManageForm({
+      title: "Edit Product",
+      submitLabel: "Save Product",
+      fields: [
+        { id: "name", label: "Product Name", required: true, value: item.name || "" },
+        { id: "salePrice", label: "Sale Price", type: "number", required: true, value: String(item.salePrice || 0) },
+        { id: "inventory", label: "Inventory", type: "number", required: true, value: String(item.inventory || 0) },
+        { id: "imageUrl", label: "Image URL or data URL", value: item.imageUrl || "" },
+        { id: "description", label: "Description", type: "textarea", required: true, value: item.description || "", rows: 4 },
+        {
+          id: "shippingAvailable",
+          label: "Shipping",
+          type: "select",
+          value: item.shippingAvailable ? "true" : "false",
+          options: [
+            { value: "true", label: "Shipping available" },
+            { value: "false", label: "Collection only" }
+          ]
+        },
+        { id: "shippingCost", label: "Shipping Cost", type: "number", value: String(item.shippingCost || 0) }
+      ]
+    });
+    if (!values) return;
+    try {
+      setMerchStatus("Updating product...");
+      await upsertMerchItem({
+        id: merchId,
+        name: values.name,
+        salePrice: Number(values.salePrice || 0),
+        inventory: Math.floor(Number(values.inventory || 0)),
+        imageUrl: values.imageUrl,
+        description: values.description,
+        shippingAvailable: values.shippingAvailable,
+        shippingCost: Number(values.shippingCost || 0),
+        status: item.status || "active"
+      });
+      setMerchStatus("Product updated.");
+      showManageToast("Product updated.");
+    } catch (error) {
+      setMerchStatus(error.message, true);
+      showManageToast(error.message, "error");
+    }
+    return;
+  }
+
+  if (target.classList.contains("merch-delete")) {
+    const merchId = String(target.getAttribute("data-merch-id") || "").trim();
+    const merchItems = Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : [];
+    const item = merchItems.find((row) => String(row?.id || "") === merchId);
+    if (!item) return;
+    const confirmed = await openManageConfirm({
+      title: "Delete Product",
+      message: "Remove this product from the active merch catalog?",
+      confirmLabel: "Delete"
+    });
+    if (!confirmed) return;
+    try {
+      setMerchStatus("Removing product...");
+      await upsertMerchItem({
+        ...item,
+        status: "inactive"
+      });
+      setMerchStatus("Product deleted.");
+      showManageToast("Product deleted.");
+    } catch (error) {
+      setMerchStatus(error.message, true);
+      showManageToast(error.message, "error");
+    }
+    return;
+  }
+
+  if (target.classList.contains("merch-ship")) {
+    const merchId = String(target.getAttribute("data-merch-id") || "").trim();
+    const merchItems = Array.isArray(commercialPayload?.merch) ? commercialPayload.merch : [];
+    const item = merchItems.find((row) => String(row?.id || "") === merchId);
+    if (!item) return;
+    const values = await openManageForm({
+      title: "Ship Product",
+      submitLabel: "Create Shipment",
+      fields: [
+        { id: "customerName", label: "Customer Name", required: true },
+        { id: "customerEmail", label: "Customer Email", type: "email" },
+        { id: "shippingAddress", label: "Shipping Address", type: "textarea", required: true, rows: 3 },
+        { id: "shippingCity", label: "City" },
+        { id: "shippingPostcode", label: "Postcode / ZIP" },
+        { id: "shippingCountry", label: "Country" },
+        { id: "shippingFee", label: "Shipping Fee", type: "number", value: String(item.shippingCost || 0) },
+        { id: "trackingRef", label: "Tracking Reference" },
+        {
+          id: "status",
+          label: "Shipment Status",
+          type: "select",
+          value: "preparing",
+          options: [
+            { value: "preparing", label: "Preparing" },
+            { value: "shipped", label: "Shipped" },
+            { value: "delivered", label: "Delivered" }
+          ]
+        }
+      ]
+    });
+    if (!values) return;
+    try {
+      setMerchStatus("Creating shipment...");
+      await createMerchShipment(merchId, {
+        customerName: values.customerName,
+        customerEmail: values.customerEmail,
+        shippingAddress: values.shippingAddress,
+        shippingCity: values.shippingCity,
+        shippingPostcode: values.shippingPostcode,
+        shippingCountry: values.shippingCountry,
+        shippingFee: Number(values.shippingFee || 0),
+        trackingRef: values.trackingRef,
+        status: values.status || "preparing"
+      });
+      setMerchStatus("Shipment created.");
+      showManageToast("Shipment created.");
+    } catch (error) {
+      setMerchStatus(error.message, true);
       showManageToast(error.message, "error");
     }
     return;
@@ -13835,6 +14680,15 @@ executivePulseRangeTabs?.addEventListener("click", (event) => {
   if (!["all", "day", "week", "month", "year"].includes(nextRange)) return;
   if (executivePulseRange === nextRange) return;
   executivePulseRange = nextRange;
+  renderExecutivePulse();
+});
+executivePulseAdminMetricTabs?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLButtonElement)) return;
+  const nextView = String(target.getAttribute("data-admin-metric-view") || "").trim().toLowerCase();
+  if (!["bookings", "subscriber_revenue", "customer_signup"].includes(nextView)) return;
+  if (executivePulseAdminMetricView === nextView) return;
+  executivePulseAdminMetricView = nextView;
   renderExecutivePulse();
 });
 executivePulseSaveSnapshotBtn?.addEventListener("click", () => {
@@ -14920,6 +15774,80 @@ giftCardForm?.addEventListener("submit", async (event) => {
   }
 });
 
+merchImageFileInput?.addEventListener("change", async () => {
+  const file = merchImageFileInput.files?.[0];
+  merchImageUploadData = "";
+  if (!file) return;
+  try {
+    merchImageUploadData = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Could not read the image file."));
+      reader.readAsDataURL(file);
+    });
+    setMerchStatus("Product image added and ready to save.");
+  } catch (error) {
+    merchImageUploadData = "";
+    setMerchStatus(error.message, true);
+  }
+});
+
+merchForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const name = String(merchNameInput?.value || "").trim();
+  const salePrice = Number(merchPriceInput?.value || 0);
+  const inventory = Math.floor(Number(merchInventoryInput?.value || 0));
+  const imageUrl = String(merchImageUrlInput?.value || "").trim() || merchImageUploadData;
+  const description = String(merchDescriptionInput?.value || "").trim();
+  const shippingAvailable = String(merchShippingInput?.value || "true").trim();
+  const shippingCost = Number(merchShippingCostInput?.value || 0);
+  if (!name) {
+    setMerchStatus("Product name is required.", true);
+    return;
+  }
+  if (!description) {
+    setMerchStatus("Product description is required.", true);
+    return;
+  }
+  if (!Number.isFinite(salePrice) || salePrice < 0) {
+    setMerchStatus("Sale price must be valid.", true);
+    return;
+  }
+  if (!Number.isInteger(inventory) || inventory < 0) {
+    setMerchStatus("Inventory must be zero or higher.", true);
+    return;
+  }
+  if (!Number.isFinite(shippingCost) || shippingCost < 0) {
+    setMerchStatus("Shipping cost must be valid.", true);
+    return;
+  }
+  try {
+    setMerchStatus("Saving product...");
+    await upsertMerchItem({
+      name,
+      salePrice,
+      inventory,
+      imageUrl,
+      description,
+      shippingAvailable,
+      shippingCost,
+      status: "active"
+    });
+    if (merchNameInput) merchNameInput.value = "";
+    if (merchPriceInput) merchPriceInput.value = "";
+    if (merchInventoryInput) merchInventoryInput.value = "";
+    if (merchImageUrlInput) merchImageUrlInput.value = "";
+    if (merchImageFileInput) merchImageFileInput.value = "";
+    if (merchDescriptionInput) merchDescriptionInput.value = "";
+    if (merchShippingInput) merchShippingInput.value = "true";
+    if (merchShippingCostInput) merchShippingCostInput.value = "";
+    merchImageUploadData = "";
+    setMerchStatus("Product saved.");
+  } catch (error) {
+    setMerchStatus(error.message, true);
+  }
+});
+
 giftCardList?.addEventListener("click", async (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
@@ -15406,15 +16334,50 @@ function loadMockDashboard() {
         expiresAt: null
       }
     ],
+    merch: [
+      {
+        id: "m1",
+        name: "Gloss Repair Serum",
+        description: "Retail repair serum for shine, softness, and smoother blow-dries between salon visits.",
+        imageUrl: "/icons/barber.svg",
+        salePrice: 24,
+        shippingAvailable: true,
+        shippingCost: 4.99,
+        inventory: 12,
+        status: "active",
+        shipments: [
+          {
+            id: "ms1",
+            customerName: "Emma Cole",
+            customerEmail: "emma.cole@example.com",
+            shippingAddress: "17 Market Street",
+            shippingCity: "Manchester",
+            shippingPostcode: "M1 2AB",
+            shippingCountry: "United Kingdom",
+            shippingFee: 4.99,
+            trackingRef: "TRACK-2048",
+            status: "shipped",
+            createdAt: new Date(now.getTime() - 86400000).toISOString(),
+            updatedAt: new Date(now.getTime() - 43200000).toISOString()
+          }
+        ]
+      }
+    ],
     summary: {
       activeMemberships: 1,
       activePackages: 1,
       activeGiftCards: 1,
-      outstandingGiftBalance: 90
+      outstandingGiftBalance: 90,
+      activeMerchItems: 1,
+      shippableMerchItems: 1,
+      pendingMerchShipments: 1,
+      merchCatalogValue: 288
     }
   };
   renderCommercialControls();
+  renderMerchControls();
   setCommercialStatus("Commercial controls loaded.");
+  setMerchStatus("Merch catalog loaded.");
   revenueAttributionPayload = {
     channels: [
       {

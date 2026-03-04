@@ -13,6 +13,8 @@ const registerEmail = document.getElementById("registerEmail");
 const registerPassword = document.getElementById("registerPassword");
 const registerMsg = document.getElementById("registerMsg");
 const subscriberFields = document.getElementById("subscriberFields");
+const customerFields = document.getElementById("customerFields");
+const customerCountry = document.getElementById("customerCountry");
 
 const businessName = document.getElementById("businessName");
 const businessType = document.getElementById("businessType");
@@ -41,6 +43,10 @@ const onboardingTemplates = {
     hours: "Mon-Wed 10:00-18:00, Thu-Fri 10:00-19:00, Sat 9:00-17:00"
   }
 };
+
+function t(key, fallback, vars) {
+  return String(fallback || "");
+}
 
 function setMessage(el, text, ok = true) {
   el.textContent = text;
@@ -76,10 +82,13 @@ function syncRoleFromQuery() {
 
 function toggleSubscriberFields() {
   const isSubscriber = registerRole.value === "subscriber";
+  const isCustomer = registerRole.value === "customer";
   subscriberFields.style.display = isSubscriber ? "grid" : "none";
+  if (customerFields) customerFields.style.display = isCustomer ? "grid" : "none";
   [businessName, businessType, businessCity, businessCountry, businessPostcode, businessPhone].forEach((el) => {
     el.required = isSubscriber;
   });
+  if (customerCountry) customerCountry.required = false;
   renderOnboardingTemplatePreview();
 }
 
@@ -107,13 +116,13 @@ function renderOnboardingTemplatePreview() {
 developerAdminAccess?.addEventListener("click", () => {
   setAdminLoginVisible(true);
   loginRole.value = "admin";
-  setMessage(loginMsg, "Admin login enabled. Restricted access for developer and maintenance use only.", true);
+  setMessage(loginMsg, t("auth.admin_login_enabled", "Admin login enabled. Restricted access for developer and maintenance use only."), true);
   loginEmail.focus();
 });
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  setMessage(loginMsg, "Signing in...", true);
+  setMessage(loginMsg, t("auth.signing_in", "Signing in..."), true);
   try {
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -125,9 +134,9 @@ loginForm.addEventListener("submit", async (event) => {
       })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed to sign in.");
+    if (!res.ok) throw new Error(data.error || t("auth.failed_sign_in", "Failed to sign in."));
     saveSessionAuth(data.token, data.user);
-    setMessage(loginMsg, "Signed in. Redirecting...", true);
+    setMessage(loginMsg, t("auth.signed_in_redirecting", "Signed in. Redirecting..."), true);
     window.location.href = `/dashboard?role=${data.user.role}`;
   } catch (error) {
     setMessage(loginMsg, error.message, false);
@@ -137,7 +146,7 @@ loginForm.addEventListener("submit", async (event) => {
 registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const role = registerRole.value;
-  setMessage(registerMsg, "Creating account...", true);
+  setMessage(registerMsg, t("auth.creating_account", "Creating account..."), true);
 
   try {
     let endpoint = "";
@@ -148,7 +157,8 @@ registerForm.addEventListener("submit", async (event) => {
       payload = {
         name: registerName.value.trim(),
         email: registerEmail.value.trim(),
-        password: registerPassword.value
+        password: registerPassword.value,
+        country: String(customerCountry?.value || "").trim()
       };
     } else {
       endpoint = "/api/auth/register/subscriber";
@@ -171,10 +181,10 @@ registerForm.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Registration failed.");
+    if (!res.ok) throw new Error(data.error || t("auth.registration_failed", "Registration failed."));
 
     saveSessionAuth(data.token, data.user);
-    setMessage(registerMsg, "Account created. Redirecting...", true);
+    setMessage(registerMsg, t("auth.account_created_redirecting", "Account created. Redirecting..."), true);
     window.location.href = `/dashboard?role=${data.user.role}`;
   } catch (error) {
     setMessage(registerMsg, error.message, false);

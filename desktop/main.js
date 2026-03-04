@@ -58,7 +58,7 @@ function stopEmbeddedBackend() {
 }
 
 async function createWindow() {
-  const appIconPath = path.join(__dirname, "..", "public", "Salon_AI_IMG.png");
+  const appIconPath = path.join(__dirname, "..", "public", "LEXI_IMG.png");
   const win = new BrowserWindow({
     width: 1400,
     height: 920,

@@ -295,7 +295,9 @@
            <span class="brand-dot"></span>
             AI Salon Receptionist
         </a>
-        <a class="btn btn-ghost" href="/">Back to Home</a>
+        <div class="auth-topbar-actions">
+          <a class="btn btn-ghost" href="/">Back to Home</a>
+        </div>
       </section>
 
       <section class="auth-wrap">
@@ -358,6 +360,10 @@
               <input id="registerEmail" type="email" placeholder="Email" autocomplete="off" autocapitalize="off" spellcheck="false" required />
               <input id="registerPassword" type="password" placeholder="Password" autocomplete="new-password" required />
 
+              <div id="customerFields" style="display:grid;gap:0.6rem;">
+                <input id="customerCountry" type="text" placeholder="Country (optional)" />
+              </div>
+
               <div id="subscriberFields" style="display:none;">
                 <select id="businessType">
                   <option value="hair_salon">Hair Salon</option>
@@ -400,3 +406,4 @@
     <script type="module" src="/auth.js"></script>
   </body>
 </html>
+

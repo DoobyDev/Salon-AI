@@ -81,6 +81,7 @@ const supportedWaitlistStatus = new Set(["waiting", "contacted", "booked", "canc
 const supportedMembershipCycles = new Set(["weekly", "monthly", "quarterly", "yearly"]);
 const supportedCommercialStatus = new Set(["active", "inactive"]);
 const supportedGiftCardStatus = new Set(["active", "redeemed", "expired", "cancelled"]);
+const supportedShipmentStatus = new Set(["preparing", "shipped", "delivered", "cancelled"]);
 
 function createUnavailablePrisma() {
   const reject = async () => {
@@ -393,8 +394,7 @@ async function syncAdminFromEnv() {
 }
 
 const cancellationPolicy = {
-  hoursWindow: 24,
-  feeRule: "Fee applies only if cancelled within 24 hours of appointment time."
+  feeRule: "Cancellation fees and policy windows are controlled by each subscriber business."
 };
 
 const adminPlanPriceMap = {
@@ -1058,6 +1058,26 @@ async function computeAdminRevenueAnalytics(monthCount = 6) {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const rangeStart = new Date(monthStart.getFullYear(), monthStart.getMonth() - (safeMonthCount - 1), 1);
+  const subscriptions = await prisma.subscription.findMany({
+    select: { plan: true, status: true, createdAt: true }
+  });
+  const datedSubscriptions = subscriptions
+    .map((row) => ({ ...row, createdAt: row?.createdAt ? new Date(row.createdAt) : null }))
+    .filter((row) => row.createdAt instanceof Date && !Number.isNaN(row.createdAt.getTime()));
+  const earliestSubscription = datedSubscriptions.length
+    ? datedSubscriptions.slice().sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0]
+    : null;
+  const firstSubscriptionDate = earliestSubscription
+    ? new Date(
+        earliestSubscription.createdAt.getFullYear(),
+        earliestSubscription.createdAt.getMonth(),
+        earliestSubscription.createdAt.getDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
   const monthKeys = [];
   const monthLabels = [];
@@ -1068,14 +1088,13 @@ async function computeAdminRevenueAnalytics(monthCount = 6) {
     monthLabels.push(slot.toLocaleString("en-US", { month: "short", year: "numeric" }));
   }
 
-  const [activeSubs, auditRows, cancelledBookings] = await Promise.all([
-    prisma.subscription.findMany({ select: { plan: true, status: true } }),
+  const [auditRows, cancelledBookings] = await Promise.all([
     prisma.auditLog.findMany({
       where: {
         action: {
           in: ["billing.subscription_activated", "billing.subscription_cancelled"]
         },
-        createdAt: { gte: rangeStart }
+        createdAt: { gte: firstSubscriptionDate }
       },
       select: { action: true, createdAt: true }
     }),
@@ -1117,13 +1136,33 @@ async function computeAdminRevenueAnalytics(monthCount = 6) {
     slot.bookingCancellations += 1;
   });
 
-  const activeSubscriptions = activeSubs.filter((row) => String(row.status || "").toLowerCase() === "active");
+  const activeSubscriptions = subscriptions.filter((row) => String(row.status || "").toLowerCase() === "active");
   const estimatedMrr = activeSubscriptions.reduce((sum, row) => {
     const planKey = String(row.plan || "starter").trim().toLowerCase();
     return sum + Number(adminPlanPriceMap[planKey] || adminPlanPriceMap.starter);
   }, 0);
   const activeCount = activeSubscriptions.length;
   const avgPlanValue = activeCount > 0 ? estimatedMrr / activeCount : adminPlanPriceMap.starter;
+
+  const daily = [];
+  const dayLookup = new Map();
+  const dailyCursor = new Date(firstSubscriptionDate.getFullYear(), firstSubscriptionDate.getMonth(), firstSubscriptionDate.getDate(), 0, 0, 0, 0);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  while (dailyCursor <= today) {
+    const key = `${dailyCursor.getFullYear()}-${String(dailyCursor.getMonth() + 1).padStart(2, "0")}-${String(dailyCursor.getDate()).padStart(2, "0")}`;
+    const row = {
+      key,
+      date: key,
+      label: dailyCursor.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      subscriptionActivations: 0,
+      subscriptionCancellations: 0,
+      activeSubscriptions: 0,
+      estimatedMrr: 0
+    };
+    daily.push(row);
+    dayLookup.set(key, row);
+    dailyCursor.setDate(dailyCursor.getDate() + 1);
+  }
 
   const netDeltaAcrossRange = monthly.reduce(
     (sum, row) => sum + row.subscriptionActivations - row.subscriptionCancellations,
@@ -1136,6 +1175,30 @@ async function computeAdminRevenueAnalytics(monthCount = 6) {
       estimatedActiveInMonth + row.subscriptionActivations - row.subscriptionCancellations
     );
     row.estimatedSubscriptionRevenue = Number((estimatedActiveInMonth * avgPlanValue).toFixed(2));
+  });
+
+  auditRows.forEach((row) => {
+    const dt = new Date(row.createdAt);
+    if (Number.isNaN(dt.getTime())) return;
+    const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+    const slot = dayLookup.get(key);
+    if (!slot) return;
+    if (row.action === "billing.subscription_activated") slot.subscriptionActivations += 1;
+    if (row.action === "billing.subscription_cancelled") slot.subscriptionCancellations += 1;
+  });
+
+  const netDeltaAcrossDays = daily.reduce(
+    (sum, row) => sum + row.subscriptionActivations - row.subscriptionCancellations,
+    0
+  );
+  let estimatedActiveInDay = Math.max(0, activeCount - netDeltaAcrossDays);
+  daily.forEach((row) => {
+    estimatedActiveInDay = Math.max(
+      0,
+      estimatedActiveInDay + row.subscriptionActivations - row.subscriptionCancellations
+    );
+    row.activeSubscriptions = estimatedActiveInDay;
+    row.estimatedMrr = Number((estimatedActiveInDay * avgPlanValue).toFixed(2));
   });
 
   const totals = monthly.reduce(
@@ -1154,11 +1217,98 @@ async function computeAdminRevenueAnalytics(monthCount = 6) {
       avgPlanValue: Number(avgPlanValue.toFixed(2)),
       periodMonths: safeMonthCount,
       estimatedRevenueInPeriod: Number(totals.estimatedSubscriptionRevenue.toFixed(2)),
+      firstSubscriptionDate: firstSubscriptionDate.toISOString(),
       subscriptionCancellationsInPeriod: totals.subscriptionCancellations,
       bookingCancellationsInPeriod: totals.bookingCancellations
     },
     monthly,
+    dailyMrrSeries: daily,
     note: "Estimated subscription revenue uses subscription status and plan-value mapping."
+  };
+}
+
+async function computeAdminAppUsageAnalytics(dayCount = 14) {
+  const safeDayCount = Math.max(3, Math.min(60, Number(dayCount) || 14));
+  const now = new Date();
+  const rangeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (safeDayCount - 1));
+  const auditRows = await prisma.auditLog.findMany({
+    where: { createdAt: { gte: rangeStart } },
+    select: { action: true, actorRole: true, createdAt: true }
+  });
+
+  const hourBuckets = Array.from({ length: 24 }, (_, hour) => ({
+    hour,
+    label: `${String(hour).padStart(2, "0")}:00`,
+    total: 0,
+    loginCount: 0,
+    bookingCount: 0,
+    lexiCount: 0
+  }));
+  const weekdayBuckets = [
+    { key: 1, label: "Mon", total: 0 },
+    { key: 2, label: "Tue", total: 0 },
+    { key: 3, label: "Wed", total: 0 },
+    { key: 4, label: "Thu", total: 0 },
+    { key: 5, label: "Fri", total: 0 },
+    { key: 6, label: "Sat", total: 0 },
+    { key: 0, label: "Sun", total: 0 }
+  ];
+  const roleCounts = {
+    admin: 0,
+    subscriber: 0,
+    customer: 0,
+    anonymous: 0
+  };
+
+  auditRows.forEach((row) => {
+    const createdAt = new Date(row.createdAt);
+    if (Number.isNaN(createdAt.getTime())) return;
+    const action = String(row.action || "").trim().toLowerCase();
+    const actorRole = String(row.actorRole || "anonymous").trim().toLowerCase() || "anonymous";
+    const hourBucket = hourBuckets[createdAt.getHours()];
+    const weekdayBucket = weekdayBuckets.find((entry) => entry.key === createdAt.getDay());
+    if (hourBucket) {
+      hourBucket.total += 1;
+      if (action === "auth.login_success") hourBucket.loginCount += 1;
+      if (action.startsWith("booking.")) hourBucket.bookingCount += 1;
+      if (action.includes("copilot_query")) hourBucket.lexiCount += 1;
+    }
+    if (weekdayBucket) weekdayBucket.total += 1;
+    if (roleCounts[actorRole] !== undefined) roleCounts[actorRole] += 1;
+    else roleCounts.anonymous += 1;
+  });
+
+  const sortedByUsage = hourBuckets.slice().sort((a, b) => a.total - b.total || a.hour - b.hour);
+  const quietest = sortedByUsage[0] || hourBuckets[0];
+  const busiest = hourBuckets.slice().sort((a, b) => b.total - a.total || a.hour - b.hour)[0] || hourBuckets[0];
+
+  const consecutiveWindows = [];
+  for (let startHour = 0; startHour < 24; startHour += 1) {
+    const span = [0, 1, 2].map((offset) => hourBuckets[(startHour + offset) % 24]);
+    const total = span.reduce((sum, row) => sum + Number(row?.total || 0), 0);
+    consecutiveWindows.push({
+      startHour,
+      total,
+      label: `${String(startHour).padStart(2, "0")}:00-${String((startHour + 3) % 24).padStart(2, "0")}:00`
+    });
+  }
+  consecutiveWindows.sort((a, b) => a.total - b.total || a.startHour - b.startHour);
+  const bestWindow = consecutiveWindows[0] || { label: "00:00-03:00", total: 0 };
+
+  return {
+    summary: {
+      periodDays: safeDayCount,
+      totalEvents: auditRows.length,
+      busiestHourLabel: busiest?.label || "00:00",
+      busiestHourEvents: Number(busiest?.total || 0),
+      quietestHourLabel: quietest?.label || "00:00",
+      quietestHourEvents: Number(quietest?.total || 0),
+      bestUpdateWindowLabel: bestWindow.label,
+      bestUpdateWindowEvents: Number(bestWindow.total || 0),
+      roleCounts
+    },
+    hourly: hourBuckets,
+    weekdays: weekdayBuckets
   };
 }
 
@@ -2256,7 +2406,49 @@ function normalizeCommercialRecord(record) {
     })
     .filter((item) => item.id && item.code);
 
-  return { memberships, packages, giftCards };
+  const merch = (Array.isArray(source.merch) ? source.merch : [])
+    .map((item) => {
+      const salePrice = Number(item?.salePrice || 0);
+      const shippingCost = Math.max(0, Number(item?.shippingCost || 0));
+      const inventory = Math.max(0, Math.floor(Number(item?.inventory || 0)));
+      const status = String(item?.status || "active").trim().toLowerCase();
+      const shipments = (Array.isArray(item?.shipments) ? item.shipments : [])
+        .map((shipment) => {
+          const shipmentStatus = String(shipment?.status || "preparing").trim().toLowerCase();
+          const shippingFee = Math.max(0, Number(shipment?.shippingFee || 0));
+          return {
+            id: String(shipment?.id || "").trim(),
+            customerName: String(shipment?.customerName || "").trim(),
+            customerEmail: String(shipment?.customerEmail || "").trim().toLowerCase(),
+            shippingAddress: String(shipment?.shippingAddress || "").trim(),
+            shippingCity: String(shipment?.shippingCity || "").trim(),
+            shippingPostcode: String(shipment?.shippingPostcode || "").trim(),
+            shippingCountry: String(shipment?.shippingCountry || "").trim(),
+            shippingFee: Number(shippingFee.toFixed(2)),
+            trackingRef: String(shipment?.trackingRef || "").trim(),
+            status: supportedShipmentStatus.has(shipmentStatus) ? shipmentStatus : "preparing",
+            createdAt: shipment?.createdAt || null,
+            updatedAt: shipment?.updatedAt || null
+          };
+        })
+        .filter((shipment) => shipment.id && shipment.customerName && shipment.shippingAddress);
+      return {
+        id: String(item?.id || "").trim(),
+        name: String(item?.name || "").trim(),
+        description: String(item?.description || "").trim(),
+        imageUrl: String(item?.imageUrl || "").trim(),
+        salePrice: Number.isFinite(salePrice) ? Number(salePrice.toFixed(2)) : 0,
+        shippingAvailable: Boolean(item?.shippingAvailable),
+        shippingCost: Number(shippingCost.toFixed(2)),
+        inventory,
+        status: supportedCommercialStatus.has(status) ? status : "active",
+        updatedAt: item?.updatedAt || null,
+        shipments
+      };
+    })
+    .filter((item) => item.id && item.name);
+
+  return { memberships, packages, giftCards, merch };
 }
 
 function summarizeCommercialRecord(record) {
@@ -2268,7 +2460,19 @@ function summarizeCommercialRecord(record) {
     activeMemberships: normalized.memberships.filter((m) => m.status === "active").length,
     activePackages: normalized.packages.filter((p) => p.status === "active").length,
     activeGiftCards: normalized.giftCards.filter((g) => g.status === "active").length,
-    outstandingGiftBalance: Number(outstandingGiftBalance.toFixed(2))
+    outstandingGiftBalance: Number(outstandingGiftBalance.toFixed(2)),
+    activeMerchItems: normalized.merch.filter((item) => item.status === "active").length,
+    shippableMerchItems: normalized.merch.filter((item) => item.status === "active" && item.shippingAvailable).length,
+    pendingMerchShipments: normalized.merch.reduce(
+      (sum, item) => sum + item.shipments.filter((shipment) => shipment.status === "preparing" || shipment.status === "shipped").length,
+      0
+    ),
+    merchCatalogValue: Number(
+      normalized.merch
+        .filter((item) => item.status === "active")
+        .reduce((sum, item) => sum + Number(item.salePrice || 0) * Number(item.inventory || 0), 0)
+        .toFixed(2)
+    )
   };
 }
 
@@ -2356,10 +2560,16 @@ async function loadCommercialRecordFromPrisma(businessId) {
 }
 
 async function loadCommercialRecord(businessId) {
-  const dbRecord = await loadCommercialRecordFromPrisma(businessId);
-  if (dbRecord) return dbRecord;
   const all = await readCommercialControlsFile();
-  return normalizeCommercialRecord(all?.[businessId]);
+  const fileRecord = normalizeCommercialRecord(all?.[businessId]);
+  const dbRecord = await loadCommercialRecordFromPrisma(businessId);
+  if (!dbRecord) return fileRecord;
+  return normalizeCommercialRecord({
+    ...fileRecord,
+    memberships: dbRecord.memberships,
+    packages: dbRecord.packages,
+    giftCards: dbRecord.giftCards
+  });
 }
 
 async function saveCommercialRecord(businessId, record) {
@@ -2415,7 +2625,6 @@ async function saveCommercialRecord(businessId, record) {
         });
       }
 
-      return normalized;
     } catch (error) {
       if (!isPrismaCommercialStorageUnavailable(error)) throw error;
     }
@@ -2425,6 +2634,12 @@ async function saveCommercialRecord(businessId, record) {
   all[businessId] = normalized;
   await writeCommercialControlsFile(all);
   return normalized;
+}
+
+function parseBooleanInput(value) {
+  if (typeof value === "boolean") return value;
+  const normalized = String(value || "").trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes" || normalized === "on";
 }
 
 function normalizeWaitlistRows(rows) {
@@ -3639,7 +3854,6 @@ async function resolveLexiRealtimeBusiness({ scope, auth, businessId }) {
 
 async function createOpenAiRealtimeClientSecret({ instructions, model, voice }) {
   const transcriptModel = String(process.env.LEXI_REALTIME_TRANSCRIBE_MODEL || "gpt-4o-mini-transcribe").trim();
-  const transcriptLanguage = String(process.env.LEXI_REALTIME_TRANSCRIBE_LANGUAGE || "en").trim();
   const response = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
     method: "POST",
     headers: {
@@ -3655,7 +3869,7 @@ async function createOpenAiRealtimeClientSecret({ instructions, model, voice }) 
           input: {
             transcription: {
               model: transcriptModel,
-              language: transcriptLanguage
+              language: "en"
             },
             turn_detection: {
               type: "server_vad",
@@ -3901,6 +4115,7 @@ app.post("/api/auth/register/customer", authLimiter, async (req, res) => {
   const password = String(req.body?.password || "");
   const phone = String(req.body?.phone || "").trim();
   const city = String(req.body?.city || "").trim();
+  const country = String(req.body?.country || "").trim();
   const preferredService = String(req.body?.preferredService || "").trim();
   const notes = String(req.body?.notes || "").trim();
   const paymentConsentAccepted = Boolean(req.body?.paymentConsentAccepted);
@@ -3913,6 +4128,24 @@ app.post("/api/auth/register/customer", authLimiter, async (req, res) => {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return res.status(409).json({ error: "Email already exists." });
+  const linkedBookings = await prisma.booking.findMany({
+    where: { customerEmail: email },
+    select: {
+      id: true,
+      businessId: true,
+      customerPhone: true,
+      createdAt: true
+    },
+    orderBy: [{ createdAt: "desc" }],
+    take: 100
+  });
+  const latestLinkedBooking = linkedBookings[0] || null;
+  const linkedBusinessCount = new Set(
+    linkedBookings
+      .map((booking) => String(booking?.businessId || "").trim())
+      .filter(Boolean)
+  ).size;
+  const linkedCustomerPhone = String(phone || latestLinkedBooking?.customerPhone || "").trim() || null;
 
   const user = await prisma.user.create({
     data: {
@@ -3935,15 +4168,27 @@ app.post("/api/auth/register/customer", authLimiter, async (req, res) => {
       onboarding: {
         phone: phone || null,
         city: city || null,
+        country: country || null,
         preferredService: preferredService || null,
         notes: notes || null,
         paymentConsentAccepted,
         termsAccepted,
-        updatesOptIn
+        updatesOptIn,
+        linkedVisitCount: linkedBookings.length,
+        linkedBusinessCount,
+        linkedFromWalkInEmail: linkedBookings.length > 0
       }
     }
   });
-  return res.status(201).json({ token, user: { id: user.id, role: user.role, email: user.email } });
+  return res.status(201).json({
+    token,
+    user: {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      phone: linkedCustomerPhone
+    }
+  });
 });
 
 app.post("/api/auth/login", authLimiter, async (req, res) => {
@@ -4644,14 +4889,7 @@ app.patch("/api/bookings/:bookingId/cancel", authRequired, bookingLimiter, async
   if (bookingStatus === "cancelled") return res.status(400).json({ error: "Booking is already cancelled." });
   if (bookingStatus === "completed") return res.status(400).json({ error: "Completed bookings cannot be cancelled." });
 
-  const normalized = normalizeBookingDateTime(booking.date, booking.time);
-  const now = Date.now();
   let feeApplied = false;
-  if (normalized) {
-    const appointmentTime = new Date(`${normalized.date}T${normalized.time}:00`);
-    const diffHours = (appointmentTime.getTime() - now) / (1000 * 60 * 60);
-    feeApplied = diffHours < cancellationPolicy.hoursWindow;
-  }
 
   const cancelled = await prisma.booking.update({
     where: { id: booking.id },
@@ -4670,7 +4908,7 @@ app.patch("/api/bookings/:bookingId/cancel", authRequired, bookingLimiter, async
   return res.json({
     booking: cancelled,
     policy: {
-      hoursWindow: cancellationPolicy.hoursWindow,
+      subscriberControlled: true,
       feeApplied
     }
   });
@@ -4740,21 +4978,40 @@ app.patch("/api/bookings/:bookingId/reschedule", authRequired, bookingLimiter, a
 });
 
 app.get("/api/dashboard/admin", authRequired, requireRole("admin"), async (_req, res) => {
-  const [businesses, users, bookings, cancelled] = await Promise.all([
+  const todayKey = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const yearStart = new Date(new Date().getFullYear(), 0, 1);
+  const [businesses, users, subscribers, customers, customerSignupsThisMonth, customerSignupsThisYear, subscriberSignupsThisMonth, subscriberSignupsThisYear, bookings, cancelled, todayBookings, usage] = await Promise.all([
     prisma.business.count(),
     prisma.user.count(),
+    prisma.user.count({ where: { role: "subscriber" } }),
+    prisma.user.count({ where: { role: "customer" } }),
+    prisma.user.count({ where: { role: "customer", createdAt: { gte: monthStart } } }),
+    prisma.user.count({ where: { role: "customer", createdAt: { gte: yearStart } } }),
+    prisma.user.count({ where: { role: "subscriber", createdAt: { gte: monthStart } } }),
+    prisma.user.count({ where: { role: "subscriber", createdAt: { gte: yearStart } } }),
     prisma.booking.count(),
-    prisma.booking.count({ where: { status: "cancelled" } })
+    prisma.booking.count({ where: { status: "cancelled" } }),
+    prisma.booking.count({ where: { date: todayKey } }),
+    computeAdminAppUsageAnalytics(14)
   ]);
 
   return res.json({
     analytics: {
       totalBusinesses: businesses,
       totalUsers: users,
+      totalSubscribers: subscribers,
+      totalCustomers: customers,
+      customerSignupsThisMonth,
+      customerSignupsThisYear,
+      subscriberSignupsThisMonth,
+      subscriberSignupsThisYear,
       totalBookings: bookings,
+      todayBookings,
       cancelledBookings: cancelled,
       conversionRate: bookings ? Number((((bookings - cancelled) / bookings) * 100).toFixed(1)) : 0
-    }
+    },
+    usage
   });
 });
 
@@ -4799,6 +5056,273 @@ app.get("/api/admin/businesses", authRequired, requireRole("admin"), async (_req
       country: business.country || ""
     }))
   });
+});
+
+async function buildAdminSupportAccountPayload(userRow) {
+  if (!userRow || typeof userRow !== "object") return null;
+  const role = String(userRow.role || "").trim().toLowerCase();
+  const base = {
+    id: String(userRow.id || "").trim(),
+    role,
+    name: String(userRow.name || "").trim(),
+    email: String(userRow.email || "").trim().toLowerCase(),
+    createdAt: userRow.createdAt ? new Date(userRow.createdAt).toISOString() : null
+  };
+
+  if (role === "subscriber") {
+    const businessId = String(userRow.businessId || userRow.business?.id || "").trim();
+    const [bookingCount, revenueAgg, latestBooking] = businessId
+      ? await Promise.all([
+          prisma.booking.count({ where: { businessId } }),
+          prisma.booking.aggregate({
+            where: { businessId, status: { not: "cancelled" } },
+            _sum: { price: true }
+          }),
+          prisma.booking.findFirst({
+            where: { businessId },
+            select: { createdAt: true, date: true, time: true },
+            orderBy: [{ date: "desc" }, { time: "desc" }, { createdAt: "desc" }]
+          })
+        ])
+      : [0, { _sum: { price: 0 } }, null];
+
+    return {
+      ...base,
+      business: userRow.business
+        ? {
+            id: String(userRow.business.id || "").trim(),
+            name: String(userRow.business.name || "").trim(),
+            type: String(userRow.business.type || "").trim(),
+            city: String(userRow.business.city || "").trim(),
+            country: String(userRow.business.country || "").trim()
+          }
+        : null,
+      stats: {
+        bookingCount,
+        revenue: Number(revenueAgg?._sum?.price || 0),
+        planStatus: String(userRow.business?.subscription?.status || "not connected").trim(),
+        planLabel: String(userRow.business?.subscription?.plan || "no plan").trim(),
+        lastBookingAt: latestBooking?.createdAt ? new Date(latestBooking.createdAt).toISOString() : null
+      },
+      recentVisits: []
+    };
+  }
+
+  const [visitCount, recentVisits] = await Promise.all([
+    prisma.booking.count({ where: { customerEmail: base.email } }),
+    prisma.booking.findMany({
+      where: { customerEmail: base.email },
+      select: {
+        id: true,
+        businessId: true,
+        businessName: true,
+        date: true,
+        time: true,
+        status: true,
+        service: true,
+        price: true,
+        createdAt: true
+      },
+      orderBy: [{ date: "desc" }, { time: "desc" }, { createdAt: "desc" }],
+      take: 6
+    })
+  ]);
+  const linkedBusinesses = new Set(
+    recentVisits
+      .map((visit) => String(visit?.businessId || "").trim())
+      .filter(Boolean)
+  ).size;
+  const upcomingCount = recentVisits.filter((visit) => {
+    const normalized = normalizeBookingDateTime(visit?.date, visit?.time);
+    if (!normalized) return false;
+    const startsAt = new Date(`${normalized.date}T${normalized.time}:00`);
+    return Number.isFinite(startsAt.getTime()) && startsAt.getTime() >= Date.now() && String(visit?.status || "").trim().toLowerCase() === "confirmed";
+  }).length;
+
+  return {
+    ...base,
+    business: null,
+    stats: {
+      visitCount,
+      linkedBusinesses,
+      upcomingCount
+    },
+    recentVisits: recentVisits.map((visit) => ({
+      id: String(visit.id || "").trim(),
+      businessId: String(visit.businessId || "").trim(),
+      businessName: String(visit.businessName || "").trim(),
+      date: String(visit.date || "").trim(),
+      time: String(visit.time || "").trim(),
+      status: String(visit.status || "").trim(),
+      service: String(visit.service || "").trim(),
+      price: Number(visit.price || 0),
+      createdAt: visit.createdAt ? new Date(visit.createdAt).toISOString() : null
+    }))
+  };
+}
+
+app.get("/api/admin/accounts", authRequired, requireRole("admin"), async (req, res) => {
+  const query = String(req.query?.query || "").trim();
+  if (query.length > 120) return res.status(400).json({ error: "Search query is too long." });
+
+  const where = {
+    role: { in: ["subscriber", "customer"] },
+    ...(query
+      ? {
+          OR: [
+            { name: { contains: query } },
+            { email: { contains: query } },
+            { business: { is: { name: { contains: query } } } },
+            { business: { is: { city: { contains: query } } } },
+            { business: { is: { country: { contains: query } } } }
+          ]
+        }
+      : {})
+  };
+
+  const users = await prisma.user.findMany({
+    where,
+    take: query ? 18 : 10,
+    orderBy: [{ createdAt: "desc" }],
+    select: {
+      id: true,
+      role: true,
+      name: true,
+      email: true,
+      businessId: true,
+      createdAt: true,
+      business: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          city: true,
+          country: true,
+          subscription: {
+            select: {
+              status: true,
+              plan: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const accounts = (await Promise.all(users.map((user) => buildAdminSupportAccountPayload(user)))).filter(Boolean);
+  return res.json({ accounts });
+});
+
+app.patch("/api/admin/accounts/:userId", authRequired, requireRole("admin"), async (req, res) => {
+  const userId = String(req.params.userId || "").trim();
+  const name = String(req.body?.name || "").trim();
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  const businessName = String(req.body?.businessName || "").trim();
+  if (!userId) return res.status(400).json({ error: "User id is required." });
+  if (!name || !email) return res.status(400).json({ error: "Name and email are required." });
+  if (!isValidEmail(email)) return res.status(400).json({ error: "Invalid email format." });
+
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      role: true,
+      name: true,
+      email: true,
+      businessId: true,
+      business: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          city: true,
+          country: true,
+          subscription: {
+            select: {
+              status: true,
+              plan: true
+            }
+          }
+        }
+      }
+    }
+  });
+  if (!existing || !["subscriber", "customer"].includes(String(existing.role || "").trim().toLowerCase())) {
+    return res.status(404).json({ error: "Account not found." });
+  }
+
+  const duplicate = await prisma.user.findUnique({ where: { email } });
+  if (duplicate && String(duplicate.id || "").trim() !== userId) {
+    return res.status(409).json({ error: "That email is already in use." });
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      email
+    }
+  });
+
+  if (existing.role === "subscriber" && existing.businessId) {
+    const businessData = {};
+    if (businessName) businessData.name = businessName;
+    if (email && email !== existing.email) businessData.email = email;
+    if (Object.keys(businessData).length) {
+      await prisma.business.update({
+        where: { id: existing.businessId },
+        data: businessData
+      });
+    }
+  }
+
+  if (existing.role === "customer" && email !== existing.email) {
+    await prisma.booking.updateMany({
+      where: { customerEmail: existing.email },
+      data: { customerEmail: email }
+    });
+  }
+
+  await writeAuditLog({
+    actorId: req.auth.sub,
+    actorRole: req.auth.role,
+    action: "admin.account_updated",
+    entityType: "user",
+    entityId: userId,
+    metadata: {
+      accountRole: existing.role,
+      businessId: existing.businessId || null
+    }
+  });
+
+  const updated = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      role: true,
+      name: true,
+      email: true,
+      businessId: true,
+      createdAt: true,
+      business: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          city: true,
+          country: true,
+          subscription: {
+            select: {
+              status: true,
+              plan: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return res.json({ account: await buildAdminSupportAccountPayload(updated) });
 });
 
 function buildAdminCopilotHeuristicResponse(question, snapshot) {
@@ -5000,8 +5524,23 @@ function lexiRestrictedDataReply(scopeLabel = "this chat", options = {}) {
   return `I can help with general questions, salon/business guidance, and how to use the app, but I can’t share private ${scopeLabel} data, personal user/customer information, credentials, or internal system details.`;
 }
 
+function repairLexiTextArtifacts(text) {
+  return String(text || "")
+    .replace(/\u2018|\u2019|\u2032/g, "'")
+    .replace(/\u201c|\u201d/g, '"')
+    .replace(/\u2013|\u2014/g, "-")
+    .replace(/\u2026/g, "...")
+    .replace(/â€™|â€˜/g, "'")
+    .replace(/â€œ|â€\x9d/g, '"')
+    .replace(/â€"/g, "-")
+    .replace(/â€¦/g, "...")
+    .replace(/Â/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function normalizeLexiReplyText(text, options = {}) {
-  const raw = String(text || "").replace(/\s+/g, " ").trim();
+  const raw = repairLexiTextArtifacts(text);
   if (!raw) return "";
   const maxSentences = Math.max(1, Number(options.maxSentences || 2));
   const maxChars = Math.max(80, Number(options.maxChars || 320));
@@ -5016,6 +5555,8 @@ function normalizeLexiReplyText(text, options = {}) {
   return compact
     .replace(/^I reviewed (?:your|the) snapshot[, ]*/i, "")
     .replace(/^Based on (?:your|the) snapshot[, ]*/i, "")
+    .replace(/^Yes\.\s+Yes\./i, "Yes.")
+    .replace(/^Hi, I'?m Lexi\.\s+Hi, I'?m Lexi\./i, "Hi, I'm Lexi.")
     .trim();
 }
 
@@ -5349,7 +5890,7 @@ function isLexiPublicAvailabilityQuestion(text) {
 
 function isLexiSalonBeautyQuestion(text) {
   const q = normalizeLexiTypos(String(text || "").toLowerCase());
-  return /(hair|salon|barber|barbershop|beauty|facial|nails?|lash|lashes|brow|brows|fade|beard|blowout|silk press|keratin|brazilian blowout|perm|relaxer|extensions?|balayage|ombre|highlight|color correction|root touch|toner|scalp|deep conditioning|bridal|updo|waxing|makeup|aftercare|shampoo|conditioner|heat protectant|serum|pomade|clay|mousse|gel|texture spray)/.test(q);
+  return /(service|services|treatment|treatments|product|products|hair|salon|barber|barbershop|beauty|facial|nails?|lash|lashes|brow|brows|fade|beard|blowout|silk press|keratin|brazilian blowout|perm|relaxer|extensions?|balayage|ombre|highlight|color correction|root touch|toner|scalp|deep conditioning|bridal|updo|waxing|makeup|aftercare|shampoo|conditioner|heat protectant|serum|pomade|clay|mousse|gel|texture spray)/.test(q);
 }
 
 function formatCurrencyGBP(amount) {
@@ -5549,6 +6090,71 @@ function buildLexiBookingDraftState({
   };
 }
 
+function extractLexiLocationHint(text) {
+  const source = String(text || "").trim();
+  if (!source) return "";
+  const match = source.match(/\b(?:in|near|around|close to)\s+([A-Za-z][A-Za-z\s'-]{1,40}?)(?=(?:\s+\b(?:for|with|that|who|which|on|this|today|tomorrow|please)\b|[?.!,]|$))/i);
+  return match ? String(match[1] || "").trim() : "";
+}
+
+function inferBusinessTypeFromLexiService(serviceName = "", question = "") {
+  const combined = normalizeLexiTypos(`${serviceName} ${question}`.toLowerCase());
+  if (/(fade|skin fade|beard|clipper|line up|shape up|barber)/.test(combined)) return "barber";
+  if (/(facial|lashes|lash|brow|brows|wax|waxing|nails|manicure|pedicure|beauty|skin|skincare|makeup)/.test(combined)) return "beauty";
+  if (/(hair|haircut|cut|colour|color|balayage|highlights|blow dry|blowout|extensions|keratin|toner|roots?)/.test(combined)) return "salon";
+  return "";
+}
+
+async function maybeBuildLexiBusinessDiscoveryReply({
+  message = "",
+  qLower = "",
+  business = null,
+  serviceReplyHint = null
+} = {}) {
+  const location = extractLexiLocationHint(message);
+  const requestedService = String(serviceReplyHint?.name || "").trim();
+  const inferredType = inferBusinessTypeFromLexiService(requestedService, qLower);
+  const wantsDiscovery = /(looking for|find me|find a|recommend|who does|who can do|where can i get|which salon|which barber|which beauty|best salon|best barber|best beauty|in my area|near me|near|around)/.test(qLower);
+  const hasDiscoveryContext = Boolean(location || wantsDiscovery);
+  if (!hasDiscoveryContext) return null;
+  if (!requestedService && !inferredType && !/(salon|barber|barbershop|beauty)/.test(qLower)) return null;
+
+  const results = await searchPublicSubscribedBusinesses({
+    location,
+    service: requestedService,
+    businessType: inferredType,
+    limit: 4
+  });
+
+  if (!results.length) {
+    if (location && requestedService) {
+      return `I couldn't find a subscribed business for ${requestedService} near ${location} right now. If you want, tell me a nearby area or I can suggest another similar service to search for.`;
+    }
+    if (location) {
+      return `I couldn't find a strong subscribed match near ${location} yet. Tell me the service or style you want, and I'll narrow it down properly.`;
+    }
+    if (requestedService) {
+      return `I can help you choose the right subscribed business for ${requestedService}. Tell me the area you want, and I'll suggest the best matches.`;
+    }
+    return "Tell me the service or style you want and the area that suits you, and I'll suggest subscribed businesses that fit.";
+  }
+
+  const summary = results
+    .map((row) => {
+      const topServices = Array.isArray(row.services) ? row.services.slice(0, 2).map((service) => service.name).filter(Boolean).join(", ") : "";
+      return `${row.name} (${row.city})${topServices ? ` - ${topServices}` : ""}`;
+    })
+    .join(" | ");
+
+  if (requestedService && location) {
+    return `For ${requestedService} near ${location}, the strongest subscribed matches I can see are ${summary}. Tell me which one feels right, and I'll help with availability.`;
+  }
+  if (requestedService) {
+    return `For ${requestedService}, the strongest subscribed matches I can see are ${summary}. Tell me the area you want or which one you prefer, and I'll take it forward.`;
+  }
+  return `The strongest subscribed matches I can see are ${summary}. Tell me the service or look you want, and I'll narrow it down properly.`;
+}
+
 function extractLexiPhoneFromText(text) {
   const match = String(text || "").match(/(?:\+?\d[\d\s().-]{7,24}\d)/);
   return match ? String(match[0] || "").trim() : "";
@@ -5686,7 +6292,7 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
   const isGreetingOnly = /^(hi|hello|hey|hiya|hey lexi|hi lexi)[!.]?\s*$/i.test(q);
 
   if (!introducedName && isGreetingOnly) {
-    return "Hi, I'm Lexi. Lovely to hear from you. How can I help today?";
+    return "Hi, I'm Lexi. What are we booking or figuring out today?";
   }
   if (false && !q) {
     return "Hi, I'm Lexi. I can answer questions about the app, how bookings work, what each dashboard/module does, and how to use Lexi. I can't share personal data.";
@@ -5696,14 +6302,23 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
   }
 
   if (!q) {
-    return "Hi, I'm Lexi. How can I help today?";
+    return "Hi, I'm Lexi. Tell me the service, day, or question and I'll guide the next step.";
   }
   if (!introducedName && isGreetingOnly) {
-    return "Hi, I'm Lexi. How can I help today?";
+    return "Hi, I'm Lexi. What are we booking or figuring out today?";
   }
   if (introducedName && !hasPendingBookingContext) {
     const displayName = introducedName.charAt(0).toUpperCase() + introducedName.slice(1);
-    return `Hi ${displayName}, lovely to meet you. How can I help today?`;
+    return `Hi ${displayName}, lovely to meet you. What would you like help with today?`;
+  }
+  const discoveryReply = await maybeBuildLexiBusinessDiscoveryReply({
+    message: q,
+    qLower,
+    business,
+    serviceReplyHint
+  });
+  if (discoveryReply) {
+    return discoveryReply;
   }
   const draftDrivenReply = await maybeBuildLexiBookingReply({ qLower, draft: bookingDraft, business, lastAssistantText });
   if (draftDrivenReply) {
@@ -5810,7 +6425,7 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
     return `Perfect, ${bizName} sounds great. What service would you like, and what day and time would suit you best?`;
   }
   if (!isLexiAppQuestion(qLower) && !isLexiPublicAvailabilityQuestion(qLower) && !isLexiSalonBeautyQuestion(qLower) && !/(today'?s date|what day is it|what('s| is)?\s+the\s+date|what('s| is)?\s+the\s+time|current time|time is it)/i.test(qLower)) {
-    return "Ask me anything public-facing about salons, services, bookings, or how the app works. I just can't share private or personal data in chat.";
+    return "Ask me about services, products, bookings, availability, or how the app works, and I'll keep it simple. I just won't show private or personal data in chat.";
   }
   if (lexiIncludesAny(qLower, LEXI_AUTH_HELP_PHRASES)) {
     if (/(do i need|need an account|have to sign in|have to sign up|without an account|guest)/.test(qLower)) {
@@ -5837,7 +6452,7 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
     return "Yes, Lexi can help with booking changes. If you already have a booking, sign in to your customer account to manage it, and if you're still arranging a new appointment I can help you choose a better day or time first.";
   }
   if (/(what can .*do|what does .*do|how .*work|how to use|how do i use|features|feature|modules?)/.test(qLower) || lexiIncludesAny(qLower, ["what can this app do", "what can lexi do", "how does lexi work", "how does the app work"])) {
-    return "Lexi can answer salon and treatment questions, check live availability, guide bookings, and move customers into the right sign-in or sign-up flow when it is time to confirm. The app then gives customers booking access, and subscribers/admins get dashboard tools.";
+    return "Lexi can answer product, service, treatment, and aftercare questions, check live availability, guide bookings, help new and returning customers use the app, and move people into sign in or sign up when it's time to confirm. Subscribers and admins then get the business-side dashboard tools.";
   }
   if (lexiIncludesAny(qLower, LEXI_POLICY_HELP_PHRASES)) {
     if (/(privacy|gdpr|data protection|personal data)/.test(qLower)) {
@@ -6029,16 +6644,52 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
     return "Yes, a consultation is the right first step before a major change. Tell me what you're thinking about and I'll guide the best next step.";
   }
   if (/(service|services|what do you offer|treatment)/.test(qLower)) {
-    return `${bizName} offers services like ${serviceExamples}. Tell me the result you're after and I'll point you to the best option.`;
+    return `${bizName} offers services like ${serviceExamples}. Tell me the result you want, and I'll narrow it down to the best fit.`;
+  }
+  if (/(what do you recommend|what would you recommend|what should i book|what should i get|what suits me|what would suit me best)/.test(qLower)) {
+    return "Tell me your goal, your hair or skin type, how much upkeep you want, and whether this is for maintenance or a bigger change. I'll narrow it down to the best option.";
+  }
+  if (/(what's the difference between|difference between|which is better|which is best)\b/.test(qLower)) {
+    return "Tell me the two services or looks you're comparing, and I'll explain the difference in result, upkeep, timing, and who each option suits best.";
+  }
+  if (/(do you do men's haircuts|men'?s haircut|skin fades?|beard trims?|barber services?)/.test(qLower)) {
+    return `Yes, ${bizName} can help with barber-style services like cuts, fades, and beard work if they're part of the listed offering. Tell me the look you want, and I'll guide the best next step.`;
+  }
+  if (/(do you do beauty treatments|beauty services|lashes|brows|waxing|facials|nails)/.test(qLower)) {
+    return `Yes, ${bizName} can help with beauty services if they're part of the current offering. Tell me the treatment you're interested in, and I'll explain the best next step, timing, and prep if needed.`;
+  }
+  if (/(do you sell products|do you stock products|what products do you have|what products do you recommend|what should i use at home)/.test(qLower)) {
+    return "Yes, I can help with product guidance. Tell me your hair or skin type, the result you want, and any issues like dryness, frizz, breakage, sensitivity, or colour fade, and I'll point you in the right direction.";
+  }
+  if (/(what products are good for|best product for|recommend a product for|aftercare for|home care for)/.test(qLower)) {
+    return "Tell me the concern first, like dryness, breakage, frizz, curl definition, colour maintenance, scalp balance, lash care, brow upkeep, or post-treatment aftercare, and I'll keep the recommendation practical.";
   }
   if (/(price|cost|how much|pricing)/.test(qLower)) {
-    return "Prices can vary depending on the service, hair length or density, and the time needed, so I won't guess if exact pricing isn't listed. Tell me what you're considering and I'll explain what usually affects the price.";
+    return "Prices usually depend on the service, hair length or density, and the time needed, so I won't guess if the exact price is not listed. Tell me what you're considering, and I'll explain what drives the price.";
+  }
+  if (/(how long does it take|how long will it take|appointment length|how long is a|how much time should i allow)/.test(qLower)) {
+    return "That usually depends on the service, the starting point, and whether it's maintenance or a bigger change. Tell me the service you're thinking about, and I'll give you a realistic timing guide.";
+  }
+  if (/(can i get booked in today|can i book today|same day|today availability|today slots)/.test(qLower)) {
+    return "Possibly. Tell me the service and your rough time window today, and I'll check the best available options.";
+  }
+  if (/(do i need a consultation|should i book a consultation|consultation first)/.test(qLower)) {
+    return "Usually yes if you're making a bigger change, correcting previous work, booking extensions, or you're unsure which service fits best. Tell me what you're planning, and I'll tell you whether a consultation is the right first step.";
+  }
+  if (/(can you help me book|help me book|book for me|can i book with you)/.test(qLower)) {
+    return "Yes. Tell me the service, day, and rough time you want, and I'll move it forward from there.";
   }
   if (/(price range|colour price|color price|long hair|thick hair surcharge|charge extra|consultations free|free consultation|package deal|package deals|membership|memberships)/.test(qLower)) {
     return "Usually it depends on the service, time needed, and hair length or thickness. Tell me the service you're thinking about and I'll explain the likely pricing factors clearly.";
   }
   if (/(policy|deposit|late|cancellation|cancelation|no show|no-show|grace period)/.test(qLower)) {
-    return "Most salons have policies around deposits, late arrivals, cancellations, and no-shows. Tell me which one you want to check and I'll walk you through it clearly.";
+    return "Most salons have policies around deposits, late arrivals, cancellations, and no-shows. Tell me which one you want to check, and I'll keep it clear and simple.";
+  }
+  if (/(is there parking|parking nearby|can i park|where do i park)/.test(qLower)) {
+    const addressBits = [business?.address, business?.city, business?.postcode].filter(Boolean).join(", ");
+    return addressBits
+      ? `${bizName} is at ${addressBits}. If parking details are part of the business profile I can help with those too, and I can also help you choose the best booking time from here.`
+      : `I can help with location and parking questions for ${bizName}. If the full parking details are not listed yet, I can still help you with the booking side straight away.`;
   }
   if (/(book in advance|book ahead|walk-?ins?|availability this week|this week availability|how long does .* take|how long .* service .* take)/.test(qLower)) {
     return "Usually the key things are the service, how flexible you are on timing, and whether you want a specific stylist. Tell me the service and day you want, and I'll keep it simple with the best next booking option.";
@@ -6047,7 +6698,16 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
     return "I can help with stylist guidance in a general way, but I won't invent staff details that aren't listed. Tell me the result you want, like blonde work, colour correction, or curly cutting, and I'll point you in the right direction.";
   }
   if (/(don'?t know what i want|not sure what i want|unsure what i want|recommend.*service|what should i get)/.test(qLower)) {
-    return "Let's narrow it down. Tell me your goal, how much upkeep you want, and any recent colour or chemical history, and I'll suggest a few strong options.";
+    return "Let's narrow it down. Tell me your goal, how much upkeep you want, and any recent colour or chemical history, and I'll suggest the strongest options.";
+  }
+  if (/(i'm a new client|new client|first time here|first visit)/.test(qLower)) {
+    return "That's easy. Tell me the service or result you want, and I'll guide the best next step, what to expect, and whether anything should be shared before the appointment.";
+  }
+  if (/(i already have an account|existing customer|returning customer|i've booked before)/.test(qLower)) {
+    return "If you've booked before, sign in when you're ready and Lexi can help you continue from there. If you're still deciding on a service or time first, I can help with that here.";
+  }
+  if (/(what can you do for me|how can you help me|how can lexi help)/.test(qLower)) {
+    return "I can help with products, services, aftercare, recommendations, live availability, bookings, account access, and app questions. If you're ready, tell me what you're trying to do and I'll take the next step with you.";
   }
   if (/(where are you located|where are you|location|address|parking|payment methods|forms of payment|card|cash)/.test(qLower)) {
     const addressBits = [business?.address, business?.city, business?.postcode].filter(Boolean).join(", ");
@@ -6078,7 +6738,7 @@ async function buildPublicLexiFallbackReply(message, business, history = [], mem
     return "I don’t have live weather lookup in free fallback mode, but if you tell me your city, I can suggest how weather usually affects walk-ins, cancellations, and demand planning for salons and barbershops.";
   }
 
-  return "Tell me what you need, and I'll keep it simple. If you're booking, just send the service, date, and time you want.";
+  return "Tell me what you need, and I'll keep it simple. You can ask about products, services, bookings, availability, customer access, or the business side of the app.";
 }
 
 async function buildPublicLexiFallbackReplySafe(message, business, history = [], memory = {}) {
@@ -6098,10 +6758,12 @@ Identity:
 - You represent a premium hair salon, barbershop, and beauty clinic experience.
 - You are warm, confident, knowledgeable, highly efficient, and commercially aware.
 - You behave like an exceptional front-desk manager with over 10 years of salon and beauty experience.
+- You make the experience feel easy, modern, and worth coming back to.
 
 Core objectives:
 - greet customers professionally
 - understand what service or result they want
+- answer product, retail, aftercare, and maintenance questions clearly
 - answer salon, barber, beauty, and booking questions clearly
 - answer questions about hair salons, barbershops, beauty salons, and specific treatments with practical confidence
 - guide customers toward the best treatment for their needs
@@ -6110,7 +6772,11 @@ Core objectives:
 - collect booking details required to complete a booking
 - confirm appointments clearly only after tool success
 - handle rescheduling, cancellations, and policy questions calmly
+- help new customers understand how to book and use the app
+- help returning customers sign in, manage bookings, and continue where they left off
+- support subscribers with practical business guidance when the conversation is about running the salon
 - suggest relevant add-ons or aftercare only when genuinely helpful
+- leave the customer feeling looked after and likely to book again
 
 Expertise:
 - women's cuts and styling
@@ -6122,9 +6788,12 @@ Expertise:
 - face shapes, haircut suitability, maintenance expectations
 - hair textures and curl patterns from 1A to 4C
 - aftercare and premium salon product guidance
+- retail product suitability, home-care routines, and maintenance advice
 - public salon FAQs including pricing factors, consultations, appointment timing, cancellations, deposits, late policies, parking, payments, and first-visit prep
 - stylist guidance, specialty matching, service suitability, and realistic maintenance expectations
 - clear answers for customers comparing services, asking what suits them, or needing help choosing between options
+- customer app journeys for new customers, existing customers, and returning bookers
+- subscriber-side support across bookings, cancellations, staffing, diary flow, pricing, and day-to-day business questions
 
 Consultation rules:
 - Ask clarifying questions before recommending when information is missing.
@@ -6139,6 +6808,8 @@ Consultation rules:
 - Vary sentence openings so replies do not sound templated.
 - If the customer is casual, match that warmth while staying polished.
 - On simple questions, sound effortless and direct rather than overly structured.
+- When a customer is deciding whether to book, reduce friction and make the next step feel easy.
+- When a customer is already using the app, help them feel guided rather than instructed.
 
 Booking flow protocol:
 - confirm the service first
@@ -6155,6 +6826,7 @@ Upselling logic:
 - upsells must feel helpful, not pushy
 - suggest useful add-ons like toner with highlights, bond repair with lightening, deep conditioning with a cut, beard treatment with barber services, or brow tint with brow wax
 - only suggest an add-on when it clearly improves the result, maintenance, or service outcome
+- use product suggestions to build trust and retention, not just to sell
 
 Edge-case handling:
 - if the customer is unhappy, respond with empathy and offer a practical next step
@@ -6162,6 +6834,7 @@ Edge-case handling:
 - if they are unsure, guide them with smart consultation questions
 - if they want to cancel or reschedule, explain the next step and any applicable policy
 - if they ask broader salon, barber, beauty, or treatment questions that do not require private data, answer them directly instead of forcing the chat back to booking
+- if they ask what else Lexi can do, explain it in a customer-friendly way first, then guide the next useful action
 
 Hard constraints:
 - this public Lexi chat may use public business information, open availability, and booking tools only
@@ -6181,7 +6854,12 @@ Voice and tone:
 - be confident and decisive without sounding robotic or pushy
 - no long preambles and no generic capability dump on simple greetings
 - avoid phrases like "I can help with", "absolutely", "certainly", or "please type your question" unless they genuinely fit
-- when suggesting the next step, make it feel like a natural continuation of the conversation`;
+- when suggesting the next step, make it feel like a natural continuation of the conversation
+- answer in 1-2 short paragraphs or 2 short sentences by default
+- on booking chats, move the conversation forward with one clear next question
+- avoid repeating the customer's wording unless it helps confirm a booking detail
+- prefer specific salon language over generic assistant phrasing
+- sound like someone customers would trust to book with again`;
 }
 
 function buildSubscriberCopilotHeuristicResponse(question, snapshot) {
@@ -6930,6 +7608,132 @@ app.post(
     });
   }
 );
+
+app.post("/api/commercial-controls/merch/upsert", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+
+  const id = String(req.body?.id || "").trim() || randomUUID();
+  const name = String(req.body?.name || "").trim();
+  const description = String(req.body?.description || "").trim();
+  const imageUrl = String(req.body?.imageUrl || "").trim();
+  const salePrice = Number(req.body?.salePrice || 0);
+  const shippingAvailable = parseBooleanInput(req.body?.shippingAvailable);
+  const shippingCost = Number(req.body?.shippingCost || 0);
+  const inventory = Math.max(0, Math.floor(Number(req.body?.inventory || 0)));
+  const status = String(req.body?.status || "active").trim().toLowerCase();
+
+  if (!name) return res.status(400).json({ error: "Product name is required." });
+  if (!description) return res.status(400).json({ error: "Product description is required." });
+  if (!Number.isFinite(salePrice) || salePrice < 0) return res.status(400).json({ error: "Sale price must be valid." });
+  if (!Number.isFinite(shippingCost) || shippingCost < 0) return res.status(400).json({ error: "Shipping cost must be valid." });
+  if (!supportedCommercialStatus.has(status)) return res.status(400).json({ error: "Unsupported product status." });
+
+  const record = await loadCommercialRecord(businessId);
+  const rows = Array.isArray(record.merch) ? record.merch : [];
+  const index = rows.findIndex((item) => item.id === id);
+  const current = index >= 0 ? rows[index] : null;
+  const merchItem = {
+    id,
+    name,
+    description,
+    imageUrl,
+    salePrice: Number(salePrice.toFixed(2)),
+    shippingAvailable,
+    shippingCost: Number(shippingCost.toFixed(2)),
+    inventory,
+    status,
+    updatedAt: new Date().toISOString(),
+    shipments: Array.isArray(current?.shipments) ? current.shipments : []
+  };
+  if (index >= 0) rows[index] = merchItem;
+  else rows.push(merchItem);
+  record.merch = rows;
+  await saveCommercialRecord(businessId, record);
+
+  await writeAuditLog({
+    actorId: req.auth.sub,
+    actorRole: req.auth.role,
+    action: "commercial.merch_upserted",
+    entityType: "commercial",
+    entityId: id,
+    metadata: { businessId, shippingAvailable, inventory, status }
+  });
+
+  return res.json({
+    merchItem,
+    ...record,
+    summary: summarizeCommercialRecord(record)
+  });
+});
+
+app.post("/api/commercial-controls/merch/:merchId/ship", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
+  const businessId = await resolveManagedBusinessId(req);
+  if (!businessId) return res.status(400).json({ error: "Subscriber business not found." });
+
+  const merchId = String(req.params.merchId || "").trim();
+  const customerName = String(req.body?.customerName || "").trim();
+  const customerEmail = String(req.body?.customerEmail || "").trim().toLowerCase();
+  const shippingAddress = String(req.body?.shippingAddress || "").trim();
+  const shippingCity = String(req.body?.shippingCity || "").trim();
+  const shippingPostcode = String(req.body?.shippingPostcode || "").trim();
+  const shippingCountry = String(req.body?.shippingCountry || "").trim();
+  const shippingFee = Number(req.body?.shippingFee || 0);
+  const trackingRef = String(req.body?.trackingRef || "").trim();
+  const status = String(req.body?.status || "preparing").trim().toLowerCase();
+
+  if (!merchId) return res.status(400).json({ error: "Product id is required." });
+  if (!customerName) return res.status(400).json({ error: "Customer name is required." });
+  if (!shippingAddress) return res.status(400).json({ error: "Shipping address is required." });
+  if (!Number.isFinite(shippingFee) || shippingFee < 0) return res.status(400).json({ error: "Shipping fee must be valid." });
+  if (!supportedShipmentStatus.has(status)) return res.status(400).json({ error: "Unsupported shipment status." });
+
+  const record = await loadCommercialRecord(businessId);
+  const rows = Array.isArray(record.merch) ? record.merch : [];
+  const index = rows.findIndex((item) => item.id === merchId);
+  if (index < 0) return res.status(404).json({ error: "Product not found." });
+  if (!rows[index].shippingAvailable) return res.status(400).json({ error: "Shipping is not enabled for this product." });
+
+  const now = new Date().toISOString();
+  const shipment = {
+    id: randomUUID(),
+    customerName,
+    customerEmail,
+    shippingAddress,
+    shippingCity,
+    shippingPostcode,
+    shippingCountry,
+    shippingFee: Number(shippingFee.toFixed(2)),
+    trackingRef,
+    status,
+    createdAt: now,
+    updatedAt: now
+  };
+  rows[index] = {
+    ...rows[index],
+    inventory: Math.max(0, Number(rows[index].inventory || 0) - 1),
+    updatedAt: now,
+    shipments: [shipment, ...(Array.isArray(rows[index].shipments) ? rows[index].shipments : [])]
+  };
+  record.merch = rows;
+  await saveCommercialRecord(businessId, record);
+
+  await writeAuditLog({
+    actorId: req.auth.sub,
+    actorRole: req.auth.role,
+    action: "commercial.merch_shipment_created",
+    entityType: "commercial",
+    entityId: shipment.id,
+    metadata: { businessId, merchId, customerName, status }
+  });
+
+  return res.json({
+    merchItem: rows[index],
+    shipment,
+    ...record,
+    summary: summarizeCommercialRecord(record)
+  });
+});
 
 app.get("/api/revenue-attribution", authRequired, requireRole("subscriber", "admin"), async (req, res) => {
   const businessId = await resolveManagedBusinessId(req);
@@ -7916,6 +8720,23 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       });
     }
     if (!business) {
+      const locationHint = extractLexiLocationHint(userMessage);
+      const serviceHint = extractLexiRequestedService(userMessage);
+      if (locationHint && serviceHint?.name) {
+        const businessType = inferBusinessTypeFromLexiService(serviceHint.name, userMessageLower);
+        const matches = await searchPublicSubscribedBusinesses({
+          location: locationHint,
+          service: serviceHint.name,
+          businessType,
+          limit: 4
+        });
+        if (matches.length) {
+          const summary = matches.map((row) => `${row.name} (${row.city})`).join(" | ");
+          return res.json({
+            reply: `For ${serviceHint.name} near ${locationHint}, the strongest subscribed matches I can see are ${summary}. Tell me which one you prefer, and I'll help with availability.`
+          });
+        }
+      }
       const shortFollowUp = userMessage.trim().split(/\s+/).filter(Boolean).length <= 5;
       const likelyBusinessNameOnly = shortFollowUp && !isLexiAppQuestion(userMessageLower) && !/(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{4}-\d{2}-\d{2})/i.test(userMessageLower);
       if (likelyBusinessNameOnly) {
@@ -8297,6 +9118,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log(`Background queues: ${jobRuntime?.enabled ? "enabled (Redis)" : "inline fallback"}`);
   });
 }
+
+
 
 
 

@@ -116,13 +116,24 @@ Recommended rollout order:
 ## Latest Stable Stop Point
 
 - Latest pushed commit:
-  - `e88d94d` `Fix Lexi popup theme styling`
-- This commit includes the latest stable Ask Lexi state:
-  - shared popup redesign is live
-  - same popup direction across homepage/admin/subscriber/customer
-  - mic button placement is corrected
-  - dark/light popup theme fix is live
-  - Lexi image styling is corrected
+  - `a0e84ec` `Refine Lexi flows and unify app theme`
+- This commit is the actual deployed stop point as of 2026-03-02 and includes:
+  - shared Lexi popup redesign live across homepage/admin/subscriber/customer
+  - unified app theme refinements across homepage, auth, dashboard, and shared styling
+  - homepage header Ask Lexi / Book actions wired into the popup flow
+  - stronger Lexi booking flow on the homepage:
+    - typo-tolerant customer input parsing
+    - pending booking draft memory
+    - customer sign-in/sign-up handoff when a booking is ready to confirm
+    - booking finalization after customer auth
+    - Lexi conversation context stored into booking notes
+  - expanded public Lexi fallback logic on the backend:
+    - better service guidance and FAQ handling
+    - clearer booking confirmation prompts
+    - clearer account / sign-in / sign-up guidance
+    - conversation memory passed through `/api/chat`
+  - avatar/realtime scaffold still present for homepage and customer flows
+  - subscriber/admin avatar stage markup remains in place for later provider activation
 
 ## Key Files For Next Session
 
@@ -133,3 +144,13 @@ Recommended rollout order:
 - `public/dashboard.js`
 - `server.js`
 - `public/sw.js`
+
+## Session Resume Note
+
+- Do not resume from `e88d94d`.
+- Resume from `a0e84ec`.
+- The next practical focus is not the popup redesign anymore; that part is already deployed.
+- Resume with:
+  - validating realtime/avatar provider configuration in-browser
+  - deciding whether subscriber/admin should get the same live voice path now or later
+  - tightening Lexi product logic and fallback behavior around the now-live booking handoff flow

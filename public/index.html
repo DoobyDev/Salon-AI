@@ -14,8 +14,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="AI Salon Receptionist" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/Salon_AI_IMG.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/Salon_AI_IMG.png" />
+    <link rel="icon" href="/LEXI_IMG.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/LEXI_IMG.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -99,7 +99,7 @@
         <div class="top-lexi-stage">
           <article class="top-lexi-portrait-card" aria-label="Lexi portrait">
             <div class="top-lexi-portrait-halo"></div>
-            <img src="/Salon_AI_IMG.png" alt="Lexi AI receptionist portrait" class="top-lexi-portrait-image" />
+            <img src="/LEXI_IMG.png" alt="Lexi AI receptionist portrait" class="top-lexi-portrait-image" />
             <div class="top-lexi-portrait-copy">
               <p>Lexi AI Receptionist</p>
               <strong>Fast, polished, and easier than calling.</strong>
@@ -251,6 +251,7 @@
                 id="chatInput"
                 type="text"
                 placeholder="Example: I want balayage next Thursday afternoon"
+               
                 autocomplete="off"
                 required
               />
@@ -715,7 +716,7 @@
       <section class="panel role-cta reveal" aria-label="Free trial invite">
           <h2>Set Up Your Subscriber Workspace</h2>
           <p>
-            Try Lexi, the dashboards, and the booking workflows first. When you're ready, create your workspace and start setting up the business.
+            <span>Try Lexi, the dashboards, and the booking workflows first. When you're ready, create your workspace and start setting up the business.</span>
           </p>
         <div class="cta-row">
           <a class="btn" data-open-trial-modal href="/auth?role=subscriber&mode=register">Create Subscriber Workspace</a>
@@ -762,21 +763,21 @@
         <article>
           <h3>1. Capture Enquiries Straight Away</h3>
           <p>
-            Lexi answers enquiries in real time and helps turn interest into booked appointments
-            before customers leave your page.
+            <span>Lexi answers enquiries in real time and helps turn interest into booked appointments
+            before customers leave your page.</span>
           </p>
         </article>
         <article>
           <h3>2. Protect Revenue Every Day</h3>
           <p>
-            Clear cancellation and waitlist workflows help reduce no-shows and protect high-demand slots.
+            <span>Clear cancellation and waitlist workflows help reduce no-shows and protect high-demand slots.</span>
           </p>
         </article>
         <article>
           <h3>3. Grow with More Control</h3>
           <p>
-            Multi-role dashboards show where growth is happening, where service quality is slipping,
-            and what to improve next.
+            <span>Multi-role dashboards show where growth is happening, where service quality is slipping,
+            and what to improve next.</span>
           </p>
         </article>
       </section>
@@ -785,8 +786,8 @@
         <div class="section-header">
           <h2>Book a Visit</h2>
           <p>
-            Search availability by business name, town/city, postcode, or phone number.
-            Then pick a business to view its front desk details and available slots.
+            <span>Search availability by business name, town/city, postcode, or phone number.
+            Then pick a business to view its front desk details and available slots.</span>
           </p>
         </div>
         <div style="display:flex;justify-content:flex-end;margin:0.2rem 0 0.65rem;">
@@ -810,11 +811,11 @@
         <div class="finder-grid">
           <form id="searchForm" class="search-form">
             <label>
-              Business Name
+              <span>Business Name</span>
               <input id="filterName" type="text" placeholder="Glow Studio" />
             </label>
             <label>
-              Business Type
+              <span>Business Type</span>
               <select id="filterBusinessType">
                 <option value="">Any Type</option>
                 <option value="hair_salon">Hair Salon</option>
@@ -823,15 +824,15 @@
               </select>
             </label>
             <label>
-              Location / City / Country
+              <span>Location / City / Country</span>
               <input id="filterLocation" type="text" placeholder="London, UK" />
             </label>
             <label>
-              Postcode / ZIP
+              <span>Postcode / ZIP</span>
               <input id="filterPostcode" type="text" placeholder="SW1A 1AA / 10001" />
             </label>
             <label>
-              Phone Number
+              <span>Phone Number</span>
               <input id="filterPhone" type="text" placeholder="+44 / +1 / +61 ..." />
             </label>
             <div class="search-actions">
@@ -863,20 +864,19 @@
           <article class="policy-card policy-card-accent">
             <h3>Clear Rule</h3>
             <p>
-              If a booking is cancelled less than <strong>24 hours</strong> before the appointment,
-              a <strong>£10 cancellation fee</strong> applies.
+              Each subscriber sets their own cancellation fee and policy window, so the salon stays in full control of how late cancellations are handled.
             </p>
           </article>
           <article class="policy-card">
               <h3>Fair for Customers</h3>
             <p>
-              Customers can still cancel or reschedule outside the 24-hour window without penalty.
+              Customers see the salon's own cancellation terms, including whether any fee applies and when it applies.
             </p>
           </article>
           <article class="policy-card">
               <h3>Protects Your Time</h3>
             <p>
-              This policy reduces last-minute empty chair time, protects service capacity, and keeps
+              A subscriber-controlled policy reduces last-minute empty chair time, protects service capacity, and keeps
               booking operations reliable.
             </p>
           </article>
@@ -1103,20 +1103,20 @@
         </div>
         <div class="home-customer-mode-tabs" role="tablist" aria-label="Subscriber and admin access options">
           <button id="homeSubscriberModeSignin" class="home-customer-mode-tab is-active" type="button" role="tab" aria-selected="true" data-home-subscriber-mode="subscriber">
-            Subscriber
+            <span>Subscriber</span>
           </button>
           <button id="homeSubscriberModeAdmin" class="home-customer-mode-tab" type="button" role="tab" aria-selected="false" data-home-subscriber-mode="admin">
-            Admin Only
+            <span>Admin Only</span>
           </button>
         </div>
         <div id="homeSubscriberSigninPanel" class="home-customer-panel is-active" role="tabpanel" aria-labelledby="homeSubscriberModeSignin">
           <form id="homeSubscriberSigninForm" class="home-access-form" autocomplete="off">
             <label>
-              Email
+              <span>Email</span>
               <input id="homeSubscriberSigninEmail" type="email" placeholder="Email" required />
             </label>
             <label>
-              Password
+              <span>Password</span>
               <input id="homeSubscriberSigninPassword" type="password" placeholder="Password" required />
             </label>
             <div class="home-access-form-actions">
@@ -1134,11 +1134,11 @@
           </div>
           <form id="homeAdminSigninForm" class="home-access-form" autocomplete="off">
             <label>
-              Admin Email
+              <span>Admin Email</span>
               <input id="homeAdminSigninEmail" type="email" placeholder="Admin email" required />
             </label>
             <label>
-              Password
+              <span>Password</span>
               <input id="homeAdminSigninPassword" type="password" placeholder="Password" required />
             </label>
             <div class="home-access-form-actions">
@@ -1163,28 +1163,28 @@
         </div>
         <div class="home-customer-mode-tabs" role="tablist" aria-label="Customer access options">
           <button id="homeCustomerModeSignIn" class="home-customer-mode-tab is-active" type="button" role="tab" aria-selected="true" data-home-customer-mode="signin">
-            Sign In
+            <span>Sign In</span>
           </button>
           <button id="homeCustomerModeSignUp" class="home-customer-mode-tab" type="button" role="tab" aria-selected="false" data-home-customer-mode="signup">
-            Sign Up
+            <span>Sign Up</span>
           </button>
         </div>
 
         <div id="homeCustomerSigninPanel" class="home-customer-panel is-active" role="tabpanel" aria-labelledby="homeCustomerModeSignIn">
           <form id="homeCustomerSigninForm" class="home-access-form" autocomplete="off">
             <label>
-              Email
+              <span>Email</span>
               <input id="homeCustomerSigninEmail" type="email" placeholder="Email" required />
             </label>
             <label>
-              Password
+              <span>Password</span>
               <div class="password-peek-field">
                 <input id="homeCustomerSigninPassword" type="password" placeholder="Password" required />
                 <button class="password-peek-toggle" type="button" data-password-toggle="homeCustomerSigninPassword" aria-label="Show password">Show</button>
               </div>
             </label>
             <label>
-              Phone
+              <span>Phone</span>
               <input id="homeCustomerSigninPhone" type="tel" placeholder="Phone number if Lexi needs it to finish the booking" />
             </label>
             <div class="home-access-form-actions">
@@ -1222,6 +1222,10 @@
                 <input id="homeCustomerSignupCity" type="text" placeholder="City" />
               </label>
               <label>
+                Country (optional)
+                <input id="homeCustomerSignupCountry" type="text" placeholder="Country" />
+              </label>
+              <label>
                 Preferred Service (optional)
                 <select id="homeCustomerSignupService">
                   <option value="">Choose a service</option>
@@ -1238,23 +1242,19 @@
             </div>
             <section class="home-payment-setup-block" aria-labelledby="homeCustomerPaymentSetupTitle">
               <div class="home-payment-warning" role="note" aria-live="polite">
-                <strong>IMPORTANT PAYMENT &amp; REFUND NOTICE</strong>
+                <strong>IMPORTANT CANCELLATION FEE NOTICE</strong>
                 <p>
-                  We only ask for payment/refund setup details so refunds can be handled if needed. Do not enter full bank account or card numbers in this form. Your banking information is not stored here and is handled only through secure payment providers.
+                  Customers are only asked to pay if a late cancellation fee applies. This only happens when a booking is cancelled inside the salon's policy window, such as within 24 hours if that salon has set a cancellation fee.
                 </p>
               </div>
-              <h3 id="homeCustomerPaymentSetupTitle">Payment &amp; Refund Setup (Customer)</h3>
+              <h3 id="homeCustomerPaymentSetupTitle">Cancellation Fee Policy (Customer)</h3>
               <p class="home-payment-setup-note">
-                Payment and refund handling are completed securely through Stripe or PayPal after sign-up or during checkout. Do not enter bank or card details in this form.
+                Each subscriber salon controls its own cancellation policy and fee settings in the subscriber dashboard. Do not enter bank or card details in this form. If a late cancellation fee applies, payment handling is completed securely through Stripe or PayPal.
               </p>
-              <div class="home-payment-provider-row" aria-label="Supported customer payment providers">
-                <button class="btn btn-ghost" type="button" disabled>Secure Stripe Checkout / Refunds</button>
-                <button class="btn btn-ghost" type="button" disabled>Secure PayPal Checkout / Refunds</button>
-              </div>
               <label class="home-trial-check">
                 <input id="homeCustomerPaymentConsent" type="checkbox" required />
                 <span>
-                  I understand payment and refund handling uses secure provider flows (Stripe/PayPal), and this form must not include full bank account or card numbers. I have read the
+                  I understand that any cancellation fee is controlled by the salon's own policy settings, and only applies if I cancel inside that salon's policy window. I also understand this form must not include full bank account or card numbers. I have read the
                   <a href="/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>,
                   <a href="/legal.html#billing" target="_blank" rel="noopener">Billing Policy</a>, and
                   <a href="/legal.html#refunds" target="_blank" rel="noopener">Refund Policy</a>.
@@ -1386,7 +1386,7 @@
         background-color: rgba(255, 255, 255, 0.18) !important;
         background-image:
           radial-gradient(circle at 22% 14%, rgba(255,255,255,0.16), transparent 42%),
-          url("/Salon_AI_IMG.png") !important;
+          url("/LEXI_IMG.png") !important;
         background-position: center 18% !important;
         background-size: cover, cover !important;
         background-repeat: no-repeat, no-repeat !important;
@@ -1604,3 +1604,5 @@
     <script type="module" src="/app.js"></script>
   </body>
 </html>
+
+

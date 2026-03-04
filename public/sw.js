@@ -8,7 +8,7 @@ const ASSETS = [
   "/manifest.webmanifest",
   "/icons/icon.svg",
   "/icons/icon-maskable.svg",
-  "/Salon_AI_IMG.png"
+  "/LEXI_IMG.png"
 ];
 
 self.addEventListener("install", (event) => {

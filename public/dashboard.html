@@ -1410,6 +1410,7 @@
       .business-hub-shell {
         display: grid;
         gap: 1rem;
+        background: transparent;
       }
       .business-hub-header {
         display: flex;
@@ -1445,6 +1446,10 @@
         min-height: 172px;
         text-align: left;
         justify-content: space-between;
+        background:
+          radial-gradient(circle at top right, rgba(244, 63, 94, 0.07), transparent 28%),
+          radial-gradient(circle at left top, rgba(251, 191, 36, 0.1), transparent 24%),
+          linear-gradient(180deg, rgba(255,253,247,0.98), rgba(255,249,246,0.95));
       }
       .hub-module-head {
         display: flex;
@@ -1907,30 +1912,92 @@
         gap: 0.55rem;
       }
       .executive-gauge {
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: rgba(9, 15, 28, 0.72);
-        padding: 0.55rem;
+        --gauge-accent: rgba(124, 234, 216, 0.95);
+        --gauge-accent-soft: rgba(124, 234, 216, 0.2);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at top right, var(--gauge-accent-soft), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.96));
+        padding: 0.8rem 0.72rem 0.7rem;
         display: grid;
         place-items: center;
-        gap: 0.35rem;
+        gap: 0.42rem;
+        box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
+      }
+      .executive-gauge.tone-success {
+        --gauge-accent: rgba(16, 185, 129, 0.96);
+        --gauge-accent-soft: rgba(16, 185, 129, 0.16);
+      }
+      .executive-gauge.tone-info {
+        --gauge-accent: rgba(59, 130, 246, 0.96);
+        --gauge-accent-soft: rgba(59, 130, 246, 0.16);
+      }
+      .executive-gauge.tone-warning {
+        --gauge-accent: rgba(245, 158, 11, 0.96);
+        --gauge-accent-soft: rgba(245, 158, 11, 0.18);
+      }
+      .executive-gauge.tone-danger {
+        --gauge-accent: rgba(244, 63, 94, 0.96);
+        --gauge-accent-soft: rgba(244, 63, 94, 0.18);
       }
       .executive-gauge .gauge-ring {
-        width: 92px;
+        width: 104px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        position: relative;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at center, rgba(255,255,255,0.98) 0 53%, transparent 54% 100%),
+          conic-gradient(from -90deg, var(--gauge-accent) calc(var(--gauge-progress, 0) * 1%), rgba(226, 232, 240, 0.9) 0);
+        box-shadow:
+          inset 0 0 0 7px rgba(255,255,255,0.9),
+          0 14px 28px rgba(15, 23, 42, 0.08);
       }
       .executive-gauge .gauge-ring::before {
-        width: 64px;
+        content: "";
+        position: absolute;
+        inset: 13px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95), rgba(248,250,252,0.92));
+        border: 1px solid rgba(255,255,255,0.92);
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+      }
+      .executive-gauge .gauge-ring::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        border: 1px dashed rgba(148, 163, 184, 0.24);
+      }
+      .executive-gauge .gauge-ring span {
+        position: relative;
+        z-index: 2;
+        color: #142033;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
       }
       .executive-gauge-label {
-        color: var(--muted);
+        color: #142033;
         text-align: center;
-        font-size: 0.75rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
       }
       .executive-gauge-sub {
-        color: #d7fff4;
+        color: #475569;
         text-align: center;
         font-size: 0.76rem;
         font-weight: 700;
+      }
+      .executive-gauge-kicker {
+        color: #64748b;
+        text-align: center;
+        font-size: 0.68rem;
+        line-height: 1.35;
       }
       .executive-bars {
         min-height: 166px;
@@ -1938,6 +2005,39 @@
         grid-template-columns: repeat(7, minmax(0, 1fr));
         align-items: end;
         gap: 0.38rem;
+      }
+      .executive-bars.is-empty {
+        display: grid;
+        place-items: center;
+      }
+      .executive-bars.is-day {
+        grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      .executive-bars.is-day-lollipop {
+        grid-template-columns: repeat(var(--day-columns, 10), minmax(0, 1fr));
+        align-items: stretch;
+        gap: 0.62rem;
+      }
+      .executive-bars.is-week {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+      }
+      .executive-bars.is-week-lollipop {
+        grid-template-columns: repeat(var(--week-columns, 7), minmax(0, 1fr));
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+      .executive-bars.is-month,
+      .executive-bars.is-year {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        gap: 0.65rem;
+      }
+      .executive-bars.is-all {
+        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+        align-items: stretch;
+        gap: 0.58rem;
       }
       .executive-bar-col {
         display: grid;
@@ -1955,6 +2055,153 @@
       .executive-bar-col small {
         color: var(--muted);
         font-size: 0.68rem;
+      }
+      .executive-hour-col {
+        display: grid;
+        grid-template-rows: auto 1fr auto auto;
+        gap: 0.32rem;
+        justify-items: center;
+      }
+      .executive-hour-col.is-week {
+        padding: 0.35rem 0.1rem 0;
+        gap: 0.42rem;
+      }
+      .executive-hour-col.is-day {
+        padding: 0.3rem 0.08rem 0;
+        gap: 0.38rem;
+      }
+      .executive-hour-col strong,
+      .executive-story-heat strong {
+        color: var(--ink);
+        font-size: 0.7rem;
+      }
+      .executive-hour-track {
+        width: 12px;
+        min-height: 132px;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+      .executive-hour-fill {
+        position: absolute;
+        inset: auto 0 0 0;
+        height: var(--hour-fill, 12%);
+        border-radius: inherit;
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.98), rgba(59, 130, 246, 0.82));
+      }
+      .executive-hour-dot {
+        position: absolute;
+        left: 50%;
+        bottom: calc(var(--hour-fill, 12%) - 6px);
+        width: 14px;
+        height: 14px;
+        border-radius: 999px;
+        transform: translateX(-50%);
+        background: #ffffff;
+        border: 3px solid rgba(59, 130, 246, 0.92);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.22);
+      }
+      .executive-hour-col.is-week .executive-hour-fill {
+        background: linear-gradient(180deg, rgba(245, 158, 11, 0.98), rgba(244, 63, 94, 0.82));
+      }
+      .executive-hour-col.is-week .executive-hour-dot {
+        border-color: rgba(245, 158, 11, 0.95);
+        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.24);
+      }
+      .executive-bars.is-week-lollipop .executive-hour-track {
+        width: 18px;
+        min-height: 148px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(226, 232, 240, 0.92));
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.14);
+      }
+      .executive-bars.is-day-lollipop .executive-hour-track {
+        width: 16px;
+        min-height: 144px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(219, 234, 254, 0.9));
+        box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.14);
+      }
+      .executive-bars.is-day-lollipop .executive-hour-fill {
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.98), rgba(59, 130, 246, 0.82));
+      }
+      .executive-bars.is-day-lollipop .executive-hour-dot {
+        border-color: rgba(59, 130, 246, 0.95);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.24);
+      }
+      .executive-bars.is-day-lollipop .executive-hour-col strong,
+      .executive-bars.is-week-lollipop .executive-hour-col strong {
+        font-size: 0.76rem;
+      }
+      .executive-bars.is-day-lollipop .executive-hour-col small,
+      .executive-bars.is-week-lollipop .executive-hour-col small {
+        text-align: center;
+        line-height: 1.3;
+      }
+      .executive-hour-col small,
+      .executive-story-heat small,
+      .executive-storyline-note {
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+      .executive-story-chart {
+        display: grid;
+        gap: 0.55rem;
+        min-height: 210px;
+      }
+      .executive-story-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 0.2rem;
+      }
+      .executive-story-static {
+        width: 100%;
+        overflow: hidden;
+      }
+      .executive-story-chart svg {
+        width: 100%;
+        height: 190px;
+        overflow: visible;
+      }
+      .executive-story-scroll svg {
+        min-width: 100%;
+      }
+      .executive-story-axis {
+        display: grid;
+        gap: 0.45rem;
+      }
+      .executive-story-axis.is-month {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
+      .executive-story-axis.is-year {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+      }
+      .executive-story-axis span {
+        color: var(--muted);
+        font-size: 0.68rem;
+        text-align: center;
+      }
+      .executive-story-heat {
+        border-radius: 16px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        background: rgba(255,255,255,0.78);
+        padding: 0.68rem;
+        display: grid;
+        gap: 0.32rem;
+      }
+      .executive-story-heat-bar {
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.7);
+        overflow: hidden;
+      }
+      .executive-story-heat-bar span {
+        display: block;
+        height: 100%;
+        width: var(--heat-width, 20%);
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(16, 185, 129, 0.82));
       }
       .executive-action-list {
         margin: 0;
@@ -2019,6 +2266,17 @@
         gap: 0.5rem;
         flex-wrap: wrap;
         justify-content: flex-end;
+      }
+      .executive-pulse-admin-tabs[hidden] {
+        display: none !important;
+      }
+      .executive-pulse-admin-tabs {
+        border-color: rgba(245, 158, 11, 0.16);
+        background: rgba(124, 58, 237, 0.04);
+      }
+      .executive-pulse-admin-tabs button.is-active {
+        background: rgba(245, 158, 11, 0.16);
+        border-color: rgba(245, 158, 11, 0.32);
       }
       .executive-pulse-range-meta {
         font-size: 0.78rem;
@@ -2176,6 +2434,89 @@
         display: grid;
         gap: 0.18rem;
         font-size: 0.74rem;
+      }
+      .merch-command-grid {
+        display: grid;
+        gap: 0.55rem;
+      }
+      .merch-command-card {
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 16px;
+        background:
+          radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(240,253,250,0.94));
+        padding: 0.72rem;
+        display: grid;
+        gap: 0.26rem;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+      }
+      .merch-command-card p,
+      .merch-command-card small {
+        margin: 0;
+      }
+      .merch-command-card p {
+        color: #047857;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .merch-command-card strong {
+        color: #142033;
+        font-size: 0.98rem;
+      }
+      .merch-command-card small {
+        color: #64748b;
+        line-height: 1.35;
+      }
+      .merch-command-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.55rem;
+      }
+      .merch-command-row span:last-child {
+        color: #142033;
+        font-weight: 700;
+      }
+      .merch-command-progress {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.9);
+        overflow: hidden;
+        margin-top: 0.15rem;
+      }
+      .merch-command-progress span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.95), rgba(59, 130, 246, 0.78));
+      }
+      .merch-command-shipment {
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 16px;
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239,246,255,0.95));
+        padding: 0.72rem;
+        display: grid;
+        gap: 0.22rem;
+      }
+      .merch-command-shipment strong {
+        color: #142033;
+        font-size: 0.86rem;
+      }
+      .merch-command-shipment small {
+        color: #64748b;
+        line-height: 1.35;
+      }
+      .merch-command-empty {
+        border: 1px dashed rgba(15, 23, 42, 0.12);
+        border-radius: 16px;
+        padding: 0.8rem;
+        color: #64748b;
+        background: rgba(255,255,255,0.6);
       }
       .booking-range-toolbar {
         margin-top: 0.55rem;
@@ -6133,12 +6474,17 @@
         gap: 0.45rem;
       }
       .commercial-form input,
-      .commercial-form select {
+      .commercial-form select,
+      .commercial-form textarea {
         border: 1px solid var(--line);
         border-radius: 10px;
         padding: 0.55rem;
         background: rgba(9, 15, 28, 0.88);
         color: var(--ink);
+      }
+      .commercial-form textarea {
+        min-height: 96px;
+        resize: vertical;
       }
       .commercial-list {
         list-style: none;
@@ -6181,6 +6527,49 @@
         display: flex;
         gap: 0.4rem;
         flex-wrap: wrap;
+      }
+      .merch-card-head {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 0.65rem;
+        align-items: start;
+      }
+      .merch-card-thumb {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid var(--line);
+      }
+      .merch-card-copy {
+        display: grid;
+        gap: 0.18rem;
+      }
+      .merch-card-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+        line-height: 1.45;
+      }
+      .merch-chip-row {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .merch-chip-row span {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.72rem;
+        color: var(--muted);
+        background: rgba(255,255,255,0.03);
+      }
+      .merch-shipment-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+        line-height: 1.4;
       }
       .commercial-status-note {
         margin: 0;
@@ -7467,11 +7856,15 @@
         color: #6f6278;
       }
       body.dashboard-light-mode .calendar-weekdays {
-        background: rgba(255, 252, 255, 0.95);
-        border-color: rgba(145, 114, 144, 0.08);
+        background:
+          radial-gradient(circle at top right, rgba(255, 198, 149, 0.18), transparent 28%),
+          linear-gradient(180deg, rgba(255, 252, 255, 0.98), rgba(250, 244, 251, 0.96));
+        border-color: rgba(145, 114, 144, 0.12);
       }
       body.dashboard-light-mode .calendar-weekdays span {
-        color: #72597a;
+        color: #111111;
+        font-weight: 800;
+        text-shadow: none;
       }
       body.dashboard-light-mode .mobile-bottom-nav {
         border-color: rgba(145, 114, 144, 0.12);
@@ -7833,6 +8226,7 @@
       body.dashboard-light-mode .waitlist-form input,
       body.dashboard-light-mode .commercial-form input,
       body.dashboard-light-mode .commercial-form select,
+      body.dashboard-light-mode .commercial-form textarea,
       body.dashboard-light-mode .revenue-form input,
       body.dashboard-light-mode .revenue-form select,
       body.dashboard-light-mode .profit-form input {
@@ -8308,15 +8702,20 @@
         min-height: 36px;
       }
       #subscriberCalendarSection .calendar-weekdays {
-        background: rgba(8, 13, 23, 0.36);
-        border: 1px solid rgba(255,255,255,0.04);
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 26%),
+          linear-gradient(180deg, rgba(8, 13, 23, 0.62), rgba(12, 18, 31, 0.5));
+        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 12px;
         padding: 0.35rem;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
       }
       #subscriberCalendarSection .calendar-weekdays span {
-        color: #cfe0fb;
-        font-weight: 600;
-        letter-spacing: 0.01em;
+        color: #111111;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-shadow: 0 1px 10px rgba(59, 130, 246, 0.22);
       }
       .copilot-shell {
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
@@ -9269,11 +9668,13 @@
         gap: 0.34rem;
       }
       #subscriberCalendarSection .calendar-weekdays span {
-        border-radius: 8px;
-        background: rgba(255,255,255,0.02);
-        padding: 0.3rem 0.14rem 0.22rem;
-        font-size: 0.74rem;
-        letter-spacing: 0.08em;
+        border-radius: 10px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.06);
+        padding: 0.34rem 0.14rem 0.26rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
       }
       #subscriberCalendarSection .calendar-day {
         min-height: 72px;
@@ -10790,9 +11191,24 @@
       }
       #adminExecutiveControlMount .admin-revenue-command-card {
         align-content: start;
+        align-self: stretch;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 28%),
+          radial-gradient(circle at left center, rgba(251, 191, 36, 0.1), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.995), rgba(248,250,252,0.99));
+      }
+      #adminExecutiveControlMount .admin-revenue-command-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 4px;
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.98), rgba(251, 191, 36, 0.7), rgba(245, 158, 11, 0));
       }
       #adminExecutiveControlMount .admin-usage-command-card {
         align-content: start;
+        align-self: stretch;
       }
       .admin-revenue-visual-grid {
         display: grid;
@@ -10819,7 +11235,24 @@
         gap: 0.62rem;
         background:
           linear-gradient(180deg, rgba(255,255,255,0.99), rgba(249,250,251,0.99));
-        box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.06);
+        box-shadow:
+          inset 0 0 0 1px rgba(245, 158, 11, 0.06),
+          0 10px 22px rgba(15, 23, 42, 0.05);
+      }
+      #adminExecutiveControlMount .admin-revenue-visual-card:nth-child(1) {
+        background:
+          radial-gradient(circle at top, rgba(245, 158, 11, 0.12), transparent 42%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.98));
+      }
+      #adminExecutiveControlMount .admin-revenue-visual-card:nth-child(2) {
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 40%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99));
+      }
+      #adminExecutiveControlMount .admin-revenue-visual-card:nth-child(3) {
+        background:
+          radial-gradient(circle at top left, rgba(245, 158, 11, 0.1), transparent 38%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,247,237,0.98));
       }
       .admin-revenue-visual-card-wide {
         grid-column: span 12;
@@ -10998,10 +11431,55 @@
       #adminExecutiveControlMount .admin-revenue-detail-panel {
         border: 1px solid rgba(245, 158, 11, 0.08);
         border-radius: 18px;
-        background: rgba(255,255,255,0.98);
-        padding: 0.82rem;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.995), rgba(249,250,251,0.99));
+        padding: 0.72rem;
         display: grid;
-        gap: 0.55rem;
+        gap: 0.48rem;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+      }
+      #adminExecutiveControlMount .admin-revenue-detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 0.6rem;
+        align-items: stretch;
+      }
+      #adminExecutiveControlMount .admin-revenue-detail-grid > .admin-revenue-detail-panel:first-child {
+        min-height: 100%;
+      }
+      #adminExecutiveControlMount .admin-revenue-signal-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.42rem;
+        align-content: start;
+      }
+      #adminExecutiveControlMount .admin-revenue-signal-card {
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,251,235,0.88));
+        padding: 0.62rem 0.68rem;
+        display: grid;
+        gap: 0.18rem;
+        border-left: 4px solid rgba(245, 158, 11, 0.6);
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
+      }
+      #adminExecutiveControlMount .admin-revenue-signal-card p {
+        margin: 0;
+        color: #92400e;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #adminExecutiveControlMount .admin-revenue-signal-card strong {
+        color: #142033;
+        font-size: 0.95rem;
+        line-height: 1.32;
+      }
+      #adminExecutiveControlMount .admin-revenue-signal-card small {
+        color: #5b667a;
+        font-size: 0.74rem;
+        line-height: 1.35;
       }
       #adminExecutiveControlMount .admin-usage-command-layout {
         display: grid;
@@ -11098,24 +11576,142 @@
         line-height: 1.35;
       }
       #adminExecutiveControlMount .admin-revenue-monthly-list {
-        gap: 0.48rem;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(92%, 1fr);
+        gap: 0.85rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 0.25rem;
+        scroll-snap-type: x mandatory;
+        min-height: 100%;
+        align-items: stretch;
       }
       #adminExecutiveControlMount .admin-revenue-month-row {
-        gap: 0.26rem;
-        padding: 0.52rem 0.58rem;
-        border-radius: 14px;
-        background: rgba(248, 250, 252, 0.92);
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        gap: 0.72rem;
+        padding: 1rem;
+        border-radius: 24px;
+        border: 1px solid rgba(245, 158, 11, 0.14);
+        background:
+          radial-gradient(circle at right top, rgba(251, 191, 36, 0.14), transparent 28%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.9));
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        scroll-snap-align: start;
+        min-height: 100%;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-row.is-accent-1 {
+        background:
+          radial-gradient(circle at right top, rgba(251, 191, 36, 0.16), transparent 30%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.92));
+      }
+      #adminExecutiveControlMount .admin-revenue-month-row.is-accent-2 {
+        background:
+          radial-gradient(circle at left top, rgba(14, 165, 233, 0.14), transparent 30%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(240,249,255,0.92));
+      }
+      #adminExecutiveControlMount .admin-revenue-month-row.is-accent-3 {
+        background:
+          radial-gradient(circle at right top, rgba(16, 185, 129, 0.14), transparent 30%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(236,253,245,0.92));
+      }
+      #adminExecutiveControlMount .admin-revenue-month-row.is-accent-4 {
+        background:
+          radial-gradient(circle at left top, rgba(244, 63, 94, 0.14), transparent 30%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,241,242,0.92));
+      }
+      #adminExecutiveControlMount .admin-revenue-month-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-copy {
+        display: grid;
+        gap: 0.22rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-copy p {
+        margin: 0;
+        color: #92400e;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
       #adminExecutiveControlMount .admin-revenue-month-copy strong {
-        font-size: 0.8rem;
+        font-size: 1.18rem;
+        color: #142033;
       }
-      #adminExecutiveControlMount .admin-revenue-month-copy small,
+      #adminExecutiveControlMount .admin-revenue-month-hero {
+        display: grid;
+        gap: 0.14rem;
+        justify-items: end;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-hero span {
+        color: #142033;
+        font-size: 1.32rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-hero small,
       #adminExecutiveControlMount .admin-platform-note {
         font-size: 0.72rem;
       }
+      #adminExecutiveControlMount .admin-revenue-month-hero small {
+        color: #64748b;
+      }
       #adminExecutiveControlMount .admin-revenue-month-bar {
-        height: 8px;
-        background: rgba(226, 232, 240, 0.8);
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.75);
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+      }
+      #adminExecutiveControlMount .admin-revenue-month-bar span {
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.98), rgba(251, 191, 36, 0.86));
+        box-shadow: 0 8px 18px rgba(245, 158, 11, 0.24);
+      }
+      #adminExecutiveControlMount .admin-revenue-month-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.62rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-stat {
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        border-radius: 16px;
+        padding: 0.72rem 0.78rem;
+        display: grid;
+        gap: 0.18rem;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248,250,252,0.88));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.45);
+      }
+      #adminExecutiveControlMount .admin-revenue-month-stat p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-stat strong {
+        color: #142033;
+        font-size: 1rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-stat small {
+        color: #64748b;
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        padding-top: 0.1rem;
+      }
+      #adminExecutiveControlMount .admin-revenue-month-meta small {
+        color: #5b667a;
+        font-size: 0.72rem;
       }
       #adminExecutiveControlMount .admin-platform-actions .btn {
         min-height: 36px;
@@ -11124,6 +11720,10 @@
       }
       #adminExecutiveControlMount + .executive-pulse-grid {
         margin-top: 0.32rem;
+      }
+      .subscriber-platform-shell {
+        display: grid;
+        gap: 0.9rem;
       }
       .subscriber-control-hero,
       .customer-control-hero {
@@ -11191,10 +11791,15 @@
       }
       body[data-role="subscriber"] #subscriberExecutivePulseSection {
         border: 1px solid rgba(245, 158, 11, 0.14) !important;
-        background:
-          radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 34%),
-          linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98)) !important;
+        background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99)) !important;
         box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .admin-platform-head {
+        align-items: end;
+        gap: 0.8rem;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .admin-platform-kicker {
+        margin-bottom: 0.28rem;
       }
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-subtitle,
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-head small,
@@ -11209,7 +11814,7 @@
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-toolbar,
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-tabs {
         border-color: rgba(245, 158, 11, 0.12) !important;
-        background: rgba(255,255,255,0.88) !important;
+        background: rgba(255,255,255,0.96) !important;
       }
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-pulse-range-tabs button {
         color: #64748b !important;
@@ -11235,6 +11840,21 @@
         background: rgba(255,255,255,0.98) !important;
         box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
       }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card {
+        border-radius: 20px;
+        padding: 0.9rem;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-head {
+        gap: 0.65rem;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-head h3 {
+        font-size: 1.02rem;
+        letter-spacing: -0.02em;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card {
+        border-radius: 16px;
+        padding: 0.72rem 0.78rem;
+      }
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card strong,
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card h3,
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge-label,
@@ -11243,18 +11863,51 @@
         color: #142033 !important;
       }
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-signal-card small,
-      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge-sub,
       body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-finance-stat.positive strong {
         color: #b45309 !important;
       }
-      body[data-role="subscriber"] #businessGrowthSection .business-hub-shell,
-      body[data-role="subscriber"] #moduleNavigatorSection,
-      body[data-role="subscriber"] #businessGrowthSection .module-card {
-        background-image: none !important;
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge.tone-success .executive-gauge-sub {
+        color: #047857 !important;
       }
-      body[data-role="subscriber"] #businessGrowthSection .module-card {
-        border: 1px solid rgba(245, 158, 11, 0.1) !important;
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge.tone-info .executive-gauge-sub {
+        color: #1d4ed8 !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge.tone-warning .executive-gauge-sub {
+        color: #b45309 !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge.tone-danger .executive-gauge-sub {
+        color: #be123c !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-primary,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-finance,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-card-snapshots {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99)) !important;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-bar {
+        background: linear-gradient(180deg, rgba(245, 158, 11, 0.95), rgba(251, 191, 36, 0.72));
+        box-shadow: 0 10px 22px rgba(245, 158, 11, 0.18);
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-gauge {
+        border-radius: 16px;
+      }
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-snapshot-item,
+      body[data-role="subscriber"] #subscriberExecutivePulseSection .executive-snapshot-empty {
+        border-color: rgba(245, 158, 11, 0.1) !important;
         background: rgba(255,255,255,0.98) !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+      }
+      body[data-role="subscriber"] #businessGrowthSection .business-hub-shell,
+      body[data-role="admin"] #businessGrowthSection .business-hub-shell {
+        background: transparent !important;
+      }
+      body[data-role="subscriber"] #businessGrowthSection .module-card,
+      body[data-role="admin"] #businessGrowthSection .module-card {
+        border: 1px solid rgba(245, 158, 11, 0.1) !important;
+        background:
+          radial-gradient(circle at top right, rgba(244, 63, 94, 0.07), transparent 28%),
+          radial-gradient(circle at left top, rgba(251, 191, 36, 0.1), transparent 24%),
+          linear-gradient(180deg, rgba(255,253,247,0.98), rgba(255,249,246,0.95)) !important;
         box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
       }
       body[data-role="subscriber"] #businessGrowthSection .module-card strong,
@@ -11532,6 +12185,21 @@
         #adminExecutiveControlMount .admin-revenue-summary-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+        #adminExecutiveControlMount .admin-revenue-detail-grid {
+          grid-template-columns: 1fr;
+        }
+        #adminExecutiveControlMount .admin-revenue-detail-grid > .admin-revenue-detail-panel:first-child {
+          min-height: 0;
+        }
+        #adminExecutiveControlMount .admin-revenue-signal-list {
+          grid-template-columns: 1fr;
+        }
+        #adminExecutiveControlMount .admin-revenue-monthly-list {
+          grid-auto-columns: 100%;
+        }
+        #adminExecutiveControlMount .admin-revenue-month-stats {
+          grid-template-columns: 1fr;
+        }
         .admin-revenue-visual-card,
         .admin-revenue-visual-card-wide {
           grid-column: 1 / -1;
@@ -11540,6 +12208,388 @@
           grid-template-columns: 1fr;
         }
         .admin-account-support-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+      #adminPlatformSection.control-board-panel,
+      #subscriberExecutivePulseSection.control-board-panel {
+        border: 1px solid rgba(245, 158, 11, 0.16);
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.14), transparent 24%),
+          radial-gradient(circle at left top, rgba(14, 165, 233, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(247,248,250,0.99));
+        box-shadow: 0 28px 70px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+      }
+      #adminPlatformSection.control-board-panel {
+        border-color: rgba(59, 130, 246, 0.18);
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 24%),
+          radial-gradient(circle at left top, rgba(16, 185, 129, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(245,248,255,0.99), rgba(239,244,255,0.99));
+      }
+      #subscriberExecutivePulseSection.control-board-panel {
+        border-color: rgba(245, 158, 11, 0.16);
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.16), transparent 24%),
+          radial-gradient(circle at left top, rgba(244, 63, 94, 0.07), transparent 22%),
+          linear-gradient(180deg, rgba(255,251,245,0.99), rgba(255,247,237,0.99));
+      }
+      .control-board-shell {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .control-board-shell .admin-platform-head,
+      .control-board-shell .executive-pulse-head {
+        position: relative;
+        padding: 1rem 1.05rem;
+        border-radius: 24px;
+        border: 1px solid rgba(245, 158, 11, 0.12);
+        background:
+          radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 26%),
+          radial-gradient(circle at left center, rgba(59, 130, 246, 0.08), transparent 24%),
+          linear-gradient(135deg, rgba(255,250,240,0.98), rgba(255,255,255,0.98));
+      }
+      .control-board-shell-admin .admin-platform-head {
+        border-color: rgba(59, 130, 246, 0.16);
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent 28%),
+          radial-gradient(circle at left center, rgba(16, 185, 129, 0.08), transparent 24%),
+          linear-gradient(135deg, rgba(239,246,255,0.98), rgba(255,255,255,0.98));
+      }
+      .control-board-shell-subscriber .executive-pulse-head {
+        border-color: rgba(245, 158, 11, 0.14);
+        background:
+          radial-gradient(circle at top right, rgba(245, 158, 11, 0.22), transparent 28%),
+          radial-gradient(circle at left center, rgba(244, 63, 94, 0.08), transparent 24%),
+          linear-gradient(135deg, rgba(255,247,237,0.98), rgba(255,255,255,0.98));
+      }
+      .control-board-shell .admin-overview-hero,
+      .control-board-shell .subscriber-control-hero {
+        border-radius: 24px;
+        border: 1px solid rgba(245, 158, 11, 0.12);
+        background:
+          radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 24%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.99));
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+      }
+      .control-board-shell-admin .admin-overview-hero {
+        border-color: rgba(59, 130, 246, 0.12);
+        background:
+          radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 24%),
+          radial-gradient(circle at left top, rgba(59, 130, 246, 0.12), transparent 20%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(239,246,255,0.98));
+      }
+      .control-board-shell-subscriber .subscriber-control-hero {
+        border-color: rgba(245, 158, 11, 0.12);
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.16), transparent 24%),
+          radial-gradient(circle at left top, rgba(244, 63, 94, 0.08), transparent 20%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,247,237,0.98));
+      }
+      .control-board-shell .admin-platform-metric-grid,
+      .control-board-shell .executive-signal-grid {
+        gap: 0.7rem;
+      }
+      .control-board-shell .admin-platform-metric-card,
+      .control-board-shell .admin-platform-summary-card,
+      .control-board-shell .executive-signal-card,
+      .control-board-shell .executive-card,
+      .control-board-shell .executive-gauge,
+      .control-board-shell .executive-finance-stat,
+      .control-board-shell .executive-action-list li {
+        border-radius: 20px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+      }
+      .control-board-shell-admin .admin-analytics-layout {
+        align-items: stretch;
+      }
+      .control-board-shell-admin .admin-platform-card {
+        min-height: 100%;
+        border-color: rgba(59, 130, 246, 0.1);
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(243,247,255,0.98));
+      }
+      .control-board-shell-admin .admin-revenue-command-card,
+      .control-board-shell-admin .admin-usage-command-card {
+        display: grid;
+        align-content: start;
+      }
+      .control-board-shell-subscriber .executive-pulse-toolbar {
+        padding: 0.85rem 1rem;
+        border-radius: 22px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        background: rgba(255,255,255,0.84);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.05);
+      }
+      .control-board-shell-subscriber .executive-pulse-toolbar {
+        border-color: rgba(245, 158, 11, 0.12);
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,251,235,0.9));
+      }
+      .managed-command-center {
+        display: grid;
+        gap: 1rem;
+      }
+      .managed-command-center-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .managed-command-center-copy {
+        display: grid;
+        gap: 0.25rem;
+        max-width: 68ch;
+      }
+      .managed-command-kicker {
+        margin: 0;
+        color: #b45309;
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .managed-command-center-status {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .managed-command-overview {
+        display: grid;
+        gap: 0.8rem;
+        padding: 1rem 1.05rem;
+        border-radius: 24px;
+        border: 1px solid rgba(245, 158, 11, 0.12);
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 28%),
+          radial-gradient(circle at left bottom, rgba(244, 63, 94, 0.08), transparent 24%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,247,237,0.96));
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+      }
+      .managed-command-overview-copy {
+        display: grid;
+        gap: 0.22rem;
+      }
+      .managed-command-overview-copy strong {
+        color: #142033;
+        font-size: 1rem;
+      }
+      .managed-command-overview-copy p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.82rem;
+      }
+      .managed-command-signal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.72rem;
+      }
+      .managed-command-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.92fr);
+        gap: 0.95rem;
+        align-items: stretch;
+      }
+      .managed-command-main,
+      .managed-command-side {
+        display: grid;
+        gap: 0.9rem;
+        align-content: start;
+      }
+      .managed-command-card {
+        border-radius: 24px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 18px 34px rgba(15, 23, 42, 0.05);
+        padding: 0.95rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+      .managed-command-card-head {
+        display: grid;
+        gap: 0.16rem;
+      }
+      .managed-command-card-head h3 {
+        margin: 0;
+        color: #142033;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+      .managed-command-card-head small {
+        color: #64748b;
+      }
+      .managed-command-card-toolbar {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.96));
+      }
+      .managed-command-card-story {
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 24%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(239,246,255,0.96));
+      }
+      .managed-command-card-finance {
+        background:
+          radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 24%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(236,253,245,0.96));
+      }
+      .managed-command-card-gauges {
+        background:
+          radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.96));
+      }
+      .managed-command-card-actions {
+        background:
+          radial-gradient(circle at top left, rgba(244, 63, 94, 0.1), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,241,242,0.96));
+      }
+      .managed-command-card-snapshots {
+        background:
+          radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(238,242,255,0.96));
+      }
+      .managed-command-bars {
+        min-height: 220px;
+      }
+      .managed-command-gauges {
+        min-height: 220px;
+      }
+      .managed-command-finance-stats {
+        min-height: 190px;
+      }
+      .managed-command-actions {
+        min-height: 220px;
+      }
+      .managed-command-snapshots {
+        min-height: 180px;
+      }
+      .control-board-shell-subscriber .executive-card,
+      .control-board-shell-subscriber .executive-card-primary,
+      .control-board-shell-subscriber .executive-card-finance,
+      .control-board-shell-subscriber .executive-card-snapshots {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.98));
+      }
+      .control-board-shell-subscriber .executive-card:nth-child(1),
+      .control-board-shell-subscriber .executive-card-primary {
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(239,246,255,0.96));
+      }
+      .control-board-shell-subscriber .executive-card:nth-child(2) {
+        background:
+          radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(236,253,245,0.96));
+      }
+      .control-board-shell-subscriber .executive-card:nth-child(3) {
+        background:
+          radial-gradient(circle at top, rgba(245, 158, 11, 0.14), transparent 26%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,251,235,0.96));
+      }
+      .control-board-shell-subscriber .executive-card-finance {
+        background:
+          radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 28%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(238,242,255,0.96));
+      }
+      .control-board-shell-subscriber .executive-card-snapshots {
+        background:
+          radial-gradient(circle at top left, rgba(244, 63, 94, 0.1), transparent 28%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,241,242,0.96));
+      }
+      .control-board-shell-admin .admin-revenue-command-card {
+        background:
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 24%),
+          radial-gradient(circle at left bottom, rgba(16, 185, 129, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(241,245,255,0.98));
+      }
+      .control-board-shell-admin .admin-usage-command-card {
+        background:
+          radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), transparent 24%),
+          radial-gradient(circle at right bottom, rgba(14, 165, 233, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(255,255,255,0.99), rgba(243,248,255,0.98));
+      }
+      .control-board-shell .executive-bars,
+      .control-board-shell .executive-gauge-grid,
+      .control-board-shell .executive-finance-stats,
+      .control-board-shell .executive-snapshot-list,
+      .control-board-shell .executive-action-list {
+        min-height: 100%;
+      }
+      #dashboardOverviewSection {
+        position: relative;
+        overflow: hidden;
+        background: rgba(255,255,255,0.99);
+      }
+      #dashboardOverviewSection::before {
+        content: none;
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      #subscriberCalendarSection {
+        position: relative;
+        overflow: hidden;
+        background: rgba(255,255,255,0.99);
+      }
+      #subscriberCalendarSection::before {
+        content: none;
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      #subscriberCalendarSection .calendar-stage,
+      #subscriberCalendarSection .calendar-feature-meta,
+      #subscriberCalendarSection .calendar-selected-day-card,
+      #subscriberCalendarSection .calendar-lexi-command-card,
+      #subscriberCalendarSection .calendar-diary-agenda,
+      #subscriberCalendarSection .calendar-diary-rota-panel {
+        background:
+          radial-gradient(circle at top right, rgba(255,255,255,0.6), transparent 30%),
+          linear-gradient(180deg, rgba(255,255,255,0.92), rgba(247,250,255,0.9));
+      }
+      #subscriberCalendarSection .calendar-diary-week-strip .calendar-week-focus-card {
+        background:
+          radial-gradient(circle at top right, rgba(125, 211, 252, 0.18), transparent 32%),
+          linear-gradient(180deg, rgba(255,255,255,0.94), rgba(239,246,255,0.9));
+      }
+      #businessGrowthSection {
+        position: relative;
+        overflow: hidden;
+        background: rgba(255,255,255,0.99);
+      }
+      #businessGrowthSection::before {
+        content: none;
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .business-hub-shell {
+        position: relative;
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 26%),
+          radial-gradient(circle at left center, rgba(59, 130, 246, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,250,244,0.9));
+      }
+      .business-hub-header {
+        background:
+          radial-gradient(circle at top right, rgba(255,255,255,0.32), transparent 28%),
+          linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.08));
+        border-radius: 22px;
+        padding: 0.35rem 0.25rem;
+      }
+      .business-hub-grid .module-card {
+        background:
+          radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 28%),
+          radial-gradient(circle at left bottom, rgba(59, 130, 246, 0.08), transparent 22%),
+          linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,251,245,0.92));
+      }
+      @media (max-width: 1100px) {
+        .managed-command-layout,
+        .managed-command-signal-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -12162,8 +13212,8 @@
         </div>
       </section>
 
-      <section class="panel" id="adminPlatformSection" hidden>
-        <div class="admin-platform-shell">
+      <section class="panel control-board-panel control-board-panel-admin" id="adminPlatformSection" hidden>
+        <div class="admin-platform-shell control-board-shell control-board-shell-admin" id="adminExecutiveControlMount">
           <div class="admin-platform-head">
             <div>
               <p class="admin-platform-kicker">Platform oversight</p>
@@ -12221,13 +13271,22 @@
                   <div id="adminRevenueTrendGraph" class="admin-revenue-trend-graph" aria-live="polite"></div>
                 </article>
               </div>
-              <section class="admin-revenue-detail-panel" aria-label="Monthly revenue detail">
-                <div class="admin-revenue-visual-head">
-                  <strong>Monthly Breakdown</strong>
-                  <small>Revenue and cancellation movement by month</small>
-                </div>
-                <div id="adminRevenueMonthlyList" class="admin-revenue-monthly-list" aria-live="polite"></div>
-              </section>
+              <div class="admin-revenue-detail-grid">
+                <section class="admin-revenue-detail-panel" aria-label="Monthly revenue detail">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Monthly Breakdown</strong>
+                    <small>Scroll month to month for full platform revenue detail</small>
+                  </div>
+                  <div id="adminRevenueMonthlyList" class="admin-revenue-monthly-list" aria-live="polite"></div>
+                </section>
+                <section class="admin-revenue-detail-panel" aria-label="Revenue command signals">
+                  <div class="admin-revenue-visual-head">
+                    <strong>Revenue Signals</strong>
+                    <small>What admin should watch next</small>
+                  </div>
+                  <div id="adminRevenueSignalList" class="admin-revenue-signal-list" aria-live="polite"></div>
+                </section>
+              </div>
               <p id="adminRevenueNote" class="admin-platform-note"></p>
             </section>
             <section class="admin-platform-card admin-usage-command-card" aria-labelledby="adminUsageOverviewTitle">
@@ -12435,83 +13494,105 @@
         </div>
       </section>
 
-            <section class="panel executive-pulse" id="subscriberExecutivePulseSection">
-        <div class="executive-pulse-head">
-          <div>
-            <h2 id="executivePulseTitle" style="margin:0;">Business Pulse</h2>
-            <p id="executivePulseSubtitle" class="executive-pulse-subtitle">
-              Quick read on bookings, cancellations, revenue and next steps.
-            </p>
+            <section class="panel executive-pulse control-board-panel control-board-panel-subscriber" id="subscriberExecutivePulseSection">
+        <div class="managed-command-center control-board-shell control-board-shell-subscriber">
+          <div class="managed-command-center-head executive-pulse-head">
+            <div class="managed-command-center-copy">
+              <p class="managed-command-kicker">Live command center</p>
+              <h2 id="executivePulseTitle" style="margin:0;">Business Pulse</h2>
+              <p id="executivePulseSubtitle" class="executive-pulse-subtitle">
+                Quick read on bookings, cancellations, revenue and next steps.
+              </p>
+            </div>
+            <div class="managed-command-center-status">
+              <span class="live-pill"><i class="live-dot"></i> Live</span>
+              <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save View</button>
+            </div>
           </div>
-          <div class="executive-pulse-badge">
-            <span class="live-pill"><i class="live-dot"></i> Live</span>
+
+          <section class="managed-command-overview" aria-label="Command center overview">
+            <div class="managed-command-overview-copy">
+              <strong>Trading, demand, and front-desk pressure in one place</strong>
+              <p>Use this board to read the selected business fast, spot revenue pressure, and decide what needs action next.</p>
+            </div>
+            <div id="executivePulseSignals" class="managed-command-signal-grid executive-signal-grid"></div>
+          </section>
+
+          <div class="managed-command-layout">
+            <div class="managed-command-main">
+              <article class="managed-command-card managed-command-card-toolbar">
+                <div class="managed-command-card-head">
+                  <h3>Command Filters</h3>
+                  <small>Switch the working range and review context</small>
+                </div>
+                <div class="executive-pulse-toolbar" aria-label="Daily pulse controls">
+                  <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Pulse range">
+                    <button type="button" class="is-active" data-exec-range="day" role="tab" aria-selected="true">Day</button>
+                    <button type="button" data-exec-range="week" role="tab" aria-selected="false">Week</button>
+                    <button type="button" data-exec-range="month" role="tab" aria-selected="false">Month</button>
+                    <button type="button" data-exec-range="year" role="tab" aria-selected="false">Year</button>
+                    <button type="button" data-exec-range="all" role="tab" aria-selected="false">All Time</button>
+                  </div>
+                  <div class="executive-pulse-toolbar-actions">
+                    <div id="executivePulseAdminMetricTabs" class="executive-pulse-range-tabs executive-pulse-admin-tabs" role="tablist" aria-label="Admin metric view" hidden>
+                      <button type="button" class="is-active" data-admin-metric-view="bookings" aria-selected="true">Bookings</button>
+                      <button type="button" data-admin-metric-view="subscriber_revenue" aria-selected="false">Subscriber Revenue</button>
+                      <button type="button" data-admin-metric-view="customer_signup" aria-selected="false">Customer Signup</button>
+                    </div>
+                    <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing all time</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="managed-command-card managed-command-card-story">
+                <div class="managed-command-card-head">
+                  <h3 id="executivePulseStorylineTitle">Booking Storyline</h3>
+                  <small>Range movement, trade rhythm, and demand shape</small>
+                </div>
+                <div id="executivePulseBars" class="executive-bars managed-command-bars"></div>
+              </article>
+
+              <article class="managed-command-card managed-command-card-finance">
+                <div class="managed-command-card-head">
+                  <h3 id="executivePulseFinanceTitle">Finance Pulse</h3>
+                  <small id="executivePulseFinanceWindowLabel">Range finance summary</small>
+                </div>
+                <div id="executivePulseFinanceStats" class="executive-finance-stats managed-command-finance-stats"></div>
+                <div style="display:none;">
+                  <small id="executivePulseRevenueChartNote"></small>
+                  <small id="executivePulseProfitChartNote"></small>
+                  <div id="executivePulseRevenueChart"></div>
+                  <div id="executivePulseProfitChart"></div>
+                </div>
+              </article>
+            </div>
+
+            <aside class="managed-command-side">
+              <article class="managed-command-card managed-command-card-gauges">
+                <div class="managed-command-card-head">
+                  <h3>Booking Health Rings</h3>
+                  <small>Completion, confirmation and cancellation mix</small>
+                </div>
+                <div id="executivePulseGauges" class="executive-gauge-grid managed-command-gauges"></div>
+              </article>
+
+              <article class="managed-command-card managed-command-card-actions">
+                <div class="managed-command-card-head">
+                  <h3 id="executivePulseActionsTitle">Next Moves</h3>
+                  <small id="executivePulseActionsSubtitle">Priority actions for the selected range</small>
+                </div>
+                <ul id="executivePulseActions" class="executive-action-list managed-command-actions"></ul>
+              </article>
+
+              <article class="managed-command-card managed-command-card-snapshots">
+                <div class="managed-command-card-head">
+                  <h3 id="executivePulseSnapshotsTitle">Saved Views</h3>
+                  <small id="executivePulseSnapshotsSubtitle">Snapshots and checkpoints for later review</small>
+                </div>
+                <div id="executivePulseSnapshotList" class="executive-snapshot-list managed-command-snapshots" aria-live="polite"></div>
+              </article>
+            </aside>
           </div>
-        </div>
-        <div class="executive-pulse-toolbar" aria-label="Daily pulse controls">
-          <div id="executivePulseRangeTabs" class="executive-pulse-range-tabs" role="tablist" aria-label="Pulse range">
-            <button type="button" class="is-active" data-exec-range="all" role="tab" aria-selected="true">All Time</button>
-            <button type="button" data-exec-range="day" role="tab" aria-selected="false">Day</button>
-            <button type="button" data-exec-range="week" role="tab" aria-selected="false">Week</button>
-            <button type="button" data-exec-range="month" role="tab" aria-selected="false">Month</button>
-            <button type="button" data-exec-range="year" role="tab" aria-selected="false">Year</button>
-          </div>
-          <div class="executive-pulse-toolbar-actions">
-            <div id="executivePulseRangeMeta" class="executive-pulse-range-meta" aria-live="polite">Viewing all time</div>
-            <button id="executivePulseSaveSnapshotBtn" type="button" class="btn btn-ghost">Save View</button>
-          </div>
-        </div>
-        <section class="subscriber-control-hero" aria-label="Subscriber business overview">
-          <div class="subscriber-control-hero-copy">
-            <strong>Salon Revenue & Operations</strong>
-            <p>Your own bookings, revenue, confirmations, and trading pressure in one control surface.</p>
-          </div>
-          <div id="executivePulseSignals" class="executive-signal-grid"></div>
-        </section>
-        <div id="adminExecutiveControlMount"></div>
-        <div class="executive-pulse-grid">
-          <article class="executive-card executive-card-primary">
-            <div class="executive-card-head">
-              <h3>Booking Health</h3>
-              <small>Completion, confirmation and cancellation mix</small>
-            </div>
-            <div id="executivePulseGauges" class="executive-gauge-grid"></div>
-          </article>
-          <article class="executive-card">
-            <div class="executive-card-head">
-              <h3>Activity</h3>
-              <small>Booking flow for the selected range</small>
-            </div>
-            <div id="executivePulseBars" class="executive-bars"></div>
-          </article>
-          <article class="executive-card">
-            <div class="executive-card-head">
-              <h3>Next Moves</h3>
-              <small>What needs attention now</small>
-            </div>
-            <ul id="executivePulseActions" class="executive-action-list"></ul>
-          </article>
-        </div>
-        <div class="executive-pulse-deep-grid">
-          <article class="executive-card executive-card-finance">
-            <div class="executive-card-head">
-              <h3>Finance</h3>
-              <small id="executivePulseFinanceWindowLabel">Range finance summary</small>
-            </div>
-            <div id="executivePulseFinanceStats" class="executive-finance-stats"></div>
-            <div style="display:none;">
-              <small id="executivePulseRevenueChartNote"></small>
-              <small id="executivePulseProfitChartNote"></small>
-              <div id="executivePulseRevenueChart"></div>
-              <div id="executivePulseProfitChart"></div>
-            </div>
-          </article>
-          <article class="executive-card executive-card-snapshots">
-            <div class="executive-card-head">
-              <h3>Saved Views</h3>
-              <small>Keep quick checkpoints for reviews</small>
-            </div>
-            <div id="executivePulseSnapshotList" class="executive-snapshot-list" aria-live="polite"></div>
-          </article>
         </div>
       </section>
       <section class="panel" id="businessGrowthSection">
@@ -12520,12 +13601,11 @@
             <div>
               <p id="businessHubKicker" class="business-hub-kicker">Subscriber workspace</p>
               <h2 id="businessHubTitle" style="margin:0;">Business Hub</h2>
-              <p id="moduleNavigatorIntro" class="business-hub-subtitle">Open a card to review or edit that part of the business. Every popup includes Ask Lexi for help.</p>
+              <p id="businessHubIntro" class="business-hub-subtitle">Open a card to see what that area does, what matters now, and how Lexi can help.</p>
             </div>
           </div>
-          <section class="module-navigator module-navigator-inline business-hub-navigator" id="moduleNavigatorSection">
-            <div id="moduleCards" class="module-grid business-hub-grid"></div>
-            <article id="moduleDetails" class="module-info" hidden></article>
+          <section class="module-navigator module-navigator-inline business-hub-navigator">
+            <div id="businessHubCardsGrid" class="module-grid business-hub-grid"></div>
           </section>
         </div>
       </section>
@@ -12870,8 +13950,8 @@
       </section>
 
       <section class="panel" id="commercialSection">
-        <h2 style="margin:0;">Memberships, Packages, and Gift Cards</h2>
-        <p style="margin:0.35rem 0 0;color:var(--muted);">Manage recurring plans, prepaid service bundles, and gift-card balances from one place.</p>
+        <h2 style="margin:0;">Memberships, Packages, Gift Cards, and Merch</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Manage recurring plans, prepaid service bundles, gift cards, and retail revenue controls from one place.</p>
         <div class="commercial-shell" style="margin-top:0.8rem;">
           <div id="commercialSummaryCards" class="commercial-summary"></div>
           <div class="commercial-grid">
@@ -12914,6 +13994,38 @@
             </article>
           </div>
           <p id="commercialStatusNote" class="commercial-status-note"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="merchSection">
+        <h2 style="margin:0;">Merch and Product Shipping</h2>
+        <p style="margin:0.35rem 0 0;color:var(--muted);">Add products you sell in the salon, set the sale price, attach an image and description, and prepare items to ship to customers.</p>
+        <div class="commercial-shell" style="margin-top:0.8rem;">
+          <div id="merchSummaryCards" class="commercial-summary"></div>
+          <div class="commercial-grid" style="grid-template-columns:minmax(320px,0.92fr) minmax(0,1.08fr);">
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Add Product</h3>
+              <form id="merchForm" class="commercial-form">
+                <input id="merchNameInput" type="text" placeholder="Product name" required />
+                <input id="merchPriceInput" type="number" step="0.01" min="0" placeholder="Sale price" required />
+                <input id="merchInventoryInput" type="number" step="1" min="0" placeholder="Units in stock" required />
+                <input id="merchImageUrlInput" type="url" placeholder="Image URL (optional)" />
+                <input id="merchImageFileInput" type="file" accept="image/*" />
+                <textarea id="merchDescriptionInput" placeholder="Product description" required></textarea>
+                <select id="merchShippingInput">
+                  <option value="true">Shipping available</option>
+                  <option value="false">Collection only</option>
+                </select>
+                <input id="merchShippingCostInput" type="number" step="0.01" min="0" placeholder="Shipping cost" />
+                <button class="btn" type="submit">Save Product</button>
+              </form>
+            </article>
+            <article>
+              <h3 style="margin:0 0 0.45rem;">Merch Catalog</h3>
+              <ul id="merchList" class="commercial-list" style="margin-top:0.6rem;"></ul>
+            </article>
+          </div>
+          <p id="merchStatusNote" class="commercial-status-note"></p>
         </div>
       </section>
 

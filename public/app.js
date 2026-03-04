@@ -135,11 +135,16 @@ const homeCustomerSignupEmail = document.getElementById("homeCustomerSignupEmail
 const homeCustomerSignupPassword = document.getElementById("homeCustomerSignupPassword");
 const homeCustomerSignupPhone = document.getElementById("homeCustomerSignupPhone");
 const homeCustomerSignupCity = document.getElementById("homeCustomerSignupCity");
+const homeCustomerSignupCountry = document.getElementById("homeCustomerSignupCountry");
 const homeCustomerSignupService = document.getElementById("homeCustomerSignupService");
 const homeCustomerSignupNotes = document.getElementById("homeCustomerSignupNotes");
 const homeCustomerPaymentConsent = document.getElementById("homeCustomerPaymentConsent");
 const homeCustomerSignupTerms = document.getElementById("homeCustomerSignupTerms");
 const homeCustomerSignupUpdates = document.getElementById("homeCustomerSignupUpdates");
+
+function t(key, fallback, vars) {
+  return String(fallback || "");
+}
 const homeCustomerSignupSubmit = document.getElementById("homeCustomerSignupSubmit");
 const homeCustomerSignupMsg = document.getElementById("homeCustomerSignupMsg");
 const homeCustomerModeSwitchers = Array.from(document.querySelectorAll("[data-home-customer-mode]"));
@@ -179,7 +184,7 @@ const homeDemoDisplayValues = {
   targetPct: 0
 };
 
-const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi. The quickest way to book here is with me, not by calling. Tell me the service, day, or question and I'll move it forward straight away.";
+const CHATBOT_WELCOME_MESSAGE = "Hi, I'm Lexi. Ask me about products, services, bookings, availability, or how to use the app, and I'll guide the next step.";
 const LEXI_BOOKING_NOTES_PREFIX = "LEXI_CONTEXT_V1:";
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
@@ -750,7 +755,7 @@ function renderLexiBookingGuide() {
     } else if (nextStep === "details") {
       lexiChatGuideHint.textContent = "Lexi now needs your name and contact details to finish the request.";
     } else if (nextStep === "confirm") {
-      lexiChatGuideHint.textContent = "Ask Lexi to confirm the appointment or repeat the booking details.";
+      lexiChatGuideHint.textContent = t("app.confirm_or_repeat_booking", "Ask Lexi to confirm the appointment or repeat the booking details.");
     } else {
       lexiChatGuideHint.textContent = "Booking complete. Lexi can help with aftercare, changes, or another appointment.";
     }
@@ -818,6 +823,18 @@ function getPendingLexiBookingDraft() {
     lexiSummary: buildLexiSalonBookingSummary(memory),
     lexiNotes: buildLexiBookingNotesPayload(memory)
   };
+}
+
+function ensureLexiBookingFollowUp(reply, options = {}) {
+  const text = cleanLexiValue(reply);
+  if (!text) return text;
+  if (options.bookingCreated) return text;
+  const draft = getPendingLexiBookingDraft();
+  if (!draft) return text;
+  if (/[?]/.test(text) || /would you like me to book that for you|tell me to confirm it|ask me to confirm|shall i book/i.test(text)) {
+    return text;
+  }
+  return `${text} Would you like me to book that for you?`;
 }
 
 function getLexiBookingTranscriptEntries() {
@@ -1669,37 +1686,37 @@ function ensureHomeLexiPopup() {
     <section class="home-lexi-popup" role="dialog" aria-modal="true" aria-labelledby="homeLexiPopupTitle">
       <div class="home-lexi-popup-head">
         <div>
-          <p class="home-lexi-popup-kicker">Ask Lexi</p>
-          <h3 id="homeLexiPopupTitle">Ask Lexi</h3>
-          <p>Ask questions, get recommendations, and move straight into booking from one focused popup.</p>
+          <p class="home-lexi-popup-kicker">${t("common.ask_lexi", "Ask Lexi")}</p>
+          <h3 id="homeLexiPopupTitle">${t("common.ask_lexi", "Ask Lexi")}</h3>
+          <p>${t("app.ask_questions_get_recommendations", "Ask questions, get recommendations, and move straight into booking from one focused popup.")}</p>
         </div>
-        <button type="button" class="home-lexi-popup-close" aria-label="Close Lexi chat popup">x</button>
+        <button type="button" class="home-lexi-popup-close" aria-label="${t("app.close_lexi_chat_popup", "Close Lexi chat popup")}">x</button>
       </div>
       <div class="home-lexi-popup-body">
-        <section class="lexi-avatar-shell" data-avatar-state="idle" aria-label="Lexi live assistant">
+        <section class="lexi-avatar-shell" data-avatar-state="idle" aria-label="${t("app.lexi_live_assistant", "Lexi live assistant")}">
           <div class="lexi-avatar-stage">
             <video id="homeLexiAvatarVideo" class="lexi-avatar-video" playsinline autoplay muted></video>
             <div class="lexi-avatar-figure">
               <div class="lexi-avatar-orb" aria-hidden="true"></div>
               <div class="lexi-avatar-label">
-                <strong id="homeLexiAvatarTitle">Lexi live assistant</strong>
-                <small id="homeLexiAvatarStatus">Push to talk is ready.</small>
+                <strong id="homeLexiAvatarTitle">${t("app.lexi_live_assistant", "Lexi live assistant")}</strong>
+                <small id="homeLexiAvatarStatus">${t("app.push_to_talk_ready", "Push-to-talk is ready.")}</small>
               </div>
             </div>
           </div>
           <div class="lexi-avatar-meta">
             <div class="lexi-avatar-chip-row">
-              <span class="lexi-avatar-chip" id="homeLexiAvatarModeChip">Text + booking</span>
-              <span class="lexi-avatar-chip" id="homeLexiAvatarProviderChip">Provider pending</span>
-              <span class="lexi-avatar-chip" id="homeLexiAvatarReadyChip">Avatar offline</span>
+              <span class="lexi-avatar-chip" id="homeLexiAvatarModeChip">${t("app.text_plus_booking", "Text + booking")}</span>
+              <span class="lexi-avatar-chip" id="homeLexiAvatarProviderChip">${t("app.provider_pending", "Provider pending")}</span>
+              <span class="lexi-avatar-chip" id="homeLexiAvatarReadyChip">${t("app.avatar_offline", "Avatar offline")}</span>
             </div>
             <div class="lexi-avatar-note">
-              <strong>Lexi focus</strong>
-              <p id="homeLexiAvatarNote">Ask about services, treatments, timings, aftercare, and the best next step for a booking.</p>
+              <strong>${t("app.lexi_focus", "Lexi focus")}</strong>
+              <p id="homeLexiAvatarNote">${t("app.ask_about_services_treatments", "Ask about services, treatments, timings, aftercare, and the best next step for a booking.")}</p>
             </div>
             <div class="lexi-avatar-transcript">
-              <strong>Live status</strong>
-              <p id="homeLexiAvatarTranscript">Use text now or press Push to Talk and review your words before sending them.</p>
+              <strong>${t("app.live_status", "Live status")}</strong>
+              <p id="homeLexiAvatarTranscript">${t("app.use_text_or_push_to_talk", "Use text now or press Push to Talk and review your words before sending them.")}</p>
             </div>
           </div>
         </section>
@@ -1712,8 +1729,8 @@ function ensureHomeLexiPopup() {
   const micSlot = document.createElement("div");
   micSlot.className = "lexi-popup-mic-actions";
   micSlot.innerHTML = `
-    <button class="btn lexi-mic-btn" id="homeLexiVoiceBtn" type="button" disabled>Push to Talk</button>
-    <button class="btn btn-ghost lexi-mic-btn" id="homeLexiMuteBtn" type="button" disabled>Stop</button>
+    <button class="btn lexi-mic-btn" id="homeLexiVoiceBtn" type="button" disabled>${t("common.push_to_talk", "Push to Talk")}</button>
+    <button class="btn btn-ghost lexi-mic-btn" id="homeLexiMuteBtn" type="button" disabled>${t("common.stop", "Stop")}</button>
   `;
   container?.appendChild(micSlot);
   const closeBtn = overlay.querySelector(".home-lexi-popup-close");
@@ -1738,11 +1755,11 @@ function setHomeLexiMicButtonState(listening = false) {
   const supported = homeLexiMicSupported();
   if (voiceBtn instanceof HTMLButtonElement) {
     voiceBtn.disabled = !supported;
-    voiceBtn.textContent = listening ? "Listening..." : "Push to Talk";
+    voiceBtn.textContent = listening ? t("dashboard.listening", "Listening...") : t("common.push_to_talk", "Push to Talk");
   }
   if (stopBtn instanceof HTMLButtonElement) {
     stopBtn.disabled = !supported || !listening;
-    stopBtn.textContent = "Stop";
+    stopBtn.textContent = t("common.stop", "Stop");
   }
 }
 
@@ -1796,8 +1813,8 @@ function toggleHomeLexiMicCapture() {
       "idle",
       "Push-to-talk is ready.",
       finalTranscript
-        ? "Review your words in the chat box, then send them to Lexi."
-        : "Press Push to Talk when you want to speak."
+        ? t("dashboard.review_words_then_send", "Review your words in the chat box, then send them to Lexi.")
+        : t("common.push_to_talk_ready_prompt", "Press Push to Talk when you want to speak.")
     );
     chatInput?.focus();
   };
@@ -1971,6 +1988,11 @@ function resetHomeLexiVoiceControls() {
   setHomeLexiMicButtonState(false);
 }
 
+function getHomeLexiVoiceButtonLabel(config = null) {
+  if (config?.avatarSessionReady && !config?.realtimeEnabled) return t("common.start_demo", "Start Demo");
+  return t("common.push_to_talk", "Push to Talk");
+}
+
 function cleanupHomeLexiRealtimeConnection() {
   const connection = homeLexiRealtimeConnection;
   if (!connection) return;
@@ -2028,11 +2050,11 @@ function handleHomeLexiRealtimeEvent(event) {
   if (!eventType) return;
 
   if (eventType === "input_audio_buffer.speech_started") {
-    setHomeLexiAvatarPanelState("listening", "Lexi is listening.", "Speak naturally. Lexi will respond as soon as you finish.");
+    setHomeLexiAvatarPanelState("listening", t("app.lexi_is_listening", "Lexi is listening."), t("app.speak_naturally_lexi_responds", "Speak naturally. Lexi will respond as soon as you finish."));
     return;
   }
   if (eventType === "input_audio_buffer.speech_stopped") {
-    setHomeLexiAvatarPanelState("thinking", "Lexi is thinking.", "Your request is being turned into Lexi's next reply.");
+    setHomeLexiAvatarPanelState("thinking", t("app.lexi_is_thinking", "Lexi is thinking."), t("app.request_being_turned_into_reply", "Your request is being turned into Lexi's next reply."));
     return;
   }
   if (eventType === "conversation.item.input_audio_transcription.completed") {
@@ -2041,19 +2063,19 @@ function handleHomeLexiRealtimeEvent(event) {
     return;
   }
   if (eventType === "response.created") {
-    setHomeLexiAvatarPanelState("thinking", "Lexi is preparing her reply.", "Lexi is turning what she heard into the next step.");
+    setHomeLexiAvatarPanelState("thinking", t("app.lexi_preparing_reply_live", "Lexi is preparing her reply."), t("app.turning_what_she_heard_into_next_step", "Lexi is turning what she heard into the next step."));
     return;
   }
   if (eventType === "response.done") {
     const text = extractLexiRealtimeText(event?.response);
     if (text) {
-      setHomeLexiAvatarPanelState("speaking", "Lexi is replying live.", `Lexi: ${text}`);
+      setHomeLexiAvatarPanelState("speaking", t("app.lexi_replying_live", "Lexi is replying live."), `${t("app.lexi_prefix", "Lexi")}: ${text}`);
       return;
     }
   }
   if (eventType === "error") {
-    const message = String(event?.error?.message || "Realtime session error.").trim();
-    setHomeLexiAvatarPanelState("speaking", "Lexi hit a realtime error.", message);
+    const message = String(event?.error?.message || t("app.realtime_session_error", "Realtime session error.")).trim();
+    setHomeLexiAvatarPanelState("speaking", t("app.lexi_realtime_error", "Lexi hit a realtime error."), message);
     setAppStatus(message, true, 3200);
   }
 }
@@ -2063,10 +2085,10 @@ async function connectHomeLexiRealtimeSession(sessionPayload) {
   const clientSecret = String(session.clientSecret || "").trim();
   const model = String(session.model || "").trim();
   if (!clientSecret || !model) {
-    throw new Error("Realtime session details are incomplete.");
+    throw new Error(t("app.realtime_session_details_incomplete", "Realtime session details are incomplete."));
   }
   if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === "undefined") {
-    throw new Error("This browser does not support live Lexi voice mode.");
+    throw new Error(t("app.browser_no_live_lexi_voice", "This browser does not support live Lexi voice mode."));
   }
 
   cleanupHomeLexiRealtimeConnection();
@@ -2086,13 +2108,13 @@ async function connectHomeLexiRealtimeSession(sessionPayload) {
   peerConnection.onconnectionstatechange = () => {
     const state = String(peerConnection.connectionState || "").trim();
     if (state === "connected") {
-      setHomeLexiAvatarPanelState("listening", "Lexi is live and listening.", "Talk naturally. Lexi will answer out loud and keep the booking moving.");
+      setHomeLexiAvatarPanelState("listening", t("app.lexi_live_and_listening", "Lexi is live and listening."), t("app.talk_naturally_lexi_answers_out_loud", "Talk naturally. Lexi will answer out loud and keep the booking moving."));
       resetHomeLexiVoiceControls();
-      setAppStatus("Lexi voice is live.", false, 2200);
+      setAppStatus(t("app.lexi_voice_live", "Lexi voice is live."), false, 2200);
     } else if (state === "failed" || state === "disconnected" || state === "closed") {
       cleanupHomeLexiRealtimeConnection();
       resetHomeLexiVoiceControls();
-      setHomeLexiAvatarPanelState("speaking", "Lexi voice session ended.", "Text chat is still available in this popup.");
+      setHomeLexiAvatarPanelState("speaking", t("app.lexi_voice_session_ended", "Lexi voice session ended."), t("app.text_chat_still_available_popup", "Text chat is still available in this popup."));
     }
   };
 
@@ -2119,7 +2141,7 @@ async function connectHomeLexiRealtimeSession(sessionPayload) {
   });
   const answerSdp = await response.text();
   if (!response.ok) {
-    throw new Error(answerSdp || "Unable to complete the Lexi realtime connection.");
+    throw new Error(answerSdp || t("app.unable_complete_lexi_realtime", "Unable to complete the Lexi realtime connection."));
   }
   await peerConnection.setRemoteDescription({ type: "answer", sdp: answerSdp });
 
@@ -2136,8 +2158,8 @@ async function hydrateHomeLexiAvatarPanel() {
   if (!homeLexiPopupOverlay) return;
   setHomeLexiAvatarPanelState(
     "thinking",
-    "Lexi is loading her live assistant profile.",
-    "Checking avatar, voice, and realtime readiness for this popup."
+    t("app.lexi_loading_live_profile", "Lexi is loading her live assistant profile."),
+    t("app.checking_avatar_voice_realtime", "Checking avatar, voice, and realtime readiness for this popup.")
   );
   const config = await loadHomeLexiAvatarConfig();
   const titleNode = homeLexiPopupOverlay.querySelector("#homeLexiAvatarTitle");
@@ -2149,35 +2171,50 @@ async function hydrateHomeLexiAvatarPanel() {
   const muteBtn = homeLexiPopupOverlay.querySelector("#homeLexiMuteBtn");
   const activeBusiness = getSelectedBusinessRecord();
 
-  if (titleNode) titleNode.textContent = `${config.displayName || "Lexi"} live assistant`;
-  if (modeChip) modeChip.textContent = config.realtimeEnabled ? "Voice + booking" : "Text + booking";
-  if (providerChip) providerChip.textContent = `Avatar ${config.providerLabel || config.provider || "pending"}`;
+  if (titleNode) titleNode.textContent = `${config.displayName || t("app.lexi_prefix", "Lexi")} ${t("app.live_assistant_suffix", "live assistant")}`;
+  if (modeChip) modeChip.textContent = config.realtimeEnabled ? t("app.voice_plus_booking", "Voice + booking") : t("app.text_plus_booking", "Text + booking");
+  if (providerChip) providerChip.textContent = `${t("app.avatar_prefix", "Avatar")} ${config.providerLabel || config.provider || t("app.pending", "pending")}`;
   if (readyChip) {
-    readyChip.textContent = config.sessionEndpointReady ? "Realtime ready" : (config.avatarEnabled ? "Avatar ready" : "Avatar pending");
+    readyChip.textContent = config.sessionEndpointReady ? t("app.realtime_ready", "Realtime ready") : (config.avatarEnabled ? t("app.avatar_ready", "Avatar ready") : t("app.avatar_pending", "Avatar pending"));
     readyChip.classList.toggle("is-live", Boolean(config.sessionEndpointReady || config.avatarEnabled));
   }
   if (noteNode) {
     noteNode.textContent = activeBusiness
-      ? `Ask about cuts, colour, brows, beauty treatments, availability, or aftercare for ${activeBusiness.name}. Lexi keeps the flow simple and moves straight into the next step.`
-      : "Ask about cuts, colour, brows, beauty treatments, aftercare, availability, or booking help. Lexi keeps the flow simple and moves straight into the next step.";
+      ? t("app.ask_about_services_for_business", "Ask about cuts, colour, brows, beauty treatments, availability, or aftercare for {business}. Lexi keeps the flow simple and moves straight into the next step.", { business: activeBusiness.name })
+      : t("app.ask_about_services_general", "Ask about cuts, colour, brows, beauty treatments, aftercare, availability, or booking help. Lexi keeps the flow simple and moves straight into the next step.");
   }
   if (voiceBtn instanceof HTMLButtonElement) {
-    voiceBtn.disabled = !homeLexiMicSupported();
-    voiceBtn.textContent = "Push to Talk";
+    const demoReady = Boolean(config.avatarSessionReady && !config.realtimeEnabled);
+    voiceBtn.disabled = demoReady ? false : !homeLexiMicSupported();
+    voiceBtn.textContent = getHomeLexiVoiceButtonLabel(config);
   }
   if (muteBtn instanceof HTMLButtonElement) {
     muteBtn.disabled = true;
-    muteBtn.textContent = "Stop";
+    muteBtn.textContent = t("common.stop", "Stop");
   }
   setHomeLexiAvatarPanelState(
     "idle",
     homeLexiMicSupported()
-      ? "Push-to-talk is ready in this popup."
-      : "Text booking mode is live now.",
+      ? t("app.push_to_talk_ready_in_popup", "Push-to-talk is ready in this popup.")
+      : (config.avatarSessionReady ? t("app.heygen_demo_ready_popup", "HeyGen demo mode is ready in this popup.") : t("app.text_booking_mode_live", "Text booking mode is live now.")),
     homeLexiMicSupported()
-      ? "Press Push to Talk, speak your question, then send the text to Lexi."
-      : "This browser does not support push-to-talk, but text chat still works."
+      ? t("app.press_push_to_talk_then_send", "Press Push to Talk, speak your question, then send the text to Lexi.")
+      : (config.avatarSessionReady
+        ? t("app.start_demo_to_connect_avatar", "Start Demo to connect Lexi's live avatar. Text chat still works underneath.")
+        : t("app.browser_no_push_text_still_works", "This browser does not support push-to-talk, but text chat still works."))
   );
+}
+
+async function startHomeLexiAvatarDemo(config = null) {
+  const avatarConfig = config || await loadHomeLexiAvatarConfig();
+  if (!avatarConfig.avatarSessionReady) throw new Error(t("app.heygen_demo_not_configured", "HeyGen demo mode is not configured yet."));
+  await connectHomeLexiAvatarSession();
+  setHomeLexiAvatarPanelState(
+    "speaking",
+    t("app.lexi_demo_avatar_live", "Lexi demo avatar is live."),
+    t("app.lexi_connected_visual_demo", "Lexi is connected in visual demo mode. Use text chat below while we validate the live avatar experience.")
+  );
+  setAppStatus(t("app.lexi_demo_avatar_connected", "Lexi demo avatar connected."), false, 2200);
 }
 
 async function startHomeLexiVoicePreparation() {
@@ -2185,63 +2222,93 @@ async function startHomeLexiVoicePreparation() {
     cleanupHomeLexiRealtimeConnection();
     cleanupHomeLexiAvatarSession();
     resetHomeLexiVoiceControls();
-    setHomeLexiAvatarPanelState("idle", "Lexi voice session ended.", "Text chat is still available in this popup.");
-    setAppStatus("Lexi voice disconnected.", false, 2200);
+    setHomeLexiAvatarPanelState("idle", t("app.lexi_voice_session_ended", "Lexi voice session ended."), t("app.text_chat_still_available_popup", "Text chat is still available in this popup."));
+    setAppStatus(t("app.lexi_voice_disconnected", "Lexi voice disconnected."), false, 2200);
     return;
   }
   const voiceBtn = homeLexiPopupOverlay?.querySelector("#homeLexiVoiceBtn");
+  let config = null;
   try {
+    config = await loadHomeLexiAvatarConfig();
     if (voiceBtn instanceof HTMLButtonElement) {
       voiceBtn.disabled = true;
-      voiceBtn.textContent = "Preparing...";
+      voiceBtn.textContent = t("common.preparing", "Preparing...");
+    }
+    if (config.avatarSessionReady && !config.realtimeEnabled) {
+      setHomeLexiAvatarPanelState(
+        "thinking",
+        t("app.lexi_preparing_heygen_demo", "Lexi is preparing a HeyGen demo session."),
+        t("app.connecting_live_avatar_without_openai", "Connecting the live avatar without OpenAI realtime voice yet.")
+      );
+      await startHomeLexiAvatarDemo(config);
+      if (voiceBtn instanceof HTMLButtonElement) {
+        voiceBtn.disabled = false;
+        voiceBtn.textContent = t("common.restart_demo", "Restart Demo");
+      }
+      return;
     }
     setHomeLexiAvatarPanelState(
       "thinking",
-      "Lexi is preparing a realtime voice session.",
-      "Requesting a short-lived client secret from the server."
+      t("app.lexi_preparing_realtime_voice", "Lexi is preparing a realtime voice session."),
+      t("app.requesting_short_lived_client_secret", "Requesting a short-lived client secret from the server.")
     );
     const data = await requestHomeLexiRealtimeSession();
     const readyChip = homeLexiPopupOverlay?.querySelector("#homeLexiAvatarReadyChip");
     if (readyChip) {
-      readyChip.textContent = data.sessionReady ? "Session ready" : "Session pending";
+      readyChip.textContent = data.sessionReady ? t("app.session_ready", "Session ready") : t("app.session_pending", "Session pending");
       readyChip.classList.toggle("is-live", Boolean(data.sessionReady));
     }
     if (!data.sessionReady) {
+      if (config.avatarSessionReady) {
+        await startHomeLexiAvatarDemo(config);
+        if (voiceBtn instanceof HTMLButtonElement) {
+          voiceBtn.disabled = false;
+          voiceBtn.textContent = t("common.restart_demo", "Restart Demo");
+        }
+        return;
+      }
       resetHomeLexiVoiceControls();
+      if (voiceBtn instanceof HTMLButtonElement) {
+        voiceBtn.disabled = !homeLexiMicSupported();
+        voiceBtn.textContent = getHomeLexiVoiceButtonLabel(config);
+      }
       setHomeLexiAvatarPanelState(
         "speaking",
-        data.message || "Lexi voice session updated.",
-        "The server responded, but a live session is not ready yet."
+        data.message || t("app.lexi_voice_session_updated", "Lexi voice session updated."),
+        t("app.server_responded_live_not_ready", "The server responded, but a live session is not ready yet.")
       );
-      setAppStatus(data.message || "Lexi voice session is not ready yet.", true, 2600);
+      setAppStatus(data.message || t("app.lexi_voice_session_not_ready", "Lexi voice session is not ready yet."), true, 2600);
       return;
     }
     await connectHomeLexiRealtimeSession(data);
     try {
       await connectHomeLexiAvatarSession();
     } catch (avatarError) {
-      updateHomeLexiTranscript(avatarError instanceof Error ? avatarError.message : "Lexi avatar could not connect, but voice is still available.");
+      updateHomeLexiTranscript(avatarError instanceof Error ? avatarError.message : t("app.lexi_avatar_failed_voice_available", "Lexi avatar could not connect, but voice is still available."));
     }
     setHomeLexiAvatarPanelState(
       "thinking",
-      data.message || "Lexi voice session updated.",
-      `OpenAI Realtime session ready for ${data.session?.model || "Lexi"} using the ${data.session?.voice || "default"} voice. Establishing the live connection now.`
+      data.message || t("app.lexi_voice_session_updated", "Lexi voice session updated."),
+      t("app.openai_realtime_ready", "OpenAI Realtime session ready for {model} using the {voice} voice. Establishing the live connection now.", {
+        model: data.session?.model || t("app.lexi_prefix", "Lexi"),
+        voice: data.session?.voice || t("app.default_voice", "default")
+      })
     );
-    setAppStatus("Lexi voice session prepared.", false, 2200);
+    setAppStatus(t("app.lexi_voice_session_prepared", "Lexi voice session prepared."), false, 2200);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to prepare a Lexi voice session right now.";
+    const message = error instanceof Error ? error.message : t("app.unable_prepare_lexi_voice", "Unable to prepare a Lexi voice session right now.");
     cleanupHomeLexiRealtimeConnection();
     cleanupHomeLexiAvatarSession();
     if (voiceBtn instanceof HTMLButtonElement) {
-      voiceBtn.disabled = !homeLexiMicSupported();
-      voiceBtn.textContent = "Push to Talk";
+      voiceBtn.disabled = !(config?.avatarSessionReady && !config?.realtimeEnabled) && !homeLexiMicSupported();
+      voiceBtn.textContent = getHomeLexiVoiceButtonLabel(config);
     }
     const readyChip = homeLexiPopupOverlay?.querySelector("#homeLexiAvatarReadyChip");
     if (readyChip) {
-      readyChip.textContent = "Session error";
+      readyChip.textContent = t("app.session_error", "Session error");
       readyChip.classList.remove("is-live");
     }
-    setHomeLexiAvatarPanelState("speaking", "Lexi could not prepare the voice session.", message);
+    setHomeLexiAvatarPanelState("speaking", t("app.lexi_could_not_prepare_voice", "Lexi could not prepare the voice session."), message);
     setAppStatus(message, true, 3200);
   }
 }
@@ -2354,19 +2421,19 @@ homeLexiLaunchBtn?.addEventListener("click", () => {
 heroLexiBookBtn?.addEventListener("click", () => {
   chatInput.value = "I want to book an appointment this week.";
   openHomeLexiPopup();
-  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+  setAppStatus(t("app.prompt_added", "Prompt added to Ask Lexi."), false, 1800);
 });
 
 headerLexiBookBtn?.addEventListener("click", () => {
   chatInput.value = "I want to book an appointment this week.";
   openHomeLexiPopup();
-  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+  setAppStatus(t("app.prompt_added", "Prompt added to Ask Lexi."), false, 1800);
 });
 
 homeLexiLaunchBookingBtn?.addEventListener("click", () => {
   chatInput.value = "I want to book an appointment this week.";
   openHomeLexiPopup();
-  setAppStatus("I've added a booking prompt to Lexi.", false, 1800);
+  setAppStatus(t("app.booking_prompt_added", "I've added a booking prompt to Lexi."), false, 1800);
 });
 
 headerLexiPromptButtons.forEach((button) => {
@@ -2375,7 +2442,7 @@ headerLexiPromptButtons.forEach((button) => {
     if (!prompt) return;
     chatInput.value = prompt;
     openHomeLexiPopup();
-    setAppStatus("Prompt added to Ask Lexi.", false, 1800);
+    setAppStatus(t("app.prompt_added", "Prompt added to Ask Lexi."), false, 1800);
   });
 });
 
@@ -2419,11 +2486,12 @@ chatForm.addEventListener("submit", async (event) => {
         phone: cleanLexiValue(sessionUser?.phone || "")
       });
       if (completed) return;
-      appendMessage("assistant", "I still need your phone number to finish that booking. Use the customer sign-in panel and add it there, or tell me the number here.");
-      history.push({ role: "assistant", content: "I still need your phone number to finish that booking. Use the customer sign-in panel and add it there, or tell me the number here." });
+      const needPhoneMessage = t("app.need_phone_finish_booking_chat", "I still need your phone number to finish that booking. Use the customer sign-in panel and add it there, or tell me the number here.");
+      appendMessage("assistant", needPhoneMessage);
+      history.push({ role: "assistant", content: needPhoneMessage });
       return;
     } catch (bookingError) {
-      const bookingErrorMessage = String(bookingError?.message || "I couldn't finish the booking just now.");
+      const bookingErrorMessage = String(bookingError?.message || t("app.could_not_finish_booking_now", "I couldn't finish the booking just now."));
       appendMessage("assistant", bookingErrorMessage);
       history.push({ role: "assistant", content: bookingErrorMessage });
       setAppStatus(bookingErrorMessage, true);
@@ -2435,8 +2503,18 @@ chatForm.addEventListener("submit", async (event) => {
     history.push({ role: "user", content: message });
     chatInput.value = "";
     prepareLexiCustomerAccessHandoff(immediateDraft);
-    appendMessage("assistant", `I've got your ${immediateDraft.service} at ${immediateDraft.businessName} on ${immediateDraft.date} at ${immediateDraft.time}. Sign in or sign up in the popup and I'll finish the booking from there.`);
-    history.push({ role: "assistant", content: `I've got your ${immediateDraft.service} at ${immediateDraft.businessName} on ${immediateDraft.date} at ${immediateDraft.time}. Sign in or sign up in the popup and I'll finish the booking from there.` });
+    const handoffMessage = t(
+      "app.booking_handoff_signin_or_signup",
+      "I've got your {service} at {business} on {date} at {time}. Sign in or sign up in the popup and I'll finish the booking from there.",
+      {
+        service: immediateDraft.service,
+        business: immediateDraft.businessName,
+        date: immediateDraft.date,
+        time: immediateDraft.time
+      }
+    );
+    appendMessage("assistant", handoffMessage);
+    history.push({ role: "assistant", content: handoffMessage });
     return;
   }
   appendMessage("user", message);
@@ -2445,15 +2523,20 @@ chatForm.addEventListener("submit", async (event) => {
 
   const thinking = document.createElement("div");
   thinking.className = "msg assistant";
-  thinking.textContent = "Lexi is checking the best next step...";
+  thinking.textContent = t("app.lexi_checking_next_step", "Just a moment. I'm checking that for you now.");
   chatWindow.appendChild(thinking);
 
   try {
-    setAppStatus("Lexi is preparing a reply...", false, 0);
+    setAppStatus(t("app.lexi_preparing_reply", "Lexi is preparing a reply..."), false, 0);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history, businessId: selectedBusinessId, memory: getLexiConversationMemory() })
+      body: JSON.stringify({
+        message,
+        history,
+        businessId: selectedBusinessId,
+        memory: getLexiConversationMemory()
+      })
     });
     const data = await response.json();
     if (!response.ok) {
@@ -2461,11 +2544,14 @@ chatForm.addEventListener("submit", async (event) => {
     }
     thinking.remove();
 
-    const reply = data.reply || data.error || "I couldn't answer that right now.";
+    const reply = ensureLexiBookingFollowUp(
+      data.reply || data.error || "I couldn't answer that right now.",
+      { bookingCreated: Boolean(data.bookingCreated) }
+    );
     appendMessage("assistant", reply);
     history.push({ role: "assistant", content: reply });
     syncLexiBookingGuideFromMessage(reply, { bookingCreated: Boolean(data.bookingCreated) });
-    setAppStatus(data.bookingCreated ? "Booking request captured successfully." : "Lexi has replied.");
+    setAppStatus(data.bookingCreated ? t("app.booking_captured", "Booking request captured successfully.") : t("app.lexi_replied", "Lexi has replied."));
     if (wantsBookingConfirmation && !data.bookingCreated) {
       const draft = getPendingLexiBookingDraft();
       if (draft && (!sessionUser || sessionUser.role !== "customer")) {
@@ -2714,7 +2800,7 @@ homeTrialForm?.addEventListener("submit", async (event) => {
     paymentConsentAccepted: Boolean(homeTrialPaymentConsent?.checked)
   };
 
-  setHomeTrialMessage("Creating your subscriber workspace...", "");
+  setHomeTrialMessage(t("app.creating_subscriber_workspace", "Creating your subscriber workspace..."), "");
   if (homeTrialSubmit) homeTrialSubmit.disabled = true;
 
   try {
@@ -2726,7 +2812,7 @@ homeTrialForm?.addEventListener("submit", async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Registration failed.");
     saveSessionAuth(data.token, data.user);
-    setHomeTrialMessage("Account created. Redirecting to your dashboard...", "success");
+    setHomeTrialMessage(t("auth.account_created_redirecting", "Account created. Redirecting..."), "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "subscriber"))}`;
   } catch (error) {
     setHomeTrialMessage(error?.message || "Unable to create account right now.", "error");
@@ -2741,7 +2827,7 @@ homeSubscriberSigninForm?.addEventListener("submit", async (event) => {
   const password = String(homeSubscriberSigninPassword?.value || "");
   if (!email || !password) return;
 
-  setHomeSubscriberSigninMessage("Signing in...", "");
+  setHomeSubscriberSigninMessage(t("auth.signing_in", "Signing in..."), "");
   if (homeSubscriberSigninSubmit) homeSubscriberSigninSubmit.disabled = true;
   try {
     const response = await fetch("/api/auth/login", {
@@ -2756,10 +2842,10 @@ homeSubscriberSigninForm?.addEventListener("submit", async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to sign in.");
     saveSessionAuth(data.token, data.user);
-    setHomeSubscriberSigninMessage("Signed in. Redirecting...", "success");
+    setHomeSubscriberSigninMessage(t("auth.signed_in_redirecting", "Signed in. Redirecting..."), "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "subscriber"))}`;
   } catch (error) {
-    setHomeSubscriberSigninMessage(error?.message || "Failed to sign in.", "error");
+    setHomeSubscriberSigninMessage(error?.message || t("auth.failed_sign_in", "Failed to sign in."), "error");
   } finally {
     if (homeSubscriberSigninSubmit) homeSubscriberSigninSubmit.disabled = false;
   }
@@ -2771,7 +2857,7 @@ homeAdminSigninForm?.addEventListener("submit", async (event) => {
   const password = String(homeAdminSigninPassword?.value || "");
   if (!email || !password) return;
 
-  setHomeAdminSigninMessage("Signing in...", "");
+  setHomeAdminSigninMessage(t("auth.signing_in", "Signing in..."), "");
   if (homeAdminSigninSubmit) homeAdminSigninSubmit.disabled = true;
   try {
     const response = await fetch("/api/auth/login", {
@@ -2784,12 +2870,12 @@ homeAdminSigninForm?.addEventListener("submit", async (event) => {
       })
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Failed to sign in.");
+    if (!response.ok) throw new Error(data.error || t("auth.failed_sign_in", "Failed to sign in."));
     saveSessionAuth(data.token, data.user);
-    setHomeAdminSigninMessage("Signed in. Redirecting...", "success");
+    setHomeAdminSigninMessage(t("auth.signed_in_redirecting", "Signed in. Redirecting..."), "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "admin"))}`;
   } catch (error) {
-    setHomeAdminSigninMessage(error?.message || "Failed to sign in.", "error");
+    setHomeAdminSigninMessage(error?.message || t("auth.failed_sign_in", "Failed to sign in."), "error");
   } finally {
     if (homeAdminSigninSubmit) homeAdminSigninSubmit.disabled = false;
   }
@@ -2802,7 +2888,7 @@ homeCustomerSigninForm?.addEventListener("submit", async (event) => {
   const phone = String(homeCustomerSigninPhone?.value || "").trim();
   if (!email || !password) return;
 
-  setHomeCustomerSigninMessage("Signing in...", "");
+  setHomeCustomerSigninMessage(t("auth.signing_in", "Signing in..."), "");
   if (homeCustomerSigninSubmit) homeCustomerSigninSubmit.disabled = true;
   try {
     const response = await fetch("/api/auth/login", {
@@ -2815,7 +2901,7 @@ homeCustomerSigninForm?.addEventListener("submit", async (event) => {
       })
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Failed to sign in.");
+    if (!response.ok) throw new Error(data.error || t("auth.failed_sign_in", "Failed to sign in."));
     saveSessionAuth(data.token, data.user);
     if (pendingLexiCustomerBookingDraft) {
       try {
@@ -2825,20 +2911,20 @@ homeCustomerSigninForm?.addEventListener("submit", async (event) => {
           phone: phone || String(data?.user?.phone || "").trim()
         });
         if (completed) {
-          setHomeCustomerSigninMessage("Signed in and booking confirmed.", "success");
+          setHomeCustomerSigninMessage(t("app.signed_in_booking_confirmed", "Signed in and booking confirmed."), "success");
           return;
         }
-        setHomeCustomerSigninMessage("Signed in, but I still need your phone number to finish the booking. Add it above and try again.", "error");
+        setHomeCustomerSigninMessage(t("app.need_phone_finish_booking", "Signed in, but I still need your phone number to finish the booking. Add it above and try again."), "error");
         return;
       } catch (bookingError) {
-        setHomeCustomerSigninMessage(String(bookingError?.message || "Signed in, but Lexi could not finish the booking just now."), "error");
+        setHomeCustomerSigninMessage(String(bookingError?.message || t("app.lexi_could_not_finish_booking", "Signed in, but Lexi could not finish the booking just now.")), "error");
         return;
       }
     }
-    setHomeCustomerSigninMessage("Signed in. Redirecting...", "success");
+    setHomeCustomerSigninMessage(t("auth.signed_in_redirecting", "Signed in. Redirecting..."), "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
   } catch (error) {
-    setHomeCustomerSigninMessage(error?.message || "Failed to sign in.", "error");
+    setHomeCustomerSigninMessage(error?.message || t("auth.failed_sign_in", "Failed to sign in."), "error");
   } finally {
     if (homeCustomerSigninSubmit) homeCustomerSigninSubmit.disabled = false;
   }
@@ -2851,11 +2937,12 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
   const password = String(homeCustomerSignupPassword?.value || "");
   const phone = String(homeCustomerSignupPhone?.value || "").trim();
   const city = String(homeCustomerSignupCity?.value || "").trim();
+  const country = String(homeCustomerSignupCountry?.value || "").trim();
   const preferredService = String(homeCustomerSignupService?.value || "").trim();
   const notes = String(homeCustomerSignupNotes?.value || "").trim();
   if (!name || !email || !password) return;
 
-  setHomeCustomerSignupMessage("Creating customer account...", "");
+  setHomeCustomerSignupMessage(t("app.creating_customer_account", "Creating customer account..."), "");
   if (homeCustomerSignupSubmit) homeCustomerSignupSubmit.disabled = true;
   try {
     const response = await fetch("/api/auth/register/customer", {
@@ -2867,6 +2954,7 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
         password,
         phone,
         city,
+        country,
         preferredService,
         notes,
         paymentConsentAccepted: Boolean(homeCustomerPaymentConsent?.checked),
@@ -2875,7 +2963,7 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
       })
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Registration failed.");
+    if (!response.ok) throw new Error(data.error || t("auth.registration_failed", "Registration failed."));
     saveSessionAuth(data.token, data.user);
     if (pendingLexiCustomerBookingDraft) {
       try {
@@ -2885,18 +2973,18 @@ homeCustomerSignupForm?.addEventListener("submit", async (event) => {
           email
         });
         if (completed) {
-          setHomeCustomerSignupMessage("Account created and booking confirmed.", "success");
+          setHomeCustomerSignupMessage(t("app.signed_in_booking_confirmed", "Signed in and booking confirmed."), "success");
           return;
         }
       } catch (bookingError) {
-        setHomeCustomerSignupMessage(String(bookingError?.message || "Account created, but Lexi could not finish the booking just now."), "error");
+        setHomeCustomerSignupMessage(String(bookingError?.message || t("app.lexi_could_not_finish_booking", "Signed in, but Lexi could not finish the booking just now.")), "error");
         return;
       }
     }
-    setHomeCustomerSignupMessage("Account created. Redirecting...", "success");
+    setHomeCustomerSignupMessage(t("auth.account_created_redirecting", "Account created. Redirecting..."), "success");
     window.location.href = `/dashboard?role=${encodeURIComponent(String(data?.user?.role || "customer"))}`;
   } catch (error) {
-    setHomeCustomerSignupMessage(error?.message || "Registration failed.", "error");
+    setHomeCustomerSignupMessage(error?.message || t("auth.registration_failed", "Registration failed."), "error");
   } finally {
     if (homeCustomerSignupSubmit) homeCustomerSignupSubmit.disabled = false;
   }

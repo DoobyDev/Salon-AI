@@ -180,6 +180,8 @@ a {
   display: flex;
   gap: 0.45rem;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .btn {
@@ -196,6 +198,8 @@ a {
   font-size: 0.9rem;
   transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.25s ease;
   box-shadow: 0 6px 18px rgba(35, 99, 202, 0.18);
+  white-space: nowrap;
+  text-align: center;
 }
 
 .btn:hover {
@@ -255,6 +259,30 @@ a {
   gap: 1rem;
 }
 
+html[dir="rtl"] body {
+  direction: rtl;
+}
+
+html[dir="rtl"] .topbar,
+html[dir="rtl"] .auth-actions,
+html[dir="rtl"] .auth-topbar,
+html[dir="rtl"] .auth-topbar-actions,
+html[dir="rtl"] .billing-actions {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .nav,
+html[dir="rtl"] .cta-row,
+html[dir="rtl"] .top-lexi-actions,
+html[dir="rtl"] .workspace-star-actions {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .brand,
+html[dir="rtl"] .auth-brand {
+  flex-direction: row-reverse;
+}
+
 body .page {
   width: min(1360px, 95vw);
   gap: 0.95rem;
@@ -295,7 +323,7 @@ body .page {
   margin: 0;
   color: #c2d0e7;
   line-height: 1.65;
-  max-width: 58ch;
+  max-width: 74ch;
 }
 
 .top-lexi-actions {
@@ -954,18 +982,21 @@ body.home-lexi-popup-open {
   text-align: center;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .home-lexi-popup .lexi-avatar-stage::before {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(7, 11, 19, 0.18), rgba(7, 11, 19, 0.5)),
-    url("/Salon_AI_IMG.png") center 24% / cover no-repeat;
-  opacity: 0.56;
+  background: url("/LEXI_IMG.png") center 20% / cover no-repeat;
+  opacity: 1;
   z-index: 0;
   pointer-events: none;
+  transform: scale(1.02);
+  filter: brightness(1.02) contrast(1.01);
+  transform-origin: 50% 42%;
+  animation: lexiPortraitIdle 7.2s ease-in-out infinite;
 }
 
 .home-lexi-popup .lexi-avatar-stage::after {
@@ -973,8 +1004,8 @@ body.home-lexi-popup-open {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 18%, rgba(109, 185, 255, 0.18), transparent 36%),
-    linear-gradient(180deg, rgba(10, 15, 24, 0.08), rgba(10, 15, 24, 0.42));
+    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(10, 15, 24, 0.04));
   z-index: 1;
   pointer-events: none;
 }
@@ -982,9 +1013,15 @@ body.home-lexi-popup-open {
 .lexi-avatar-figure {
   display: grid;
   justify-items: center;
-  gap: 0.55rem;
+  gap: 0.7rem;
   position: relative;
-  z-index: 2;
+  z-index: 3;
+  align-self: end;
+  width: 100%;
+  margin-top: auto;
+  padding: 0 0.2rem 0.2rem;
+  border-radius: 24px;
+  background: none;
 }
 
 .lexi-avatar-video {
@@ -1019,17 +1056,41 @@ body.home-lexi-popup-open {
   animation: lexiAvatarFloat 2.4s ease-in-out infinite;
 }
 
+.lexi-avatar-shell[data-avatar-state="thinking"] .lexi-avatar-stage::before {
+  animation: lexiPortraitThinking 4.8s ease-in-out infinite;
+}
+
+.lexi-avatar-shell[data-avatar-state="listening"] .lexi-avatar-stage::before {
+  animation: lexiPortraitListening 2.2s ease-in-out infinite;
+}
+
+.lexi-avatar-shell[data-avatar-state="speaking"] .lexi-avatar-stage::before {
+  animation: lexiPortraitSpeaking 0.9s ease-in-out infinite;
+}
+
 .lexi-avatar-label strong {
   display: block;
-  font-size: 1.02rem;
+  font-size: 1.06rem;
   line-height: 1.3;
+  text-shadow: 0 10px 18px rgba(0, 0, 0, 0.38);
 }
 
 .lexi-avatar-label small {
   display: block;
   margin-top: 0.25rem;
-  color: var(--muted);
+  color: #000;
   line-height: 1.45;
+  text-shadow: 0 8px 16px rgba(0, 0, 0, 0.32);
+}
+
+.lexi-avatar-label {
+  width: min(100%, 260px);
+  padding: 0.7rem 0.85rem;
+  border-radius: 18px;
+  background: rgba(8, 12, 22, 0.12);
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(2px);
 }
 
 .lexi-avatar-meta {
@@ -1167,11 +1228,12 @@ body.home-lexi-popup-open {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(7, 11, 19, 0.24), rgba(7, 11, 19, 0.54)),
-    url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
-  opacity: 0.12;
+    linear-gradient(180deg, rgba(7, 11, 19, 0.16), rgba(7, 11, 19, 0.42)),
+    url("/LEXI_IMG.png") center 14% / cover no-repeat;
+  opacity: 0.15;
   z-index: 0;
   pointer-events: none;
+  filter: saturate(1.04) brightness(1.03);
 }
 
 .home-lexi-popup .chat-form,
@@ -2234,6 +2296,87 @@ body.home-lexi-popup-open {
   padding: 0.8rem;
   display: grid;
   gap: 0.75rem;
+}
+
+#homeCustomerSignupPanel .home-trial-form {
+  border-color: rgba(224, 142, 70, 0.24);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 226, 192, 0.72), transparent 42%),
+    radial-gradient(circle at 0% 0%, rgba(255, 198, 145, 0.46), transparent 40%),
+    linear-gradient(160deg, rgba(255, 244, 232, 0.96), rgba(255, 233, 208, 0.94));
+  color: #2c180f;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 14px 28px rgba(99, 54, 18, 0.14);
+}
+
+#homeCustomerSignupPanel .home-trial-form label,
+#homeCustomerSignupPanel .home-trial-form .home-payment-setup-note,
+#homeCustomerSignupPanel .home-trial-form .home-trial-msg,
+#homeCustomerSignupPanel .home-trial-form .home-trial-check,
+#homeCustomerSignupPanel .home-trial-form .home-trial-template-preview,
+#homeCustomerSignupPanel .home-trial-form .home-trial-template-preview small {
+  color: #4f2f1f !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form .home-payment-setup-block {
+  border-color: rgba(224, 142, 70, 0.18);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 224, 191, 0.5), transparent 50%),
+    rgba(255, 248, 241, 0.82);
+}
+
+#homeCustomerSignupPanel .home-trial-form .home-payment-setup-block h3,
+#homeCustomerSignupPanel .home-trial-form .home-payment-warning strong,
+#homeCustomerSignupPanel .home-trial-form .home-trial-template-preview strong {
+  color: #2f170d !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form .home-payment-warning {
+  border-color: rgba(211, 109, 73, 0.28);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 210, 198, 0.42), transparent 50%),
+    rgba(255, 241, 237, 0.88);
+}
+
+#homeCustomerSignupPanel .home-trial-form .home-payment-warning p {
+  color: #5b3126 !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form input,
+#homeCustomerSignupPanel .home-trial-form select,
+#homeCustomerSignupPanel .home-trial-form textarea {
+  background: rgba(255, 252, 248, 0.96) !important;
+  color: #2f190f !important;
+  border-color: rgba(206, 149, 103, 0.32) !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form input::placeholder,
+#homeCustomerSignupPanel .home-trial-form textarea::placeholder {
+  color: rgba(102, 67, 48, 0.72) !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form input:focus,
+#homeCustomerSignupPanel .home-trial-form select:focus,
+#homeCustomerSignupPanel .home-trial-form textarea:focus {
+  border-color: rgba(214, 129, 65, 0.62) !important;
+  box-shadow: 0 0 0 3px rgba(240, 171, 109, 0.2) !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form .password-peek-toggle,
+#homeCustomerSignupPanel .home-trial-form .btn.btn-ghost {
+  background: rgba(255, 247, 239, 0.96) !important;
+  color: #5a3524 !important;
+  border-color: rgba(206, 149, 103, 0.28) !important;
+}
+
+#homeCustomerSignupPanel .home-trial-form .home-trial-check a {
+  color: #a24b1f !important;
+}
+
+#homeCustomerSigninPanel label,
+#homeCustomerSigninPanel label span {
+  color: #000 !important;
 }
 
 .home-trial-form-grid {
@@ -3723,14 +3866,49 @@ body[data-theme-mode="light"] .lexi-avatar-chip {
 }
 
 body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-stage::before {
-  opacity: 0.35;
+  opacity: 1;
+  filter: brightness(1.01) contrast(1.01);
 }
 
 body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-stage::after {
   background:
-    radial-gradient(circle at 22% 18%, rgba(109, 185, 255, 0.12), transparent 36%),
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.32));
+    radial-gradient(circle at 50% 14%, rgba(255,255,255,0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.03));
 }
+
+body[data-theme-mode="light"] .lexi-avatar-label {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(186, 204, 231, 0.82);
+  box-shadow: 0 10px 20px rgba(141, 155, 179, 0.1);
+}
+
+@keyframes lexiPortraitIdle {
+  0%, 100% { transform: scale(1.02) translate3d(0, 0, 0); }
+  25% { transform: scale(1.035) translate3d(-2px, -4px, 0); }
+  50% { transform: scale(1.05) translate3d(0, -8px, 0); }
+  75% { transform: scale(1.034) translate3d(2px, -3px, 0); }
+}
+
+@keyframes lexiPortraitListening {
+  0%, 100% { transform: scale(1.03) translate3d(0, 0, 0) rotate(0deg); }
+  35% { transform: scale(1.048) translate3d(-3px, -7px, 0) rotate(-0.8deg); }
+  70% { transform: scale(1.042) translate3d(3px, -5px, 0) rotate(0.8deg); }
+}
+
+@keyframes lexiPortraitThinking {
+  0%, 100% { transform: scale(1.032) translate3d(0, 0, 0) rotate(0deg); }
+  30% { transform: scale(1.055) translate3d(-4px, -8px, 0) rotate(-1deg); }
+  60% { transform: scale(1.062) translate3d(3px, -10px, 0) rotate(0.9deg); }
+}
+
+@keyframes lexiPortraitSpeaking {
+  0%, 100% { transform: scale(1.035) translate3d(0, 0, 0) rotate(0deg); }
+  20% { transform: scale(1.052) translate3d(-3px, -5px, 0) rotate(-0.7deg); }
+  40% { transform: scale(1.064) translate3d(3px, -9px, 0) rotate(0.6deg); }
+  60% { transform: scale(1.056) translate3d(-2px, -6px, 0) rotate(-0.45deg); }
+  80% { transform: scale(1.048) translate3d(2px, -3px, 0) rotate(0.4deg); }
+}
+
 
 body[data-theme-mode="light"] .lexi-avatar-label small,
 body[data-theme-mode="light"] .lexi-avatar-note p,
@@ -4905,7 +5083,7 @@ body .page {
 .hero-chat-demo .chat-window {
   border: 1px solid rgba(255,255,255,0.11);
   background-color: rgba(255, 255, 255, 0.06);
-  background-image: url("/Salon_AI_IMG.png");
+  background-image: url("/LEXI_IMG.png");
   background-position: center 18%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -5278,6 +5456,26 @@ body .page {
   .floating-card {
     animation: none !important;
   }
+
+  .home-lexi-popup .lexi-avatar-stage::before {
+    animation-duration: 7.2s !important;
+    animation-iteration-count: infinite !important;
+  }
+
+  .home-lexi-popup .lexi-avatar-shell[data-avatar-state="listening"] .lexi-avatar-stage::before {
+    animation-duration: 2.2s !important;
+    animation-iteration-count: infinite !important;
+  }
+
+  .home-lexi-popup .lexi-avatar-shell[data-avatar-state="thinking"] .lexi-avatar-stage::before {
+    animation-duration: 4.8s !important;
+    animation-iteration-count: infinite !important;
+  }
+
+  .home-lexi-popup .lexi-avatar-shell[data-avatar-state="speaking"] .lexi-avatar-stage::before {
+    animation-duration: 0.9s !important;
+    animation-iteration-count: infinite !important;
+  }
 }
 
 /* Final homepage light-mode surface reset (loads last) */
@@ -5499,7 +5697,7 @@ body::before {
 
 .top-lexi-marquee {
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-  gap: 1.35rem;
+  gap: 1.05rem;
   padding: 1.5rem;
   border-radius: 38px;
   background:
@@ -5665,11 +5863,11 @@ html body .home-payment-provider-row .btn,
 html body .mobile-quick-sheet-close.btn,
 html body .mobile-bottom-nav-item,
 html body .password-peek-toggle {
-  background: #e3a16f !important;
+  background: var(--brand-orange) !important;
   background-image: none !important;
-  background-color: #e3a16f !important;
-  border: 1px solid rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange) !important;
+  border: 1px solid var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
   box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
 }
 
@@ -5693,11 +5891,11 @@ html body .home-payment-provider-row .btn:hover,
 html body .mobile-quick-sheet-close.btn:hover,
 html body .mobile-bottom-nav-item:hover,
 html body .password-peek-toggle:hover {
-  background: #d99663 !important;
+  background: var(--brand-orange-hover) !important;
   background-image: none !important;
-  background-color: #d99663 !important;
-  border-color: rgba(173, 117, 78, 0.38) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange-hover) !important;
+  border-color: var(--brand-orange-border-hover) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 html body .btn.btn-ghost,
@@ -6088,6 +6286,23 @@ html body .home-payment-provider-row .btn-ghost:hover {
   color: #3b2d23 !important;
 }
 
+html body .billing-actions .btn[data-open-subscriber-lexi="booking_diary"] {
+  background: var(--brand-orange) !important;
+  background-image: none !important;
+  background-color: var(--brand-orange) !important;
+  border: 1px solid var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
+  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+}
+
+html body .billing-actions .btn[data-open-subscriber-lexi="booking_diary"]:hover {
+  background: var(--brand-orange-hover) !important;
+  background-image: none !important;
+  background-color: var(--brand-orange-hover) !important;
+  border-color: var(--brand-orange-border-hover) !important;
+  color: var(--brand-orange-text) !important;
+}
+
 /* TRUE FINAL neutral homepage override
    This must stay at the very end of the file. */
 html body,
@@ -6173,9 +6388,9 @@ html body a.btn,
 html body input.btn,
 html body .topbar .btn,
 html body .control-room-home .btn {
-  background: #e3a16f !important;
-  border-color: rgba(173, 117, 78, 0.26) !important;
-  color: #3b2d23 !important;
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
   box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
 }
 
@@ -6185,8 +6400,8 @@ html body a.btn:hover,
 html body input.btn:hover,
 html body .topbar .btn:hover,
 html body .control-room-home .btn:hover {
-  background: #d99663 !important;
-  border-color: rgba(173, 117, 78, 0.34) !important;
+  background: var(--brand-orange-hover) !important;
+  border-color: var(--brand-orange-border-hover) !important;
 }
 
 html body .btn.btn-ghost,
@@ -6220,11 +6435,11 @@ html body .home-payment-provider-row .btn,
 html body .mobile-quick-sheet-close.btn,
 html body .mobile-bottom-nav-item,
 html body .password-peek-toggle {
-  background: #e3a16f !important;
+  background: var(--brand-orange) !important;
   background-image: none !important;
-  background-color: #e3a16f !important;
-  border: 1px solid rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange) !important;
+  border: 1px solid var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
   box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
 }
 
@@ -6245,11 +6460,11 @@ html body .home-payment-provider-row .btn:hover,
 html body .mobile-quick-sheet-close.btn:hover,
 html body .mobile-bottom-nav-item:hover,
 html body .password-peek-toggle:hover {
-  background: #d99663 !important;
+  background: var(--brand-orange-hover) !important;
   background-image: none !important;
-  background-color: #d99663 !important;
-  border-color: rgba(173, 117, 78, 0.38) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange-hover) !important;
+  border-color: var(--brand-orange-border-hover) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 html body .btn.btn-ghost,
@@ -6319,10 +6534,10 @@ a[href="#frontdesk"].btn,
 .home-lexi-popup .chat-form .btn[type="submit"],
 .home-lexi-popup .customer-chat-form .btn[type="submit"],
 .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
-  background: #e3a16f !important;
-  border-color: rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
-  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+  background: rgba(243, 246, 249, 0.98) !important;
+  border-color: rgba(211, 219, 227, 0.95) !important;
+  color: #304656 !important;
+  box-shadow: none !important;
 }
 
 #headerLexiAskBtn:hover,
@@ -6337,8 +6552,8 @@ a[href="#frontdesk"].btn:hover,
 .home-lexi-popup .chat-form .btn[type="submit"]:hover,
 .home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
 .home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {
-  background: #d99663 !important;
-  border-color: rgba(173, 117, 78, 0.36) !important;
+  background: rgba(236, 241, 245, 0.98) !important;
+  border-color: rgba(190, 201, 212, 0.98) !important;
 }
 
 /* Absolute final Ask Lexi button color override */
@@ -6354,11 +6569,11 @@ html body a[href="#frontdesk"].btn,
 html body .home-lexi-popup .chat-form .btn[type="submit"],
 html body .home-lexi-popup .customer-chat-form .btn[type="submit"],
 html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
-  background: #e3a16f !important;
+  background: rgba(243, 246, 249, 0.98) !important;
   background-image: none !important;
-  border-color: rgba(173, 117, 78, 0.34) !important;
-  color: #3b2d23 !important;
-  box-shadow: 0 12px 24px rgba(132, 94, 65, 0.14) !important;
+  border-color: rgba(211, 219, 227, 0.95) !important;
+  color: #304656 !important;
+  box-shadow: none !important;
 }
 
 html body #headerLexiAskBtn:hover,
@@ -6373,9 +6588,9 @@ html body a[href="#frontdesk"].btn:hover,
 html body .home-lexi-popup .chat-form .btn[type="submit"]:hover,
 html body .home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
 html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {
-  background: #d99663 !important;
+  background: rgba(236, 241, 245, 0.98) !important;
   background-image: none !important;
-  border-color: rgba(173, 117, 78, 0.4) !important;
+  border-color: rgba(190, 201, 212, 0.98) !important;
 }
 
 /* Absolute final body override: homepage must match the neutral dashboard/customer background */
@@ -7633,6 +7848,7 @@ body::before {
 
 .home-orange-reboot .home-hero-band {
   grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+  gap: 0.95rem;
   padding: 1.1rem !important;
   border-radius: 24px !important;
   background: #fbf3eb !important;
@@ -7644,7 +7860,7 @@ body::before {
 }
 
 .home-orange-reboot .top-lexi-copy > p:last-of-type {
-  max-width: 42ch;
+  max-width: none;
 }
 
 .home-orange-reboot .top-lexi-stage {
@@ -7868,6 +8084,11 @@ body .topbar .btn-ghost,
   color: #6a4e3e !important;
 }
 
+.home-lexi-popup .lexi-avatar-label small {
+  color: #000 !important;
+  text-shadow: none;
+}
+
 .home-lexi-popup .msg.assistant,
 .home-lexi-popup .customer-chat-msg.ai,
 .home-lexi-popup .business-lexi-chat-box .customer-chat-msg.ai {
@@ -7971,12 +8192,20 @@ body .topbar a[href="#frontdesk"] {
   color: #2b180f !important;
 }
 
+html body {
+  --brand-orange: #e3a16f;
+  --brand-orange-hover: #d99663;
+  --brand-orange-border: rgba(173, 117, 78, 0.3);
+  --brand-orange-border-hover: rgba(173, 117, 78, 0.38);
+  --brand-orange-text: #3b2d23;
+}
+
 .home-login-choice-grid .btn,
 .home-access-modal .home-access-form-actions .btn:not(.btn-ghost),
 .home-customer-choice-card .btn:not(.btn-ghost) {
-  background: #e3a16f !important;
-  border-color: rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 .home-login-choice-card-admin .btn,
@@ -7985,9 +8214,9 @@ body .topbar a[href="#frontdesk"] {
 .home-login-choice-card-admin button.btn-ghost,
 .home-access-modal .home-admin-warning + .home-access-form .btn:not(.btn-ghost),
 #homeAdminSigninSubmit {
-  background: #e3a16f !important;
-  border-color: rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 .home-login-choice-grid a.btn.btn-ghost,
@@ -8003,9 +8232,9 @@ body .topbar a[href="#frontdesk"] {
 .home-login-choice-grid button[data-login-role="admin"],
 .home-login-choice-grid button[data-login-role="admin"].btn,
 .home-login-choice-grid button[data-login-role="admin"].btn.btn-ghost {
-  background: #e3a16f !important;
-  border-color: rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 /* Button text contrast hardening */
@@ -8089,11 +8318,11 @@ html body .role-cta .cta-row .btn,
 html body .role-cta .cta-row .btn.btn-ghost,
 html body .role-cta .cta-row a.btn,
 html body .role-cta .cta-row a.btn.btn-ghost {
-  background: #e3a16f !important;
+  background: var(--brand-orange) !important;
   background-image: none !important;
-  background-color: #e3a16f !important;
-  border: 1px solid rgba(173, 117, 78, 0.3) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange) !important;
+  border: 1px solid var(--brand-orange-border) !important;
+  color: var(--brand-orange-text) !important;
   box-shadow: none !important;
 }
 
@@ -8101,11 +8330,11 @@ html body .role-cta .cta-row .btn:hover,
 html body .role-cta .cta-row .btn.btn-ghost:hover,
 html body .role-cta .cta-row a.btn:hover,
 html body .role-cta .cta-row a.btn.btn-ghost:hover {
-  background: #d99663 !important;
+  background: var(--brand-orange-hover) !important;
   background-image: none !important;
-  background-color: #d99663 !important;
-  border-color: rgba(173, 117, 78, 0.38) !important;
-  color: #3b2d23 !important;
+  background-color: var(--brand-orange-hover) !important;
+  border-color: var(--brand-orange-border-hover) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 html body .top-lexi-info-grid {
@@ -8188,12 +8417,47 @@ html body .customer-chat-msg.user,
 html body .home-lexi-popup .msg.user,
 html body .home-lexi-popup .customer-chat-msg.user,
 html body .home-lexi-popup .business-lexi-chat-box .customer-chat-msg.user {
-  background: #e3a16f !important;
+  background: rgba(243, 246, 249, 0.98) !important;
   background-image: none !important;
-  background-color: #e3a16f !important;
-  color: #3b2d23 !important;
-  border-color: rgba(173, 117, 78, 0.28) !important;
+  background-color: rgba(243, 246, 249, 0.98) !important;
+  color: #304656 !important;
+  border-color: rgba(211, 219, 227, 0.95) !important;
   box-shadow: none !important;
+}
+
+html body .ask-lexi-btn,
+html body button.ask-lexi-btn,
+html body a.ask-lexi-btn,
+html body .btn.ask-lexi-btn,
+html body .billing-actions .btn.ask-lexi-btn,
+html body .workspace-actions .btn.ask-lexi-btn,
+html body .lexi-launch-actions .btn.ask-lexi-btn,
+html body .calendar-diary-agenda .btn.ask-lexi-btn,
+html body .calendar-lexi-command-card .btn.ask-lexi-btn,
+html body .calendar-selected-day-card .btn.ask-lexi-btn {
+  background: rgba(243, 246, 249, 0.98) !important;
+  background-image: none !important;
+  background-color: rgba(243, 246, 249, 0.98) !important;
+  border: 1px solid rgba(211, 219, 227, 0.95) !important;
+  color: #304656 !important;
+  box-shadow: none !important;
+}
+
+html body .ask-lexi-btn:hover,
+html body button.ask-lexi-btn:hover,
+html body a.ask-lexi-btn:hover,
+html body .btn.ask-lexi-btn:hover,
+html body .billing-actions .btn.ask-lexi-btn:hover,
+html body .workspace-actions .btn.ask-lexi-btn:hover,
+html body .lexi-launch-actions .btn.ask-lexi-btn:hover,
+html body .calendar-diary-agenda .btn.ask-lexi-btn:hover,
+html body .calendar-lexi-command-card .btn.ask-lexi-btn:hover,
+html body .calendar-selected-day-card .btn.ask-lexi-btn:hover {
+  background: rgba(236, 241, 245, 0.98) !important;
+  background-image: none !important;
+  background-color: rgba(236, 241, 245, 0.98) !important;
+  border-color: rgba(190, 201, 212, 0.98) !important;
+  color: #304656 !important;
 }
 
 @media (max-width: 980px) {
@@ -8753,9 +9017,10 @@ body[data-theme-mode="light"] .home-lexi-popup .chat-window::before,
 body[data-theme-mode="light"] .home-lexi-popup .customer-chat-box::before,
 body[data-theme-mode="light"] .home-lexi-popup .business-lexi-chat-box::before {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.9)),
-    url("/Salon_AI_IMG.png") center 18% / cover no-repeat;
-  opacity: 0.2;
+    linear-gradient(180deg, rgba(255,255,255,0.68), rgba(255,255,255,0.84)),
+    url("/LEXI_IMG.png") center 14% / cover no-repeat;
+  opacity: 0.26;
+  filter: saturate(1.03) brightness(1.01);
 }
 
 body[data-theme-mode="light"] .home-lexi-popup .chat-shell,
@@ -8787,6 +9052,11 @@ body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-label small,
 body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-note p,
 body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-transcript p {
   color: #5f748f !important;
+}
+
+body[data-theme-mode="light"] .home-lexi-popup .lexi-avatar-label small {
+  color: #000 !important;
+  text-shadow: none;
 }
 
 body[data-theme-mode="light"] .home-lexi-popup .msg.assistant {
