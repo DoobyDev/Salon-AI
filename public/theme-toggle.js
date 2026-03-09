@@ -1,65 +1,28 @@
 const THEME_KEY = "salonTheme";
-const THEMES = {
-  classic: "classic",
-  vibrant: "vibrant"
-};
+const LEGACY_THEME_KEYS = ["salonThemeMode", "dashboardThemeMode", "salonThemeVariant"];
 
-function getInitialTheme() {
-  return THEMES.classic;
-}
+function clearLegacyThemeState() {
+  const { body, documentElement } = document;
+  if (!body) return;
 
-function applyTheme(theme, persist = true) {
-  document.body.classList.remove("theme-vibrant");
-  document.body.dataset.theme = THEMES.classic;
-  document.body.dataset.themeMode = "light";
-  if (persist) {
-    try {
-      localStorage.setItem(THEME_KEY, THEMES.classic);
-    } catch {
-      // ignore storage failures
-    }
-  }
-}
+  body.classList.remove("theme-vibrant", "dashboard-light-mode");
+  body.dataset.theme = "premium";
+  delete body.dataset.themeMode;
 
-function setTheme(theme) {
-  applyTheme(theme, true);
-}
+  documentElement.classList.remove("theme-vibrant", "dashboard-light-mode");
+  documentElement.dataset.theme = "premium";
+  delete documentElement.dataset.themeMode;
 
-function isHomeScreen() {
-  return !!document.getElementById("home") || window.location.pathname === "/" || window.location.pathname.endsWith("/index.html");
-}
-
-function isDashboardScreen() {
-  return !!document.getElementById("dashboardMain");
-}
-
-function mountThemeToggle(initialTheme) {
-  applyTheme(initialTheme, true);
-}
-
-async function clearLegacyThemeCaches() {
-  if (!("serviceWorker" in navigator)) return;
   try {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((registration) => registration.unregister()));
+    localStorage.removeItem(THEME_KEY);
+    LEGACY_THEME_KEYS.forEach((key) => localStorage.removeItem(key));
   } catch {
-    // ignore service worker cleanup failures
-  }
-  if (!("caches" in window)) return;
-  try {
-    const cacheKeys = await caches.keys();
-    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
-  } catch {
-    // ignore cache cleanup failures
+    // ignore storage failures
   }
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    clearLegacyThemeCaches().catch(() => {});
-    mountThemeToggle(getInitialTheme());
-  });
+  document.addEventListener("DOMContentLoaded", clearLegacyThemeState);
 } else {
-  clearLegacyThemeCaches().catch(() => {});
-  mountThemeToggle(getInitialTheme());
+  clearLegacyThemeState();
 }

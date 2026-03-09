@@ -38,6 +38,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: salon-ai-postgres
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: salon_ai
       POSTGRES_USER: postgres
@@ -53,6 +55,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: salon-ai-redis
+    ports:
+      - "6380:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_data:/data

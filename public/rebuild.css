@@ -1,0 +1,831 @@
+:root {
+  --re-bg: #f5f1ea;
+  --re-bg-soft: #fcfaf7;
+  --re-surface: rgba(255, 250, 243, 0.9);
+  --re-surface-strong: rgba(252, 247, 240, 0.98);
+  --re-line: rgba(66, 76, 68, 0.14);
+  --re-line-strong: rgba(198, 168, 106, 0.32);
+  --re-ink: #16161a;
+  --re-muted: #5f6470;
+  --re-teal: #0f766e;
+  --re-teal-dark: #0d5f59;
+  --re-gold: #c6a86a;
+  --re-gold-dark: #a7894d;
+  --re-danger: #c24141;
+  --re-radius-xl: 32px;
+  --re-radius-lg: 24px;
+  --re-radius-md: 18px;
+  --re-radius-sm: 14px;
+  --re-shadow-lg: 0 22px 60px rgba(73, 57, 33, 0.1);
+  --re-shadow-md: 0 14px 36px rgba(73, 57, 33, 0.08);
+}
+
+html body {
+  background:
+    radial-gradient(circle at top left, rgba(198, 168, 106, 0.14), transparent 26%),
+    radial-gradient(circle at top right, rgba(198, 168, 106, 0.16), transparent 24%),
+    linear-gradient(180deg, #faf6ee 0%, #f6f1e8 50%, #efe7da 100%) !important;
+  color: var(--re-ink) !important;
+}
+
+html body::before,
+html body.dashboard-light-mode::before {
+  background-image:
+    linear-gradient(rgba(37, 58, 55, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 58, 55, 0.04) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+  mask-image: radial-gradient(circle at center, black 54%, transparent 100%) !important;
+}
+
+html body,
+html body.dashboard-light-mode,
+html body.dashboard-light-mode .dash,
+html body.dashboard-light-mode .dash > .panel,
+html body.dashboard-light-mode .dash > section.panel {
+  color: var(--re-ink) !important;
+}
+
+html body .topbar {
+  width: min(1400px, calc(100vw - 2rem)) !important;
+  margin: 0.8rem auto 0 !important;
+  padding: 1rem 1.15rem !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--re-line) !important;
+  background: rgba(255, 251, 245, 0.82) !important;
+  box-shadow: var(--re-shadow-md) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+html body .brand {
+  font-family: "Fraunces", serif !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+html body .brand-dot {
+  background: radial-gradient(circle at 32% 32%, #fff9e3, var(--re-gold) 58%, #927344) !important;
+  box-shadow: 0 0 0 6px rgba(198, 168, 106, 0.14), 0 0 24px rgba(198, 168, 106, 0.24) !important;
+}
+
+html body .nav,
+html body .nav a,
+html body .nav-secondary {
+  color: #40504b !important;
+}
+
+html body .btn {
+  border-color: rgba(167, 137, 77, 0.92) !important;
+  background: linear-gradient(180deg, #d5ba83 0%, #c6a86a 58%, #a7894d 100%) !important;
+  color: #17181c !important;
+  box-shadow: 0 10px 24px rgba(198, 168, 106, 0.2) !important;
+}
+
+html body .btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 14px 30px rgba(198, 168, 106, 0.24) !important;
+}
+
+html body .btn-ghost,
+html body .status-chip,
+html body .customer-lexi-view-tab,
+html body .executive-pulse-range-tabs button,
+html body .dashboard-overview-link,
+html body .workspace-action-btn,
+html body .customer-journey-link {
+  border-color: rgba(66, 76, 68, 0.14) !important;
+  background: rgba(255, 252, 248, 0.84) !important;
+  color: #203632 !important;
+  box-shadow: none !important;
+}
+
+html body .btn-ghost:hover,
+html body .status-chip:hover,
+html body .customer-lexi-view-tab:hover,
+html body .executive-pulse-range-tabs button:hover,
+html body .dashboard-overview-link:hover,
+html body .workspace-action-btn:hover,
+html body .customer-journey-link:hover {
+  border-color: var(--re-line-strong) !important;
+  background: rgba(255, 248, 236, 0.96) !important;
+}
+
+html body .page.control-room-home {
+  width: min(1400px, calc(100vw - 2rem)) !important;
+  margin: 1rem auto 3rem !important;
+  gap: 1rem !important;
+}
+
+html body .homepage-reset-shell,
+html body .homepage-reset-hero,
+html body .homepage-reset-proof,
+html body .homepage-reset-conversion {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+html body .homepage-reset-vault {
+  display: none !important;
+}
+
+html body[data-home-reset-active="true"] #home > *:not(#homepageResetShell) {
+  display: none !important;
+}
+
+html body[data-home-reset-active="true"] #home > #homepageResetShell {
+  display: grid !important;
+}
+
+html body .page.control-room-home > section,
+html body .top-lexi-marquee,
+html body .hero.home-conversion-stage,
+html body .top-lexi-portrait-card,
+html body .top-lexi-chat-card,
+html body .top-lexi-head-note,
+html body .top-lexi-proof-card,
+html body .top-lexi-info-card,
+html body .hero-capabilities article,
+html body .stat-chip,
+html body .hero-lexi-calendar-star,
+html body .lexi-launch-panel,
+html body .chat-shell {
+  border: 1px solid var(--re-line) !important;
+  background:
+    radial-gradient(circle at top right, rgba(198, 168, 106, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 251, 245, 0.96), rgba(248, 241, 232, 0.98)) !important;
+  color: var(--re-ink) !important;
+  box-shadow: var(--re-shadow-lg) !important;
+}
+
+html body .top-lexi-marquee,
+html body .hero.home-conversion-stage {
+  display: grid !important;
+  gap: 1rem !important;
+  padding: 1.4rem !important;
+  border-radius: var(--re-radius-xl) !important;
+}
+
+html body .top-lexi-marquee {
+  grid-template-columns: minmax(0, 1.06fr) minmax(360px, 0.94fr) !important;
+}
+
+html body .hero.home-conversion-stage {
+  grid-template-columns: minmax(0, 1.03fr) minmax(390px, 0.97fr) !important;
+  align-items: start !important;
+}
+
+html body .top-lexi-head-notes,
+html body .top-lexi-proof-row,
+html body .top-lexi-info-grid,
+html body .hero-capabilities,
+html body .hero-stats {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.8rem !important;
+}
+
+html body .top-lexi-copy h2,
+html body .hero-copy h1,
+html body .dash-top h1,
+html body #subscriberCalendarSection .calendar-head h2 {
+  font-family: "Fraunces", serif !important;
+  color: var(--re-ink) !important;
+  letter-spacing: -0.045em !important;
+}
+
+html body .top-lexi-copy h2 {
+  font-size: clamp(2.3rem, 4.6vw, 4.6rem) !important;
+  line-height: 0.94 !important;
+}
+
+html body .hero-copy h1 {
+  font-size: clamp(2.5rem, 5vw, 5rem) !important;
+  line-height: 0.9 !important;
+}
+
+html body .eyebrow,
+html body .top-lexi-head-note span,
+html body .top-lexi-proof-card span,
+html body .top-lexi-info-card span,
+html body .workspace-actions-badge,
+html body .workspace-star-kicker,
+html body .managed-command-kicker,
+html body .business-hub-kicker,
+html body .calendar-feature-meta-kicker,
+html body .calendar-lexi-command-kicker,
+html body .dashboard-overview-kicker {
+  color: var(--re-gold-dark) !important;
+}
+
+html body .cta-proof,
+html body .hero-operator-note,
+html body .hero-badges,
+html body .dashboard-overview-status-card,
+html body .calendar-feature-meta,
+html body .calendar-selected-day-card,
+html body .calendar-feature-stats article,
+html body .calendar-lexi-command-card,
+html body .workspace-star-card,
+html body .dash-card,
+html body .managed-command-card,
+html body .admin-platform-card,
+html body .admin-revenue-detail-panel,
+html body .admin-revenue-visual-card,
+html body .subscription-quick-panel,
+html body .customer-lexi-card,
+html body .customer-lexi-calendar-panel,
+html body .customer-lexi-summary-panel {
+  border: 1px solid var(--re-line) !important;
+  background: rgba(255, 252, 247, 0.9) !important;
+  color: var(--re-ink) !important;
+  box-shadow: none !important;
+}
+
+html body .hero-badges span,
+html body .top-lexi-pills span,
+html body .calendar-lexi-badges span,
+html body .calendar-spotlight-tag,
+html body .workspace-actions-badge {
+  border: 1px solid rgba(198, 168, 106, 0.24) !important;
+  background: rgba(255, 248, 236, 0.94) !important;
+  color: #7d6432 !important;
+}
+
+html body .dash {
+  width: min(1450px, calc(100vw - 2rem)) !important;
+  margin: 1rem auto 2rem !important;
+  gap: 1rem !important;
+}
+
+html body .mobile-bottom-nav,
+html body .mobile-quick-sheet-overlay {
+  display: none !important;
+}
+
+html body .dashboard-reset-shell {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+html body .dashboard-reset-hero,
+html body .dashboard-reset-primary,
+html body .dashboard-reset-secondary {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+html body .dashboard-reset-workspace {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr) !important;
+  gap: 1rem !important;
+  align-items: start !important;
+}
+
+html body .dashboard-reset-vault {
+  display: none !important;
+}
+
+html body[data-dashboard-reset-active="true"] #dashboardMain > *:not(#dashboardResetShell) {
+  display: none !important;
+}
+
+html body[data-dashboard-reset-active="true"] #dashboardMain > #dashboardResetShell {
+  display: grid !important;
+}
+
+html body[data-role="subscriber"] .dash,
+html body[data-role="admin"] .dash {
+  display: block !important;
+  align-items: start !important;
+}
+
+html body[data-role="customer"] .dash {
+  display: block !important;
+  align-items: start !important;
+}
+
+html body .dash > .panel,
+html body .dash > section.panel {
+  border: 1px solid var(--re-line) !important;
+  border-radius: var(--re-radius-lg) !important;
+  background:
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.05), transparent 32%),
+    linear-gradient(180deg, rgba(255, 251, 245, 0.96), rgba(248, 241, 232, 0.98)) !important;
+  box-shadow: var(--re-shadow-md) !important;
+  color: var(--re-ink) !important;
+}
+
+html body [data-reset-active="true"] > .panel,
+html body [data-reset-active="true"] > section.panel {
+  margin: 0 !important;
+}
+
+html body .dashboard-reset-vault > *,
+html body .dashboard-reset-vault section,
+html body .dashboard-reset-vault .panel {
+  display: none !important;
+}
+
+html body .dash > .panel p,
+html body .dash > .panel small,
+html body .dash > .panel li,
+html body .calendar-feature-meta-copy,
+html body .workspace-action-btn small,
+html body .workspace-star-card small {
+  color: var(--re-muted) !important;
+}
+
+html body .dash > #dashboardOverviewSection,
+html body[data-role="subscriber"] .dash > #subscriberCalendarSection,
+html body[data-role="admin"] .dash > #subscriberCalendarSection,
+html body[data-role="subscriber"] .dash > #subscriberExecutivePulseSection,
+html body[data-role="admin"] .dash > #subscriberExecutivePulseSection,
+html body[data-role="subscriber"] .dash > #bookingOperationsSection,
+html body[data-role="admin"] .dash > #bookingOperationsSection,
+html body[data-role="admin"] .dash > #adminPlatformSection,
+html body[data-role="customer"] .dash > #dashboardOverviewSection,
+html body[data-role="customer"] .dash > #customerJourneyActionsSection,
+html body[data-role="customer"] .dash > #customerLexiCalendarSection {
+  grid-column: 1 / -1 !important;
+}
+
+html body .dashboard-overview-shell {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 1rem !important;
+}
+
+html body .dashboard-overview-status-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+}
+
+html body .dashboard-overview-nav {
+  display: flex !important;
+  gap: 0.6rem !important;
+  flex-wrap: wrap !important;
+}
+
+html body .workspace-actions,
+html body .customer-journey-actions {
+  padding: 1.1rem !important;
+}
+
+html body .workspace-actions-grid,
+html body .workspace-star-grid,
+html body .customer-journey-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.7rem !important;
+}
+
+html body .workspace-action-btn,
+html body .customer-journey-link {
+  min-height: 98px !important;
+  border-radius: var(--re-radius-md) !important;
+  padding: 0.95rem !important;
+}
+
+html body #subscriberCalendarSection {
+  padding: 1.2rem !important;
+}
+
+html body #dashboardOverviewSection,
+html body #dashboardQuickActionsSection,
+html body #subscriberCalendarSection,
+html body #bookingOperationsSection,
+html body #customerSearchSection,
+html body #customerReceptionSection,
+html body #customerLexiCalendarSection,
+html body #customerSlotsSection,
+html body #customerHistorySection,
+html body #adminPlatformSection {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+html body[data-reset-role="subscriber"] .dashboard-reset-workspace {
+  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr) !important;
+}
+
+html body[data-reset-role="customer"] .dashboard-reset-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+}
+
+html body[data-reset-role="admin"] .dashboard-reset-workspace {
+  grid-template-columns: 1fr !important;
+}
+
+html body[data-reset-role="admin"] .dashboard-reset-secondary {
+  display: none !important;
+}
+
+html body #dashboardOverviewSection {
+  padding: 1rem 1.1rem !important;
+  border-radius: 24px !important;
+}
+
+html body .dashboard-overview-copy h1 {
+  font-size: clamp(1.6rem, 2.4vw, 2.35rem) !important;
+  line-height: 0.98 !important;
+}
+
+html body .dashboard-overview-user,
+html body .dash-role-hint,
+html body .dash-action-status {
+  max-width: 70ch !important;
+}
+
+html body .dashboard-overview-copy {
+  display: grid !important;
+  gap: 0.22rem !important;
+}
+
+html body .dashboard-overview-kicker {
+  margin: 0 0 0.1rem !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+html body .dashboard-overview-user {
+  margin: 0.18rem 0 0 !important;
+  font-size: 0.9rem !important;
+}
+
+html body .dash-role-hint,
+html body .dash-action-status {
+  margin: 0.05rem 0 0 !important;
+  font-size: 0.8rem !important;
+}
+
+html body .dashboard-overview-side {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+html body .dashboard-overview-side .billing-actions {
+  display: flex !important;
+  gap: 0.6rem !important;
+  flex-wrap: wrap !important;
+}
+
+html body .dashboard-overview-status-grid {
+  display: none !important;
+}
+
+html body .dashboard-overview-status-card {
+  padding: 0.72rem 0.8rem !important;
+  border-radius: 16px !important;
+}
+
+html body .dashboard-overview-status-card span {
+  font-size: 0.64rem !important;
+}
+
+html body .dashboard-overview-status-card strong {
+  font-size: 0.86rem !important;
+  line-height: 1.3 !important;
+}
+
+html body .dashboard-overview-nav {
+  display: none !important;
+}
+
+html body .dashboard-overview-link {
+  min-height: 36px !important;
+  padding: 0.52rem 0.78rem !important;
+  font-size: 0.78rem !important;
+}
+
+html body .dashboard-overview-kicker,
+html body .dash-role-hint,
+html body .dash-action-status {
+  display: none !important;
+}
+
+html body .dashboard-overview-shell {
+  gap: 0.7rem !important;
+}
+
+html body .dashboard-overview-copy {
+  gap: 0.12rem !important;
+}
+
+html body .dashboard-overview-user {
+  margin: 0 !important;
+  font-size: 0.84rem !important;
+  opacity: 0.9;
+}
+
+html body .dashboard-overview-side {
+  justify-content: flex-end !important;
+}
+
+html body .dashboard-overview-side .billing-actions .btn {
+  min-height: 38px !important;
+  padding: 0.55rem 0.85rem !important;
+  font-size: 0.8rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 0.8rem !important;
+  flex-wrap: wrap !important;
+}
+
+html body #subscriberCalendarSection .calendar-nav {
+  display: flex !important;
+  gap: 0.55rem !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+html body #subscriberCalendarSection .calendar-label {
+  margin: 0 !important;
+  min-width: 130px !important;
+  text-align: center !important;
+  font-weight: 800 !important;
+  color: var(--re-ink) !important;
+}
+
+html body #subscriberCalendarSection .calendar-diary-week-strip {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-week-focus-card,
+html body #subscriberCalendarSection .calendar-stage,
+html body #subscriberCalendarSection .calendar-feature-rail {
+  border: 1px solid var(--re-line) !important;
+  border-radius: var(--re-radius-lg) !important;
+  background: rgba(255, 252, 247, 0.92) !important;
+  box-shadow: none !important;
+}
+
+html body #subscriberCalendarSection .calendar-feature-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.85fr) minmax(340px, 0.9fr) !important;
+  gap: 0.9rem !important;
+  align-items: start !important;
+}
+
+html body #subscriberCalendarSection .calendar-stage {
+  padding: 0.85rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-weekdays,
+html body #subscriberCalendarSection .calendar-grid {
+  gap: 0.5rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-weekdays span {
+  min-height: 46px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: var(--re-radius-sm) !important;
+  border: 1px solid var(--re-line) !important;
+  background: rgba(248, 241, 232, 0.9) !important;
+  color: #324440 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+html body #subscriberCalendarSection .calendar-day {
+  min-height: 134px !important;
+  border: 1px solid rgba(66, 76, 68, 0.12) !important;
+  border-radius: var(--re-radius-md) !important;
+  background: rgba(255, 253, 250, 0.95) !important;
+  box-shadow: none !important;
+}
+
+html body #subscriberCalendarSection .calendar-day.has-bookings {
+  border-color: rgba(198, 168, 106, 0.36) !important;
+  background:
+    radial-gradient(circle at bottom left, rgba(198, 168, 106, 0.12), transparent 48%),
+    rgba(252, 249, 244, 0.98) !important;
+}
+
+html body #subscriberCalendarSection .calendar-day.selected {
+  border-color: rgba(198, 168, 106, 0.58) !important;
+  background:
+    radial-gradient(circle at top right, rgba(198, 168, 106, 0.14), transparent 44%),
+    rgba(255, 250, 240, 0.98) !important;
+  box-shadow: inset 0 0 0 1px rgba(198, 168, 106, 0.16) !important;
+}
+
+html body #subscriberCalendarSection .calendar-day.is-today {
+  border-color: rgba(198, 168, 106, 0.5) !important;
+}
+
+html body #subscriberCalendarSection .calendar-day button.calendar-day-btn {
+  min-height: 100% !important;
+  align-content: start !important;
+  gap: 0.35rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-day strong,
+html body #subscriberCalendarSection .calendar-day small,
+html body #subscriberCalendarSection .calendar-day .calendar-day-count {
+  color: var(--re-ink) !important;
+}
+
+html body #subscriberCalendarSection .calendar-feature-rail {
+  position: static !important;
+  padding: 0.8rem !important;
+  gap: 0.7rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-feature-stats {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+}
+
+html body #subscriberCalendarSection .calendar-lexi-command-deck {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.65rem !important;
+}
+
+html body #dashboardQuickActionsSection .workspace-actions-head {
+  align-items: end !important;
+}
+
+html body #dashboardQuickActionsSection .workspace-star-panel {
+  display: none !important;
+}
+
+html body #dashboardQuickActionsSection .workspace-actions-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.8rem !important;
+}
+
+html body #dashboardQuickActionsSection .workspace-action-btn {
+  min-height: 118px !important;
+  align-content: start !important;
+}
+
+html body #bookingOperationsSection .booking-range-toolbar,
+html body #bookingOperationsSection .booking-filters,
+html body #bookingOperationsSection .status-chips {
+  display: flex !important;
+  gap: 0.6rem !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+html body #bookingOperationsSection .bookings-list {
+  display: grid !important;
+  gap: 0.7rem !important;
+}
+
+html body #bookingOperationsSection .bookings-list > li,
+html body #customerSearchSection .customer-results > li,
+html body #customerAvailableSlots > li,
+html body #customerBookingHistory > li {
+  border: 1px solid var(--re-line) !important;
+  border-radius: var(--re-radius-md) !important;
+  background: rgba(255, 252, 247, 0.9) !important;
+  padding: 0.9rem !important;
+}
+
+html body #customerSearchSection,
+html body #customerReceptionSection,
+html body #customerLexiCalendarSection,
+html body #customerSlotsSection,
+html body #customerHistorySection {
+  padding: 1.15rem !important;
+}
+
+html body #adminPlatformSection {
+  padding: 1.2rem !important;
+}
+
+html body #customerSearchForm,
+html body .customer-chat-form {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.7rem !important;
+}
+
+html body #customerSearchForm .btn,
+html body #customerSearchForm .btn-ghost,
+html body .customer-chat-form .btn,
+html body .customer-chat-form .btn-ghost {
+  min-height: 46px !important;
+}
+
+html body input,
+html body select,
+html body textarea {
+  border: 1px solid var(--re-line) !important;
+  background: rgba(255, 252, 248, 0.94) !important;
+  color: var(--re-ink) !important;
+  border-radius: 14px !important;
+}
+
+html body ::placeholder {
+  color: #777e7c !important;
+}
+
+@media (max-width: 1180px) {
+  html body .top-lexi-marquee,
+  html body .hero.home-conversion-stage,
+  html body .dashboard-overview-shell,
+  html body .dashboard-overview-status-grid,
+  html body .dashboard-reset-workspace,
+  html body[data-role="subscriber"] .dash,
+  html body[data-role="admin"] .dash,
+  html body[data-role="customer"] .dash,
+  html body #subscriberCalendarSection .calendar-feature-shell,
+  html body #subscriberCalendarSection .calendar-diary-week-strip,
+  html body .top-lexi-head-notes,
+  html body .top-lexi-proof-row,
+  html body .top-lexi-info-grid,
+  html body .hero-capabilities,
+  html body .hero-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  html body[data-role="subscriber"] .dash > *,
+  html body[data-role="admin"] .dash > *,
+  html body[data-role="customer"] .dash > * {
+    grid-column: 1 / -1 !important;
+  }
+
+  html body .workspace-actions,
+  html body .customer-journey-actions {
+    position: static !important;
+  }
+
+  html body .workspace-actions-grid,
+  html body .customer-journey-grid,
+  html body #dashboardQuickActionsSection .workspace-actions-grid,
+  html body #subscriberCalendarSection .calendar-lexi-command-deck,
+  html body #customerSearchForm,
+  html body .customer-chat-form {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  html body .topbar,
+  html body .page.control-room-home,
+  html body .dash {
+    width: min(100vw - 1rem, 100%) !important;
+  }
+
+  html body .topbar {
+    border-radius: 24px !important;
+    padding: 0.95rem !important;
+  }
+
+  html body .top-lexi-marquee,
+  html body .hero.home-conversion-stage,
+  html body .dash > .panel,
+  html body .workspace-actions,
+  html body .customer-journey-actions {
+    padding: 1rem !important;
+    border-radius: 24px !important;
+  }
+
+  html body .dashboard-overview-nav,
+  html body .dashboard-overview-side .billing-actions,
+  html body #subscriberCalendarSection .calendar-nav {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  html body #dashboardOverviewSection {
+    padding: 0.9rem !important;
+  }
+
+  html body .dashboard-overview-copy h1 {
+    font-size: 1.45rem !important;
+  }
+
+  html body .dashboard-overview-status-grid,
+  html body .workspace-actions-grid,
+  html body .customer-journey-grid,
+  html body #dashboardQuickActionsSection .workspace-actions-grid,
+  html body #subscriberCalendarSection .calendar-lexi-command-deck,
+  html body #customerSearchForm,
+  html body .customer-chat-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  html body #subscriberCalendarSection .calendar-label {
+    grid-column: 1 / -1 !important;
+  }
+
+  html body #subscriberCalendarSection .calendar-day {
+    min-height: 102px !important;
+  }
+}

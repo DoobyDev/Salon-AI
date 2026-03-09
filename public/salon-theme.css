@@ -1,0 +1,189 @@
+:root {
+  --shared-bg: #f2e7d9;
+  --shared-bg-soft: #fff8f1;
+  --shared-surface: rgba(255, 250, 245, 0.94);
+  --shared-surface-strong: rgba(255, 252, 248, 0.97);
+  --shared-surface-dark: #241914;
+  --shared-ink: #241611;
+  --shared-ink-soft: #6e5648;
+  --shared-line: rgba(110, 59, 30, 0.12);
+  --shared-line-strong: rgba(187, 105, 63, 0.22);
+  --shared-primary: #bb693f;
+  --shared-primary-strong: #8e4427;
+  --shared-accent: #efc7a0;
+  --shared-accent-strong: #f4dcc0;
+  --shared-highlight: #1d7f77;
+  --shared-success: #1f7a63;
+  --shared-danger: #b44747;
+  --shared-grid: rgba(92, 58, 36, 0.05);
+  --shared-gloss: rgba(255, 255, 255, 0.72);
+  --shared-shadow: 0 18px 44px rgba(108, 68, 42, 0.1);
+  --shared-shadow-soft: 0 12px 28px rgba(108, 68, 42, 0.08);
+  --shared-gradient-primary: linear-gradient(135deg, #22140f 0%, #bb693f 56%, #efc7a0 100%);
+  --shared-gradient-surface: linear-gradient(180deg, rgba(255, 252, 248, 0.95), rgba(244, 233, 221, 0.86));
+  --shared-gradient-topbar: linear-gradient(180deg, rgba(255, 252, 248, 0.92), rgba(245, 234, 223, 0.84));
+  --shared-body-top-left: rgba(239, 199, 160, 0.28);
+  --shared-body-top-right: rgba(29, 127, 119, 0.1);
+  --shared-body-bottom-right: rgba(187, 105, 63, 0.08);
+  --shared-body-start: #fffaf4;
+  --shared-body-mid: #f3e7d8;
+  --shared-body-end: #e8d6c2;
+  --shared-theme-color: #bb693f;
+}
+
+:root[data-salon-theme="rose-editorial"] {
+  --shared-bg: #f3e5e3;
+  --shared-bg-soft: #fff8f8;
+  --shared-surface: rgba(255, 249, 248, 0.94);
+  --shared-surface-strong: rgba(255, 252, 251, 0.97);
+  --shared-surface-dark: #2a1819;
+  --shared-ink: #241517;
+  --shared-ink-soft: #71565b;
+  --shared-line: rgba(123, 77, 84, 0.13);
+  --shared-line-strong: rgba(185, 107, 120, 0.24);
+  --shared-primary: #b96b78;
+  --shared-primary-strong: #894854;
+  --shared-accent: #efc2bf;
+  --shared-accent-strong: #f5dbd8;
+  --shared-highlight: #3c7a74;
+  --shared-success: #2b7c6a;
+  --shared-danger: #b44d60;
+  --shared-grid: rgba(105, 72, 78, 0.05);
+  --shared-shadow: 0 18px 44px rgba(98, 59, 66, 0.11);
+  --shared-shadow-soft: 0 12px 28px rgba(98, 59, 66, 0.08);
+  --shared-gradient-primary: linear-gradient(135deg, #2a1819 0%, #b96b78 56%, #efc2bf 100%);
+  --shared-body-top-left: rgba(239, 194, 191, 0.3);
+  --shared-body-top-right: rgba(60, 122, 116, 0.1);
+  --shared-body-bottom-right: rgba(185, 107, 120, 0.08);
+  --shared-body-start: #fff9f8;
+  --shared-body-mid: #f5e8e6;
+  --shared-body-end: #ead8d6;
+  --shared-theme-color: #b96b78;
+}
+
+:root[data-salon-theme="forest-luxe"] {
+  --shared-bg: #e7ece3;
+  --shared-bg-soft: #fafcf7;
+  --shared-surface: rgba(248, 251, 246, 0.94);
+  --shared-surface-strong: rgba(252, 253, 250, 0.97);
+  --shared-surface-dark: #182019;
+  --shared-ink: #172018;
+  --shared-ink-soft: #566759;
+  --shared-line: rgba(76, 96, 72, 0.14);
+  --shared-line-strong: rgba(111, 137, 101, 0.24);
+  --shared-primary: #6d8b65;
+  --shared-primary-strong: #496146;
+  --shared-accent: #d6c7a0;
+  --shared-accent-strong: #ece3c8;
+  --shared-highlight: #2e6e68;
+  --shared-success: #2e7a63;
+  --shared-danger: #a75252;
+  --shared-grid: rgba(74, 88, 70, 0.05);
+  --shared-shadow: 0 18px 44px rgba(56, 73, 52, 0.11);
+  --shared-shadow-soft: 0 12px 28px rgba(56, 73, 52, 0.08);
+  --shared-gradient-primary: linear-gradient(135deg, #182019 0%, #6d8b65 56%, #d6c7a0 100%);
+  --shared-body-top-left: rgba(214, 199, 160, 0.28);
+  --shared-body-top-right: rgba(46, 110, 104, 0.1);
+  --shared-body-bottom-right: rgba(109, 139, 101, 0.08);
+  --shared-body-start: #fbfcf8;
+  --shared-body-mid: #edf1e7;
+  --shared-body-end: #dfe6d8;
+  --shared-theme-color: #6d8b65;
+}
+
+.salon-theme-switcher {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 60;
+  display: grid;
+  gap: 0.6rem;
+  width: min(320px, calc(100vw - 2rem));
+  padding: 0.8rem;
+  border: 1px solid var(--shared-line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(244, 233, 221, 0.9));
+  box-shadow: var(--shared-shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.salon-theme-switcher[hidden] {
+  display: none;
+}
+
+.salon-theme-switcher-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.salon-theme-switcher-head strong {
+  color: var(--shared-ink);
+  font-size: 0.95rem;
+}
+
+.salon-theme-switcher-head small {
+  color: var(--shared-ink-soft);
+}
+
+.salon-theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.salon-theme-option {
+  border: 1px solid var(--shared-line);
+  border-radius: 16px;
+  padding: 0.6rem;
+  background: rgba(255, 251, 246, 0.88);
+  display: grid;
+  gap: 0.4rem;
+  cursor: pointer;
+  color: var(--shared-ink);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.salon-theme-option:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shared-shadow-soft);
+}
+
+.salon-theme-option.is-active {
+  border-color: var(--shared-highlight);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--shared-highlight) 24%, transparent);
+}
+
+.salon-theme-swatch {
+  width: 100%;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+}
+
+.salon-theme-option strong {
+  font-size: 0.84rem;
+}
+
+.salon-theme-toggle {
+  border: 1px solid var(--shared-line);
+  border-radius: 999px;
+  background: rgba(255, 248, 240, 0.92);
+  color: var(--shared-ink);
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .salon-theme-switcher {
+    width: calc(100vw - 1rem);
+    left: 0.5rem;
+    bottom: 0.5rem;
+  }
+
+  .salon-theme-options {
+    grid-template-columns: 1fr;
+  }
+}

@@ -3,7 +3,6 @@ const ASSETS = [
   "/",
   "/index.html",
   "/styles.css",
-  "/theme-toggle.js",
   "/app.js",
   "/manifest.webmanifest",
   "/icons/icon.svg",
@@ -39,7 +38,6 @@ function shouldRefreshFromNetwork(url) {
     url.pathname === "/dashboard.js" ||
     url.pathname === "/auth.html" ||
     url.pathname === "/auth.js" ||
-    url.pathname === "/theme-toggle.js" ||
     url.pathname === "/manifest.webmanifest"
   );
 }

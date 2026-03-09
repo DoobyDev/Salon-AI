@@ -14,6 +14,7 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 ## Project Layout
 
 - Structure reference: `docs/PROJECT_STRUCTURE.md`
+- Product and role feature catalog: `docs/APP_FEATURE_RECORD.md`
 - Business/legal templates and print packs: `docs/business_legal_pack/`
 - Public legal policy hub page: `public/legal.html`
 - Runtime logs are kept in `logs/` (instead of project root) for cleaner maintenance.
@@ -47,6 +48,17 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 
 ## Setup
 
+Local development notes:
+- Use Node `20.14.0` for this repo. On Windows with `nvm`: `nvm use 20.14.0`
+- Local database defaults:
+  - Postgres: `localhost:5432`
+  - Redis: `localhost:6380`
+- If port `3000` is already in use, start with a different port:
+```powershell
+$env:PORT='3130'
+npm start
+```
+
 1. Install:
 ```bash
 npm install
@@ -64,7 +76,7 @@ copy .env.example .env
 - `JWT_SECRET`
 - `OPENAI_API_KEY`
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-- `REDIS_URL` (recommended for scale)
+- `REDIS_URL` (recommended for scale; local Docker mapping is `redis://localhost:6380`)
 - Stripe/PayPal/Twilio/SendGrid keys as needed
 - For production deployment, set:
   - `APP_URL=https://www.aisalonreceptionist.co.uk`
@@ -81,6 +93,7 @@ Pooler setup note:
 - Set `DATABASE_URL_POOLER` to your Supabase pooler URL (typically port `6543`).
 - Set `DIRECT_URL` to the direct DB URL (typically port `5432`).
 - Runtime prefers `DATABASE_URL_POOLER` automatically.
+- For local development on Windows, prefer the local Postgres/Redis setup if Prisma TLS fails against Supabase.
 
 5. Start:
 ```bash

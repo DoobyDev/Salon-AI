@@ -10,8 +10,36 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260309-theme1" />
     <link rel="stylesheet" href="/styles.css?v=20260302-neutral2" />
     <style>
+      :root {
+        --auth-surface: rgba(251, 243, 235, 0.92);
+        --auth-surface-soft: rgba(255, 250, 245, 0.94);
+        --auth-line: var(--salon-line, rgba(110, 59, 30, 0.12));
+        --auth-ink: var(--salon-ink, #2b180f);
+        --auth-muted: var(--salon-ink-soft, #6a4e3e);
+        --auth-primary: var(--salon-primary, #cb5a35);
+        --auth-accent: var(--salon-accent, #ef9f66);
+        --auth-highlight: var(--salon-highlight, #1d7f77);
+        --auth-hero-top: rgba(29, 127, 119, 0.1);
+        --auth-card-top: rgba(29, 127, 119, 0.08);
+        --auth-input-bg: rgba(255, 250, 245, 0.96);
+        --auth-body-top: rgba(239, 199, 160, 0.42);
+        --auth-body-start: #f5e8db;
+        --auth-body-end: #efdfcf;
+        --auth-grid: rgba(92, 58, 36, 0.06);
+        --auth-white-gloss: rgba(255, 255, 255, 0.72);
+        --auth-brand-core: #fff4d6;
+        --auth-brand-ring: rgba(239, 159, 102, 0.14);
+        --auth-button-text: #fff8f2;
+        --auth-soft-shadow: 0 10px 24px rgba(135, 78, 46, 0.16);
+        --auth-elevated-shadow: 0 18px 44px rgba(108, 68, 42, 0.08);
+        --auth-admin-line: rgba(187, 105, 63, 0.18);
+        --auth-admin-top: rgba(239, 199, 160, 0.18);
+        --auth-admin-surface: rgba(255, 246, 238, 0.96);
+        --auth-shadow: 0 18px 44px rgba(108, 68, 42, 0.08);
+      }
       .auth-page {
         width: min(1160px, 94vw);
         margin: 2rem auto;
@@ -21,8 +49,8 @@
       .auth-topbar {
         border: 1px solid var(--line);
         border-radius: 18px;
-        background: linear-gradient(150deg, rgba(18, 29, 52, 0.88), rgba(11, 19, 35, 0.9));
-        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+        background: var(--auth-surface);
+        box-shadow: var(--auth-shadow);
         padding: 0.8rem 1rem;
         display: flex;
         align-items: center;
@@ -40,7 +68,7 @@
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #fff3ca, #d6b56a 60%, #8c7039);
+        background: radial-gradient(circle at 30% 30%, var(--auth-brand-core), var(--auth-accent) 58%, var(--auth-primary));
       }
       .auth-wrap {
         display: grid;
@@ -48,13 +76,13 @@
         gap: 1rem;
       }
       .auth-intro {
-        border: 1px solid rgba(156, 191, 255, 0.28);
+        border: 1px solid var(--auth-line);
         border-radius: 18px;
         padding: 1.1rem;
         background:
-          radial-gradient(circle at 85% 0%, rgba(124, 234, 216, 0.14), transparent 42%),
-          linear-gradient(155deg, rgba(18, 29, 52, 0.9), rgba(11, 19, 35, 0.92));
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+          radial-gradient(circle at 85% 0%, var(--auth-hero-top), transparent 42%),
+          linear-gradient(180deg, rgba(255, 252, 248, 0.95), rgba(245, 234, 223, 0.88));
+        box-shadow: var(--auth-shadow);
       }
       .auth-intro h1 {
         margin: 0;
@@ -77,7 +105,7 @@
         border: 1px solid var(--line);
         border-radius: 12px;
         padding: 0.55rem 0.65rem;
-        background: rgba(10, 16, 29, 0.8);
+        background: var(--auth-surface-soft);
       }
       .auth-points strong {
         display: block;
@@ -90,13 +118,13 @@
         gap: 1rem;
       }
       .auth-card {
-        border: 1px solid rgba(156, 191, 255, 0.28);
+        border: 1px solid var(--auth-line);
         background:
-          linear-gradient(155deg, rgba(18, 29, 52, 0.88), rgba(11, 19, 35, 0.9)),
-          radial-gradient(circle at 100% 0%, rgba(124, 234, 216, 0.08), transparent 42%);
+          radial-gradient(circle at 100% 0%, var(--auth-card-top), transparent 42%),
+          linear-gradient(180deg, rgba(255, 252, 248, 0.95), rgba(245, 234, 223, 0.88));
         border-radius: 16px;
         padding: 1.1rem;
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+        box-shadow: var(--auth-shadow);
       }
       .auth-card h1,
       .auth-card h2 {
@@ -114,14 +142,14 @@
         border: 1px solid var(--line);
         border-radius: 10px;
         padding: 0.65rem;
-        background: rgba(9, 15, 28, 0.88);
-        color: var(--ink);
+        background: var(--auth-input-bg);
+        color: var(--auth-ink);
       }
       .auth-form input:focus,
       .auth-form select:focus {
         outline: none;
-        border-color: rgba(124, 234, 216, 0.52);
-        box-shadow: 0 0 0 2px rgba(124, 234, 216, 0.12);
+        border-color: color-mix(in srgb, var(--auth-highlight) 34%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--auth-highlight) 12%, transparent);
       }
       .auth-note {
         color: var(--muted);
@@ -133,17 +161,17 @@
         font-size: 1.25rem;
       }
       .dev-admin-card {
-        border: 1px solid rgba(214, 181, 106, 0.5);
+        border: 1px solid var(--auth-admin-line);
         background:
-          radial-gradient(circle at 100% 0%, rgba(214, 181, 106, 0.15), transparent 44%),
-          linear-gradient(155deg, rgba(23, 32, 54, 0.9), rgba(12, 19, 34, 0.92));
+          radial-gradient(circle at 100% 0%, var(--auth-admin-top), transparent 44%),
+          var(--auth-admin-surface);
       }
       .dev-admin-card h2 {
         margin: 0;
       }
       .dev-admin-note {
         margin: 0.45rem 0 0;
-        color: #d7c49a;
+        color: var(--auth-muted);
         font-size: 0.86rem;
         line-height: 1.45;
       }
@@ -159,7 +187,7 @@
         border: 1px solid var(--line);
         border-radius: 10px;
         padding: 0.65rem;
-        background: rgba(9, 15, 28, 0.76);
+        background: var(--auth-surface-soft);
       }
       .template-preview strong {
         display: block;
@@ -182,15 +210,15 @@
 
       body {
         background:
-          radial-gradient(circle at 12% 10%, rgba(255, 202, 166, 0.45), transparent 28%),
-          linear-gradient(180deg, #f5e8db 0%, #efdfcf 100%);
-        color: #2b180f;
+          radial-gradient(circle at 12% 10%, var(--auth-body-top), transparent 28%),
+          linear-gradient(180deg, var(--auth-body-start) 0%, var(--auth-body-end) 100%);
+        color: var(--auth-ink);
       }
 
       body::before {
         background-image:
-          linear-gradient(rgba(92, 58, 36, 0.06) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(92, 58, 36, 0.06) 1px, transparent 1px);
+          linear-gradient(var(--auth-grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--auth-grid) 1px, transparent 1px);
         background-size: 56px 56px;
         mask-image: none;
         opacity: 0.55;
@@ -204,11 +232,11 @@
       .auth-topbar,
       .auth-intro,
       .auth-card {
-        border-color: rgba(110, 59, 30, 0.1);
-        background: rgba(251, 243, 235, 0.92);
+        border-color: var(--auth-line);
+        background: var(--auth-surface);
         box-shadow:
-          0 18px 44px rgba(108, 68, 42, 0.08),
-          inset 0 1px 0 rgba(255,255,255,0.72);
+          var(--auth-elevated-shadow),
+          inset 0 1px 0 var(--auth-white-gloss);
       }
 
       .auth-topbar {
@@ -221,12 +249,12 @@
       .auth-card h2,
       .auth-intro h1,
       .auth-points strong {
-        color: #2b180f;
+        color: var(--auth-ink);
       }
 
       .auth-brand .brand-dot {
-        background: radial-gradient(circle at 30% 30%, #fff4d6, #ef9f66 58%, #cb5a35);
-        box-shadow: 0 0 0 6px rgba(239, 159, 102, 0.14);
+        background: radial-gradient(circle at 30% 30%, var(--auth-brand-core), var(--auth-accent) 58%, var(--auth-primary));
+        box-shadow: 0 0 0 6px var(--auth-brand-ring);
       }
 
       .auth-wrap {
@@ -244,47 +272,46 @@
       .dev-admin-note,
       .template-preview small,
       .msg-box {
-        color: #6a4e3e;
+        color: var(--auth-muted);
       }
 
       .auth-points li,
       .template-preview {
-        border-color: rgba(110, 59, 30, 0.1);
-        background: rgba(255, 250, 245, 0.92);
+        border-color: var(--auth-line);
+        background: var(--auth-surface-soft);
       }
 
       .auth-form input,
       .auth-form select {
-        border-color: rgba(110, 59, 30, 0.1);
+        border-color: var(--auth-line);
         border-radius: 14px;
         padding: 0.75rem 0.85rem;
-        background: rgba(255, 250, 245, 0.96);
-        color: #2b180f;
+        background: var(--auth-input-bg);
+        color: var(--auth-ink);
       }
 
       .auth-form input:focus,
       .auth-form select:focus {
-        border-color: rgba(203, 90, 53, 0.45);
-        box-shadow: 0 0 0 3px rgba(203, 90, 53, 0.12);
+        border-color: color-mix(in srgb, var(--auth-highlight) 34%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--auth-highlight) 12%, transparent);
       }
 
       .btn {
         border-color: rgba(128, 67, 37, 0.16);
-        background: #e3a16f;
-        background-image: none;
-        color: #3b2d23;
-        box-shadow: 0 10px 24px rgba(135, 78, 46, 0.16);
+        background: linear-gradient(135deg, #22140f 0%, var(--auth-primary) 56%, var(--auth-accent) 100%);
+        color: var(--auth-button-text);
+        box-shadow: var(--auth-soft-shadow);
       }
 
       .btn.btn-ghost {
         background: #fff7f0;
-        color: #3b2418;
+        color: var(--auth-ink);
         box-shadow: none;
       }
 
       .dev-admin-card {
-        border-color: rgba(205, 111, 64, 0.18);
-        background: rgba(255, 246, 238, 0.96);
+        border-color: var(--auth-admin-line);
+        background: var(--auth-admin-surface);
       }
     </style>
   </head>
@@ -402,8 +429,8 @@
         front desk work, client retention, and day-to-day business performance.
       </p>
     </footer>
-    <script src="/theme-toggle.js?v=20260302-neutral2"></script>
     <script type="module" src="/auth.js"></script>
+    <script type="module" src="/salon-theme.js?v=20260309-theme2"></script>
   </body>
 </html>
 

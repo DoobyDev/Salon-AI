@@ -236,5 +236,39 @@
       "connectedAt": null,
       "updatedAt": null
     }
+  },
+  "biz_acc_1772990866472": {
+    "quickbooks": {
+      "provider": "quickbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "xero": {
+      "provider": "xero",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": "2026-03-08T17:27:46.545Z"
+    },
+    "freshbooks": {
+      "provider": "freshbooks",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    },
+    "sage": {
+      "provider": "sage",
+      "status": "not_connected",
+      "accountLabel": "",
+      "syncMode": "daily",
+      "connectedAt": null,
+      "updatedAt": null
+    }
   }
 }

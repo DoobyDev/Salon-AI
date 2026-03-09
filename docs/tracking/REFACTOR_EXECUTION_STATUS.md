@@ -1,0 +1,888 @@
+# Refactor Execution Status
+
+Last updated: 2026-03-08
+
+## Phase 1: Tracking + Standards
+Status: in_progress
+
+Completed:
+- Added TODO tracker.
+- Added FIXME tracker.
+- Added TBD tracker.
+- Added repo reorg plan.
+- Added codebase conventions.
+
+Remaining:
+- Keep trackers current after each completed change.
+
+## Phase 2: Frontend Structure (Dashboard)
+Status: completed
+
+Completed:
+- Removed duplicated role/layout visibility block at startup path by routing through `enforceDashboardRoleLayoutVisibility()`.
+- Kept Business Hub popup wiring unchanged visually.
+- Extracted role-based visibility orchestration into new module:
+  - `public/dashboard-layout.js`
+  - `public/dashboard.js` now delegates to `applyDashboardRoleLayoutVisibility(...)`
+- Extracted Business Hub card definitions into a dedicated module:
+  - `public/dashboard-business-hub.js`
+  - `public/dashboard.js` now uses `getBusinessHubModulesForRole(...)`
+- Extracted Business Hub popup/card renderer into a dedicated runtime module:
+  - `public/dashboard-business-hub-popup.js`
+  - `public/dashboard.js` now delegates popup/card rendering via `createBusinessHubRuntime(...)`
+- Extracted module usage tracking helpers into a dedicated runtime module:
+  - `public/dashboard-module-usage.js`
+  - `public/dashboard.js` now delegates usage storage/summary helpers via `createModuleUsageRuntime(...)`
+- Extracted module status evaluation into a dedicated runtime module:
+  - `public/dashboard-module-status.js`
+  - `public/dashboard.js` now delegates `moduleOperationalStatus(...)` and `renderModuleStatusPill(...)` via `createModuleStatusRuntime(...)`
+- Extracted module catalog lookup helpers into a dedicated runtime module:
+  - `public/dashboard-module-catalog.js`
+  - `public/dashboard.js` now delegates `moduleDefinitionByKey(...)` and popup-mode checks via `createModuleCatalogRuntime(...)`
+- Extracted module grouping/navigation helpers into a dedicated runtime module:
+  - `public/dashboard-module-groups.js`
+  - `public/dashboard.js` now delegates grouping/heading helpers via `createModuleGroupingRuntime(...)`
+- Extracted module purpose-profile helper into a dedicated module:
+  - `public/dashboard-module-profile.js`
+  - `public/dashboard.js` now delegates `moduleBusinessJobProfile(...)` via `getModuleBusinessJobProfile(...)`
+- Extracted module popup snapshot generator into a dedicated module:
+  - `public/dashboard-module-snapshots.js`
+  - `public/dashboard.js` now delegates `modulePopupSnapshotItems(...)` via `getModulePopupSnapshotItems(...)`
+- Extracted module routing helpers into a dedicated runtime module:
+  - `public/dashboard-module-routing.js`
+  - `public/dashboard.js` now delegates popup-only checks and pinned-module checks via `createModuleRoutingRuntime(...)`
+- Extracted module narrative helpers into a dedicated module:
+  - `public/dashboard-module-narrative.js`
+  - `public/dashboard.js` now delegates `moduleOpsCategoryLabel(...)` and `moduleLexiNarrativeProfile(...)` to the module
+- Extracted Lexi brief helpers into a dedicated runtime module:
+  - `public/dashboard-module-lexi-brief.js`
+  - `public/dashboard.js` now delegates `moduleLexiAssistQuestion(...)` and `buildModuleLexiBriefModel(...)` via `createModuleLexiBriefRuntime(...)`
+- Extracted Lexi brief panel renderer into a dedicated runtime module:
+  - `public/dashboard-module-lexi-panel.js`
+  - `public/dashboard.js` now delegates `renderModuleLexiBriefPanel(...)` via `createModuleLexiPanelRuntime(...)`
+- Extracted module operator blueprint model into a dedicated module:
+  - `public/dashboard-module-operator-blueprint.js`
+  - `public/dashboard.js` now delegates `moduleOperatorBlueprint(...)` via `getModuleOperatorBlueprint(...)`
+- Extracted module action handlers into a dedicated runtime module:
+  - `public/dashboard-module-actions.js`
+  - `public/dashboard.js` now delegates `openLexiModuleAssist(...)` and `runModuleOperatorAction(...)` via `createModuleActionRuntime(...)`
+- Extracted Opening/Closing checklist popup logic into a dedicated runtime module:
+  - `public/dashboard-open-close-checklist.js`
+  - `public/dashboard.js` now delegates checklist state/model/render/bind helpers via `createOpenCloseChecklistRuntime(...)`
+- Extracted module workboard renderer into a dedicated runtime module:
+  - `public/dashboard-module-workboard.js`
+  - `public/dashboard.js` now delegates `renderModuleWorkboardPanel(...)` via `createModuleWorkboardRuntime(...)`
+- Extracted module info/workspace popup controller into a dedicated runtime module:
+  - `public/dashboard-module-popups.js`
+  - `public/dashboard.js` now delegates `openModuleInfoModal(...)` and `openInteractiveModulePopup(...)` via `createModulePopupRuntime(...)`
+- Extracted mobile bottom-nav runtime into a dedicated module:
+  - `public/dashboard-mobile-nav.js`
+  - `public/dashboard.js` now delegates `visibleMobileNavButtons(...)`, `setActiveMobileNavButtonBySection(...)`, and `initializeMobileBottomNav(...)` via `createDashboardMobileNavRuntime(...)`
+- Extracted booking date-filter and preset helpers into a dedicated runtime module:
+  - `public/dashboard-booking-filters.js`
+  - `public/dashboard.js` now delegates `updateBookingRangeControls(...)`, `setBookingDateFilter(...)`, `dateKeyRangeForPreset(...)`, `makeDateKeySet(...)`, and `applyBookingDatePreset(...)` via `createBookingFilterRuntime(...)`
+- Extracted calendar day workspace popup runtime into a dedicated module:
+  - `public/dashboard-calendar-day-workspace.js`
+  - `public/dashboard.js` now delegates `refreshBookingsAfterDayPopupMutation(...)` and `openCalendarDayWorkspace(...)` via `createCalendarDayWorkspaceRuntime(...)`
+- Extracted customer Lexi popup/mic lifecycle runtime into a dedicated module:
+  - `public/dashboard-customer-lexi-popup.js`
+  - `public/dashboard.js` now delegates popup shell creation, mic capture controls, avatar panel state updates, and popup open/close via `createCustomerLexiPopupRuntime(...)`
+- Extracted customer Lexi realtime/avatar orchestration into a dedicated runtime module:
+  - `public/dashboard-customer-lexi-realtime.js`
+  - `public/dashboard.js` now delegates realtime session setup, avatar session setup, connection cleanup, transcript updates, and voice preparation flows via `createCustomerLexiRealtimeRuntime(...)`
+- Extracted customer Lexi planner/calendar rendering runtime into a dedicated module:
+  - `public/dashboard-customer-lexi-planner.js`
+  - `public/dashboard.js` now delegates planner prompt generation, team legend/day summary rendering, and calendar rendering/dataset helpers via `createCustomerLexiPlannerRuntime(...)`
+- Extracted customer search + reception chat runtime into a dedicated module:
+  - `public/dashboard-customer-reception.js`
+  - `public/dashboard.js` now delegates customer salon selection/search rendering, reception chat rendering/reply logic, and chat prompt queueing/guidance helpers via `createCustomerReceptionRuntime(...)`
+- Extracted customer dashboard analytics/control-center runtime into a dedicated module:
+  - `public/dashboard-customer-analytics.js`
+  - `public/dashboard.js` now delegates customer booking history rendering, analytics cards, control-center cards, and customer dashboard refresh orchestration via `createCustomerAnalyticsRuntime(...)`
+- Extracted customer experience bootstrap runtime into a dedicated module:
+  - `public/dashboard-customer-bootstrap.js`
+  - `public/dashboard.js` now delegates customer init/reset setup (`initializeCustomerExperience(...)`) via `createCustomerBootstrapRuntime(...)`
+- Extracted accounting live revenue runtime into a dedicated module:
+  - `public/dashboard-accounting-live.js`
+  - `public/dashboard.js` now delegates accounting live timeframe/range helpers, rendering, loading, and stream lifecycle (`formatRelativeTime(...)`, `timeframeLabel(...)`, `setAccountingTimeframe(...)`, `setQuickFilterVisualState(...)`, `setAccountingLiveRange(...)`, `getThisWeekRange(...)`, `getThisMonthRange(...)`, `renderAccountingLiveRevenue(...)`, `loadAccountingLiveRevenue(...)`, `startAccountingLiveStream(...)`) via `createAccountingLiveRuntime(...)`
+- Extracted staff rota utility helpers into a dedicated module:
+  - `public/dashboard-staff-utils.js`
+  - `public/dashboard.js` now delegates pure staff helper utilities (`parseShiftDaysInput(...)`, `formatDateKey(...)`, `normalizeStaffCellStatus(...)`, `normalizeStaffShiftType(...)`, `roleLabel(...)`, `getStaffStatusLabel(...)`, `getStaffStatusDotColor(...)`, `getStaffInitials(...)`, `nextStaffCellStatus(...)`, `getStaffShiftLabel(...)`) to module exports
+- Extracted waitlist utility helpers into a dedicated module:
+  - `public/dashboard-waitlist-utils.js`
+  - `public/dashboard.js` now delegates waitlist datetime parsing/prefill helpers (`parseWaitlistDateTime(...)`, `buildWaitlistRecoveryPrefillDateTime(...)`) to module exports
+- Extracted staff rota week/state lifecycle runtime into a dedicated module:
+  - `public/dashboard-staff-rota-week.js`
+  - `public/dashboard.js` now delegates staff week lifecycle and persistence helpers (`setStaffStatus(...)`, `loadStaffRotaOverrides(...)`, `saveStaffRotaOverrides(...)`, `getStaffWeekStartDate(...)`, `getStaffWeekKey(...)`, `getStaffWeekMeta(...)`, `formatStaffWeekRange(...)`, `normalizeIncomingRotaWeek(...)`, `loadStaffRotaWeek(...)`, `persistStaffRotaBulk(...)`, `resetStaffRotaWeekRemote(...)`) via `createStaffRotaWeekRuntime(...)`
+- Extracted staff rota core state/update runtime into a dedicated module:
+  - `public/dashboard-staff-rota-core.js`
+  - `public/dashboard.js` now delegates staff core helpers and update workflows (`getStaffMemberId(...)`, week/member override accessors, day-state helpers, override pruning, staff color mapping, snapshot + cover-candidate builders, `getCurrentRotaBrush(...)`, `applyStaffRotaUpdates(...)`, `loadStaffDemoRotaPreview(...)`, `promptStaffSickReport(...)`, `applyAutoCoverForWeek(...)`) via `createStaffRotaCoreRuntime(...)`
+- Extracted business profile and social setup runtime into a dedicated module:
+  - `public/dashboard-business-profile.js`
+  - `public/dashboard.js` now delegates business/social profile helpers (`renderSocialMediaPreview(...)`, `setSocialMediaFormValues(...)`, `validateHttpUrl(...)`, `loadSocialMediaLinks(...)`, `collectSocialMediaPayloadFromInputs(...)`, `validateSocialPayload(...)`, `saveSocialMediaLinks(...)`, `setBusinessProfileStatus(...)`, `openBusinessProfileSetupModal(...)`, `closeBusinessProfileSetupModal(...)`, `formatServicesForEditor(...)`, `parseServiceEditorText(...)`, `getBusinessHoursPayload(...)`, `setBusinessProfileFormValues(...)`, `loadBusinessProfile(...)`, `saveBusinessProfile(...)`, `applyBusinessTemplate(...)`) via `createBusinessProfileRuntime(...)`
+- Extracted admin account support and accounting export runtime into a dedicated module:
+  - `public/dashboard-admin-support.js`
+  - `public/dashboard.js` now delegates admin support/account export helpers (`adminAccountSupportSelectedAccount(...)`, `renderAdminAccountSupportModule(...)`, `loadAdminAccountSupport(...)`, `openAdminAccountSupportEditForm(...)`, `parseExportFileName(...)`, `runAccountingExport(...)`) and binds the related admin popup/export event handlers via `createAdminSupportRuntime(...)`
+- Extracted business copilot popup/runtime into a dedicated module:
+  - `public/dashboard-business-copilot.js`
+  - `public/dashboard.js` now delegates business copilot helpers (`renderSubscriberCopilotSnapshot(...)`, copilot link builders/renderers, popup shell helpers, mic lifecycle helpers, chat message helpers, business AI context/workspace builders, prompt helpers, and `askSubscriberCopilot(...)` / `askAdminCopilot(...)`) and binds the related popup/form/scope event handlers via `createBusinessCopilotRuntime(...)`
+- Extracted admin platform analytics/runtime into a dedicated module:
+  - `public/dashboard-admin-platform.js`
+  - `public/dashboard.js` now delegates admin platform analytics rendering/loading helpers (`renderAdminPlatformOverview(...)`, `renderAdminUsageIntelligenceContent(...)`, `loadAdminPlatformOverview(...)`) and binds the admin platform export action via `createAdminPlatformRuntime(...)`
+- Extracted Business Hub command/reporting runtime into a dedicated module:
+  - `public/dashboard-business-reporting.js`
+  - `public/dashboard.js` now delegates Business Hub/reporting helpers (`loadHubAutoRoutinePrefs(...)`, `saveHubAutoRoutinePrefs(...)`, `businessHubCommandModel(...)`, `renderBusinessHubCommandDeck(...)`, `buildBusinessReportPayload(...)`, `buildBusinessReportHtml(...)`, `openPrintWindowWithHtml(...)`, `printBusinessReportPdf(...)`, `queueBusinessReportEmail(...)`, `openBusinessReportEmailFlow(...)`) and binds the related Hub/reporting event handlers via `createBusinessReportingRuntime(...)`
+- Extracted bookings/metrics runtime into a dedicated module:
+  - `public/dashboard-bookings-runtime.js`
+  - `public/dashboard.js` now delegates booking list/filter/status helpers, booking edit/cancel workflows, metrics loading, booking pagination/loading, and the related bookings/filter event handlers via `createBookingsRuntime(...)`
+- Extended the bookings runtime with shared booking creation requests:
+  - `public/dashboard-bookings-runtime.js`
+  - `public/dashboard.js` now keeps `createBooking(...)` as a thin delegate to `createBookingsRuntime(...)`
+- Removed unused demo catalog arrays and an unused module navigator no-op from `public/dashboard.js`
+- Extracted mock/demo dashboard bootstrap data into a dedicated module:
+  - `public/dashboard-mock-runtime.js`
+  - `public/dashboard.js` now keeps `loadMockDashboard()` as a thin delegate to `createMockDashboardRuntime(...)`
+- Removed the final `loadMockDashboard()` wrapper from `public/dashboard.js`; the mock branch now calls `mockDashboardRuntime.loadMockDashboard()` directly
+- Kept the role-layout gate in `public/dashboard.js` as a single bound delegate constant instead of a named wrapper function body
+- Removed the stale `renderSubscriberFullDemoModePanel()` startup call from `public/dashboard.js` after the demo panel implementation was retired
+- Extracted shared dashboard storage keys, speech-recognition handle, and staff-rota day constants into a dedicated module:
+  - `public/dashboard-constants.js`
+  - `public/dashboard.js` now imports those static config values instead of defining them inline
+- Extracted shared front-desk mock data and customer salon directory data into a dedicated module:
+  - `public/dashboard-customer-data.js`
+  - `public/dashboard.js` now imports the front-desk preview payload and customer salon directory instead of defining them inline
+- Moved the front-desk preview startup binding fully into the extracted runtime:
+  - `public/dashboard-frontdesk-mock.js`
+  - `public/dashboard.js` now calls `frontDeskMockRuntime.bindFrontDeskMockLoad()` instead of binding `DOMContentLoaded` inline
+- Removed the local `formatBusinessTypeLabel(...)` wrapper from `public/dashboard.js`; customer runtimes now use `frontDeskMockRuntime.formatBusinessTypeLabel(...)` directly
+- Removed additional front-desk/business-profile bridge wrappers from `public/dashboard.js`:
+  - the dead `renderFrontDeskMock()` wrapper is gone
+  - mock startup wiring now calls the business-profile runtime directly for social preview/form updates
+- Removed more dead business-profile bridge wrappers from `public/dashboard.js`:
+  - the local social setup/validation wrappers for URL validation, payload collection/validation, save, and setup-modal open/close are gone
+  - manage-social wiring now calls `businessProfileRuntime` methods directly
+- Removed the local `setBusinessProfileStatus(...)` wrapper from `public/dashboard.js`; startup/mock wiring now calls `businessProfileRuntime` directly for profile status updates
+- Removed additional dead business-profile bridge wrappers from `public/dashboard.js`:
+  - removed unused local wrappers for service formatting, business-hours payload, profile save/template actions
+  - startup/mock wiring now calls `businessProfileRuntime` directly for profile load and form-value application
+- Removed additional single-use bridge wrappers from `public/dashboard.js`:
+  - Business Hub runtime wiring now inlines its role-based module lookup instead of using `businessHubModulesForCurrentRole()`
+  - module-popup snapshot context now inlines admin account-support selection access instead of using `adminAccountSupportSelectedAccount()`
+- Removed the duplicate `renderCalendarFeatureSidebarLexi(...)` bridge from `public/dashboard.js`; calendar pulse wiring now calls `calendarLexiRuntime.renderCalendarFeatureSidebarLexi(...)` directly
+- Removed additional dead business-copilot/calendar summary bridge wrappers from `public/dashboard.js`:
+  - removed unused local wrappers for subscriber copilot snapshot/link rendering
+  - business copilot runtime wiring now inlines selected-calendar summary access instead of using `selectedCalendarDateSummary()`
+- Removed the single-use `copilotPopupRefs(...)` wrapper from `public/dashboard.js`; module-action wiring now calls `businessCopilotRuntime.copilotPopupRefs(...)` directly
+- Extracted the fallback text helper into a dedicated module:
+  - `public/dashboard-text.js`
+  - `public/dashboard.js` now imports `fallbackText as t` instead of defining the local `t(...)` helper inline
+- Extracted calendar and executive pulse runtime into a dedicated module:
+  - `public/dashboard-calendar-pulse.js`
+  - `public/dashboard.js` now delegates selected-day summary, subscriber calendar rendering, executive pulse rendering/snapshot helpers, and the related calendar/pulse event handlers via `createCalendarPulseRuntime(...)`
+- Extracted workspace star and dashboard Lexi launcher runtime into a dedicated module:
+  - `public/dashboard-workspace-star.js`
+  - `public/dashboard.js` now delegates workspace-star summary rendering plus dashboard Lexi launcher helpers/bindings via `createWorkspaceStarRuntime(...)`
+- Extracted calendar diary focus/walk-in runtime into a dedicated module:
+  - `public/dashboard-calendar-diary.js`
+  - `public/dashboard.js` now delegates diary focus-date helpers, week-strip/agenda/rota render helpers, walk-in creation flow, selected-day booking helpers, and calendar midnight refresh scheduling via `createCalendarDiaryRuntime(...)`
+- Extracted command center runtime into a dedicated module:
+  - `public/dashboard-command-center.js`
+  - `public/dashboard.js` now delegates command-center status/render/action helpers and the related command-center action click binding via `createCommandCenterRuntime(...)`
+- Extracted calendar day utility runtime into a dedicated module:
+  - `public/dashboard-calendar-day-utils.js`
+  - `public/dashboard.js` now delegates calendar day/date/time/status/revenue helper utilities (`parseDateKeyToDate(...)`, `statusChipClass(...)`, `parseTimeToMinutes(...)`, `formatMinutesToTime(...)`, `summarizeCalendarDaySchedule(...)`, `summarizeCalendarDayRevenue(...)`, `formatCalendarDayTitle(...)`) via `createCalendarDayUtilsRuntime(...)`
+- Extracted customer interaction binding runtime into a dedicated module:
+  - `public/dashboard-customer-interactions.js`
+  - `public/dashboard.js` now binds customer search/reset/salon-selection and reception submit/clear interactions via `createCustomerInteractionsRuntime(...)`
+- Extracted calendar Lexi sidebar runtime into a dedicated module:
+  - `public/dashboard-calendar-lexi.js`
+  - `public/dashboard.js` now delegates calendar Lexi sidebar rendering, prompt-building, launch helpers, and delegated day/deck action bindings via `createCalendarLexiRuntime(...)`
+- Extracted staff rota UI runtime into a dedicated module:
+  - `public/dashboard-staff-rota-ui.js`
+  - `public/dashboard.js` now delegates staff rota week controls, quick-assign flow, drag-paint helpers, and roster/grid interaction bindings via `createStaffRotaUiRuntime(...)`
+- Extracted waitlist/operations/CRM runtime into a dedicated module:
+  - `public/dashboard-operations-runtime.js`
+  - `public/dashboard.js` now delegates waitlist status/render/load/mutation helpers, operations insight renderers/actions, CRM segment render/load/send helpers, and their local event bindings via `createOperationsRuntime(...)`
+- Extracted business controls event runtime into a dedicated module:
+  - `public/dashboard-business-controls-events.js`
+  - `public/dashboard.js` now binds the local commercial, merch, revenue-spend, and profitability form/list interactions via `createBusinessControlsEventsRuntime(...)`
+- Extracted accounting integrations runtime into a dedicated module:
+  - `public/dashboard-accounting-integrations.js`
+  - `public/dashboard.js` now delegates accounting integrations render/load/connect/disconnect helpers and the local provider form/list bindings via `createAccountingIntegrationsRuntime(...)`
+- Extracted business controls runtime into a dedicated module:
+  - `public/dashboard-business-controls-runtime.js`
+  - `public/dashboard.js` now delegates commercial, merch, revenue attribution, and profitability status/render/load/mutation helpers via `createBusinessControlsRuntime(...)`
+- Extracted customer Lexi calendar event runtime into a dedicated module:
+  - `public/dashboard-customer-lexi-calendar-events.js`
+  - `public/dashboard.js` now binds customer Lexi calendar navigation, view switching, day selection, and selected-day planner actions via `createCustomerLexiCalendarEventsRuntime(...)`
+- Extracted managed social-link click actions into a dedicated module:
+  - `public/dashboard-manage-social-actions.js`
+  - `public/dashboard.js` now delegates add/clear/edit/delete social link actions from the global click handler via `createManageSocialActionsRuntime(...)`
+- Extracted managed accounting integration click actions into a dedicated module:
+  - `public/dashboard-manage-accounting-actions.js`
+  - `public/dashboard.js` now delegates add/disconnect/edit/delete accounting integration actions from the global click handler via `createManageAccountingActionsRuntime(...)`
+- Extracted managed CRM click actions into a dedicated module:
+  - `public/dashboard-manage-crm-actions.js`
+  - `public/dashboard.js` now delegates CRM campaign/template/delete actions from the global click handler via `createManageCrmActionsRuntime(...)`
+- Extracted managed revenue/profitability click actions into a dedicated module:
+  - `public/dashboard-manage-revenue-profitability-actions.js`
+  - `public/dashboard.js` now delegates revenue spend and profitability payroll/cost actions from the global click handler via `createManageRevenueProfitabilityActionsRuntime(...)`
+- Extracted managed commercial/merch click actions into a dedicated module:
+  - `public/dashboard-manage-commercial-actions.js`
+  - `public/dashboard.js` now delegates membership/package/gift-card/merch actions from the global click handler via `createManageCommercialActionsRuntime(...)`
+- Extracted managed waitlist click actions into a dedicated module:
+  - `public/dashboard-manage-waitlist-actions.js`
+  - `public/dashboard.js` now delegates waitlist add-entry actions from the global click handler via `createManageWaitlistActionsRuntime(...)`
+- Extracted remaining booking/staff manage click actions into a dedicated module:
+  - `public/dashboard-manage-core-actions.js`
+  - `public/dashboard.js` now delegates booking creation and staff creation from the global click handler via `createManageCoreActionsRuntime(...)`
+- Extracted the document-level manage click dispatcher into a dedicated module:
+  - `public/dashboard-manage-dispatcher.js`
+  - `public/dashboard.js` now binds the manage-mode document click routing via `createManageDispatcherRuntime(...)`
+- Switched business-profile setup/social form bindings fully over to the extracted runtime:
+  - `public/dashboard-business-profile.js`
+  - `public/dashboard.js` now calls `businessProfileRuntime.bindBusinessProfileEvents()` instead of duplicating those listeners inline
+- Extracted admin-managed shortcut controls into a dedicated module:
+  - `public/dashboard-admin-managed-controls.js`
+  - `public/dashboard.js` now binds the admin managed calendar/hub/profile/Lexi shortcuts via `createAdminManagedControlsRuntime(...)`
+- Extracted billing/contact shortcut controls into a dedicated module:
+  - `public/dashboard-billing-controls.js`
+  - `public/dashboard.js` now binds checkout, portal, provider connect, and contact-admin actions via `createBillingControlsRuntime(...)`
+- Extracted admin managed-business search/select controls into a dedicated module:
+  - `public/dashboard-admin-business-controls.js`
+  - `public/dashboard.js` now binds admin business filtering and selection via `createAdminBusinessControlsRuntime(...)`
+- Extracted accounting live timeframe/range controls into a dedicated module:
+  - `public/dashboard-accounting-live-controls.js`
+  - `public/dashboard.js` now binds accounting timeframe, quick filters, and custom date range controls via `createAccountingLiveControlsRuntime(...)`
+- Extracted dashboard session/toggle controls into a dedicated module:
+  - `public/dashboard-session-controls.js`
+  - `public/dashboard.js` now binds edit-mode toggle, demo-mode notice, and accounting stream cleanup via `createDashboardSessionControlsRuntime(...)`
+- Extracted account session and local billing-preference controls into a dedicated module:
+  - `public/dashboard-account-session-controls.js`
+  - `public/dashboard.js` now binds logout and local auto-renew preference controls via `createAccountSessionControlsRuntime(...)`
+- Extracted the document-level module jump/popup router into a dedicated module:
+  - `public/dashboard-module-click-router.js`
+  - `public/dashboard.js` now binds workspace back, hub popup, module popup, and module jump routing via `createModuleClickRouterRuntime(...)`
+- Extracted customer Lexi launch and AI quick-routine controls into a dedicated module:
+  - `public/dashboard-ai-launch-controls.js`
+  - `public/dashboard.js` now binds customer Lexi launch buttons and subscriber/admin AI quick routines via `createAiLaunchControlsRuntime(...)`
+- Extracted staff roster form controls into a dedicated module:
+  - `public/dashboard-staff-roster-controls.js`
+  - `public/dashboard.js` now binds the add-staff form via `createStaffRosterControlsRuntime(...)`
+- Extracted dashboard startup orchestration into a dedicated module:
+  - `public/dashboard-startup-runtime.js`
+  - `public/dashboard.js` now runs the initial bind/startup flow via `createDashboardStartupRuntime(...)`
+- Extended the startup runtime with the initial async dashboard load phase:
+  - `public/dashboard-startup-runtime.js`
+  - `public/dashboard.js` now routes the bottom-of-file admin/subscriber first-load fetch orchestration through `runInitialDashboardLoads()`
+- Extracted admin managed-business render/status helpers into a dedicated module:
+  - `public/dashboard-admin-business-runtime.js`
+  - `public/dashboard.js` now delegates admin business status, filtered options, select rendering, and managed-business summary helpers via `createAdminBusinessRuntime(...)`
+- Removed additional dead fallback bodies after runtime extractions:
+  - `public/dashboard.js`
+  - cleaned unreachable inline implementations under `setBusinessProfileFormValues(...)`, `openStaffDayQuickAssign(...)`, `stageStaffRotaPaint(...)`, and `flushStaffRotaDragPaint(...)`
+- Removed a broader set of dead delegate fallback bodies left behind after earlier runtime splits:
+  - `public/dashboard.js`
+  - cleaned unreachable inline implementations under the business copilot, calendar diary, admin platform/support, business reporting, workspace star, executive pulse, and related runtime delegate wrappers
+- Extracted managed section shortcut-row injection into a dedicated module:
+  - `public/dashboard-managed-section-actions.js`
+  - `public/dashboard.js` now delegates booking/staff/waitlist/social/CRM/commercial/accounting/revenue/profitability manage-row setup via `createManagedSectionActionsRuntime(...)`
+- Extracted subscriber billing summary and checkout helpers into a dedicated module:
+  - `public/dashboard-subscriber-billing.js`
+  - `public/dashboard.js` now delegates subscriber billing summary loading, provider/cycle inference, plan rendering, checkout session creation, PayPal subscription launch, and billing portal launch via `createSubscriberBillingRuntime(...)`
+- Extracted staff roster rendering and CRUD helpers into a dedicated module:
+  - `public/dashboard-staff-roster-runtime.js`
+  - `public/dashboard.js` now delegates staff summary rendering, roster rendering, roster payload application, and staff roster load/save/update/delete flows via `createStaffRosterRuntime(...)`
+- Extracted the Business Hub growth/onboarding panel into a dedicated module:
+  - `public/dashboard-business-growth-panel.js`
+  - `public/dashboard.js` now delegates business hub growth panel rendering, including billing banner, onboarding checklist, and first-seven-days summary cards, via `createBusinessGrowthPanelRuntime(...)`
+- Extracted dashboard module navigation and mobile quick-booking flow into a dedicated module:
+  - `public/dashboard-module-navigation.js`
+  - `public/dashboard.js` now delegates module focus/home navigation, workspace back visibility, module visibility/init, and mobile quick booking creation via `createModuleNavigationRuntime(...)`
+- Extracted shared manage-mode UI helpers into a dedicated module:
+  - `public/dashboard-manage-ui.js`
+  - `public/dashboard.js` now delegates manage toast stack, modal overlay, HTML escaping, generic manage form, and generic confirm modal helpers via `createManageUiRuntime(...)`
+- Extracted Lexi pending-booking reminder popup flow into a dedicated module:
+  - `public/dashboard-lexi-pending-reminders.js`
+  - `public/dashboard.js` now delegates pending booking popup rendering, reminder loop management, snooze/dismiss actions, and pending-booking review routing via `createLexiPendingRemindersRuntime(...)`
+- Extracted executive pulse scope/storage/time/bucket helpers into a dedicated module:
+  - `public/dashboard-executive-pulse-utils.js`
+  - `public/dashboard.js` now delegates executive pulse scope keying, snapshot storage, range config creation, working-hours parsing, row-time parsing, revenue estimation, and bucket aggregation via `createExecutivePulseUtilsRuntime(...)`
+- Extracted subscriber merch analytics helpers into a dedicated module:
+  - `public/dashboard-merch-analytics.js`
+  - `public/dashboard.js` now delegates merchandise shipment/sales/profit/top-product analytics via `createMerchAnalyticsRuntime(...)`
+- Extracted shared dashboard formatting/date/clipboard helpers into a dedicated module:
+  - `public/dashboard-shared-utils.js`
+  - `public/dashboard.js` now delegates money formatting, clipboard writes, padded date-key formatting, booking-date parsing, provider labels, and date-time formatting via `createDashboardSharedUtilsRuntime(...)`
+- Extended the shared dashboard formatting/date helper module with local "today" date-key generation:
+  - `public/dashboard-shared-utils.js`
+  - `public/dashboard.js` now keeps `todayDateKeyLocal()` as a thin delegate to `createDashboardSharedUtilsRuntime(...)`
+- Extracted staff rota date/coverage helpers into a dedicated module:
+  - `public/dashboard-staff-date-utils.js`
+  - `public/dashboard.js` now delegates rota day-key/week-start helpers and date-based working-staff resolution via `createStaffDateUtilsRuntime(...)`
+- Extracted dashboard status/demo/ui-preference helpers into a dedicated module:
+  - `public/dashboard-preferences-runtime.js`
+  - `public/dashboard.js` now delegates dashboard action status timing, demo-fill preference persistence, demo-mode navigation, and UI density helpers via `createDashboardPreferencesRuntime(...)`
+- Extracted admin managed-business loading/reload orchestration into a dedicated module:
+  - `public/dashboard-admin-business-loading.js`
+  - `public/dashboard.js` now delegates admin business option loading and managed dashboard reload orchestration via `createAdminBusinessLoadingRuntime(...)`
+- Removed duplicate executive pulse chart/storyline helper bodies from `public/dashboard.js`:
+  - `public/dashboard-calendar-pulse.js`
+  - `public/dashboard.js` now keeps the executive pulse chart/storyline wrappers as thin delegates to `createCalendarPulseRuntime(...)`
+- Extracted role-based module definitions into a dedicated module:
+  - `public/dashboard-module-definitions.js`
+  - `public/dashboard.js` now delegates module normalization and role-based module catalog generation via `createModuleDefinitionsRuntime(...)`
+- Removed the legacy inline module-definition fallback block from `public/dashboard.js` after wiring the runtime-backed delegates
+- Extracted module popup support helpers into a dedicated module:
+  - `public/dashboard-module-popup-support.js`
+  - `public/dashboard.js` now delegates the popup purpose strip renderer and popup snapshot-context bridge via `createModulePopupSupportRuntime(...)`
+- Extracted shared dashboard request helpers into a dedicated module:
+  - `public/dashboard-request-utils.js`
+  - `public/dashboard.js` now delegates auth-header creation, manage-scope gating, and managed-business URL scoping via `createDashboardRequestUtilsRuntime(...)`
+- Moved the remaining customer Lexi avatar video/stage popup helper into the existing popup runtime:
+  - `public/dashboard-customer-lexi-popup.js`
+  - `public/dashboard.js` now keeps `getCustomerLexiAvatarVideo()` and `setCustomerLexiAvatarVideoActive(...)` as thin delegates only
+- Extracted subscriber emergency admin-contact helpers into a dedicated module:
+  - `public/dashboard-contact-admin.js`
+  - `public/dashboard.js` now delegates local urgent-message persistence and the contact-admin modal flow via `createContactAdminRuntime(...)`
+- Extracted small routing/UI support helpers into a dedicated module:
+  - `public/dashboard-routing-ui-support.js`
+  - `public/dashboard.js` now delegates admin business query sync, metric-card injection, generic section show/hide, and popup-only module rendering via `createDashboardRoutingUiSupportRuntime(...)`
+- Extracted front-desk mock formatting/render helpers into a dedicated module:
+  - `public/dashboard-frontdesk-mock.js`
+  - `public/dashboard.js` now delegates business-type labeling and front-desk mock rendering via `createFrontDeskMockRuntime(...)`
+- Extracted manage-mode state/persistence helpers into a dedicated module:
+  - `public/dashboard-manage-mode.js`
+  - `public/dashboard.js` now delegates manager-role detection plus manage-mode load/set/init behavior via `createDashboardManageModeRuntime(...)`
+- Extracted dashboard role/header/admin-scope chrome initialization into a dedicated module:
+  - `public/dashboard-role-chrome.js`
+  - `public/dashboard.js` now initializes the title, identity hinting, managed-business scope visibility, and overview chrome via `createDashboardRoleChromeRuntime(...)`
+- Extracted the shared copilot list renderer into a dedicated module:
+  - `public/dashboard-copilot-ui.js`
+  - `public/dashboard.js` now delegates `renderCopilotList(...)` via `createDashboardCopilotUiRuntime(...)`
+- Removed the stale inline calendar feature sidebar body from `public/dashboard.js`:
+  - `public/dashboard-calendar-lexi.js`
+  - `public/dashboard.js` now keeps `renderCalendarFeatureSidebar(...)` as a thin delegate to `createCalendarLexiRuntime(...)`
+- Extracted small dashboard status/date helpers into a dedicated module:
+  - `public/dashboard-status-utils.js`
+  - `public/dashboard.js` now delegates clean-slate detection, top-metrics visibility, short-date formatting, and accounting status-note rendering via `createDashboardStatusUtilsRuntime(...)`
+- Removed duplicate Hub auto-routine preference bodies from `public/dashboard.js`:
+  - `public/dashboard-business-reporting.js`
+  - `public/dashboard.js` now keeps `loadHubAutoRoutinePrefs()` and `saveHubAutoRoutinePrefs(...)` as thin delegates to `createBusinessReportingRuntime(...)`
+- Removed dead business-copilot/calendar bridge wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for `dashboardMicSupported()`, `businessLexiStatusRefs(...)`, `businessAiContextString(...)`, and `renderCalendarFeatureSidebar(...)`
+  - `public/dashboard.js` now relies directly on extracted runtimes for those paths instead of keeping unreferenced bridge functions
+- Removed another dead business-copilot wrapper cluster from `public/dashboard.js`:
+  - Deleted unused local delegates for `subscriberCopilotLinkCandidates()`, `getBusinessAiPopupCard(...)`, `ensureBusinessAiPopupHost(...)`, `renderSubscriberCopilotResponse(...)`, and `renderAdminCopilotResponse(...)`
+  - Those copilot helpers now exist only inside `public/dashboard-business-copilot.js`
+- Removed dead business-copilot mic/chat bridge wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for `setBusinessLexiPanelState(...)`, `setBusinessLexiMicButtonState(...)`, `stopBusinessLexiMicCapture(...)`, `startBusinessLexiMicCapture(...)`, `appendCopilotChatMessage(...)`, `ensureCopilotChatSeed(...)`, and `closeBusinessAiChatPopup(...)`
+  - `public/dashboard.js` now keeps only the still-wired copilot popup delegates needed by other runtimes
+- Removed dead calendar-diary/contact bridge wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for `getCalendarDiaryFocusDate()`, `getCalendarDiaryServiceOptions()`, `renderCalendarDiaryAgenda()`, `renderCalendarDiaryRotaPanel()`, and `saveLocalAdminContactMessage(...)`
+  - `openCalendarDiaryWalkIn(...)` now uses `calendarDiaryRuntime.getCalendarDiaryFocusDateKey()` directly for its default focus date
+- Removed dead admin/platform/business-report bridge wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for `loadUiDensityPreference()`, `setUiDensity()`, `renderAdminPlatformOverview()`, `renderAdminUsageIntelligenceContent()`, `businessHubCommandModel()`, `renderBusinessHubCommandDeck()`, `buildBusinessReportPayload()`, `buildBusinessReportHtml(...)`, and `openPrintWindowWithHtml(...)`
+  - Those helpers now exist only inside their extracted runtimes instead of the main dashboard composition layer
+- Removed dead module-group and module-usage bridge wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for `moduleGroupForRole(...)`, `formatModuleGroupHeading(...)`, `moduleUsageStorageKey()`, `loadModuleUsageMap()`, and `saveModuleUsageMap(...)`
+  - `public/dashboard.js` now keeps only the still-wired module grouping and usage helpers used by active runtimes
+- Collapsed more single-use bridge wrappers in `public/dashboard.js`:
+  - Inlined admin account-support rendering, accounting export filename parsing, and module business-job profile access directly into runtime construction
+  - Removed the local `renderAdminAccountSupportModule()`, `parseExportFileName(...)`, and `moduleBusinessJobProfile(...)` bridge functions
+- Collapsed more single-use module bridge wrappers in `public/dashboard.js`:
+  - Inlined Business Hub card rendering, Business Hub popup opening, and module usage-summary access directly into runtime construction
+  - Removed the local `openBusinessHubModulePopup(...)`, `renderBusinessHubCards()`, and `moduleUsageSummary(...)` bridge functions
+- Collapsed more single-use module popup/navigation bridge wrappers in `public/dashboard.js`:
+  - Inlined grouped-module lookup, popup purpose-strip rendering, popup snapshot lookup, and pinned-module checks directly into runtime construction
+  - Removed the local `groupedModulesForCurrentRole()`, `renderModulePurposeStrip(...)`, `modulePopupSnapshotItems(...)`, and `isPinnedBusinessModule(...)` bridge functions
+- Collapsed more single-use copilot/contact bridge wrappers in `public/dashboard.js`:
+  - Inlined copilot chat reset, AI prompt setting, and contact-admin modal opening directly into runtime construction
+  - Removed the local `resetCopilotChat(...)`, `setBusinessAiPrompt(...)`, and `openContactAdminModal()` bridge functions
+- Collapsed the module catalog/status bridge layer in `public/dashboard.js`:
+  - Inlined module definition lookup, popup-type checks, usage marking, and module status rendering directly into Business Hub and module runtime construction
+  - Removed the local `moduleDefinitionByKey(...)`, `moduleUsesInteractivePopup(...)`, `moduleUsesInfoPopup(...)`, `markModuleUsed(...)`, `moduleOperationalStatus(...)`, and `renderModuleStatusPill(...)` bridge functions
+- Removed another dead wrapper batch from `public/dashboard.js`:
+  - Deleted unused local delegates for `getCalendarDiaryFocusDateKey()`, `copilotPromptWithBusinessContext(...)`, and `normalizeModuleConfig(...)`
+  - Those helpers now exist only inside their extracted runtimes instead of the main dashboard composition layer
+- Collapsed the module narrative/operator bridge layer in `public/dashboard.js`:
+  - Inlined module operator-blueprint, narrative-profile, and ops-category helpers directly into module runtime construction
+  - Removed the local `moduleOperatorBlueprint(...)`, `moduleOpsCategoryLabel(...)`, and `moduleLexiNarrativeProfile(...)` bridge functions
+- Removed another single-use module-definition bridge from `public/dashboard.js`:
+  - Inlined role-based module-definition lookup directly into module grouping and catalog runtime construction
+  - Removed the local `moduleDefinitionsForRole()` wrapper
+- Removed another single-use startup bridge from `public/dashboard.js`:
+  - Inlined UI-density initialization directly into dashboard startup runtime construction
+  - Removed the local `initializeUiDensity()` wrapper
+- Removed the Hub auto-routine preference bridge wrappers from `public/dashboard.js`:
+  - Inlined Hub auto-routine preference load/save access directly into module Lexi, workboard, and popup runtime construction
+  - Removed the local `loadHubAutoRoutinePrefs()` and `saveHubAutoRoutinePrefs(...)` wrappers
+- Collapsed the admin-business bridge layer in `public/dashboard.js`:
+  - Inlined admin business status, filtered option lookup, select rendering, managed-business summary rendering, and query-param sync directly into runtime construction
+  - Removed the local `setAdminBusinessStatus(...)`, `filteredAdminBusinessOptions()`, `renderAdminBusinessSelect(...)`, `renderAdminManagedBusinessSummary()`, and `syncAdminBusinessQueryParam()` bridge functions
+- Removed the remaining copilot launch/render bridge wrappers from `public/dashboard.js`:
+  - Inlined Business AI popup opening and Business AI workspace rendering directly into runtime construction
+  - Removed the local `openBusinessAiChatPopup(...)` and `renderBusinessAiWorkspace(...)` wrappers
+- Removed the popup-routing bridge pair from `public/dashboard.js`:
+  - Inlined popup-only module detection and popup-only module rendering directly into module runtime construction
+  - Removed the local `isPopupOnlyBusinessModuleKey(...)` and `renderPopupOnlyBusinessModule(...)` wrappers
+- Removed another single-use popup-section bridge from `public/dashboard.js`:
+  - Inlined popup-mounted section detection directly into operations and business-controls runtime construction
+  - Removed the local `isPopupMountedBusinessSection(...)` wrapper
+- Removed the manage-scope bridge wrapper from `public/dashboard.js`:
+  - Inlined `canManageBusinessModules()` directly into the admin support, operations, accounting, business-controls, and staff-roster runtime construction
+  - Removed the local `canManageBusinessModules()` wrapper
+- Removed the metrics bridge wrapper from `public/dashboard.js`:
+  - Inlined metric-card insertion directly into bookings and mock runtime construction
+  - Removed the local `addMetric(...)` wrapper
+- Removed the managed-request bridge wrapper from `public/dashboard.js`:
+  - Inlined managed-business path scoping directly into business profile, admin support, reporting, bookings, billing, operations, accounting, business-controls, and staff runtimes
+  - Removed the local `withManagedBusiness(...)` wrapper
+- Removed the remaining calendar-diary bridge pair from `public/dashboard.js`:
+  - Inlined calendar-date jumping and diary week-strip rendering directly into calendar pulse runtime construction
+  - Removed the local `jumpToCalendarDate(...)` and `renderCalendarDiaryWeekStrip()` wrappers
+- Removed dead admin-support/reporting helper wrappers from `public/dashboard.js`:
+  - Deleted unused local delegates for admin account-support edit/export and business-report print/email flows
+  - Kept `loadAdminAccountSupport(...)` in place because it still feeds routing UI support
+- Removed another single-use startup bridge from `public/dashboard.js`:
+  - Inlined admin platform overview loading directly into dashboard startup runtime construction
+  - Removed the local `loadAdminPlatformOverview()` wrapper
+- Removed another single-use admin-support bridge from `public/dashboard.js`:
+  - Inlined admin account-support loading directly into routing UI support runtime construction
+  - Removed the local `loadAdminAccountSupport(...)` wrapper
+- Removed the shared short-date bridge wrapper from `public/dashboard.js`:
+  - Inlined short-date formatting directly into admin platform/support, business growth, module popup snapshot, and subscriber billing runtime construction
+  - Removed the local `formatDateShort(...)` wrapper
+- Removed the top-metrics visibility bridge wrapper from `public/dashboard.js`:
+  - Inlined top-metrics visibility checks directly into admin-business loading, bookings, dashboard startup, calendar day workspace, and manage-core runtime construction
+  - Removed the local `shouldRenderTopMetricsGrid()` wrapper
+- Collapsed the remaining module popup/brief bridge cluster in `public/dashboard.js`:
+  - Inlined module Lexi brief building, Lexi launch, and module popup open handlers directly into module runtime construction
+  - Removed the local `moduleLexiAssistQuestion(...)`, `buildModuleLexiBriefModel(...)`, `renderModuleLexiBriefPanel(...)`, `openLexiModuleAssist(...)`, `openModuleInfoModal(...)`, and `openInteractiveModulePopup(...)` wrappers
+- Removed the shared local-date bridge wrapper from `public/dashboard.js`:
+  - Inlined `todayDateKeyLocal()` directly into copilot, reporting, checklist, module navigation, mobile-nav, executive pulse, and calendar day workspace runtime construction
+  - Removed the local `todayDateKeyLocal()` wrapper
+- Removed the business-growth panel bridge wrapper from `public/dashboard.js`:
+  - Inlined Business Hub growth-panel rendering directly into business profile, bookings, startup, accounting integrations, and mock runtime construction
+  - Removed the local `renderBusinessGrowthPanel()` wrapper
+- Collapsed the module-navigation bridge cluster in `public/dashboard.js`:
+  - Inlined module focus, workspace-back visibility, and return-to-home navigation directly into runtime construction
+  - Removed the local `focusModuleByKey(...)`, `setWorkspaceBackButtonVisible(...)`, and `returnToDashboardHomeView()` wrappers
+- Collapsed the checklist/workboard bridge cluster in `public/dashboard.js`:
+  - Inlined checklist panel rendering/binding and module workboard rendering directly into module popup runtime construction
+  - Removed the local `loadOpenCloseChecklistState()`, `saveOpenCloseChecklistState(...)`, `openingClosingChecklistModel()`, `renderOpeningClosingChecklistPanel(...)`, `bindOpeningClosingChecklistPanel(...)`, and `renderModuleWorkboardPanel(...)` wrappers
+- Removed the shared section-visibility bridge wrappers from `public/dashboard.js`:
+  - Inlined section show/hide delegates directly into preferences, role chrome, managed controls, Business Hub growth, startup, calendar pulse, operations, business-controls, and manage-mode runtime construction
+  - Removed the local `hideSection(...)` and `showSection(...)` wrappers
+- Removed the manage-mode bridge wrappers from `public/dashboard.js`:
+  - Inlined manager-role checks and manage-mode initialization/toggling directly into bookings, calendar workspace, startup, session controls, operations, manage dispatcher, managed section actions, business-controls events, accounting live, and staff-rota runtime construction
+  - Removed the local `isDashboardManagerRole()`, `loadManageModePreference()`, `setManageMode(...)`, and `initializeManageMode()` wrappers
+- Removed the mobile/module-navigation bridge wrappers from `public/dashboard.js`:
+  - Inlined module navigator startup, mobile bottom-nav startup, and mobile quick-booking launch directly into runtime construction
+  - Removed the local `openQuickCreateBookingFromMobile()`, `initializeModuleNavigator()`, and `initializeMobileBottomNav()` wrappers, plus the dead `visibleMobileNavButtons()`, `setActiveMobileNavButtonBySection(...)`, and `applyModuleVisibility()` wrappers
+- Removed the demo-fill/copilot bridge wrappers from `public/dashboard.js`:
+  - Inlined demo-fill preference load/refresh directly into startup and wired the business-copilot runtime straight to the copilot UI runtime
+  - Removed the local `refreshDemoModeToggle()`, `loadDashboardDemoFillPreference()`, `setDashboardDemoFillPreference(...)`, `navigateWithDemoMode(...)`, and `renderCopilotList(...)` wrappers
+- Removed the Lexi-pending reminder bridge wrappers from `public/dashboard.js`:
+  - Inlined the remaining reminder sync delegate directly into bookings runtime construction
+  - Removed the local `ensureLexiPendingPopup()`, `hideLexiPendingPopup()`, `getPendingConfirmationBookings()`, `buildLexiPendingSignature(...)`, `updateLexiPendingPopupContent(...)`, `showLexiPendingPopup(...)`, `openLexiPendingBookingsReview()`, `stopLexiPendingReminderLoop()`, `ensureLexiPendingReminderLoop()`, and `syncLexiPendingReminders()` wrappers
+- Removed the executive-pulse utility bridge wrappers from `public/dashboard.js`:
+  - Inlined executive-pulse range, revenue, bucket, and snapshot delegates directly into calendar-pulse runtime construction
+  - Removed the local `getExecutivePulseScopeKey()`, `getExecutivePulseSnapshotStorageKey()`, `readExecutivePulseSnapshots()`, `writeExecutivePulseSnapshots(...)`, `getExecutivePulseRangeConfig(...)`, `getExecutiveRowRevenueEstimate(...)`, `parseFlexibleHourTextToMinutes(...)`, `parseBusinessHoursRangeToMinutes(...)`, `getExecutivePulseWorkingHoursForDate(...)`, `parseExecutiveBookingRowTimeMinutes(...)`, and `getExecutivePulseBuckets(...)` wrappers
+- Removed the workspace/calendar/staff-date bridge wrappers from `public/dashboard.js`:
+  - Inlined workspace-star launch/render, subscriber-calendar render, calendar today-refresh scheduling, and staff-working-for-date delegates directly into runtime construction
+  - Removed the local `renderWorkspaceStarPanel()`, `dashboardLexiPromptForSource(...)`, `openDashboardLexiForCurrentRole(...)`, `openDashboardLexiForRole(...)`, `renderSubscriberCalendar()`, `scheduleCalendarTodayRefresh()`, `getRotaDayKeyFromDate(...)`, `getRotaWeekStartKeyForDate(...)`, and `getStaffWorkingForDate(...)` wrappers
+- Removed the calendar-day utility bridge wrappers from `public/dashboard.js`:
+  - Inlined calendar-day parsing, date-title, status-chip, time-formatting, and day-summary delegates directly into the runtimes that use them
+  - Removed the local `parseDateKeyToDate(...)`, `getBookingsForDateKey(...)`, `statusChipClass(...)`, `formatCalendarDayTitle(...)`, `parseTimeToMinutes(...)`, `formatMinutesToTime(...)`, `summarizeCalendarDaySchedule(...)`, and `summarizeCalendarDayRevenue(...)` wrappers
+- Removed the customer-reception bridge wrappers from `public/dashboard.js`:
+  - Inlined customer salon selection, search rendering, reception-chat rendering, reply generation, and customer Lexi prompt delegates directly into the customer runtimes that consume them
+  - Removed the local `getSelectedCustomerSalon()`, `renderCustomerSearchResults()`, `renderCustomerSelectedSalon()`, `runCustomerSalonSearch()`, `renderCustomerReceptionChat()`, `normalizeCustomerLexiTypos(...)`, `getReceptionReply(...)`, `appendCustomerLexiChat(...)`, `queueCustomerLexiPrompt(...)`, and `appendCustomerLexiGuidance(...)` wrappers
+- Removed the customer Lexi planner bridge wrappers from `public/dashboard.js`:
+  - Inlined customer Lexi calendar/planner delegates directly into the customer analytics, reception, and calendar-event runtimes
+  - Removed the local `parseCustomerSlotEntry(...)`, `getCustomerLexiCalendarDataset()`, `buildCustomerLexiPlannerPrompt(...)`, `getCustomerLexiTeamMembers(...)`, `renderCustomerLexiStaffLegend(...)`, `getWeekStartFromDateKey(...)`, `renderCustomerLexiDaySummary(...)`, and `renderCustomerLexiCalendar()` wrappers
+- Removed the customer Lexi popup/realtime bridge wrappers from `public/dashboard.js`:
+  - Inlined customer Lexi popup and realtime delegates directly into the customer avatar, calendar-event, AI-launch, and interaction runtimes
+  - Removed the local `ensureCustomerLexiPopup()`, `customerLexiMicSupported()`, `setCustomerLexiMicButtonState(...)`, `stopCustomerLexiMicCapture()`, `toggleCustomerLexiMicCapture()`, `setCustomerLexiAvatarPanelState(...)`, `getCustomerLexiAvatarVideo()`, `setCustomerLexiAvatarVideoActive(...)`, `extractCustomerLexiRealtimeText(...)`, `updateCustomerLexiTranscript(...)`, `resetCustomerLexiVoiceControls()`, `getCustomerLexiVoiceButtonLabel(...)`, `cleanupCustomerLexiRealtimeConnection()`, `handleCustomerLexiRealtimeEvent(...)`, `openCustomerLexiPopup()`, `closeCustomerLexiPopup()`, and `updateCustomerChatGuideHint()` wrappers
+- Removed the customer analytics/bootstrap bridge wrappers from `public/dashboard.js`:
+  - Inlined customer analytics/control-center and bootstrap refresh delegates directly into the customer runtimes that consume them
+  - Removed the local `renderCustomerBookingHistory(...)`, `renderCustomerAnalytics(...)`, `renderCustomerControlCenter(...)`, `refreshCustomerDashboard()`, and `initializeCustomerExperience()` wrappers
+- Removed the accounting/status bridge wrappers from `public/dashboard.js`:
+  - Inlined accounting live controls, status messaging, provider/date formatting, and live-render delegates directly into the accounting runtimes that consume them
+  - Removed the local `formatProviderLabel(...)`, `formatDateTime(...)`, `setAccountingStatus(...)`, `setAccountingLiveNote(...)`, `formatRelativeTime(...)`, `timeframeLabel(...)`, `setAccountingTimeframe(...)`, `setQuickFilterVisualState(...)`, `setAccountingLiveRange(...)`, `getThisWeekRange()`, `getThisMonthRange()`, `renderAccountingLiveRevenue()`, and `startAccountingLiveStream()` wrappers
+- Removed the staff roster/status bridge wrappers from `public/dashboard.js`:
+  - Inlined staff roster rendering and staff status delegates directly into the staff, manage-mode, and mock runtimes that consume them
+  - Removed the local `setStaffStatus(...)`, `renderStaffSummary()`, `renderStaffRoster()`, and `applyStaffRosterPayload(...)` wrappers
+- Removed the bookings bridge wrappers from `public/dashboard.js`:
+  - Inlined booking creation, loading, filtering, metric loading, pending-banner, and booking-status delegates directly into the runtimes that consume them
+  - Removed the local `createBooking(...)`, `renderBookings(...)`, `normalizeText(...)`, `parseLexiBookingContextNotes(...)`, `isPendingConfirmationStatus(...)`, `formatBookingStatusLabel(...)`, `getFilteredBookings()`, `applyBookingFilters()`, `updatePendingBookingBanner()`, `setActiveStatusChip(...)`, `loadMetrics()`, `updateLoadMoreState(...)`, and `loadBookings(...)` wrappers
+- Removed the operations/waitlist bridge wrappers from `public/dashboard.js`:
+  - Inlined waitlist, operations-insight, and CRM delegates directly into the startup, calendar workspace, CRM, waitlist-manage, and mock runtimes that consume them
+  - Removed the local `setWaitlistStatus(...)`, `parseWaitlistDateTime(...)`, `buildWaitlistRecoveryPrefillDateTime(...)`, `stageWaitlistRecoveryFromBooking(...)`, `renderWaitlistSummary()`, `renderWaitlist()`, `applyWaitlistPayload(...)`, `loadWaitlist()`, `upsertWaitlistEntry(...)`, `markWaitlistContacted(...)`, `removeWaitlistEntry(...)`, `setOperationsStatus(...)`, `setCrmStatus(...)`, `markRebookingPromptSent(...)`, `renderOperationsInsights()`, `renderCrmSegments()`, `loadCrmSegments()`, and `sendCrmCampaign(...)` wrappers
+- Removed the business-controls bridge wrappers from `public/dashboard.js`:
+  - Inlined commercial, merch, revenue-attribution, and profitability delegates directly into startup, manage-action, form-event, and mock runtimes
+  - Removed the local `setCommercialStatus(...)`, `setMerchStatus(...)`, `formatShipmentStatusLabel(...)`, `renderCommercialControls()`, `renderMerchControls()`, `applyCommercialPayload(...)`, `loadCommercialControls()`, `upsertMembership(...)`, `upsertPackage(...)`, `issueGiftCard(...)`, `redeemGiftCard(...)`, `upsertMerchItem(...)`, `createMerchShipment(...)`, `setRevenueStatus(...)`, `toChannelLabel(...)`, `renderRevenueAttribution()`, `applyRevenueAttributionPayload(...)`, `loadRevenueAttribution()`, `saveRevenueChannelSpend(...)`, `setProfitabilityStatus(...)`, `renderProfitabilitySummary()`, `applyProfitabilityPayload(...)`, `loadProfitabilitySummary()`, `upsertPayrollInput(...)`, `removePayrollInput(...)`, and `upsertProfitabilityCosts(...)` wrappers
+- Removed the subscriber-billing/accounting bridge wrappers from `public/dashboard.js`:
+  - Inlined subscriber billing and accounting-integration delegates directly into startup, manage-action, billing-control, and mock runtimes
+  - Removed the local `loadBillingSummary()`, `inferBillingCycleFromSummary(...)`, `inferBillingProviderFromSummary(...)`, `getAutoRenewFromSummary(...)`, `renderSubscriberBillingControls()`, `openBillingCheckoutForProvider(...)`, `createCheckout()`, `createPayPalCheckout()`, `createPortal()`, `renderAccountingIntegrations()`, `loadAccountingIntegrations()`, `connectAccountingIntegration(...)`, and `disconnectAccountingIntegration(...)` wrappers
+- Removed the command-center bridge wrappers from `public/dashboard.js`:
+  - Inlined command-center render and booking-operations delegates directly into the runtimes that consume them
+  - Removed the local `setCommandCenterStatus(...)`, `focusBookingOperations()`, and `renderCommandCenter()` wrappers
+- Removed the booking-filter bridge wrappers from `public/dashboard.js`:
+  - Inlined booking range/filter delegates directly into startup, calendar pulse, and calendar-day workspace runtime construction
+  - Removed the local `updateBookingRangeControls()`, `setBookingDateFilter(...)`, `dateKeyRangeForPreset(...)`, `makeDateKeySet(...)`, and `applyBookingDatePreset(...)` wrappers
+- Removed the shared money/date utility bridge wrappers from `public/dashboard.js`:
+  - Inlined money formatting, zero-padding, local date-key formatting, and booking-date parsing delegates directly into the runtimes that still consume them
+  - Removed the local `formatMoney(...)`, `pad2(...)`, `toDateKey(...)`, and `parseBookingDate(...)` wrappers
+- Removed the admin-business loading and dead calendar-Lexi bridge wrappers from `public/dashboard.js`:
+  - Inlined admin-business option loading and managed-dashboard reload delegates directly into startup, admin support, and admin business control runtime construction
+  - Removed the local `loadAdminBusinessOptions()`, `reloadAdminManagedDashboard()`, `buildLexiCalendarPrompt(...)`, and `launchLexiCalendarActionFromButton(...)` wrappers
+- Removed the clipboard/calendar-day/accounting-live bridge wrappers from `public/dashboard.js`:
+  - Inlined clipboard writes plus calendar-day open/refresh delegates directly into the runtimes that still consume them, and removed the dead accounting live-load bridge
+  - Removed the local `writeToClipboard(...)`, `refreshBookingsAfterDayPopupMutation()`, `openCalendarDayWorkspace(...)`, and `loadAccountingLiveRevenue(...)` wrappers
+- Removed the managed-section and booking-action bridge wrappers from `public/dashboard.js`:
+  - Inlined managed-section setup plus booking cancel/reschedule delegates directly into startup and customer Lexi popup runtime construction
+  - Removed the local `setupManagedSectionActions()`, `cancelBooking(...)`, and `rescheduleBooking(...)` wrappers
+- Removed the dead command-center and executive-pulse helper bridge wrappers from `public/dashboard.js`:
+  - Deleted the unused local command-center action bridge plus the unused executive pulse/chart helper delegates that were already owned by extracted runtimes
+  - Removed the local `runCommandCenterAction(...)`, `renderExecutivePulseMiniBars(...)`, `buildExecutiveStoryPolylinePoints(...)`, `buildExecutiveStoryAreaPath(...)`, `renderExecutiveStoryLineChart(...)`, `renderExecutiveStoryLollipopChart(...)`, `renderExecutivePulseStoryline(...)`, `computeSubscriberMerchAnalytics()`, and `renderExecutivePulseSnapshotsList(...)` wrappers
+- Removed the dead customer Lexi realtime bridge wrappers from `public/dashboard.js`:
+  - Deleted the unused local customer Lexi realtime/avatar delegates that were already owned by the extracted realtime runtime, while keeping the two popup-linked wrappers that still serve local runtime construction
+  - Removed the local `loadCustomerLexiAvatarConfig()`, `requestCustomerLexiRealtimeSession()`, `loadCustomerLivekitClient()`, `requestCustomerLexiAvatarSession()`, `connectCustomerLexiAvatarSession()`, `connectCustomerLexiRealtimeSession(...)`, `startCustomerLexiAvatarDemo(...)`, and `startCustomerLexiVoicePreparation()` wrappers
+- Removed the staff roster CRUD and shift-parse bridge wrappers from `public/dashboard.js`:
+  - Inlined staff roster load/upsert/update/remove delegates plus shift-day parsing directly into the runtime construction sites that still consume them
+  - Removed the local `parseShiftDaysInput(...)`, `loadStaffRoster()`, `upsertStaffMember(...)`, `updateStaffAvailability(...)`, and `removeStaffMember(...)` wrappers
+- Removed the dead staff-rota UI bridge wrappers from `public/dashboard.js`:
+  - Deleted the unused local staff-rota UI delegates that were already owned by the extracted staff-rota UI runtime
+  - Removed the local `loadAndRenderStaffRotaWeek()`, `openStaffDayQuickAssign(...)`, `stageStaffRotaPaint(...)`, and `flushStaffRotaDragPaint()` wrappers
+- Removed another dead staff-helper bridge batch from `public/dashboard.js`:
+  - Deleted the unused local staff rota/day-state helper delegates that were already owned by the extracted staff week/core/util modules
+  - Removed the local `getStaffWeekStartDate()`, `getStaffMemberWeekOverrides(...)`, `getStaffDayState(...)`, `getStaffDayStatus(...)`, `getStaffDayShift(...)`, `setStaffDayStatus(...)`, `getStaffStatusDotColor(...)`, and `findCoverCandidatesForDay(...)` wrappers
+- Removed the last local customer Lexi popup/realtime bridge wrappers from `public/dashboard.js`:
+  - Inlined avatar panel hydration and avatar session cleanup delegates directly into the customer Lexi popup/realtime runtime construction
+  - Removed the local `hydrateCustomerLexiAvatarPanel()` and `cleanupCustomerLexiAvatarSession()` wrappers
+- Removed a staff utility wrapper batch from `public/dashboard.js`:
+  - Replaced several staff runtime-construction call sites with the already-imported staff utility helpers directly instead of routing through local wrapper functions
+  - Removed the local `formatDateKey(...)`, `normalizeStaffCellStatus(...)`, `normalizeStaffShiftType(...)`, `roleLabel(...)`, `getStaffStatusLabel(...)`, `getStaffInitials(...)`, `nextStaffCellStatus(...)`, and `getStaffShiftLabel(...)` wrappers
+- Removed another staff week/core bridge batch from `public/dashboard.js`:
+  - Inlined additional staff week/core delegates directly into the runtime construction sites that still consume them and removed the redundant local bridge functions
+  - Removed the local `saveStaffRotaOverrides()`, `getStaffWeekKey()`, `getStaffWeekMeta()`, `normalizeIncomingRotaWeek(...)`, `loadStaffRotaWeek(...)`, `persistStaffRotaBulk(...)`, `resetStaffRotaWeekRemote()`, `pruneStaffRotaOverridesForCurrentRoster()`, `applyStaffRotaUpdates(...)`, `loadStaffDemoRotaPreview()`, and `applyAutoCoverForWeek(...)` wrappers
+- Removed another staff core/date bridge subset from `public/dashboard.js`:
+  - Inlined staff member lookup, week-override access, base-day status, color lookup, week-clear, and sick-report delegates directly into the runtime construction sites that still use them
+  - Removed the local `getStaffMemberId(...)`, `getStaffWeekOverridesBucket(...)`, `getBaseStaffDayStatus(...)`, `clearStaffWeekOverrides()`, `getStaffColorForId(...)`, and `promptStaffSickReport(...)` wrappers
+- Removed the remaining obvious staff composition bridges from `public/dashboard.js`:
+  - Inlined staff rota snapshot, brush, day-state mutation, and staff week-range delegates directly into the runtime construction sites that still use them
+  - Removed the local `loadStaffRotaOverrides()`, `formatStaffWeekRange()`, `setStaffDayState(...)`, `buildStaffRotaSnapshot()`, and `getCurrentRotaBrush()` wrappers
+- Removed the last single-use module action bridge from `public/dashboard.js`:
+  - Inlined module operator actions directly into module popup runtime construction
+  - Removed the local `runModuleOperatorAction(...)` wrapper
+- Removed the shared executive pulse render bridge from `public/dashboard.js`:
+  - Inlined executive pulse rendering directly into the constructor sites that still consume it
+  - Removed the local `renderExecutivePulse()` wrapper
+
+Remaining:
+- Maintain the extracted runtime/module structure and only revisit `public/dashboard.js` if a future feature meaningfully changes ownership boundaries.
+
+## Phase 3: Server Structure
+Status: completed
+
+Completed:
+- Added targeted architecture comments around Prisma fallback and Lexi realtime/avatar session brokers.
+- Extracted PayPal billing helpers into a dedicated service:
+  - `src/services/paypal_billing.js`
+  - `server.js` now uses `createPayPalBillingService(...)` for PayPal base URL/config checks, access-token creation, subscription-session creation, webhook signature verification, and PayPal billing-cycle/custom-id parsing helpers
+- Finished the waitlist service cutover:
+  - `src/services/waitlist.js`
+  - `server.js` now routes waitlist list/upsert/backfill/delete flows through `createWaitlistService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization instead of the startup placeholder
+- Extracted accounting integration storage and connect/disconnect flows into a dedicated service:
+  - `src/services/accounting_integrations.js`
+  - `server.js` now routes accounting integration list/connect/disconnect flows through `createAccountingIntegrationsService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted revenue attribution and profitability storage/summary logic into a dedicated service:
+  - `src/services/revenue_profitability.js`
+  - `server.js` now routes revenue attribution plus profitability summary/payroll/cost flows through `createRevenueProfitabilityService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted commercial controls storage and mutation logic into a dedicated service:
+  - `src/services/commercial_controls.js`
+  - `server.js` now routes commercial controls, membership/package upserts, gift-card issue/redeem, and merch upsert/shipment flows through `createCommercialControlsService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted staff roster and rota storage/mutation logic into a dedicated service:
+  - `src/services/staff_roster.js`
+  - `server.js` now routes staff roster CRUD, rota week load/bulk/reset, and booking-capacity staff lookups through `createStaffRosterService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted social media extras storage into a dedicated service:
+  - `src/services/social_media.js`
+  - `server.js` now routes business social-media extra load/save through `createSocialMediaService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted the business report email queue into a dedicated service:
+  - `src/services/business_report_queue.js`
+  - `server.js` now routes business report email queue writes through `createBusinessReportQueueService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted live revenue analytics and accounting CSV helpers into a dedicated service:
+  - `src/services/live_revenue_analytics.js`
+  - `server.js` now routes admin revenue analytics, live revenue snapshots, and accounting CSV export helpers through `createLiveRevenueAnalyticsService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted shared business-type/default-profile helpers into a dedicated module:
+  - `src/services/business_profile_defaults.js`
+  - `server.js` now imports business-type normalization/search/defaults plus `parseHours(...)` from that module, while the business-hours/service input normalizers are created through `createBusinessProfileInputUtils(...)` with injected time-parsing helpers
+- Extracted shared display/date formatting helpers into a dedicated module:
+  - `src/services/display_formatting.js`
+  - `server.js` now imports user-time display, slot labeling, GB date formatting, and Lexi booking/slot formatting helpers instead of defining that formatter block inline
+- Extracted shared booking date/time and open-hours helpers into a dedicated module:
+  - `src/services/booking_time_utils.js`
+  - `server.js` now creates booking datetime, open-hours, time-math, day-key, and booking timing/status helpers through `createBookingTimeUtils(...)` instead of defining that utility block inline
+- Extracted shared pagination/cache helpers into a dedicated module:
+  - `src/services/pagination_cache_utils.js`
+  - `server.js` now creates page-size parsing, cursor encode/decode, cache-key building, and read-cache get/set/clear helpers through `createPaginationCacheUtils(...)` instead of defining that block inline
+- Extracted shared auth/token utilities into a dedicated module:
+  - `src/services/auth_utils.js`
+  - `server.js` now creates token signing plus auth/role middleware through `createAuthUtils(...)` instead of defining that block inline
+- Extracted shared validation/input helpers into a dedicated module:
+  - `src/services/validation_utils.js`
+  - `server.js` now imports email validation, phone validation, optional URL validation, and boolean input parsing instead of defining that block inline
+- Extracted shared business availability/mapping helpers into a dedicated module:
+  - `src/services/business_availability.js`
+  - `server.js` now creates business slot-availability lookup, business payload mapping, and business-hours slot validation through `createBusinessAvailabilityService(...)` instead of defining that block inline
+- Extracted shared request-context helpers into a dedicated module:
+  - `src/services/request_context_utils.js`
+  - `server.js` now creates booking-mutation access checks, CORS options, and managed-business resolution through `createRequestContextUtils(...)` instead of defining that block inline
+- Extracted shared JSON file-store helpers into a dedicated module:
+  - `src/services/json_file_store.js`
+  - `server.js` now routes repeated JSON object file read/write adapters through `readJsonObjectFile(...)` and `writeJsonFile(...)` instead of defining each file adapter inline
+- Extracted shared request auth-context helpers into a dedicated module:
+  - `src/services/request_auth_context.js`
+  - `server.js` now creates rate-limit key helpers and optional JWT decoding through `createRequestAuthContextUtils(...)` instead of defining that block inline
+- Extracted shared OpenAI quota-circuit helpers into a dedicated module:
+  - `src/services/openai_quota_circuit.js`
+  - `server.js` now creates quota cooldown/log-throttle helpers through `createOpenAiQuotaCircuitUtils(...)` instead of defining that block inline
+- Extracted shared booking-capacity helpers into a dedicated module:
+  - `src/services/booking_capacity.js`
+  - `server.js` now creates business date capacity lookup and slot-capacity checks through `createBookingCapacityService(...)` instead of defining that block inline
+- Extracted shared CRM segment helpers into a dedicated module:
+  - `src/services/crm_segments.js`
+  - `server.js` now creates customer rollup keys and CRM segment generation through `createCrmSegmentsService(...)` instead of defining that block inline
+- Extracted Lexi avatar/realtime support helpers into a dedicated module:
+  - `src/services/lexi_realtime_support.js`
+  - `server.js` now creates Lexi avatar config, HeyGen session helpers, realtime instruction building, business resolution, and OpenAI realtime client-secret brokerage through `createLexiRealtimeSupportService(...)`
+- Extracted runtime security and audit-log helpers into a dedicated module:
+  - `src/services/runtime_security_audit.js`
+  - `server.js` now imports secure-runtime validation and creates the audit-log writer through `createAuditLogWriter(...)` instead of defining that block inline
+- Extracted business profile load/save/template application into a dedicated service:
+  - `src/services/business_profile.js`
+  - `server.js` now routes business profile load/save/template flows through `createBusinessProfileService(...)`, while keeping validation and audit logging at the route layer
+- Extracted Lexi demo subscriber seeding into a dedicated service:
+  - `src/services/lexi_demo_seed.js`
+  - `server.js` now routes the demo-business seed bootstrap through `createLexiDemoSeedService(...)`, while keeping shared business-type defaults in the server composition layer
+- Extracted admin app usage analytics into a dedicated service:
+  - `src/services/admin_app_usage.js`
+  - `server.js` now sources admin usage-intelligence metrics through `createAdminAppUsageService(...)`, and the service resolves Prisma through `getPrisma()` so it uses the live client after runtime initialization
+- Extracted admin account-support payload shaping into a dedicated service:
+  - `src/services/admin_account_support.js`
+  - `server.js` now routes admin account payload shaping through `createAdminAccountSupportService(...)` for both admin account list and update flows
+- Extracted admin copilot snapshot/response logic into a dedicated service:
+  - `src/services/admin_copilot.js`
+  - `server.js` now routes admin copilot heuristic, snapshot, and OpenAI-backed response generation through `createAdminCopilotService(...)`
+- Extracted subscriber copilot snapshot/response logic into a dedicated service:
+  - `src/services/subscriber_copilot.js`
+  - `server.js` now routes subscriber copilot heuristic, snapshot, and OpenAI-backed response generation through `createSubscriberCopilotService(...)`
+- Extracted public subscribed-business search into a dedicated service:
+  - `src/services/public_business_search.js`
+  - `server.js` now routes shared public business discovery/search queries through `createPublicBusinessSearchService(...)`
+- Extracted public business profile/status shaping into a dedicated service:
+  - `src/services/public_business_profiles.js`
+  - `server.js` now routes public subscription-status checks and public business profile mapping through `createPublicBusinessProfileService(...)`
+- Extracted public Lexi business-discovery reply building into a dedicated service:
+  - `src/services/public_lexi_discovery.js`
+  - `server.js` now routes shared public business-discovery reply generation through `createPublicLexiDiscoveryService(...)`
+- Extracted the public Lexi system prompt into a dedicated module:
+  - `src/services/public_lexi_prompt.js`
+  - `server.js` now imports `buildPublicLexiSystemPrompt(...)` instead of defining the prompt inline
+- Extracted public Lexi conversation-memory and booking-draft helpers into a dedicated service:
+  - `src/services/public_lexi_memory.js`
+  - `server.js` now routes memory normalization and booking draft-state building through `createPublicLexiMemoryService(...)`
+- Extracted public Lexi parsing helpers into a dedicated service:
+  - `src/services/public_lexi_parsing.js`
+  - `server.js` now routes location/type inference plus public contact parsing through `createPublicLexiParsingService(...)`
+- Extracted public Lexi booking-intent helpers into a dedicated service:
+  - `src/services/public_lexi_booking.js`
+  - `server.js` now routes booking-intent checks and draft-driven public booking replies through `createPublicLexiBookingService(...)`
+- Extracted shared public Lexi date/service/question helpers into a dedicated module:
+  - `src/services/public_lexi_helpers.js`
+  - `server.js` now imports shared public Lexi typo normalization, date parsing, service inference, question classification, and currency/date helper utilities instead of defining that helper block inline
+- Extracted shared Lexi text normalization into a dedicated module:
+  - `src/services/lexi_text.js`
+  - `server.js` now imports `normalizeLexiReplyText(...)` instead of owning the live text-normalization helper inline
+- Extracted shared Lexi data-restriction checks into a dedicated module:
+  - `src/services/lexi_restrictions.js`
+  - `server.js` now imports `isLexiRestrictedDataRequest(...)` and `lexiRestrictedDataReply(...)` instead of owning the live restriction checks inline
+- Extracted billing event processing into a dedicated service:
+  - `src/services/billing_events.js`
+  - `server.js` now routes PayPal and Stripe subscription-event handling through `createBillingEventService(...)`, while the job-runtime wiring stays in the server composition layer
+- Removed stale local copilot and Lexi text helper duplicates from `server.js` after those flows had already been cut over to shared services:
+  - deleted dead local admin copilot snapshot/response helpers
+  - deleted dead local subscriber copilot snapshot/response helpers
+  - deleted dead legacy Lexi restriction/text-normalization helpers that had already been replaced by shared service imports
+- Extracted public chat business-resolution and pre-selection guidance into a dedicated service:
+  - `src/services/public_chat_context.js`
+  - `server.js` now routes public chat business lookup and no-business-yet reply shaping through `createPublicChatContextService(...)`
+- Extracted `/api/chat` OpenAI tool-call handlers into a dedicated service:
+  - `src/services/public_chat_tools.js`
+  - `server.js` now routes public business search/profile lookup, slot checks, and AI booking creation through `createPublicChatToolsService(...)`
+- Extracted `/api/chat` OpenAI tool schema definitions into a dedicated module:
+  - `src/services/public_chat_tool_definitions.js`
+  - `server.js` now sources the public chat tool contract from `getPublicChatToolDefinitions()`
+- Extracted `/api/chat` OpenAI message assembly into a dedicated service:
+  - `src/services/public_chat_prompt.js`
+  - `server.js` now builds public chat prompt messages through `createPublicChatPromptService(...)`
+- Extracted `/api/chat` OpenAI error and fallback response handling into a dedicated service:
+  - `src/services/public_chat_error.js`
+  - `server.js` now routes quota/auth/general chat error handling through `createPublicChatErrorService(...)`
+- Extracted the general public Lexi FAQ tail from the fallback reply path into a dedicated service:
+  - `src/services/public_lexi_faq.js`
+  - `server.js` now routes the final general-help/location/hours/product/app/weather FAQ replies through `createPublicLexiFaqService(...)`
+- Extracted the remaining public Lexi service/treatment guidance FAQ set from the fallback reply path into the same dedicated service:
+  - `src/services/public_lexi_faq.js`
+  - `server.js` now routes the inline service-recommendation, consultation, pricing, product, and prep guidance replies through `publicLexiFaqService.buildServiceGuidanceFaqReply(...)`
+- Extracted the remaining public Lexi booking/search/revenue contextual replies from the fallback path into a dedicated service:
+  - `src/services/public_lexi_contextual.js`
+  - `server.js` now routes business lookup, slot/day availability, today-revenue, and booking follow-up fallback replies through `createPublicLexiContextualService(...)`
+- Extracted the remaining public Lexi conversation follow-up and customer-access/policy reply block from the fallback path into a dedicated service:
+  - `src/services/public_lexi_conversation.js`
+  - `server.js` now routes booking-confirmation follow-ups, short conversational nudges, auth/cancel/reschedule guidance, app capability answers, and policy replies through `createPublicLexiConversationService(...)`
+- Extracted the public Lexi intro and greeting reply branch from the fallback path into a dedicated service:
+  - `src/services/public_lexi_intro.js`
+  - `server.js` now routes empty-input, greeting-only, and introduced-name greeting replies through `createPublicLexiIntroService(...)`
+- Removed the now-dead inline public Lexi fallback placeholder branches from `server.js` after the intro flow was extracted:
+  - deleted the disabled `if (false)` greeting/help remnants that no longer participated in the public fallback path
+- Extracted the remaining public Lexi fallback orchestration into a dedicated service:
+  - `src/services/public_lexi_fallback.js`
+  - `server.js` now delegates the public Lexi fallback context assembly and ordered intro/discovery/booking/conversation/contextual/FAQ reply chain through `createPublicLexiFallbackService(...)`
+- Moved the public Lexi safe fallback wrapper into the same dedicated fallback service:
+  - `src/services/public_lexi_fallback.js`
+  - `server.js` no longer owns the normalized try/catch wrapper for Lexi fallback replies and now calls `publicLexiFallbackService.buildFallbackReplySafe(...)` directly
+- Extracted the broader `/api/chat` request orchestration into a dedicated service:
+  - `src/services/public_chat_route.js`
+  - `server.js` now delegates public chat request validation, business resolution, OpenAI/local fallback routing, audit logging, completion handling, and tool-response shaping through `createPublicChatRouteService(...)`
+- Extracted the remaining `/api/chat` Express handler wrapper into a dedicated service:
+  - `src/services/public_chat_handler.js`
+  - `server.js` now registers `app.post("/api/chat", chatLimiter, publicChatHandler)` while the handler owns request-state capture and shared error fallback delegation
+- Extracted the subscriber/admin copilot HTTP handlers into a dedicated service:
+  - `src/services/copilot_route_handlers.js`
+  - `server.js` now registers the subscriber and admin copilot POST routes with extracted handler functions instead of owning those request/response flows inline
+- Extracted the subscriber dashboard HTTP handler into a dedicated service:
+  - `src/services/subscriber_dashboard_handler.js`
+  - `server.js` now registers the subscriber dashboard GET route with an extracted handler instead of keeping the analytics/risk/rebooking response assembly inline
+- Extracted the nearby engagement/customer-CRM HTTP handler cluster into a dedicated service:
+  - `src/services/engagement_route_handlers.js`
+  - `server.js` now registers the rebooking mark-sent, customer dashboard, CRM segments, and CRM campaign-send routes with extracted handlers instead of owning those flows inline
+- Extracted the commercial-controls HTTP route family into a dedicated service:
+  - `src/services/commercial_controls_handlers.js`
+  - `server.js` now registers the commercial controls load, membership/package upsert, gift-card issue/redeem, and merch upsert/shipping routes with extracted handlers instead of keeping that HTTP glue inline
+- Extracted the revenue/profitability HTTP route cluster into a dedicated service:
+  - `src/services/revenue_profitability_handlers.js`
+  - `server.js` now registers the revenue attribution, spend update, profitability summary, payroll upsert/delete, and costs update routes with extracted handlers instead of keeping those service-backed flows inline
+- Extracted the accounting live-revenue/export HTTP handlers into a dedicated service:
+  - `src/services/accounting_live_revenue_handlers.js`
+  - `server.js` now registers the accounting live-revenue snapshot and CSV export routes with extracted handlers instead of keeping their validation/scope/export glue inline
+- Extracted the business-report email and accounting-integrations management HTTP handlers into a dedicated service:
+  - `src/services/business_reports_accounting_handlers.js`
+  - `server.js` now registers the business-report queueing and accounting integrations list/connect/disconnect routes with extracted handlers instead of keeping those service-backed flows inline
+- Extracted the staff-roster/rota HTTP route family into a dedicated service:
+  - `src/services/staff_roster_handlers.js`
+  - `server.js` now registers the staff roster list/upsert/remove, availability update, rota week, rota bulk update, and rota reset routes with extracted handlers instead of keeping that HTTP glue inline
+- Extracted the waitlist HTTP route family into a dedicated service:
+  - `src/services/waitlist_handlers.js`
+  - `server.js` now registers the waitlist list/upsert/backfill/delete routes with extracted handlers instead of keeping that validation and audit-log glue inline
+- Extracted the subscriber billing HTTP route cluster into a dedicated service:
+  - `src/services/subscriber_billing_handlers.js`
+  - `server.js` now registers the subscriber billing summary, Stripe checkout, PayPal subscription, and Stripe portal routes with extracted handlers instead of keeping those provider-specific flows inline
+- Extracted the auth register/login HTTP route cluster into a dedicated service:
+  - `src/services/auth_route_handlers.js`
+  - `server.js` now registers the subscriber register, customer register, and login routes with extracted handlers instead of keeping those validation, provisioning, token, and audit flows inline
+- Extracted the business profile/social-media HTTP route cluster into a dedicated service:
+  - `src/services/business_profile_handlers.js`
+  - `server.js` now registers the business profile load/save/template and business social-media load/save routes with extracted handlers instead of keeping that CRUD and audit glue inline
+- Extracted the bookings HTTP route family into a dedicated service:
+  - `src/services/booking_route_handlers.js`
+  - `server.js` now registers the booking create, public-demo feed, admin list, my-bookings list, cancel, and reschedule routes with extracted handlers instead of keeping that validation, pagination, capacity-check, and audit glue inline
+- Extracted the admin platform/support HTTP route cluster into a dedicated service:
+  - `src/services/admin_platform_handlers.js`
+  - `server.js` now registers the admin dashboard, admin revenue analytics/export, admin businesses list, and admin account search/update routes with extracted handlers instead of keeping those analytics, CSV export, support search, and audit flows inline
+- Extracted the public business search/profile HTTP route pair into a dedicated service:
+  - `src/services/public_business_route_handlers.js`
+  - `server.js` now registers the public business search and public business detail routes with extracted handlers instead of keeping that search filtering, cursor pagination, slot-enrichment, and cache glue inline
+- Extracted the Lexi realtime/avatar HTTP route cluster into a dedicated service:
+  - `src/services/lexi_realtime_route_handlers.js`
+  - `server.js` now registers the Lexi avatar-config, realtime session, avatar session start, and avatar session stop routes with extracted handlers instead of keeping that auth gating, readiness fallback, and provider-session brokerage glue inline
+- Extracted the billing webhook HTTP route pair into a dedicated service:
+  - `src/services/billing_webhook_handlers.js`
+  - `server.js` now registers the Stripe and PayPal billing webhook routes with extracted handlers instead of keeping that signature verification, provider validation, and billing-event queue glue inline
+- Extracted the remaining platform/system HTTP route group into a dedicated service:
+  - `src/services/platform_route_handlers.js`
+  - `server.js` now registers the health, readiness, public config, and auth/dashboard page routes with extracted handlers instead of keeping that readiness-check, featured-config, and static-page sendfile glue inline
+- Consolidated the main application route registration block into a dedicated registrar:
+  - `src/services/application_route_registration.js`
+  - `server.js` now hands the bulk Lexi/auth/public-business/bookings/admin/subscriber/commercial/accounting/billing/chat route wiring to `registerApplicationRoutes(...)` instead of owning that long registration sequence inline
+- Extracted the runtime/bootstrap lifecycle into a dedicated service:
+  - `src/services/runtime_bootstrap.js`
+  - `server.js` now delegates Prisma fallback creation, runtime initialization, admin-env sync, and shutdown orchestration through `createRuntimeBootstrapService(...)` instead of keeping that startup lifecycle inline
+- Extracted the app JSON file-store bindings into a dedicated service:
+  - `src/services/app_file_stores.js`
+  - `server.js` now composes shared accounting/staff/waitlist/commercial/revenue/social/report file readers and writers through `createAppFileStores(...)` instead of declaring each data path and wrapper inline
+- Extracted the shared app constant/config cluster into a dedicated module:
+  - `src/services/app_constants.js`
+  - `server.js` now imports shared booking regexes, pagination defaults, supported status sets, cancellation policy, and pricing constants instead of declaring that static configuration inline
+- Extracted the env/client runtime config cluster into a dedicated module:
+  - `src/services/app_runtime_config.js`
+  - `server.js` now composes port, secrets, provider credentials, derived URLs/origins, and OpenAI/Stripe clients through `createAppRuntimeConfig(...)` instead of initializing that env-driven runtime config inline
+- Extracted the shared middleware/limiter setup into a dedicated service:
+  - `src/services/server_middleware.js`
+  - `server.js` now composes API/auth/booking/chat limiters and applies the shared helmet/cors/compression, webhook parsing, JSON parsing, API limiter, and static cache middleware through `createServerLimiters(...)` and `applyServerMiddleware(...)`
+
+Remaining:
+- Keep `server.js` in composition/orchestration shape and only reopen structural extraction if a future feature adds meaningful new inline ownership.
+
+## Phase 4: Naming Cleanup
+Status: completed
+
+Completed:
+- Started naming cleanup in `server.js` by renaming the OpenAI quota circuit state/constants and a couple generic helper identifiers:
+  - `openAiQuotaCircuit` -> `openAiQuotaCircuitState`
+  - `OPENAI_QUOTA_COOLDOWN_MS` / `OPENAI_QUOTA_LOG_THROTTLE_MS` -> `openAiQuotaCooldownMs` / `openAiQuotaLogThrottleMs`
+  - `toCsvCell(...)` -> `escapeCsvCell(...)`
+  - `assertRuntimeSecurity(...)` -> `enforceRuntimeSecurity(...)`
+- Tightened a second batch of generic composition names in the public chat and realtime setup:
+  - `publicLexiFaqService` -> `publicLexiFaqReplyService`
+  - `publicLexiContextualService` -> `publicLexiContextualReplyService`
+  - `publicLexiFallbackService` -> `publicLexiFallbackReplyService`
+  - `publicChatPromptService` -> `publicChatMessagePromptService`
+  - `publicChatRouteService` -> `publicChatRequestService`
+  - `publicChatErrorService` -> `publicChatFailureService`
+  - `lexiRealtimeSupportService` -> `lexiRealtimeBrokerService`
+- Tightened the core auth/audit/request-context locals in `server.js`:
+  - `writeAuditLog` -> `writeAuditEntry`
+  - `signToken` -> `issueAuthToken`
+  - `canMutateBooking` -> `canModifyBooking`
+  - `getCorsOptions` -> `buildCorsOptions`
+  - `resolveManagedBusinessId` -> `resolveScopedBusinessId`
+- Tightened the public-business availability composition names in `server.js`:
+  - `publicBusinessProfileService` -> `publicBusinessProfileMapperService`
+  - `businessAvailabilityService` -> `businessAvailabilityQueryService`
+  - `getAvailableSlotsForBusiness` -> `listAvailableSlotsForBusiness`
+  - `mapBusiness` -> `mapPublicBusinessSummary`
+  - `isSlotWithinBusinessHours` -> `isSlotWithinBusinessSchedule`
+- Tightened another batch of broad service composition names in `server.js`:
+  - `accountingIntegrationsService` -> `accountingIntegrationDirectoryService`
+  - `socialMediaService` -> `businessSocialMediaStoreService`
+  - `businessReportQueueService` -> `businessReportEmailQueueService`
+  - `businessProfileService` -> `subscriberBusinessProfileService`
+  - `adminAppUsageService` -> `adminUsageAnalyticsService`
+  - `adminAccountSupportService` -> `adminAccountPayloadService`
+
+Remaining:
+- Continue opportunistic naming cleanup only when future edits touch the same composition paths.
+
+## Phase 5: Comment Pass
+Status: completed
+
+Completed:
+- Added targeted comments in critical non-obvious flows.
+- Added targeted comments around the startup fallback job runtime and the middleware ordering requirement for billing webhooks versus global JSON parsing.
+- Added targeted comments around the OpenAI quota circuit state, the production-only runtime security gate, and the platform handler composition's dependence on live in-memory runtime state.
+
+Remaining:
+- Add comments only when future changes introduce new non-obvious control flow or wiring.
+

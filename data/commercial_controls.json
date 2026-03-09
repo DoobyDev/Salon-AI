@@ -2514,5 +2514,82 @@
         "updatedAt": "2026-02-28T10:56:37.745Z"
       }
     ]
+  },
+  "biz_controls_create_1772990864509_94381": {
+    "memberships": [
+      {
+        "id": "3ac4c53c-a5e2-4d4a-a7d2-e12a22ecc2ec",
+        "name": "VIP Membership",
+        "price": 89,
+        "billingCycle": "monthly",
+        "status": "active",
+        "benefits": "Priority booking",
+        "updatedAt": "2026-03-08T17:27:44.591Z"
+      }
+    ],
+    "packages": [
+      {
+        "id": "fc688a3f-743b-4289-bf5e-12ccc254befc",
+        "name": "5x Beard Trim",
+        "price": 110,
+        "sessionCount": 5,
+        "remainingSessions": 5,
+        "status": "active",
+        "updatedAt": "2026-03-08T17:27:44.616Z"
+      }
+    ],
+    "giftCards": [
+      {
+        "id": "d7533705-ad86-4735-ae9e-c36fa3d8bc16",
+        "code": "GIFT-A9493C40",
+        "purchaserName": "Ava Thompson",
+        "recipientName": "Daniel Ruiz",
+        "initialBalance": 150,
+        "remainingBalance": 150,
+        "status": "active",
+        "issuedAt": "2026-03-08T17:27:44.631Z",
+        "expiresAt": null,
+        "updatedAt": "2026-03-08T17:27:44.631Z"
+      }
+    ],
+    "merch": []
+  },
+  "biz_controls_redeem_1772990864683_73709": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "f78a24d1-b71b-4304-aeef-6fa8871addf4",
+        "code": "GIFT-AE4F2589",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 120,
+        "remainingBalance": 75,
+        "status": "active",
+        "issuedAt": "2026-03-08T17:27:44.690Z",
+        "expiresAt": null,
+        "updatedAt": "2026-03-08T17:27:44.704Z"
+      }
+    ],
+    "merch": []
+  },
+  "biz_controls_validate_1772990864710_77908": {
+    "memberships": [],
+    "packages": [],
+    "giftCards": [
+      {
+        "id": "247f97ee-7775-49b0-9919-f6f214267e57",
+        "code": "GIFT-B6301DBF",
+        "purchaserName": "Lina Patel",
+        "recipientName": "Owen Price",
+        "initialBalance": 80,
+        "remainingBalance": 80,
+        "status": "active",
+        "issuedAt": "2026-03-08T17:27:44.717Z",
+        "expiresAt": null,
+        "updatedAt": "2026-03-08T17:27:44.717Z"
+      }
+    ],
+    "merch": []
   }
 }

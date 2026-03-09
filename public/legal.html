@@ -8,8 +8,19 @@
       name="description"
       content="Legal policies for AI Hair & Beauty Receptionist including privacy, terms, cookies, billing, refunds, and AI disclosure."
     />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260309-theme1" />
     <link rel="stylesheet" href="/styles.css" />
     <style>
+      :root {
+        --legal-chip-bg: rgba(255, 248, 240, 0.9);
+        --legal-chip-border: var(--salon-line, rgba(110, 59, 30, 0.14));
+        --legal-chip-text: var(--salon-ink, #241611);
+        --legal-warning-bg: rgba(255, 241, 237, 0.95);
+        --legal-warning-border: rgba(180, 71, 71, 0.18);
+        --legal-warning-text: #7d2e2e;
+        --legal-warning-strong: #8f3838;
+        --legal-chip-glow: 0 8px 20px rgba(29, 127, 119, 0.12);
+      }
       .legal-page {
         width: min(1100px, 94vw);
         margin: 1rem auto 2rem;
@@ -22,50 +33,48 @@
         gap: 0.5rem;
       }
       .legal-nav a {
-        color: #d8e7ff;
+        color: var(--legal-chip-text);
         text-decoration: none;
-        border: 1px solid rgba(167, 193, 255, 0.3);
+        border: 1px solid var(--legal-chip-border);
         border-radius: 999px;
         padding: 0.45rem 0.75rem;
-        background: rgba(236, 242, 255, 0.04);
+        background: var(--legal-chip-bg);
         font-weight: 700;
         font-size: 0.88rem;
       }
-      .legal-nav a:hover { box-shadow: 0 8px 20px rgba(58, 137, 255, 0.2); }
+      .legal-nav a:hover { box-shadow: var(--legal-chip-glow); }
       .legal-doc h2 {
         margin: 0;
         font-family: "Sora", "Manrope", sans-serif;
       }
       .legal-doc p {
-        color: #afc0dc;
+        color: var(--muted);
         line-height: 1.55;
       }
       .legal-doc ul {
         margin: 0.45rem 0 0;
         padding-left: 1.1rem;
-        color: #bdd0ee;
+        color: var(--muted);
         line-height: 1.5;
       }
       .legal-doc li + li {
         margin-top: 0.25rem;
       }
       .legal-warning {
-        border: 1px solid rgba(255, 132, 132, 0.32);
+        border: 1px solid var(--legal-warning-border);
         border-radius: 14px;
-        background:
-          radial-gradient(circle at 100% 0%, rgba(255, 132, 132, 0.08), transparent 48%),
-          rgba(36, 13, 17, 0.38);
+        background: var(--legal-warning-bg);
         padding: 0.8rem;
-        color: #ffe0e4;
+        color: var(--legal-warning-text);
       }
       .legal-warning strong {
         display: block;
         margin-bottom: 0.35rem;
-        color: #ffd4da;
+        color: var(--legal-warning-strong);
       }
       .legal-note {
         margin: 0;
-        color: #c9d9ef;
+        color: var(--muted);
         font-size: 0.88rem;
       }
     </style>
@@ -200,6 +209,6 @@
       </div>
       <p>AI Hair &amp; Beauty Receptionist legal policy hub.</p>
     </footer>
-    <script src="/theme-toggle.js"></script>
+    <script type="module" src="/salon-theme.js?v=20260309-theme2"></script>
   </body>
-  </html>
+</html>

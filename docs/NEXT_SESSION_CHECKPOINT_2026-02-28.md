@@ -154,3 +154,66 @@ Recommended rollout order:
   - validating realtime/avatar provider configuration in-browser
   - deciding whether subscriber/admin should get the same live voice path now or later
   - tightening Lexi product logic and fallback behavior around the now-live booking handoff flow
+
+## 2026-03-04 End Of Session Checkpoint
+
+- Latest pushed commit:
+  - `2d1b774` `Update dashboards and merch analytics`
+- Working tree is clean after push.
+
+## Current Dashboard Stop Point
+
+- Admin and subscriber dashboard work moved heavily into `public/dashboard.html`, `public/dashboard.js`, and `server.js`.
+- The old broken Business Hub popup path was replaced earlier in the session, but the latest visible UI direction removed the extra shell gradients from the hub surfaces.
+- `Booking Storyline` heading now reads `Storyline` for both subscriber and admin.
+- Default storyline range is `Day`.
+- Storyline chart behavior currently expected:
+  - `Day`: hourly lollipop chart using salon hours or fallback working hours
+  - `Week`: 6 or 7 lollipops based on configured working days, anchored Monday to Sunday
+  - `Month`: full month line chart
+  - `Year`: full-year line chart with a reduced month axis so it does not run off-screen
+  - `All Time`: line chart positioned after `Year` in the filter order
+- Admin `Command Filters` now include extra quick toggles for:
+  - `Bookings`
+  - `Subscriber Revenue`
+  - `Customer Signup`
+- Important: those admin quick toggles were intended to change summary/finance data only.
+- Important: the user explicitly wanted the existing storyline visuals kept as-is and did not want the booking storyline replaced by subscriber-revenue charts.
+
+## Merch Analytics Direction
+
+- Subscriber control center:
+  - `Finance Pulse` was replaced with merch sales analytics
+  - `Next Moves` was replaced with merch-focused analytics
+  - `Saved Views` was replaced with shipment/merch analytics
+- The same merch analytics treatment was then applied to the admin managed-business side as well.
+- Merch-related rendering is now mixed into the command-center data path in `public/dashboard.js`.
+
+## Visual Direction At Stop Point
+
+- The user tested stronger gradients and then backed several of them out.
+- Removed/softened backgrounds now matter:
+  - gradient removed from `.business-hub-shell`
+  - gradient removed from `#businessGrowthSection`
+  - extra section gradients were also removed from the broader dashboard shells
+- Booking diary weekday labels were changed to black, including the aqua/light variant, because the prior treatment looked worse to the user.
+- The user is sensitive to dead space, especially inside control-center panels.
+
+## Backend/Data Notes
+
+- `server.js` was extended during this session to provide additional admin counters, including subscriber and customer signup totals/count windows.
+- There was also admin revenue-series work added for platform-level subscription analytics.
+- Because the user later asked to keep the admin storyline visually unchanged, confirm which server-side admin metrics are still actively consumed before doing another admin control-center refactor.
+
+## Next Session Priorities
+
+1. Open the dashboard in-browser before making more dashboard structural changes.
+2. Verify the admin quick-toggle buttons only affect the intended summary/finance cards and not the storyline visuals.
+3. Review the merch analytics sections in both subscriber and admin because they were added quickly and have not been browser-validated in this session.
+4. If more styling work is requested, avoid broad gradient sweeps first; the current preference is more restrained surfaces with targeted color accents.
+
+## Resume From Here
+
+- Resume from `2d1b774`.
+- Start with `public/dashboard.html`, `public/dashboard.js`, and `server.js`.
+- If the next task is visual, validate in-browser before another major dashboard rewrite.
