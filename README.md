@@ -15,9 +15,11 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 
 - Structure reference: `docs/PROJECT_STRUCTURE.md`
 - Product and role feature catalog: `docs/APP_FEATURE_RECORD.md`
-- Business/legal templates and print packs: `docs/business_legal_pack/`
+- Live open-work / decision / fix tracker: `docs/tracking/`
+- Business/legal source documents: `docs/business_legal_pack/`
 - Public legal policy hub route: `/legal` (served from `public/legal.html`)
 - Runtime logs are kept in `logs/` (instead of project root) for cleaner maintenance.
+- Older checkpoint, roadmap, and release-note docs in `docs/` are historical context only unless they explicitly say otherwise.
 
 ## Core Features
 
@@ -31,6 +33,7 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 - Redis-backed caching, distributed rate limiting, and job queues
 - Stripe and PayPal subscriber billing (checkout + webhooks, plus Stripe billing portal)
 - AI receptionist booking flow (OpenAI tool-calling)
+- Realtime voice/avatar scaffolding exists but remains deferred until the paid end-stage rollout
 - Booking lifecycle APIs (create, cancel, reschedule)
 - SMS/Email booking notifications (Twilio + SendGrid)
 - Subscriber reminder settings, due-soon queueing, and scheduled reminder dispatch
@@ -41,7 +44,7 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 
 - Node.js + Express
 - Prisma + PostgreSQL
-- OpenAI
+- OpenAI (current text/tool-calling flows; paid realtime voice/avatar rollout deferred)
 - Stripe
 - PayPal
 - Twilio + SendGrid
@@ -103,6 +106,7 @@ Lexi realtime/avatar notes:
 - Without `OPENAI_REALTIME_MODEL`, Lexi popup voice mode stays in pending/text-fallback mode.
 - Without the HeyGen variables, avatar mode stays unavailable even if text chat and realtime voice are enabled.
 - Keep `APP_URL` and `CORS_ORIGIN` aligned with the environment you are actually testing.
+- Realtime voice/avatar is intentionally deferred until the paid end-of-build rollout, so current production readiness is mainly about text chat, billing, notifications, and dashboard flows.
 
 Billing env note:
 - Stripe checkout resolves the monthly plan from `STRIPE_PRICE_ID_MONTHLY` first, then falls back to `STRIPE_PRICE_ID`.
@@ -124,6 +128,28 @@ Pooler setup note:
 ```bash
 npm start
 ```
+
+## Daily Local Start
+
+If Docker Desktop is already running, the normal local boot flow is:
+
+```powershell
+docker compose up -d postgres redis
+npm start
+```
+
+If the containers already exist and are only stopped, this also works:
+
+```powershell
+docker start salon-ai-postgres salon-ai-redis
+npm start
+```
+
+Local runtime targets for this repo:
+- Postgres: `localhost:5432`
+- Redis: `localhost:6380`
+
+Do not use the older `salon-redis` container name unless you intentionally still have a separate legacy container outside this repo setup.
 
 ## Desktop
 

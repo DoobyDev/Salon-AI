@@ -367,6 +367,8 @@ export function createBusinessCopilotRuntime(deps) {
       placeholder.className = "home-lexi-chat-placeholder";
       setBusinessCopilotPopupPlaceholder?.(role, placeholder);
     }
+    // The popup card is physically moved into a shared body-level overlay, so we
+    // keep a placeholder in the original tree and restore the card on close.
     if (popupCard.parentNode && popupCard.parentNode !== host) {
       popupCard.parentNode.insertBefore(placeholder, popupCard);
     }
@@ -458,6 +460,8 @@ export function createBusinessCopilotRuntime(deps) {
     const accountingRows = Array.isArray(getAccountingRows?.()) ? getAccountingRows() : [];
     const accountingConnected = accountingRows.filter((row) => row?.connected || row?.status === "connected").length;
     const scope = role === "admin" ? getAdminAiScope?.() : getSubscriberAiScope?.();
+    // Keep this summary high-signal and sanitized: enough operational context to
+    // steer Lexi, without dumping raw booking or customer details into prompts.
     const parts = [
       `Scope: ${scope}`,
       `Today: ${todayRows.length} bookings, ${todayCancelled} cancelled, revenue signal ${formatMoney?.(todayRevenue)}, ${workingToday} staff on rota`,

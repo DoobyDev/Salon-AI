@@ -30,7 +30,9 @@ export function createModuleNavigationRuntime(deps) {
     const key = String(moduleKey || "").trim();
     if (!key) return;
     markModuleUsed?.(key, "focus");
-    const modules = groupedModulesForCurrentRole?.().filter((mod) => Boolean(mod.section));
+    const modules = groupedModulesForCurrentRole?.()
+      .flatMap((entry) => entry.modules)
+      .filter((mod) => Boolean(mod?.section));
     const found = modules.find((mod) => mod.key === key);
     if (!found) return;
     setActiveModuleKey?.(found.key);

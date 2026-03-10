@@ -155,6 +155,15 @@ const moduleUsageRuntime = createModuleUsageRuntime({
   getRole: () => user?.role
 });
 const dashboardSharedUtilsRuntime = createDashboardSharedUtilsRuntime();
+const formatMoney = (...args) => dashboardSharedUtilsRuntime.formatMoney(...args);
+const formatDateTime = (...args) => dashboardSharedUtilsRuntime.formatDateTime(...args);
+const formatProviderLabel = (...args) => dashboardSharedUtilsRuntime.formatProviderLabel(...args);
+const parseBookingDate = (...args) => dashboardSharedUtilsRuntime.parseBookingDate(...args);
+const pad2 = (...args) => dashboardSharedUtilsRuntime.pad2(...args);
+const toDateKey = (...args) => dashboardSharedUtilsRuntime.toDateKey(...args);
+const todayDateKeyLocal = (...args) => dashboardSharedUtilsRuntime.todayDateKeyLocal(...args);
+const writeToClipboard = (...args) => dashboardSharedUtilsRuntime.writeToClipboard(...args);
+const initializeUiDensity = (...args) => dashboardPreferencesRuntime.initializeUiDensity(...args);
 const dashboardPreferencesRuntime = createDashboardPreferencesRuntime({
   dashActionStatus,
   demoModeToggle,
@@ -172,6 +181,14 @@ const dashboardPreferencesRuntime = createDashboardPreferencesRuntime({
   getManagedBusinessId: () => managedBusinessId
 });
 const manageUiRuntime = createManageUiRuntime();
+const {
+  ensureManageToastStack,
+  showManageToast,
+  ensureManageModalOverlay,
+  escapeHtml,
+  openManageForm,
+  openManageConfirm
+} = manageUiRuntime;
 const lexiPendingRemindersRuntime = createLexiPendingRemindersRuntime({
   getUserRole: () => user?.role,
   getBookingRows: () => bookingRows,
@@ -459,12 +476,16 @@ const adminManagedOpenCalendarBtn = document.getElementById("adminManagedOpenCal
 const adminManagedOpenHubBtn = document.getElementById("adminManagedOpenHubBtn");
 const adminManagedOpenProfileBtn = document.getElementById("adminManagedOpenProfileBtn");
 const adminManagedAskLexiBtn = document.getElementById("adminManagedAskLexiBtn");
-const adminAccountSupportSection = document.getElementById("adminAccountSupportSection");
-const adminAccountSupportScope = document.getElementById("adminAccountSupportScope");
-const adminAccountSupportSearch = document.getElementById("adminAccountSupportSearch");
-const adminAccountSupportRefreshBtn = document.getElementById("adminAccountSupportRefreshBtn");
-const adminAccountSupportResults = document.getElementById("adminAccountSupportResults");
-const adminAccountSupportDetail = document.getElementById("adminAccountSupportDetail");
+const adminAccountSearchForm = document.getElementById("adminAccountSearchForm");
+const adminAccountSearchInput = document.getElementById("adminAccountSearchInput");
+const adminAccountsTable = document.getElementById("adminAccountsTable");
+const adminAccountDetail = document.getElementById("adminAccountDetail");
+const adminAccountEditForm = document.getElementById("adminAccountEditForm");
+const adminEditName = document.getElementById("adminEditName");
+const adminEditEmail = document.getElementById("adminEditEmail");
+const adminEditBusinessName = document.getElementById("adminEditBusinessName");
+const adminAccountEditMessage = document.getElementById("adminAccountEditMessage");
+const adminAccountSupportSection = adminAccountSearchForm?.closest(".dashboard-card") || adminAccountsTable?.closest(".dashboard-card") || null;
 const accountingBookingExportBtn = document.getElementById("accountingBookingExportBtn");
 const accountingPlatformExportBtn = document.getElementById("accountingPlatformExportBtn");
 let bookingRows = [];
@@ -693,12 +714,12 @@ frontDeskMockRuntime.bindFrontDeskMockLoad();
 const calendarDayUtilsRuntime = createCalendarDayUtilsRuntime({
   parseServiceEditorText,
   getBusinessProfileServicesValue: () => businessProfileServices?.value,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   normalizeText: (value) => bookingsRuntime.normalizeText(value)
 });
 const commandCenterRuntime = createCommandCenterRuntime({
   getUserRole: () => user?.role,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   applyBookingFilters: () => bookingsRuntime.applyBookingFilters(),
   setActiveStatusChip: (status) => bookingsRuntime.setActiveStatusChip(status),
   renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
@@ -715,7 +736,7 @@ const commandCenterRuntime = createCommandCenterRuntime({
 });
 const businessProfileRuntime = createBusinessProfileRuntime({
   canManageBusinessModules,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   headers,
   renderBusinessGrowthPanel: () => businessGrowthPanelRuntime.renderBusinessGrowthPanel(),
   setDashActionStatus,
@@ -766,14 +787,8 @@ const manageSocialActionsRuntime = createManageSocialActionsRuntime({
   collectSocialMediaPayloadFromInputs: () => businessProfileRuntime.collectSocialMediaPayloadFromInputs(),
   saveSocialMediaLinks: (payload) => businessProfileRuntime.saveSocialMediaLinks(payload)
 });
-
-async function loadSocialMediaLinks() {
-  return businessProfileRuntime.loadSocialMediaLinks();
-}
-
-function parseServiceEditorText(value) {
-  return businessProfileRuntime.parseServiceEditorText(value);
-}
+const loadSocialMediaLinks = (...args) => businessProfileRuntime.loadSocialMediaLinks(...args);
+const parseServiceEditorText = (...args) => businessProfileRuntime.parseServiceEditorText(...args);
 
 businessProfileRuntime.bindBusinessProfileEvents();
 const dashboardRoleChromeRuntime = createDashboardRoleChromeRuntime({
@@ -801,10 +816,9 @@ const dashboardRequestUtilsRuntime = createDashboardRequestUtilsRuntime({
   getUserRole: () => user?.role,
   getManagedBusinessId: () => managedBusinessId
 });
-
-function headers() {
-  return dashboardRequestUtilsRuntime.headers();
-}
+const headers = (...args) => dashboardRequestUtilsRuntime.headers(...args);
+const withManagedBusiness = (...args) => dashboardRequestUtilsRuntime.withManagedBusiness(...args);
+const canManageBusinessModules = (...args) => dashboardRequestUtilsRuntime.canManageBusinessModules(...args);
 
 const dashboardStatusUtilsRuntime = createDashboardStatusUtilsRuntime({
   getUserRole: () => user?.role,
@@ -812,18 +826,24 @@ const dashboardStatusUtilsRuntime = createDashboardStatusUtilsRuntime({
   accountingStatusNote,
   accountingLiveNote
 });
-
-function isSubscriberCleanSlate() {
-  return dashboardStatusUtilsRuntime.isSubscriberCleanSlate();
-}
-
-function setDashActionStatus(message, isError = false, autoClearMs = 4200) {
-  return dashboardPreferencesRuntime.setDashActionStatus(message, isError, autoClearMs);
-}
-
-function isDashboardDemoDataModeActive() {
-  return dashboardPreferencesRuntime.isDashboardDemoDataModeActive();
-}
+const isSubscriberCleanSlate = (...args) => dashboardStatusUtilsRuntime.isSubscriberCleanSlate(...args);
+const formatDateShort = (...args) => dashboardStatusUtilsRuntime.formatDateShort(...args);
+const shouldRenderTopMetricsGrid = (...args) => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(...args);
+const setAccountingStatus = (...args) => dashboardStatusUtilsRuntime.setAccountingStatus(...args);
+const setAccountingLiveNote = (...args) => dashboardStatusUtilsRuntime.setAccountingLiveNote(...args);
+const setDashActionStatus = (...args) => dashboardPreferencesRuntime.setDashActionStatus(...args);
+const isDashboardDemoDataModeActive = (...args) => dashboardPreferencesRuntime.isDashboardDemoDataModeActive(...args);
+const loadBookings = (...args) => bookingsRuntime.loadBookings(...args);
+const loadMetrics = (...args) => bookingsRuntime.loadMetrics(...args);
+const isDashboardManagerRole = (...args) => dashboardManageModeRuntime.isDashboardManagerRole(...args);
+const getManageModeEnabled = (...args) => manageModeEnabled;
+const isManageModeEnabled = (...args) => manageModeEnabled;
+const setStaffStatus = (...args) => staffRotaWeekRuntime.setStaffStatus(...args);
+const setWaitlistStatus = (...args) => operationsRuntime.setWaitlistStatus(...args);
+const setCrmStatus = (...args) => operationsRuntime.setCrmStatus(...args);
+const renderCrmSegments = (...args) => operationsRuntime.renderCrmSegments(...args);
+const sendCrmCampaign = (...args) => operationsRuntime.sendCrmCampaign(...args);
+const upsertWaitlistEntry = (...args) => operationsRuntime.upsertWaitlistEntry(...args);
 
 const dashboardCopilotUiRuntime = createDashboardCopilotUiRuntime();
 
@@ -832,13 +852,13 @@ const businessCopilotRuntime = createBusinessCopilotRuntime({
   getUserRole: () => user?.role,
   headers,
   escapeHtml,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   renderCopilotList: (el, items, emptyText) => dashboardCopilotUiRuntime.renderCopilotList(el, items, emptyText),
   moduleDefinitionByKey,
   selectedCalendarDateSummary: () => calendarPulseRuntime.selectedCalendarDateSummary(),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
+  parseBookingDate,
+  toDateKey,
+  todayDateKeyLocal,
   getBookingRows: () => bookingRows,
   getStaffWorkingForDate: (dateObj) => staffDateUtilsRuntime.getStaffWorkingForDate(dateObj),
   getWaitlistRows: () => waitlistRows,
@@ -914,17 +934,9 @@ const businessCopilotRuntime = createBusinessCopilotRuntime({
   adminCopilotMicStopBtn
 });
 
-async function openCalendarDiaryWalkIn(defaultDateKey = calendarDiaryRuntime.getCalendarDiaryFocusDateKey()) {
-  return calendarDiaryRuntime.openCalendarDiaryWalkIn(defaultDateKey);
-}
-
-async function askSubscriberCopilot(question) {
-  return businessCopilotRuntime.askSubscriberCopilot(question);
-}
-
-async function askAdminCopilot(question) {
-  return businessCopilotRuntime.askAdminCopilot(question);
-}
+const openCalendarDiaryWalkIn = (...args) => calendarDiaryRuntime.openCalendarDiaryWalkIn(...args);
+const askSubscriberCopilot = (...args) => businessCopilotRuntime.askSubscriberCopilot(...args);
+const askAdminCopilot = (...args) => businessCopilotRuntime.askAdminCopilot(...args);
 
 dashboardDemoFillModeEnabled = dashboardPreferencesRuntime.loadDashboardDemoFillPreference();
 dashboardPreferencesRuntime.refreshDemoModeToggle();
@@ -970,14 +982,14 @@ const adminBusinessLoadingRuntime = createAdminBusinessLoadingRuntime({
   },
   filteredAdminBusinessOptions: () => adminBusinessRuntime.filteredAdminBusinessOptions(),
   syncAdminBusinessQueryParam: () => dashboardRoutingUiSupportRuntime.syncAdminBusinessQueryParam(),
-  shouldRenderTopMetricsGrid: () => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(),
+  shouldRenderTopMetricsGrid,
   metricsGrid,
   resetBookingsCursor: () => {
     nextBookingsCursor = null;
   },
   updateLoadMoreState: (isLoading = false) => bookingsRuntime.updateLoadMoreState(isLoading),
-  loadMetrics: () => bookingsRuntime.loadMetrics(),
-  loadBookings: (options = {}) => bookingsRuntime.loadBookings(options),
+  loadMetrics,
+  loadBookings,
   loadBillingSummary,
   loadBusinessProfile,
   loadSocialMediaLinks,
@@ -994,8 +1006,8 @@ const adminPlatformRuntime = createAdminPlatformRuntime({
   getUserRole: () => user?.role,
   headers,
   escapeHtml,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
-  formatDateShort: (value) => dashboardStatusUtilsRuntime.formatDateShort(value),
+  formatMoney,
+  formatDateShort,
   setDashActionStatus,
   renderAdminManagedBusinessSummary: () => {
     adminBusinessRuntime.renderAdminManagedBusinessSummary();
@@ -1037,8 +1049,8 @@ const adminSupportRuntime = createAdminSupportRuntime({
   getUserRole: () => user?.role,
   headers,
   escapeHtml,
-  formatDateShort: (value) => dashboardStatusUtilsRuntime.formatDateShort(value),
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatDateShort,
+  formatMoney,
   openManageForm,
   loadAdminBusinessOptions: () => adminBusinessLoadingRuntime.loadAdminBusinessOptions(),
   reloadAdminManagedDashboard: () => adminBusinessLoadingRuntime.reloadAdminManagedDashboard(),
@@ -1047,7 +1059,7 @@ const adminSupportRuntime = createAdminSupportRuntime({
   renderModuleNavigator,
   getCloseModulePopupActive: () => closeModulePopupActive,
   openInteractiveModulePopup,
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
+  canManageBusinessModules,
   setAccountingStatus,
   getManagedBusinessId: () => managedBusinessId,
   setManagedBusinessId: (value) => {
@@ -1055,15 +1067,18 @@ const adminSupportRuntime = createAdminSupportRuntime({
   },
   adminBusinessSelect,
   subscriberCalendarSection,
-  adminAccountSupportSection,
-  adminAccountSupportScope,
-  adminAccountSupportSearch,
-  adminAccountSupportRefreshBtn,
-  adminAccountSupportResults,
-  adminAccountSupportDetail,
+  adminAccountSearchForm,
+  adminAccountSearchInput,
+  adminAccountsTable,
+  adminAccountDetail,
+  adminAccountEditForm,
+  adminEditName,
+  adminEditEmail,
+  adminEditBusinessName,
+  adminAccountEditMessage,
   accountingBookingExportBtn,
   accountingPlatformExportBtn,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   getAdminAccountSupportResultsCache: () => adminAccountSupportResultsCache,
   setAdminAccountSupportResultsCache: (value) => {
     adminAccountSupportResultsCache = Array.isArray(value) ? value : [];
@@ -1123,12 +1138,12 @@ const businessReportingRuntime = createBusinessReportingRuntime({
   getUserBusinessId: () => user?.businessId,
   getManagedBusinessId: () => managedBusinessId,
   headers,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  withManagedBusiness,
+  formatMoney,
   escapeHtml,
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
+  todayDateKeyLocal,
+  parseBookingDate,
+  toDateKey,
   getBookingRows: () => bookingRows,
   getStaffWorkingForDate: (dateObj) => staffDateUtilsRuntime.getStaffWorkingForDate(dateObj),
   getAccountingRows: () => accountingRows,
@@ -1161,8 +1176,8 @@ const businessGrowthPanelRuntime = createBusinessGrowthPanelRuntime({
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
   renderBusinessHubCards: () => businessHubRuntime.renderBusinessHubCards(),
-  formatDateShort: (value) => dashboardStatusUtilsRuntime.formatDateShort(value),
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatDateShort,
+  formatMoney,
   escapeHtml,
   businessGrowthSection,
   businessHubIntro,
@@ -1191,10 +1206,10 @@ const bookingsRuntime = createBookingsRuntime({
   getUserRole: () => user?.role,
   getManagedBusinessId: () => managedBusinessId,
   headers,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   escapeHtml,
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
+  parseBookingDate,
+  toDateKey,
   openManageForm,
   openManageConfirm,
   setDashActionStatus,
@@ -1207,9 +1222,9 @@ const bookingsRuntime = createBookingsRuntime({
   renderCommandCenter: () => commandCenterRuntime.renderCommandCenter(),
   renderOperationsInsights,
   stageWaitlistRecoveryFromBooking,
-  shouldRenderTopMetricsGrid: () => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(),
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
-  isManageModeEnabled: () => manageModeEnabled,
+  shouldRenderTopMetricsGrid,
+  isDashboardManagerRole,
+  isManageModeEnabled,
   isDashboardDemoDataModeActive,
   addMetric: (label, value) => dashboardRoutingUiSupportRuntime.addMetric(label, value),
   bookingsList,
@@ -1246,7 +1261,7 @@ const dashboardRoutingUiSupportRuntime = createDashboardRoutingUiSupportRuntime(
   getManagedBusinessId: () => managedBusinessId,
   metricsGrid,
   getAdminAccountSupportResultsCache: () => adminAccountSupportResultsCache,
-  loadAdminAccountSupport: (query = adminAccountSupportSearch?.value || "") => adminSupportRuntime.loadAdminAccountSupport(query),
+  loadAdminAccountSupport: (query = adminAccountSearchInput?.value || "") => adminSupportRuntime.loadAdminAccountSupport(query),
   setDashActionStatus,
   renderAdminAccountSupportModule: () => adminSupportRuntime.renderAdminAccountSupportModule(),
   renderOperationsInsights,
@@ -1360,13 +1375,20 @@ const moduleGroupingRuntime = createModuleGroupingRuntime({
   getRole: () => user?.role
 });
 
+const moduleCatalogRuntime = createModuleCatalogRuntime({
+  getModules: () => moduleDefinitionsRuntime.moduleDefinitionsForRole()
+});
+const moduleDefinitionByKey = (...args) => moduleCatalogRuntime.moduleDefinitionByKey(...args);
+const moduleUsesInteractivePopup = (...args) => moduleCatalogRuntime.moduleUsesInteractivePopup(...args);
+const moduleUsesInfoPopup = (...args) => moduleCatalogRuntime.moduleUsesInfoPopup(...args);
+
 const businessHubRuntime = createBusinessHubRuntime({
   businessHubCardsGrid,
   getBusinessHubModules: () => getBusinessHubModulesForRole({
     role: user.role,
-    moduleDefinitionByKey: (moduleKey) => moduleCatalogRuntime.moduleDefinitionByKey(moduleKey)
+    moduleDefinitionByKey
   }),
-  moduleDefinitionByKey: (moduleKey) => moduleCatalogRuntime.moduleDefinitionByKey(moduleKey),
+  moduleDefinitionByKey,
   moduleOperationalStatus: (mod) => moduleStatusRuntime.moduleOperationalStatus(mod),
   renderModuleStatusPill: (status, options = {}) => moduleStatusRuntime.renderModuleStatusPill(status, options),
   escapeHtml,
@@ -1379,10 +1401,6 @@ const businessHubRuntime = createBusinessHubRuntime({
   openLexiModuleAssist,
   setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey)
-});
-
-const moduleCatalogRuntime = createModuleCatalogRuntime({
-  getModules: () => moduleDefinitionsRuntime.moduleDefinitionsForRole()
 });
 
 const moduleStatusRuntime = createModuleStatusRuntime({
@@ -1417,8 +1435,8 @@ const modulePopupSupportRuntime = createModulePopupSupportRuntime({
     metricsGrid,
     billingSummary,
     subscriptionCurrentPlanLabelText: subscriptionCurrentPlanLabel?.textContent,
-    formatDateShort: (value) => dashboardStatusUtilsRuntime.formatDateShort(value),
-    formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+    formatDateShort,
+    formatMoney,
     commandCenterCards,
     commandCenterActions,
     commandCenterStatus,
@@ -1466,14 +1484,14 @@ const moduleActionRuntime = createModuleActionRuntime({
   setDashActionStatus,
   setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
-  writeToClipboard: (text) => dashboardSharedUtilsRuntime.writeToClipboard(text),
+  writeToClipboard,
   showManageToast
 });
 const openCloseChecklistRuntime = createOpenCloseChecklistRuntime({
   storageKey: OPEN_CLOSE_CHECKLIST_STORAGE_KEY,
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
+  todayDateKeyLocal,
+  parseBookingDate,
+  toDateKey,
   getStaffWorkingForDate,
   getBookingRows: () => bookingRows,
   getOperationsInsights: () => operationsInsights,
@@ -1490,7 +1508,7 @@ const moduleWorkboardRuntime = createModuleWorkboardRuntime({
   loadHubAutoRoutinePrefs: () => businessReportingRuntime.loadHubAutoRoutinePrefs()
 });
 const modulePopupRuntime = createModulePopupRuntime({
-  moduleDefinitionByKey: (moduleKey) => moduleCatalogRuntime.moduleDefinitionByKey(moduleKey),
+  moduleDefinitionByKey,
   markModuleUsed: (moduleKey, mode = "open") => moduleUsageRuntime.markModuleUsed(moduleKey, mode),
   ensureManageModalOverlay,
   getCloseModulePopupActive: () => closeModulePopupActive,
@@ -1540,22 +1558,22 @@ const moduleNavigationRuntime = createModuleNavigationRuntime({
   renderBusinessHubCards: () => businessHubRuntime.renderBusinessHubCards(),
   workspaceBackToDashboardBtn,
   dashboardQuickActionsSection,
-  getManageModeEnabled: () => manageModeEnabled,
+  getManageModeEnabled,
   showManageToast,
   getManagedBusinessId: () => managedBusinessId,
   getUserBusinessId: () => user?.businessId,
   openManageForm,
   createBooking: (payload) => bookingsRuntime.createBooking(payload),
   refreshBookingsAfterDayPopupMutation: () => calendarDayWorkspaceRuntime.refreshBookingsAfterDayPopupMutation(),
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal()
+  todayDateKeyLocal
 });
 const moduleClickRouterRuntime = createModuleClickRouterRuntime({
   dashboardQuickActionsSection,
   returnToDashboardHomeView,
   openBusinessHubModulePopup: (moduleKey) => businessHubRuntime.openBusinessHubModulePopup(moduleKey),
-  moduleDefinitionByKey: (moduleKey) => moduleCatalogRuntime.moduleDefinitionByKey(moduleKey),
-  moduleUsesInteractivePopup: (mod) => moduleCatalogRuntime.moduleUsesInteractivePopup(mod),
-  moduleUsesInfoPopup: (mod) => moduleCatalogRuntime.moduleUsesInfoPopup(mod),
+  moduleDefinitionByKey,
+  moduleUsesInteractivePopup,
+  moduleUsesInfoPopup,
   openInteractiveModulePopup: (moduleKey) => modulePopupRuntime.openInteractiveModulePopup(moduleKey),
   openModuleInfoModal: (moduleKey) => modulePopupRuntime.openModuleInfoModal(moduleKey),
   setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
@@ -1569,7 +1587,7 @@ const dashboardStartupRuntime = createDashboardStartupRuntime({
   subscriberCalendarSection,
   businessGrowthSection,
   adminPlatformSection,
-  initializeUiDensity: () => dashboardPreferencesRuntime.initializeUiDensity(),
+  initializeUiDensity,
   initializeManageMode: () => dashboardManageModeRuntime.initializeManageMode(),
   setupManagedSectionActions: () => managedSectionActionsRuntime.setupManagedSectionActions(),
   setAccountingTimeframe,
@@ -1603,11 +1621,11 @@ const dashboardStartupRuntime = createDashboardStartupRuntime({
   setAdminBusinessStatus: (message, isError = false) => {
     adminBusinessRuntime.setAdminBusinessStatus(message, isError);
   },
-  loadMetrics: () => bookingsRuntime.loadMetrics(),
-  shouldRenderTopMetricsGrid: () => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(),
+  loadMetrics,
+  shouldRenderTopMetricsGrid,
   metricsGrid,
   setDashActionStatus,
-  loadBookings: (options = {}) => bookingsRuntime.loadBookings(options),
+  loadBookings,
   bookingsList,
   loadBillingSummary,
   billingLiveBanner,
@@ -1620,11 +1638,11 @@ const dashboardStartupRuntime = createDashboardStartupRuntime({
   loadAccountingIntegrations,
   setAccountingStatus,
   loadStaffRoster: () => staffRosterRuntime.loadStaffRoster(),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError),
+  setStaffStatus,
   loadWaitlist: () => operationsRuntime.loadWaitlist(),
-  setWaitlistStatus: (message, isError = false) => operationsRuntime.setWaitlistStatus(message, isError),
+  setWaitlistStatus,
   loadCrmSegments: () => operationsRuntime.loadCrmSegments(),
-  setCrmStatus: (message, isError = false) => operationsRuntime.setCrmStatus(message, isError),
+  setCrmStatus,
   loadCommercialControls: () => businessControlsRuntime.loadCommercialControls(),
   setCommercialStatus: (message, isError = false) => businessControlsRuntime.setCommercialStatus(message, isError),
   loadRevenueAttribution: () => businessControlsRuntime.loadRevenueAttribution(),
@@ -1638,7 +1656,7 @@ const mobileNavRuntime = createDashboardMobileNavRuntime({
   mobileQuickSheetClose,
   getCurrentRole: () => currentRole,
   getUserRole: () => user?.role,
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
+  todayDateKeyLocal,
   openQuickCreateBookingFromMobile: () => moduleNavigationRuntime.openQuickCreateBookingFromMobile(),
   returnToDashboardHomeView: () => moduleNavigationRuntime.returnToDashboardHomeView(),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
@@ -1664,13 +1682,13 @@ const bookingFilterRuntime = createBookingFilterRuntime({
   },
   applyBookingFilters: () => bookingsRuntime.applyBookingFilters(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue)
+  toDateKey
 });
 const calendarLexiRuntime = createCalendarLexiRuntime({
   getUserRole: () => user?.role,
   getSelectedCalendarDateKey: () => selectedCalendarDateKey,
   escapeHtml,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   t,
   showToast,
   openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
@@ -1688,7 +1706,7 @@ const executivePulseUtilsRuntime = createExecutivePulseUtilsRuntime({
   getUserRole: () => user?.role,
   snapshotsStorageKey: EXECUTIVE_PULSE_SNAPSHOTS_STORAGE_KEY,
   getBookingRows: () => bookingRows,
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
+  parseBookingDate,
   getBusinessHoursInputs: () => ({
     monday: businessHoursMonday,
     tuesday: businessHoursTuesday,
@@ -1700,19 +1718,19 @@ const executivePulseUtilsRuntime = createExecutivePulseUtilsRuntime({
   }),
   parseTimeToMinutes: (value) => calendarDayUtilsRuntime.parseTimeToMinutes(value),
   formatMinutesToTime: (totalMinutes) => calendarDayUtilsRuntime.formatMinutesToTime(totalMinutes),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  pad2: (value) => dashboardSharedUtilsRuntime.pad2(value)
+  toDateKey,
+  pad2
 });
 const calendarPulseRuntime = createCalendarPulseRuntime({
   getUserRole: () => user?.role,
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
   escapeHtml,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
-  formatDateTime: (value) => dashboardSharedUtilsRuntime.formatDateTime(value),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
+  formatMoney,
+  formatDateTime,
+  parseBookingDate,
+  toDateKey,
+  todayDateKeyLocal,
   isPendingConfirmationStatus: (status) => bookingsRuntime.isPendingConfirmationStatus(status),
   getExecutivePulseRangeConfig: (range = "day") => executivePulseUtilsRuntime.getExecutivePulseRangeConfig(range),
   getExecutiveRowRevenueEstimate: (row) => executivePulseUtilsRuntime.getExecutiveRowRevenueEstimate(row),
@@ -1802,7 +1820,7 @@ const calendarPulseRuntime = createCalendarPulseRuntime({
 });
 const calendarDiaryRuntime = createCalendarDiaryRuntime({
   getUserRole: () => user?.role,
-  getManageModeEnabled: () => manageModeEnabled,
+  getManageModeEnabled,
   getManagedBusinessId: () => managedBusinessId,
   getUserBusinessId: () => user?.businessId,
   getSelectedCalendarDateKey: () => selectedCalendarDateKey,
@@ -1818,10 +1836,10 @@ const calendarDiaryRuntime = createCalendarDiaryRuntime({
   },
   getBusinessProfileServicesValue: () => businessProfileServices?.value,
   parseDateKeyToDate: (dateKey) => calendarDayUtilsRuntime.parseDateKeyToDate(dateKey),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
+  parseBookingDate,
   parseServiceEditorText,
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  toDateKey,
+  formatMoney,
   escapeHtml,
   getStaffWorkingForDate: (dateObj) => staffDateUtilsRuntime.getStaffWorkingForDate(dateObj),
   getStaffMemberId,
@@ -1842,8 +1860,8 @@ const workspaceStarRuntime = createWorkspaceStarRuntime({
   getUserRole: () => user?.role,
   getBookingRows: () => bookingRows,
   getSelectedCalendarDateKey: () => selectedCalendarDateKey,
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  toDateKey,
+  formatMoney,
   isPendingConfirmationStatus: (status) => bookingsRuntime.isPendingConfirmationStatus(status),
   openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
   openCustomerLexiPopup,
@@ -1875,11 +1893,11 @@ const calendarDayWorkspaceRuntime = createCalendarDayWorkspaceRuntime({
   renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
   shouldRenderTopMetricsGrid: () => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(),
   metricsGrid,
-  loadBookings: (options = {}) => bookingsRuntime.loadBookings(options),
-  loadMetrics: () => bookingsRuntime.loadMetrics(),
+  loadBookings,
+  loadMetrics,
   getUserRole: () => user?.role,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
-  getManageModeEnabled: () => manageModeEnabled,
+  isDashboardManagerRole,
+  getManageModeEnabled,
   getManagedBusinessId: () => managedBusinessId,
   getUserBusinessId: () => user?.businessId,
   getBookingsForDateKey: (dateKey) => calendarDiaryRuntime.getBookingsForDateKey(dateKey),
@@ -1887,7 +1905,7 @@ const calendarDayWorkspaceRuntime = createCalendarDayWorkspaceRuntime({
   summarizeCalendarDaySchedule: (rows = []) => calendarDayUtilsRuntime.summarizeCalendarDaySchedule(rows),
   summarizeCalendarDayRevenue: (rows = []) => calendarDayUtilsRuntime.summarizeCalendarDayRevenue(rows),
   statusChipClass: (status) => calendarDayUtilsRuntime.statusChipClass(status),
-  formatDateTime: (value) => dashboardSharedUtilsRuntime.formatDateTime(value),
+  formatDateTime,
   escapeHtml,
   formatMinutesToTime: (totalMinutes) => calendarDayUtilsRuntime.formatMinutesToTime(totalMinutes),
   formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
@@ -1895,7 +1913,7 @@ const calendarDayWorkspaceRuntime = createCalendarDayWorkspaceRuntime({
   getSelectedCalendarDateKey: () => selectedCalendarDateKey,
   returnToDashboardHomeView: () => moduleNavigationRuntime.returnToDashboardHomeView(),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
-  setWaitlistStatus: (message, isError = false) => operationsRuntime.setWaitlistStatus(message, isError),
+  setWaitlistStatus,
   stageWaitlistRecoveryFromBooking: (sourceBooking, options = {}) =>
     operationsRuntime.stageWaitlistRecoveryFromBooking(sourceBooking, options),
   showManageToast,
@@ -2000,10 +2018,10 @@ const customerLexiRealtimeRuntime = createCustomerLexiRealtimeRuntime({
 const customerLexiPlannerRuntime = createCustomerLexiPlannerRuntime({
   t,
   getUserRole: () => user?.role,
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  toDateKey: (dateValue) => dashboardSharedUtilsRuntime.toDateKey(dateValue),
-  pad2: (value) => dashboardSharedUtilsRuntime.pad2(value),
-  todayDateKeyLocal: () => dashboardSharedUtilsRuntime.todayDateKeyLocal(),
+  parseBookingDate,
+  toDateKey,
+  pad2,
+  todayDateKeyLocal,
   escapeHtml,
   getStaffInitials: getStaffRosterInitials,
   getStaffColorForId,
@@ -2176,9 +2194,9 @@ const billingControlsRuntime = createBillingControlsRuntime({
 });
 const subscriberBillingRuntime = createSubscriberBillingRuntime({
   getUserRole: () => user?.role,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   headers,
-  formatDateShort: (value) => dashboardStatusUtilsRuntime.formatDateShort(value),
+  formatDateShort,
   getBillingSummary: () => billingSummary,
   setBillingSummary: (value) => {
     billingSummary = value || null;
@@ -2199,7 +2217,7 @@ const accountingLiveControlsRuntime = createAccountingLiveControlsRuntime({
   setAccountingTimeframe: (nextTimeframe, options = {}) => accountingLiveRuntime.setAccountingTimeframe(nextTimeframe, options),
   setQuickFilterVisualState: (key) => accountingLiveRuntime.setQuickFilterVisualState(key),
   setAccountingLiveRange: (from, to, options = {}) => accountingLiveRuntime.setAccountingLiveRange(from, to, options),
-  setAccountingLiveNote: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingLiveNote(message, isError),
+  setAccountingLiveNote,
   getThisWeekRange: () => accountingLiveRuntime.getThisWeekRange(),
   getThisMonthRange: () => accountingLiveRuntime.getThisMonthRange(),
   accountingTimeframeSwitch,
@@ -2218,8 +2236,8 @@ const accountSessionControlsRuntime = createAccountSessionControlsRuntime({
   subscriptionAutoRenewToggle
 });
 const dashboardSessionControlsRuntime = createDashboardSessionControlsRuntime({
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
-  getManageModeEnabled: () => manageModeEnabled,
+  isDashboardManagerRole,
+  getManageModeEnabled,
   setManageMode: (enabled) => dashboardManageModeRuntime.setManageMode(enabled),
   showManageToast,
   setDashActionStatus,
@@ -2231,22 +2249,22 @@ const dashboardSessionControlsRuntime = createDashboardSessionControlsRuntime({
   demoModeToggle
 });
 const operationsRuntime = createOperationsRuntime({
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
+  canManageBusinessModules,
   isPopupMountedBusinessSection: (sectionEl) => moduleRoutingRuntime.isPopupMountedBusinessSection(sectionEl),
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   headers,
   parseWaitlistDateTimeInput,
   buildWaitlistRecoveryDateTime,
   normalizeText: (value) => bookingsRuntime.normalizeText(value),
   focusModuleByKey,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
-  getManageModeEnabled: () => manageModeEnabled,
+  isDashboardManagerRole,
+  getManageModeEnabled,
   openManageForm,
   openManageConfirm,
   showManageToast,
-  writeToClipboard: (text) => dashboardSharedUtilsRuntime.writeToClipboard(text),
+  writeToClipboard,
   getBookingRows: () => bookingRows,
   getWaitlistRows: () => waitlistRows,
   setWaitlistRows: (value) => {
@@ -2287,19 +2305,19 @@ const manageCrmActionsRuntime = createManageCrmActionsRuntime({
   setCrmSegmentsPayload: (value) => {
     crmSegmentsPayload = value || null;
   },
-  setCrmStatus: (message, isError = false) => operationsRuntime.setCrmStatus(message, isError),
-  renderCrmSegments: () => operationsRuntime.renderCrmSegments(),
-  sendCrmCampaign: (payload) => operationsRuntime.sendCrmCampaign(payload)
+  setCrmStatus,
+  renderCrmSegments,
+  sendCrmCampaign
 });
 const accountingIntegrationsRuntime = createAccountingIntegrationsRuntime({
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  canManageBusinessModules,
+  withManagedBusiness,
   headers,
-  formatProviderLabel: (value) => dashboardSharedUtilsRuntime.formatProviderLabel(value),
-  formatDateTime: (value) => dashboardSharedUtilsRuntime.formatDateTime(value),
+  formatProviderLabel,
+  formatDateTime,
   renderAccountingLiveRevenue: ({ silent = false } = {}) => accountingLiveRuntime.loadAccountingLiveRevenue({ silent }),
   renderBusinessGrowthPanel: () => businessGrowthPanelRuntime.renderBusinessGrowthPanel(),
-  setAccountingStatus: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingStatus(message, isError),
+  setAccountingStatus,
   getAccountingRows: () => accountingRows,
   setAccountingRows: (value) => {
     accountingRows = Array.isArray(value) ? value : [];
@@ -2315,8 +2333,8 @@ const manageAccountingActionsRuntime = createManageAccountingActionsRuntime({
   openManageConfirm,
   showManageToast,
   getAccountingRows: () => accountingRows,
-  setAccountingStatus: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingStatus(message, isError),
-  formatProviderLabel: (value) => dashboardSharedUtilsRuntime.formatProviderLabel(value),
+  setAccountingStatus,
+  formatProviderLabel,
   connectAccountingIntegration: (provider, accountLabel, syncMode) =>
     accountingIntegrationsRuntime.connectAccountingIntegration(provider, accountLabel, syncMode),
   disconnectAccountingIntegration: (provider) => accountingIntegrationsRuntime.disconnectAccountingIntegration(provider),
@@ -2357,8 +2375,8 @@ const manageCommercialActionsRuntime = createManageCommercialActionsRuntime({
 const manageWaitlistActionsRuntime = createManageWaitlistActionsRuntime({
   openManageForm,
   showManageToast,
-  upsertWaitlistEntry: (payload) => operationsRuntime.upsertWaitlistEntry(payload),
-  setWaitlistStatus: (message, isError = false) => operationsRuntime.setWaitlistStatus(message, isError)
+  upsertWaitlistEntry,
+  setWaitlistStatus
 });
 const manageCoreActionsRuntime = createManageCoreActionsRuntime({
   openManageForm,
@@ -2367,18 +2385,18 @@ const manageCoreActionsRuntime = createManageCoreActionsRuntime({
   getUserBusinessId: () => user?.businessId,
   getUserRole: () => user?.role,
   createBooking: (payload) => bookingsRuntime.createBooking(payload),
-  loadBookings: (options = {}) => bookingsRuntime.loadBookings(options),
-  shouldRenderTopMetricsGrid: () => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(),
+  loadBookings,
+  shouldRenderTopMetricsGrid,
   clearMetricsGrid: () => {
     if (metricsGrid) metricsGrid.innerHTML = "";
   },
-  loadMetrics: () => bookingsRuntime.loadMetrics(),
+  loadMetrics,
   upsertStaffMember: (payload) => staffRosterRuntime.upsertStaffMember(payload),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError)
+  setStaffStatus
 });
 const manageDispatcherRuntime = createManageDispatcherRuntime({
-  getManageModeEnabled: () => manageModeEnabled,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
+  getManageModeEnabled,
+  isDashboardManagerRole,
   manageHandlers: [
     (target) => manageSocialActionsRuntime.handleManageSocialClick(target),
     (target) => manageCrmActionsRuntime.handleManageCrmClick(target),
@@ -2390,7 +2408,7 @@ const manageDispatcherRuntime = createManageDispatcherRuntime({
   ]
 });
 const managedSectionActionsRuntime = createManagedSectionActionsRuntime({
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
+  isDashboardManagerRole,
   bookingOperationsSection,
   staffRosterSection,
   waitlistSection,
@@ -2403,15 +2421,15 @@ const managedSectionActionsRuntime = createManagedSectionActionsRuntime({
   profitabilitySection
 });
 const businessControlsRuntime = createBusinessControlsRuntime({
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
+  canManageBusinessModules,
   isPopupMountedBusinessSection: (sectionEl) => moduleRoutingRuntime.isPopupMountedBusinessSection(sectionEl),
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   headers,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   escapeHtml,
-  formatDateTime: (value) => dashboardSharedUtilsRuntime.formatDateTime(value),
+  formatDateTime,
   renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
   getUserRole: () => user?.role,
   getCommercialPayload: () => commercialPayload,
@@ -2454,8 +2472,8 @@ const merchAnalyticsRuntime = createMerchAnalyticsRuntime({
   getCommercialPayload: () => commercialPayload
 });
 const businessControlsEventsRuntime = createBusinessControlsEventsRuntime({
-  getManageModeEnabled: () => manageModeEnabled,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
+  getManageModeEnabled,
+  isDashboardManagerRole,
   openManageForm,
   openManageConfirm,
   showManageToast,
@@ -2520,16 +2538,16 @@ const businessControlsEventsRuntime = createBusinessControlsEventsRuntime({
 });
 const accountingLiveRuntime = createAccountingLiveRuntime({
   getUserRole: () => user?.role,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
+  isDashboardManagerRole,
   isDashboardDemoDataModeActive,
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  canManageBusinessModules,
+  withManagedBusiness,
   headers,
-  formatMoney: (value) => dashboardSharedUtilsRuntime.formatMoney(value),
+  formatMoney,
   escapeHtml,
   renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
-  setAccountingStatus: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingStatus(message, isError),
-  setAccountingLiveNote: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingLiveNote(message, isError),
+  setAccountingStatus,
+  setAccountingLiveNote,
   accountingLivePanel,
   accountingLiveCards,
   accountingLiveGauges,
@@ -2585,7 +2603,7 @@ const staffRotaWeekRuntime = createStaffRotaWeekRuntime({
     staffRotaWeekLoading = Boolean(value);
   },
   isDashboardDemoDataModeActive,
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  withManagedBusiness,
   headers,
   normalizeStaffCellStatus: normalizeStaffRotaCellStatus,
   normalizeStaffShiftType: normalizeStaffRotaShiftType,
@@ -2624,7 +2642,7 @@ const staffRotaCoreRuntime = createStaffRotaCoreRuntime({
   renderStaffSummary: () => staffRosterRuntime.renderStaffSummary(),
   renderStaffRoster: () => staffRosterRuntime.renderStaffRoster(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError),
+  setStaffStatus,
   showManageToast,
   persistStaffRotaBulk: ({ updates = [], sicknessLogs = [] } = {}) =>
     staffRotaWeekRuntime.persistStaffRotaBulk({ updates, sicknessLogs }),
@@ -2638,8 +2656,8 @@ const staffRotaUiRuntime = createStaffRotaUiRuntime({
   openManageForm,
   openManageConfirm,
   showManageToast,
-  isDashboardManagerRole: () => dashboardManageModeRuntime.isDashboardManagerRole(),
-  getManageModeEnabled: () => manageModeEnabled,
+  isDashboardManagerRole,
+  getManageModeEnabled,
   loadStaffRotaWeek: ({ silent = false } = {}) => staffRotaWeekRuntime.loadStaffRotaWeek({ silent }),
   renderStaffSummary: () => staffRosterRuntime.renderStaffSummary(),
   renderStaffRoster: () => staffRosterRuntime.renderStaffRoster(),
@@ -2657,7 +2675,7 @@ const staffRotaUiRuntime = createStaffRotaUiRuntime({
     staffRotaCoreRuntime.applyAutoCoverForWeek({ onlyDays, forMemberId, silent }),
   loadStaffDemoRotaPreview: () => staffRotaCoreRuntime.loadStaffRotaPreview(),
   resetStaffRotaWeekRemote: () => staffRotaWeekRuntime.resetStaffRotaWeekRemote(),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError),
+  setStaffStatus,
   getStaffRotaSelectedMemberId: () => staffRotaSelectedMemberId,
   setStaffRotaSelectedMemberId: (value) => {
     staffRotaSelectedMemberId = String(value || "").trim();
@@ -2687,7 +2705,7 @@ const staffRotaUiRuntime = createStaffRotaUiRuntime({
 });
 const staffRosterControlsRuntime = createStaffRosterControlsRuntime({
   parseShiftDaysInput: (raw) => parseStaffShiftDaysInput(raw),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError),
+  setStaffStatus,
   upsertStaffMember: (payload) => staffRosterRuntime.upsertStaffMember(payload),
   staffRosterForm,
   staffNameInput,
@@ -2696,12 +2714,12 @@ const staffRosterControlsRuntime = createStaffRosterControlsRuntime({
   staffShiftDaysInput
 });
 const staffRosterRuntime = createStaffRosterRuntime({
-  canManageBusinessModules: () => dashboardRequestUtilsRuntime.canManageBusinessModules(),
-  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
+  canManageBusinessModules,
+  withManagedBusiness,
   headers,
   escapeHtml,
   formatStaffWeekRange: () => staffRotaWeekRuntime.formatStaffWeekRange(),
-  getManageModeEnabled: () => manageModeEnabled,
+  getManageModeEnabled,
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
   buildStaffRotaSnapshot: () => staffRotaCoreRuntime.buildStaffRotaSnapshot(),
   getStaffColorForId: (staffId) => staffRotaCoreRuntime.getStaffColorForId(staffId),
@@ -2757,7 +2775,7 @@ const staffDateUtilsRuntime = createStaffDateUtilsRuntime({
 const dashboardManageModeRuntime = createDashboardManageModeRuntime({
   manageModeStorageKey: MANAGE_MODE_STORAGE_KEY,
   getUserRole: () => user?.role,
-  getManageModeEnabled: () => manageModeEnabled,
+  getManageModeEnabled,
   setManageModeEnabled: (value) => {
     manageModeEnabled = Boolean(value);
   },
@@ -2767,30 +2785,6 @@ const dashboardManageModeRuntime = createDashboardManageModeRuntime({
   renderStaffRoster: () => staffRosterRuntime.renderStaffRoster(),
   staffRosterSection
 });
-
-function ensureManageToastStack() {
-  return manageUiRuntime.ensureManageToastStack();
-}
-
-function showManageToast(message, type = "success") {
-  return manageUiRuntime.showManageToast(message, type);
-}
-
-function ensureManageModalOverlay() {
-  return manageUiRuntime.ensureManageModalOverlay();
-}
-
-function escapeHtml(value) {
-  return manageUiRuntime.escapeHtml(value);
-}
-
-async function openManageForm({ title, fields = [], submitLabel = "Save" } = {}) {
-  return manageUiRuntime.openManageForm({ title, fields, submitLabel });
-}
-
-async function openManageConfirm({ title, message, confirmLabel = "Confirm" } = {}) {
-  return manageUiRuntime.openManageConfirm({ title, message, confirmLabel });
-}
 
 
 
@@ -2857,7 +2851,7 @@ const mockDashboardRuntime = createMockDashboardRuntime({
     accountingRows = Array.isArray(value) ? value : [];
   },
   renderAccountingIntegrations: () => accountingIntegrationsRuntime.renderAccountingIntegrations(),
-  setAccountingStatus: (message, isError = false) => dashboardStatusUtilsRuntime.setAccountingStatus(message, isError),
+  setAccountingStatus,
   getAccountingLiveTimeframe: () => accountingLiveTimeframe,
   setAccountingLivePayload: (value) => {
     accountingLivePayload = value || null;
@@ -2875,7 +2869,7 @@ const mockDashboardRuntime = createMockDashboardRuntime({
   },
   renderStaffSummary: () => staffRosterRuntime.renderStaffSummary(),
   renderStaffRoster: () => staffRosterRuntime.renderStaffRoster(),
-  setStaffStatus: (message, isError = false) => staffRotaWeekRuntime.setStaffStatus(message, isError),
+  setStaffStatus,
   setWaitlistRows: (value) => {
     waitlistRows = Array.isArray(value) ? value : [];
   },
@@ -2884,7 +2878,7 @@ const mockDashboardRuntime = createMockDashboardRuntime({
   },
   renderWaitlistSummary: () => operationsRuntime.renderWaitlistSummary(),
   renderWaitlist: () => operationsRuntime.renderWaitlist(),
-  setWaitlistStatus: (message, isError = false) => operationsRuntime.setWaitlistStatus(message, isError),
+  setWaitlistStatus,
   setOperationsInsights: (value) => {
     operationsInsights = value ?? null;
   },
@@ -2893,8 +2887,8 @@ const mockDashboardRuntime = createMockDashboardRuntime({
   setCrmSegmentsPayload: (value) => {
     crmSegmentsPayload = value || null;
   },
-  renderCrmSegments: () => operationsRuntime.renderCrmSegments(),
-  setCrmStatus: (message, isError = false) => operationsRuntime.setCrmStatus(message, isError),
+  renderCrmSegments,
+  setCrmStatus,
   setCommercialPayload: (value) => {
     commercialPayload = value || null;
   },

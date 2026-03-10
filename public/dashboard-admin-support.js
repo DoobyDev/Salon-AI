@@ -1,4 +1,4 @@
-// Admin account support and accounting export runtime.
+// Admin account tooling and accounting export runtime.
 export function createAdminSupportRuntime(deps) {
   const {
     win = window,
@@ -23,12 +23,15 @@ export function createAdminSupportRuntime(deps) {
     setManagedBusinessId,
     adminBusinessSelect,
     subscriberCalendarSection,
-    adminAccountSupportSection,
-    adminAccountSupportScope,
-    adminAccountSupportSearch,
-    adminAccountSupportRefreshBtn,
-    adminAccountSupportResults,
-    adminAccountSupportDetail,
+    adminAccountSearchForm,
+    adminAccountSearchInput,
+    adminAccountsTable,
+    adminAccountDetail,
+    adminAccountEditForm,
+    adminEditName,
+    adminEditEmail,
+    adminEditBusinessName,
+    adminAccountEditMessage,
     accountingBookingExportBtn,
     accountingPlatformExportBtn,
     withManagedBusiness,
@@ -40,157 +43,157 @@ export function createAdminSupportRuntime(deps) {
     setAdminAccountSupportSearchTimerId
   } = deps || {};
 
+  function getAdminAccountQuery() {
+    return String(adminAccountSearchInput?.value || "").trim();
+  }
+
+  function setAdminAccountMessage(text, mode = "neutral") {
+    if (!adminAccountEditMessage) return;
+    adminAccountEditMessage.textContent = String(text || "");
+    adminAccountEditMessage.className = `form-message ${mode === "error" ? "status-negative" : mode === "success" ? "status-positive" : "status-neutral"}`;
+  }
+
   function adminAccountSupportSelectedAccount() {
     const cache = Array.isArray(getAdminAccountSupportResultsCache?.()) ? getAdminAccountSupportResultsCache() : [];
     const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
     return cache.find((account) => String(account?.id || "") === selectedId) || null;
   }
 
-  function renderAdminAccountSupportModule() {
-    if (getUserRole?.() !== "admin" || !adminAccountSupportSection) return;
-    const selected = adminAccountSupportSelectedAccount();
-    const cache = Array.isArray(getAdminAccountSupportResultsCache?.()) ? getAdminAccountSupportResultsCache() : [];
-    const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
-    if (adminAccountSupportScope) {
-      adminAccountSupportScope.textContent = selected
-        ? `${selected.role === "subscriber" ? "Subscriber" : "Customer"} account loaded`
-        : "Admin support popup";
-    }
-    if (adminAccountSupportResults) {
-      if (!cache.length) {
-        adminAccountSupportResults.innerHTML = `
-          <div class="admin-account-support-detail-empty">
-            <div>
-              <strong>No accounts loaded yet</strong>
-              <p>Search for a subscriber or customer account to review it here.</p>
-            </div>
-          </div>
-        `;
-      } else {
-        adminAccountSupportResults.innerHTML = cache.map((account) => {
-          const isSelected = String(account?.id || "") === selectedId;
-          const summary = account?.role === "subscriber"
-            ? [account?.business?.name, account?.business?.city, account?.business?.country].filter(Boolean).join(" • ")
-            : `Visits ${Number(account?.stats?.visitCount || 0)} • Linked salons ${Number(account?.stats?.linkedBusinesses || 0)}`;
-          return `
-            <button type="button" class="admin-account-support-card${isSelected ? " is-selected" : ""}" data-admin-account-id="${escapeHtml(String(account?.id || ""))}">
-              <div class="admin-account-support-card-head">
-                <strong>${escapeHtml(String(account?.name || "Unnamed account"))}</strong>
-                <span class="admin-account-support-role-pill is-${escapeHtml(String(account?.role || "").toLowerCase())}">${escapeHtml(String(account?.role || "account"))}</span>
-              </div>
-              <small>${escapeHtml(String(account?.email || ""))}</small>
-              <div class="admin-account-support-card-row">
-                <span class="admin-account-support-stat-pill">${escapeHtml(summary || "Open this account")}</span>
-                <small>${escapeHtml(account?.createdAt ? formatDateShort?.(account.createdAt) : "")}</small>
-              </div>
-            </button>
-          `;
-        }).join("");
-      }
-    }
-    if (adminAccountSupportDetail) {
-      if (!selected) {
-        adminAccountSupportDetail.innerHTML = `
-          <div class="admin-account-support-detail-empty">
-            <div>
-              <strong>Select an account</strong>
-              <p>Use this popup to search, review, and edit subscriber or customer accounts.</p>
-            </div>
-          </div>
-        `;
-        return;
-      }
-      const stats = selected?.stats || {};
-      const subscriberMeta = selected?.role === "subscriber"
-        ? [selected?.business?.name, selected?.business?.type, selected?.business?.city, selected?.business?.country].filter(Boolean).join(" • ")
-        : "";
-      const recentVisits = Array.isArray(selected?.recentVisits) ? selected.recentVisits : [];
-      const visitRows = recentVisits.length
-        ? recentVisits.map((visit) => `
-            <div class="admin-account-support-visit-row">
-              <div>
-                <strong>${escapeHtml(String(visit?.businessName || visit?.service || "Visit"))}</strong>
-                <small>${escapeHtml([visit?.service, visit?.date, visit?.time].filter(Boolean).join(" • "))}</small>
-              </div>
-              <small>${escapeHtml(String(visit?.status || ""))}</small>
-            </div>
-          `).join("")
-        : `<div class="admin-account-support-visit-row"><div><strong>No recent visits</strong><small>This account has no recent linked activity yet.</small></div></div>`;
-      adminAccountSupportDetail.innerHTML = `
-        <div class="admin-account-support-card-head">
-          <div>
-            <strong>${escapeHtml(String(selected?.name || "Unnamed account"))}</strong>
-            <div class="admin-account-support-card-row">
-              <span class="admin-account-support-role-pill is-${escapeHtml(String(selected?.role || "").toLowerCase())}">${escapeHtml(String(selected?.role || "account"))}</span>
-              <small>${escapeHtml(String(selected?.email || ""))}</small>
-            </div>
-            ${subscriberMeta ? `<small>${escapeHtml(subscriberMeta)}</small>` : ""}
-          </div>
-          <div class="admin-account-support-action-row">
-            ${selected?.role === "subscriber" && selected?.business?.id ? '<button class="btn" type="button" data-admin-account-action="open-dashboard">Open Dashboard</button>' : ""}
-            ${selected?.role === "subscriber" && selected?.business?.id ? '<button class="btn btn-ghost" type="button" data-admin-account-action="open-profile">Edit Business Info</button>' : ""}
-            <button class="btn btn-ghost" type="button" data-admin-account-action="edit-account">Edit Account</button>
-          </div>
-        </div>
-        <div class="admin-account-support-stats">
-          <article>
-            <p>${escapeHtml(selected?.role === "subscriber" ? "Bookings" : "Visits")}</p>
-            <strong>${escapeHtml(String(stats.visitCount || stats.bookingCount || 0))}</strong>
-          </article>
-          <article>
-            <p>${escapeHtml(selected?.role === "subscriber" ? "Active Plan" : "Upcoming")}</p>
-            <strong>${escapeHtml(String(stats.planLabel || stats.upcomingCount || "0"))}</strong>
-          </article>
-          <article>
-            <p>${escapeHtml(selected?.role === "subscriber" ? "Revenue Signal" : "Linked Salons")}</p>
-            <strong>${escapeHtml(selected?.role === "subscriber" ? formatMoney?.(Number(stats.revenue || 0)) : String(stats.linkedBusinesses || 0))}</strong>
-          </article>
-        </div>
-        <section class="admin-account-support-visit-list">
-          <p>${escapeHtml(selected?.role === "subscriber" ? "Subscriber snapshot" : "Recent visits")}</p>
-          ${selected?.role === "subscriber"
-            ? `
-              <div class="admin-account-support-visit-row">
-                <div>
-                  <strong>${escapeHtml(String(selected?.business?.name || "Subscriber business"))}</strong>
-                  <small>${escapeHtml(String(stats.planStatus || "No billing data"))}</small>
-                </div>
-                <small>${escapeHtml(String(stats.lastBookingAt ? formatDateShort?.(stats.lastBookingAt) : "No recent booking"))}</small>
-              </div>
-              <div class="admin-account-support-visit-row">
-                <div>
-                  <strong>Managed dashboard access</strong>
-                  <small>Open their Booking Diary and Business Hub in the admin dashboard below.</small>
-                </div>
-              </div>
-            `
-            : visitRows}
-        </section>
-        <section class="admin-account-support-notes">
-          <p>${escapeHtml(selected?.role === "subscriber" ? "Admin note" : "Customer note")}</p>
-          <strong>${escapeHtml(selected?.role === "subscriber"
-            ? "Dashboard edits continue through the managed subscriber views below."
-            : "Editing the account here keeps future customer sign-in and visit history aligned.")}</strong>
-        </section>
-      `;
-    }
+  function roleLabel(role) {
+    const value = String(role || "").trim().toLowerCase();
+    return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "Account";
   }
 
-  async function loadAdminAccountSupport(query = adminAccountSupportSearch?.value || "") {
+  function renderAdminAccountsTable(cache, selectedId) {
+    if (!adminAccountsTable) return;
+    adminAccountsTable.innerHTML = cache.length
+      ? cache.map((account) => `
+          <article class="admin-row ${String(account?.id || "") === selectedId ? "is-selected" : ""}" data-admin-account-id="${escapeHtml(String(account?.id || ""))}">
+            <div>
+              <strong>${escapeHtml(String(account?.name || "Account"))}</strong>
+              <small>${escapeHtml(String(account?.email || ""))}</small>
+            </div>
+            <div>
+              <strong>${escapeHtml(roleLabel(account?.role))}</strong>
+              <small>${escapeHtml(String(account?.business?.name || account?.business?.city || "No linked business"))}</small>
+            </div>
+            <div>
+              <strong>${escapeHtml(String(account?.stats?.bookingCount ?? account?.stats?.visitCount ?? 0))}</strong>
+              <small>${escapeHtml(account?.role === "subscriber" ? "bookings" : "visits")}</small>
+            </div>
+            <div>
+              <strong>${escapeHtml(account?.role === "subscriber" ? String(formatMoney?.(Number(account?.stats?.revenue || 0)) || "GBP 0") : String(account?.stats?.upcomingCount || 0))}</strong>
+              <small>${escapeHtml(account?.role === "subscriber" ? String(account?.stats?.planLabel || "no plan") : "upcoming bookings")}</small>
+            </div>
+          </article>
+        `).join("")
+      : '<div class="empty-state">No matching accounts found.</div>';
+  }
+
+  function renderAdminAccountDetailCard(account) {
+    if (!adminAccountDetail) return;
+    if (!account) {
+      adminAccountDetail.innerHTML = '<div class="empty-state">Select an account to review and edit it.</div>';
+      if (adminEditName) adminEditName.value = "";
+      if (adminEditEmail) adminEditEmail.value = "";
+      if (adminEditBusinessName) adminEditBusinessName.value = "";
+      setAdminAccountMessage("");
+      return;
+    }
+
+    const stats = account?.stats || {};
+    const recentVisits = Array.isArray(account?.recentVisits) ? account.recentVisits : [];
+    const primary = account?.role === "subscriber"
+      ? `${String(stats.bookingCount || 0)} bookings - ${String(formatMoney?.(Number(stats.revenue || 0)) || "GBP 0")}`
+      : `${String(stats.visitCount || 0)} visits - ${String(stats.upcomingCount || 0)} upcoming`;
+    const secondary = account?.role === "subscriber"
+      ? `${String(stats.planLabel || "no plan")} - ${String(account?.business?.city || "no city")}`
+      : `${String(stats.linkedBusinesses || 0)} linked salons`;
+
+    adminAccountDetail.innerHTML = `
+      <article class="detail-card">
+        <strong>${escapeHtml(String(account?.name || "Account"))}</strong>
+        <small>${escapeHtml(String(account?.email || ""))}</small>
+        <small>${escapeHtml(roleLabel(account?.role))}${account?.business?.name ? ` - ${escapeHtml(String(account.business.name || ""))}` : ""}</small>
+      </article>
+      <article class="detail-card">
+        <strong>Activity</strong>
+        <small>${escapeHtml(primary)}</small>
+        <small>${escapeHtml(secondary)}</small>
+      </article>
+      <article class="detail-card">
+        <strong>Recent activity</strong>
+        ${recentVisits.length
+          ? recentVisits
+              .slice(0, 4)
+              .map((visit) => `<small>${escapeHtml(String(visit?.service || "Service"))} - ${escapeHtml(String(visit?.businessName || "Salon"))} - ${escapeHtml(String(formatDateShort?.(visit?.date) || visit?.date || ""))}</small>`)
+              .join("")
+          : `<small>${escapeHtml(String(stats.lastBookingAt ? formatDateShort?.(stats.lastBookingAt) : "No recent activity available."))}</small>`}
+      </article>
+      ${account?.role === "subscriber" && account?.business?.id
+        ? `
+          <article class="detail-card">
+            <strong>Managed actions</strong>
+            <div class="agenda-item-actions">
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-dashboard">Open dashboard</button>
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-profile">Edit business info</button>
+            </div>
+          </article>
+        `
+        : ""}
+    `;
+
+    if (adminEditName) adminEditName.value = String(account?.name || "");
+    if (adminEditEmail) adminEditEmail.value = String(account?.email || "");
+    if (adminEditBusinessName) {
+      adminEditBusinessName.value = String(account?.business?.name || "");
+      adminEditBusinessName.disabled = account?.role !== "subscriber";
+    }
+    setAdminAccountMessage("");
+  }
+
+  function renderAdminAccountSupportModule() {
+    if (getUserRole?.() !== "admin" || !adminAccountsTable || !adminAccountDetail) return;
+    const cache = Array.isArray(getAdminAccountSupportResultsCache?.()) ? getAdminAccountSupportResultsCache() : [];
+    const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
+    renderAdminAccountsTable(cache, selectedId);
+    renderAdminAccountDetailCard(adminAccountSupportSelectedAccount());
+  }
+
+  async function loadAdminAccountSupport(query = getAdminAccountQuery()) {
     if (getUserRole?.() !== "admin") return;
     const q = String(query || "").trim();
     const endpoint = q ? `/api/admin/accounts?query=${encodeURIComponent(q)}` : "/api/admin/accounts";
     const res = await fetchImpl(endpoint, { headers: headers?.() });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Unable to load admin account support data.");
+    if (!res.ok) throw new Error(data.error || "Unable to load admin accounts.");
     const accounts = Array.isArray(data?.accounts) ? data.accounts : [];
     setAdminAccountSupportResultsCache?.(accounts);
     const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
     const selectedStillExists = accounts.some((account) => String(account?.id || "") === selectedId);
-    setAdminAccountSupportSelectedId?.(
-      selectedStillExists ? selectedId : String(accounts[0]?.id || "").trim()
-    );
+    setAdminAccountSupportSelectedId?.(selectedStillExists ? selectedId : String(accounts[0]?.id || "").trim());
     renderAdminAccountSupportModule();
+  }
+
+  async function updateAdminAccount(values = {}) {
+    const account = adminAccountSupportSelectedAccount();
+    if (!account) return;
+    const res = await fetchImpl(`/api/admin/accounts/${encodeURIComponent(String(account.id || ""))}`, {
+      method: "PATCH",
+      headers: headers?.(),
+      body: JSON.stringify(values)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Unable to update account.");
+    if (account.role === "subscriber") {
+      await loadAdminBusinessOptions?.();
+      if (String(account?.business?.id || "") === String(getManagedBusinessId?.() || "").trim()) {
+        await reloadAdminManagedDashboard?.();
+      }
+    }
+    await loadAdminAccountSupport(getAdminAccountQuery());
+    setDashActionStatus?.(`${account.role === "subscriber" ? "Subscriber" : "Customer"} account updated.`);
+    setAdminAccountMessage("Account saved.", "success");
   }
 
   async function openAdminAccountSupportEditForm() {
@@ -209,21 +212,7 @@ export function createAdminSupportRuntime(deps) {
       fields
     });
     if (!values) return;
-    const res = await fetchImpl(`/api/admin/accounts/${encodeURIComponent(String(account.id || ""))}`, {
-      method: "PATCH",
-      headers: headers?.(),
-      body: JSON.stringify(values)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Unable to update account.");
-    if (account.role === "subscriber") {
-      await loadAdminBusinessOptions?.();
-      if (String(account?.business?.id || "") === String(getManagedBusinessId?.() || "").trim()) {
-        await reloadAdminManagedDashboard?.();
-      }
-    }
-    await loadAdminAccountSupport(adminAccountSupportSearch?.value || "");
-    setDashActionStatus?.(`${account.role === "subscriber" ? "Subscriber" : "Customer"} account updated.`);
+    await updateAdminAccount(values);
   }
 
   function parseExportFileName(disposition, fallback = "accounting_export.csv") {
@@ -271,46 +260,42 @@ export function createAdminSupportRuntime(deps) {
   }
 
   function bindAdminSupportEvents() {
-    adminAccountSupportRefreshBtn?.addEventListener("click", async () => {
-      if (getUserRole?.() !== "admin") return;
-      try {
-        await loadAdminAccountSupport(adminAccountSupportSearch?.value || "");
-        setDashActionStatus?.("Account support refreshed.");
-      } catch (error) {
-        setDashActionStatus?.(error.message, true);
-      }
-    });
-
-    adminAccountSupportSearch?.addEventListener("input", () => {
+    adminAccountSearchInput?.addEventListener("input", () => {
       if (getUserRole?.() !== "admin") return;
       const timerId = getAdminAccountSupportSearchTimerId?.();
       if (timerId) win.clearTimeout(timerId);
       const nextTimer = win.setTimeout(() => {
-        loadAdminAccountSupport(adminAccountSupportSearch?.value || "").catch((error) => {
-          setDashActionStatus?.(error.message, true);
+        loadAdminAccountSupport(getAdminAccountQuery()).catch((error) => {
+          setAdminAccountMessage(error.message, "error");
         });
       }, 220);
       setAdminAccountSupportSearchTimerId?.(nextTimer);
     });
 
-    adminAccountSupportResults?.addEventListener("click", (event) => {
+    adminAccountSearchForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (getUserRole?.() !== "admin") return;
+      try {
+        await loadAdminAccountSupport(getAdminAccountQuery());
+      } catch (error) {
+        setAdminAccountMessage(error.message, "error");
+      }
+    });
+
+    adminAccountsTable?.addEventListener("click", (event) => {
       const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-id]") : null;
       if (!(target instanceof HTMLElement)) return;
       setAdminAccountSupportSelectedId?.(String(target.getAttribute("data-admin-account-id") || "").trim());
       renderAdminAccountSupportModule();
     });
 
-    adminAccountSupportDetail?.addEventListener("click", async (event) => {
+    adminAccountDetail?.addEventListener("click", async (event) => {
       const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-action]") : null;
       if (!(target instanceof HTMLElement)) return;
       const action = String(target.getAttribute("data-admin-account-action") || "").trim();
       const account = adminAccountSupportSelectedAccount();
       if (!account) return;
       try {
-        if (action === "edit-account") {
-          await openAdminAccountSupportEditForm();
-          return;
-        }
         if (action === "open-dashboard" && account.role === "subscriber" && account?.business?.id) {
           const nextBusinessId = String(account.business.id || "").trim();
           setManagedBusinessId?.(nextBusinessId);
@@ -337,6 +322,25 @@ export function createAdminSupportRuntime(deps) {
       }
     });
 
+    adminAccountEditForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const account = adminAccountSupportSelectedAccount();
+      if (!account) {
+        setAdminAccountMessage("Select an account first.", "error");
+        return;
+      }
+      try {
+        setAdminAccountMessage("Saving...", "neutral");
+        await updateAdminAccount({
+          name: String(adminEditName?.value || "").trim(),
+          email: String(adminEditEmail?.value || "").trim(),
+          businessName: account.role === "subscriber" ? String(adminEditBusinessName?.value || "").trim() : ""
+        });
+      } catch (error) {
+        setAdminAccountMessage(error.message, "error");
+      }
+    });
+
     accountingBookingExportBtn?.addEventListener("click", async () => {
       await runAccountingExport(
         withManagedBusiness?.("/api/accounting-integrations/export?scope=business&format=csv"),
@@ -354,6 +358,12 @@ export function createAdminSupportRuntime(deps) {
         { requireManagedBusiness: false }
       );
     });
+
+    if (getUserRole?.() === "admin" && (adminAccountsTable || adminAccountDetail)) {
+      loadAdminAccountSupport().catch((error) => {
+        setAdminAccountMessage(error.message, "error");
+      });
+    }
   }
 
   return {

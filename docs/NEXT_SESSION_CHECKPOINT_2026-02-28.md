@@ -2,6 +2,7 @@
 
 This file is historical session context only. It is not the live source of truth for current work.
 Use `docs/tracking/` for active TODOs, TBD decisions, and FIXMEs.
+Do not treat this checkpoint as an active handoff or current plan.
 
 ## Current Product State
 

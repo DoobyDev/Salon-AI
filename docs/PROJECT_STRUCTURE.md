@@ -120,6 +120,8 @@ Purpose:
 
 - Put durable architecture, structure, and process docs in `docs/`.
 - Put active handoff and refactor tracking docs in `docs/tracking/`.
+- Treat `docs/tracking/` as the live source of truth for open work, unresolved decisions, and active fixes.
+- Mark older checkpoints, release notes, and retired roadmaps as historical at the top of the file so they cannot be mistaken for active planning documents.
 - Update `docs/APP_FEATURE_RECORD.md` whenever product capabilities materially change.
 
 ## Data and Runtime Artifacts
@@ -136,6 +138,25 @@ Purpose:
 - Browser/dashboard files: `kebab-case` with role or domain prefixes
 - Server service files: `snake_case` with explicit domain naming
 - Public routes and API paths: preserve compatibility once published
+
+## Naming Migration Guidance
+
+- Do not mass-rename published DOM ids, routes, or API paths just for style consistency while the app is still being validated.
+- For new JavaScript variables, functions, and DOM ids, prefer the current `camelCase` pattern already used across the dashboard code.
+- For new files, follow the established role/domain prefixes instead of inventing parallel naming families.
+- Only rename existing ids, section names, or module keys when:
+  - the change removes real ambiguity or merge risk
+  - the affected runtime/tests/docs are updated in the same batch
+  - the rename is narrow enough to verify safely
+- Treat broader naming cleanup as post-behavior-freeze work, not default in-flight maintenance.
+
+## Comment Policy
+
+- Add comments only where a behavior contract, sequencing rule, or non-obvious dependency would otherwise be easy to break.
+- Do not add line-by-line narration or comments that restate obvious code.
+- Prefer short guard comments above risky logic blocks over long explanatory prose.
+- Add JSDoc only for exported/shared helpers when the purpose, inputs, or outputs are not already obvious from the function name and local usage.
+- If a block is hard to explain briefly, prefer extracting or renaming it before adding heavier commentary.
 
 ## Decision Rules For New Files
 

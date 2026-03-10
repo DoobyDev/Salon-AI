@@ -335,6 +335,7 @@ Status: oversight dashboard available
   - account name
   - account email
   - subscriber business name
+- Admin account search, detail review, inline editing, and managed-dashboard jump actions now run through the current dashboard accounts panel instead of a stale hidden support surface
 - Admin recent account activity visibility
 
 ### Platform revenue and analytics
@@ -537,3 +538,4 @@ Status: oversight dashboard available
 - Corrected subscriber billing return paths so Stripe checkout, PayPal subscription approval, and billing-portal return flow all route back through the canonical `/dashboard` page
 - Reconnected the installable PWA shell so the current public, auth, dashboard, and legal pages all expose the shared manifest and register the shared service worker
 - Matched Lexi avatar-session auth gating to the realtime-session rules so subscriber/admin live avatar sessions now enforce the same protected-scope access checks
+- Reconciled the admin account tooling to the current dashboard accounts panel so search, detail review, inline edits, and managed-dashboard jump actions now use one live admin surface

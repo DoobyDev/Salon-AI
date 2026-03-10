@@ -2,6 +2,7 @@
 
 This file is historical release context only. It is not the live source of truth for the current app state.
 Use `README.md`, `docs/APP_FEATURE_RECORD.md`, and `docs/tracking/` for current product and work status.
+Do not use this file for current release decisions or active session planning.
 
 ## Release Readiness Summary
 

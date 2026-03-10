@@ -11,6 +11,7 @@ Current alignment notes:
 - Subscriber billing uses Stripe and PayPal subscription flows
 - Reminder settings, scheduled reminders, and notification logging are active product capabilities
 - OpenAI realtime voice and avatar provider rollout remain deferred until the end-of-build paid rollout
+- Re-check `README.md`, `docs/APP_FEATURE_RECORD.md`, and `docs/tracking/` before publishing any external legal/business wording so this pack stays aligned with the live app.
 
 ## Legal Documents
 

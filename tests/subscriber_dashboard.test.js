@@ -118,8 +118,9 @@ describe("subscriber dashboard command center", () => {
 
   it("lists reminders due soon and distinguishes scheduled reminder delivery logs", async () => {
     const now = new Date();
-    const bookingDate = toDateString(1);
-    const dueSoonTime = `${String((now.getHours() + 2) % 24).padStart(2, "0")}:00`;
+    const dueSoonDateTime = new Date(now.getTime() + (26 * 60 * 60 * 1000));
+    const bookingDate = `${dueSoonDateTime.getFullYear()}-${String(dueSoonDateTime.getMonth() + 1).padStart(2, "0")}-${String(dueSoonDateTime.getDate()).padStart(2, "0")}`;
+    const dueSoonTime = `${String(dueSoonDateTime.getHours()).padStart(2, "0")}:${String(dueSoonDateTime.getMinutes()).padStart(2, "0")}`;
 
     prisma.booking.findMany.mockResolvedValue([
       {
