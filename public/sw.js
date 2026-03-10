@@ -1,7 +1,10 @@
-const CACHE_NAME = "salon-ai-v7";
+const CACHE_NAME = "salon-ai-v8";
 const ASSETS = [
   "/",
   "/index.html",
+  "/auth",
+  "/dashboard",
+  "/legal",
   "/styles.css",
   "/app.js",
   "/manifest.webmanifest",
@@ -32,6 +35,9 @@ function shouldRefreshFromNetwork(url) {
   return (
     url.pathname === "/" ||
     url.pathname === "/index.html" ||
+    url.pathname === "/auth" ||
+    url.pathname === "/dashboard" ||
+    url.pathname === "/legal" ||
     url.pathname === "/styles.css" ||
     url.pathname === "/app.js" ||
     url.pathname === "/dashboard.html" ||

@@ -1,7 +1,10 @@
 import { buildAdminNotificationLexiPrompt, evaluateAdminNotificationHealth } from "./dashboard-admin-notification-health.js";
+import { registerServiceWorker } from "./pwa-runtime.js";
 
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
+
+registerServiceWorker();
 
 const $ = (id) => document.getElementById(id);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));

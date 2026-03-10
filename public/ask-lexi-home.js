@@ -1,3 +1,5 @@
+import { registerServiceWorker } from "./pwa-runtime.js";
+
 const homePreviewThread = document.getElementById("homePreviewThread");
 const homeBookingFeed = document.getElementById("homeBookingFeed");
 const homeRefreshFeedBtn = document.getElementById("homeRefreshFeedBtn");
@@ -13,6 +15,8 @@ const homePromptButtons = Array.from(document.querySelectorAll("[data-home-lexi-
 const modalCloseTargets = Array.from(document.querySelectorAll("[data-close-home-lexi]"));
 
 const PUBLIC_HISTORY = [];
+
+registerServiceWorker();
 
 function appendAssistantMessage(container, role, text) {
   if (!container) return;

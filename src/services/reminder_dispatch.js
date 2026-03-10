@@ -58,6 +58,7 @@ export function createReminderDispatchService({
         const dueAtMs = startsAt.getTime() - leadHours * 60 * 60 * 1000;
         if (now.getTime() < dueAtMs || now.getTime() - dueAtMs > dispatchWindowMs) continue;
 
+        // Scheduled reminders are deduped from audit logs, so changing this marker also changes dispatch idempotency.
         const existing = await prisma.auditLog.findFirst({
           where: {
             action: "notification.delivery",

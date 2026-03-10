@@ -1,3 +1,5 @@
+import { registerServiceWorker } from "./pwa-runtime.js";
+
 const loginForm = document.getElementById("loginForm");
 const loginRole = document.getElementById("loginRole");
 const loginRoleAdminOption = document.getElementById("loginRoleAdminOption");
@@ -25,6 +27,8 @@ const businessPhone = document.getElementById("businessPhone");
 const onboardingTemplatePreview = document.getElementById("onboardingTemplatePreview");
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
+
+registerServiceWorker();
 
 const onboardingTemplates = {
   hair_salon: {

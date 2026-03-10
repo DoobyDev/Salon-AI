@@ -34,6 +34,7 @@ The app is designed to help salons:
 ## Core Platform Features
 
 - Public web app, desktop shell, and mobile-capable delivery path
+- Installable PWA shell now correctly links the shared manifest and registers the shared service worker from the live home, auth, dashboard, and legal page entrypoints
 - Role-based authentication for:
   - customer
   - subscriber
@@ -532,3 +533,4 @@ Status: oversight dashboard available
 - Updated the homepage hero so Lexi is visibly present from the first screen with a top-of-page portrait cue for new visitors
 - Refined the homepage Lexi intro into a more compact top-of-hero strip so first-load visibility stays clear without competing too heavily with the main portrait
 - Corrected subscriber billing return paths so Stripe checkout, PayPal subscription approval, and billing-portal return flow all route back through the canonical `/dashboard` page
+- Reconnected the installable PWA shell so the current public, auth, dashboard, and legal pages all expose the shared manifest and register the shared service worker

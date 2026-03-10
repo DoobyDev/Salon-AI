@@ -113,6 +113,7 @@ export async function sendBookingNotifications({ businessName, booking, customer
   const subject = `Booking Confirmed - ${businessName}`;
   const channelResults = [];
 
+  // "Skipped" rows are intentional here: downstream audit logs and dashboard health views depend on them to explain why nothing was sent.
   if (!liveRemindersEnabled || channelPreference === "manual") {
     channelResults.push({ channel: "sms", outcome: "skipped", reason: liveRemindersEnabled ? "manual_only" : "live_reminders_disabled" });
     channelResults.push({ channel: "email", outcome: "skipped", reason: liveRemindersEnabled ? "manual_only" : "live_reminders_disabled" });
