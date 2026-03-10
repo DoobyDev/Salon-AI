@@ -22,8 +22,14 @@ beforeEach(() => {
     findUnique: vi.fn(),
     findFirst: vi.fn()
   };
+  prisma.booking = {
+    count: vi.fn().mockResolvedValue(0),
+    aggregate: vi.fn().mockResolvedValue({ _sum: { price: 0 } }),
+    findMany: vi.fn().mockResolvedValue([])
+  };
   prisma.auditLog = {
-    create: vi.fn().mockResolvedValue({})
+    create: vi.fn().mockResolvedValue({}),
+    findMany: vi.fn().mockResolvedValue([])
   };
 });
 
@@ -36,8 +42,30 @@ describe("admin managed businesses", () => {
 
   it("returns admin business options", async () => {
     prisma.business.findMany.mockResolvedValue([
-      { id: "biz_1", name: "Glow Studio", type: "salon", city: "London", country: "UK" },
-      { id: "biz_2", name: "North Fade", type: "barber", city: "Leeds", country: "UK" }
+      {
+        id: "biz_1",
+        name: "Glow Studio",
+        type: "salon",
+        city: "London",
+        country: "UK",
+        users: [],
+        subscription: null,
+        services: [],
+        bookings: [],
+        _count: { bookings: 0, services: 0 }
+      },
+      {
+        id: "biz_2",
+        name: "North Fade",
+        type: "barber",
+        city: "Leeds",
+        country: "UK",
+        users: [],
+        subscription: null,
+        services: [],
+        bookings: [],
+        _count: { bookings: 0, services: 0 }
+      }
     ]);
 
     const token = makeToken({ role: "admin", businessId: null, email: "admin@example.com" });

@@ -19,6 +19,9 @@ beforeEach(() => {
     create: vi.fn().mockResolvedValue({ id: "biz_1" }),
     findFirst: vi.fn().mockResolvedValue({ id: "biz_1" })
   };
+  prisma.booking = {
+    findMany: vi.fn().mockResolvedValue([])
+  };
   prisma.auditLog = {
     create: vi.fn().mockResolvedValue({})
   };

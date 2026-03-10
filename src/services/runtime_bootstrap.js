@@ -5,7 +5,8 @@ export function createUnavailablePrisma() {
   };
   const model = new Proxy({}, { get: () => reject });
   const state = {
-    current: null
+    current: null,
+    mockAssigned: false
   };
   return new Proxy(state, {
     get(target, prop) {
@@ -15,7 +16,7 @@ export function createUnavailablePrisma() {
         };
       }
       if (prop === "__isAvailable") {
-        return Boolean(target.current);
+        return Boolean(target.current || target.mockAssigned);
       }
       if (prop === "__current") {
         return target.current;
@@ -24,6 +25,9 @@ export function createUnavailablePrisma() {
         const value = target.current[prop];
         return typeof value === "function" ? value.bind(target.current) : value;
       }
+      if (Object.prototype.hasOwnProperty.call(target, prop)) {
+        return target[prop];
+      }
       return model;
     },
     set(target, prop, value) {
@@ -31,6 +35,9 @@ export function createUnavailablePrisma() {
         target.current[prop] = value;
       } else {
         target[prop] = value;
+        if (typeof prop !== "symbol" && !String(prop).startsWith("__")) {
+          target.mockAssigned = true;
+        }
       }
       return true;
     }
