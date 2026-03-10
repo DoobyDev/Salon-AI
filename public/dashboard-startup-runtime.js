@@ -3,11 +3,6 @@ export function createDashboardStartupRuntime(deps) {
   const {
     getUserRole,
     accountingLiveTimeframe,
-    showSection,
-    hideSection,
-    subscriberCalendarSection,
-    businessGrowthSection,
-    adminPlatformSection,
     initializeUiDensity,
     initializeManageMode,
     setupManagedSectionActions,
@@ -75,14 +70,10 @@ export function createDashboardStartupRuntime(deps) {
     setAccountingTimeframe?.(accountingLiveTimeframe, { reload: false });
     startAccountingLiveStream?.();
 
+    // Keep role-driven section visibility centralized in dashboard-layout.js; startup should not override it per role.
     enforceDashboardRoleLayoutVisibility?.();
     initializeModuleNavigator?.();
     renderBusinessGrowthPanel?.();
-    if (getUserRole?.() === "admin") {
-      showSection?.(subscriberCalendarSection);
-      showSection?.(businessGrowthSection);
-      hideSection?.(adminPlatformSection);
-    }
     initializeMobileBottomNav?.();
     bindModuleClickRouter?.();
     bindCustomerInteractionEvents?.();

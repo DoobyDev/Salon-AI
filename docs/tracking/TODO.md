@@ -80,13 +80,9 @@ Notes: Customer/public scaffolding exists; broader rollout should be decided onl
 
 ## Architecture And Maintenance
 
-- [ ] Consolidate duplicated role-visibility logic in dashboard boot/layout code.
-Files: `public/dashboard.js`
-Notes: Partially reduced on 2026-03-10 by consolidating repeated section-hiding groups into `public/dashboard-layout.js`. Further simplification is still worthwhile if role switching changes again.
-
 - [ ] Add targeted comments in complex runtime areas where behavior contracts are easy to break.
 Files: `public/dashboard.js`, `public/dashboard-calendar-pulse.js`, `server.js`, `public/app.js`
-Notes: One guard comment was added on 2026-03-10 for the admin quick-toggle/storyline contract; continue selectively. Admin notification-health logic was also extracted into `public/dashboard-admin-notification-health.js`, subscriber readiness plus due-soon reminder logic were extracted into `src/services/subscriber_communication_readiness.js`, the subscriber communications rollup now lives in `src/services/subscriber_communication_summary.js`, subscriber no-show/rebooking calculations now live in `src/services/subscriber_operations_insights.js`, and command-center recommendation thresholds now live in `src/services/subscriber_command_center.js` to reduce risk inside larger files.
+Notes: One guard comment was added on 2026-03-10 for the admin quick-toggle/storyline contract, and another now protects the shared role-layout contract in `public/dashboard-startup-runtime.js`; continue selectively. Admin notification-health logic was also extracted into `public/dashboard-admin-notification-health.js`, subscriber readiness plus due-soon reminder logic were extracted into `src/services/subscriber_communication_readiness.js`, the subscriber communications rollup now lives in `src/services/subscriber_communication_summary.js`, subscriber no-show/rebooking calculations now live in `src/services/subscriber_operations_insights.js`, and command-center recommendation thresholds now live in `src/services/subscriber_command_center.js` to reduce risk inside larger files.
 
 - [ ] Add naming and folder conventions guidance, then enforce it on new code.
 Files: `docs/PROJECT_STRUCTURE.md`, `docs/tracking/REPO_REORG_PLAN.md`
