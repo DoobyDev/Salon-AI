@@ -2,8 +2,8 @@
 
 ## Pricing Inputs
 
-- Monthly price: GBP 9.99
-- Yearly price: GBP 99.99
+- Monthly price: GBP 29.99
+- Yearly price: GBP 299.99
 - Yearly discount %: 16.7
 
 ## Core Assumptions
@@ -24,7 +24,8 @@
 ## Cost Tracking
 
 - Hosting/infrastructure
-- AI API usage
+- AI API usage (text/chat baseline)
+- Future realtime/avatar provider cost line only when the paid rollout starts
 - Messaging/email
 - Payment processing fees
 - Support/admin
@@ -40,4 +41,3 @@
 ## Notes
 
 Maintain this in spreadsheet form using this document as the assumptions checklist.
-

@@ -12,6 +12,7 @@ Core modules:
 - Booking availability and customer booking history
 - Subscriber dashboard operations + analytics
 - Admin platform analytics and controls
+- Reminder settings, scheduled reminders, and communication visibility
 - Accounting integrations and export workflow
 
 ## 3. Target Market
@@ -66,6 +67,8 @@ Differentiators:
 - Role-based dashboard frontend
 - Stripe + PayPal billing
 - AI integrations with managed guardrails
+- Installable PWA shell across the live web routes
+- Deferred paid rollout for realtime voice/avatar features
 
 ## 10. Compliance and Legal
 
@@ -100,4 +103,3 @@ Cost base:
 2. Complete onboarding optimization
 3. Launch focused acquisition campaigns
 4. Implement retention loop (usage nudges + success metrics)
-

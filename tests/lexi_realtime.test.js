@@ -178,4 +178,119 @@ describe("Lexi realtime route handlers", () => {
     expect(res.body.session.clientSecret).toBe("client_secret_123");
     expect(res.body.session.model).toBe("gpt-4o-realtime-preview");
   });
+
+  it("requires auth for subscriber avatar sessions", async () => {
+    const handlers = createLexiRealtimeRouteHandlers({
+      openai: { responses: {} },
+      getOptionalAuth: () => null,
+      buildLexiAvatarConfig: () => ({
+        provider: "heygen",
+        avatarSessionReady: true
+      }),
+      buildLexiRealtimeInstructions: () => "Prompt",
+      resolveLexiRealtimeBusiness: vi.fn(),
+      createOpenAiRealtimeClientSecret: vi.fn(),
+      createHeyGenAvatarSession: vi.fn(),
+      startHeyGenAvatarSession: vi.fn(),
+      stopHeyGenAvatarSession: vi.fn()
+    });
+
+    const req = {
+      body: {
+        scope: "subscriber"
+      }
+    };
+    const res = createMockRes();
+
+    await handlers.lexiAvatarSessionHandler(req, res);
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toMatch(/sign in/i);
+  });
+
+  it("requires admin auth for admin avatar sessions", async () => {
+    const handlers = createLexiRealtimeRouteHandlers({
+      openai: { responses: {} },
+      getOptionalAuth: () => ({ role: "subscriber", businessId: "biz_1" }),
+      buildLexiAvatarConfig: () => ({
+        provider: "heygen",
+        avatarSessionReady: true
+      }),
+      buildLexiRealtimeInstructions: () => "Prompt",
+      resolveLexiRealtimeBusiness: vi.fn(),
+      createOpenAiRealtimeClientSecret: vi.fn(),
+      createHeyGenAvatarSession: vi.fn(),
+      startHeyGenAvatarSession: vi.fn(),
+      stopHeyGenAvatarSession: vi.fn()
+    });
+
+    const req = {
+      body: {
+        scope: "admin",
+        businessId: "biz_1"
+      }
+    };
+    const res = createMockRes();
+
+    await handlers.lexiAvatarSessionHandler(req, res);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body.error).toMatch(/admin/i);
+  });
+
+  it("returns an avatar session payload when avatar env and auth are ready", async () => {
+    const resolveBusiness = vi.fn().mockResolvedValue({ id: "biz_1", name: "Salon One" });
+    const createAvatarSession = vi.fn().mockResolvedValue({
+      sessionToken: "heygen_token_123",
+      data: {
+        session_id: "avatar_session_123",
+        url: "wss://livekit.example.com/room",
+        access_token: "livekit_access_123"
+      }
+    });
+    const startAvatarSession = vi.fn().mockResolvedValue({ ok: true });
+
+    const handlers = createLexiRealtimeRouteHandlers({
+      openai: { responses: {} },
+      getOptionalAuth: () => ({ role: "subscriber", businessId: "biz_1" }),
+      buildLexiAvatarConfig: () => ({
+        provider: "heygen",
+        avatarSessionReady: true
+      }),
+      buildLexiRealtimeInstructions: () => "Prompt",
+      resolveLexiRealtimeBusiness: resolveBusiness,
+      createOpenAiRealtimeClientSecret: vi.fn(),
+      createHeyGenAvatarSession: createAvatarSession,
+      startHeyGenAvatarSession: startAvatarSession,
+      stopHeyGenAvatarSession: vi.fn()
+    });
+
+    const req = {
+      body: {
+        scope: "subscriber",
+        businessId: "biz_1"
+      }
+    };
+    const res = createMockRes();
+
+    await handlers.lexiAvatarSessionHandler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(resolveBusiness).toHaveBeenCalledWith({
+      scope: "subscriber",
+      auth: { role: "subscriber", businessId: "biz_1" },
+      businessId: "biz_1"
+    });
+    expect(createAvatarSession).toHaveBeenCalledWith({
+      business: { id: "biz_1", name: "Salon One" },
+      scope: "subscriber"
+    });
+    expect(startAvatarSession).toHaveBeenCalledWith({
+      sessionToken: "heygen_token_123",
+      sessionId: "avatar_session_123"
+    });
+    expect(res.body.sessionReady).toBe(true);
+    expect(res.body.session.provider).toBe("heygen");
+    expect(res.body.session.sessionId).toBe("avatar_session_123");
+  });
 });

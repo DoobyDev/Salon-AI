@@ -81,6 +81,18 @@ export function createLexiRealtimeRouteHandlers({
   async function lexiAvatarSessionHandler(req, res) {
     const scope = String(req.body?.scope || "public").trim().toLowerCase();
     const config = buildLexiAvatarConfig(scope);
+    const auth = getOptionalAuth(req);
+
+    if ((scope === "subscriber" || scope === "admin") && !auth) {
+      return res.status(401).json({ error: "Sign in to start a subscriber Lexi avatar session." });
+    }
+    if (scope === "subscriber" && auth?.role !== "subscriber" && auth?.role !== "admin") {
+      return res.status(403).json({ error: "Subscriber Lexi avatar is only available to subscriber or admin users." });
+    }
+    if (scope === "admin" && auth?.role !== "admin") {
+      return res.status(403).json({ error: "Admin Lexi avatar is only available to admin users." });
+    }
+
     if (config.provider !== "heygen" || !config.avatarSessionReady) {
       return res.status(202).json({
         ok: true,
@@ -91,7 +103,6 @@ export function createLexiRealtimeRouteHandlers({
     }
 
     try {
-      const auth = getOptionalAuth(req);
       const business = await resolveLexiRealtimeBusiness({
         scope,
         auth,

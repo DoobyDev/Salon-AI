@@ -33,7 +33,24 @@ Maintain this list and provide updates to subscribers as required by contract/la
 - Service: email notifications
 - Data: emails, booking notification content
 
-5. [PLACEHOLDER: Hosting provider]
+5. OpenAI
+- Service: AI assistant text-generation and tool-calling support
+- Data: user prompts, operational context, booking/support request content as configured by the app
+- Notes: realtime voice usage is deferred until the paid rollout is enabled
+
+6. [PLACEHOLDER: Hosting provider]
 - Service: application hosting/infrastructure
 - Data: account, booking, logs
 
+7. [PLACEHOLDER: Database/managed Postgres provider]
+- Service: database hosting
+- Data: account, booking, business, audit, and billing-support records
+
+8. [PLACEHOLDER: Redis/queue provider]
+- Service: cache, rate limiting, and job queue support
+- Data: transient cache keys, limiter counters, notification/billing job metadata
+
+9. [PLACEHOLDER: avatar provider if enabled later]
+- Service: live avatar rendering / streaming
+- Data: session metadata, voice/avatar session identifiers
+- Notes: leave out of published register until the paid avatar rollout is actually enabled

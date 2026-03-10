@@ -73,6 +73,7 @@ The app is designed to help salons:
 - Help with revenue, finance, and accounting questions
 - Guide use of the dashboard and subscriber tools
 - Stay available as a persistent in-app assistant
+- Protected realtime/avatar session startup now requires subscriber or admin auth before live business-assistant sessions can be created
 
 ### Admin Lexi
 
@@ -82,6 +83,7 @@ The app is designed to help salons:
 - Support platform monitoring and managed-business oversight questions
 - Explain likely notification-delivery problems and suggest the next admin checks in plain language
 - Launch notification-fix guidance directly from the admin dashboard for a selected salon
+- Protected admin realtime/avatar session startup now requires admin auth before live platform-assistant sessions can be created
 
 ## Landing Page / Public Marketing Features
 
@@ -534,3 +536,4 @@ Status: oversight dashboard available
 - Refined the homepage Lexi intro into a more compact top-of-hero strip so first-load visibility stays clear without competing too heavily with the main portrait
 - Corrected subscriber billing return paths so Stripe checkout, PayPal subscription approval, and billing-portal return flow all route back through the canonical `/dashboard` page
 - Reconnected the installable PWA shell so the current public, auth, dashboard, and legal pages all expose the shared manifest and register the shared service worker
+- Matched Lexi avatar-session auth gating to the realtime-session rules so subscriber/admin live avatar sessions now enforce the same protected-scope access checks

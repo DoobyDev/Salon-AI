@@ -23,6 +23,7 @@ This is a practical checklist, not legal advice.
 - [ ] Stripe live setup complete
 - [ ] PayPal live setup complete
 - [ ] Webhooks verified for both providers
+- [ ] Billing return/cancel flows verified back to `/dashboard`
 - [ ] Accounting exports tested
 - [ ] Tax/VAT position confirmed with accountant
 
@@ -38,4 +39,5 @@ This is a practical checklist, not legal advice.
 - [ ] Marketing consent wording reviewed
 - [ ] Contact preferences respected
 - [ ] Business profile accuracy standards set
-
+- [ ] Public `/legal` content matches approved legal pack wording
+- [ ] README, feature record, and business/legal pack all match the shipped app design and enabled features

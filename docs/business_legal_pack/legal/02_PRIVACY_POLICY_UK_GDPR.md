@@ -13,6 +13,7 @@ This policy explains how we collect, use, store, and share personal data across 
 - Account data: role, login details, authentication metadata.
 - Booking data: appointment details, preferences, notes.
 - Business data: salon profile, services, operating hours.
+- Communication data: reminder settings, notification delivery status, and customer communication history linked to booking workflows.
 - Technical data: IP, device, logs, analytics events.
 - Billing data: subscription status and provider identifiers (Stripe/PayPal).
 
@@ -34,8 +35,10 @@ We do not intentionally collect special category data unless explicitly required
 
 ## 5. AI Processing
 
-AI assistant interactions may be processed to provide chat and booking assistance.  
+AI assistant interactions may be processed to provide chat, booking, and dashboard assistance.  
 Do not submit highly sensitive personal data in chat fields.
+
+Realtime voice/avatar processing is not part of the standard live rollout unless and until those paid features are intentionally enabled.
 
 ## 6. Sharing
 
@@ -84,4 +87,3 @@ Service is not directed to children under 13 (or local minimum digital consent a
 ## 13. Changes
 
 We may update this policy and will publish updated effective dates.
-

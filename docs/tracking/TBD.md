@@ -7,8 +7,8 @@ Purpose:
 - Do not keep completed or already-decided items in this file.
 
 ## Decisions Needed
-- [ ] Should subscriber/admin get full live voice/avatar now, or later after customer/public hardening?
-  - Files: server.js, public/dashboard.js
+- [ ] How far should PWA support go beyond installable shell coverage?
+  - Files: public/sw.js, public/pwa-runtime.js, public/manifest.webmanifest, public/index.html, public/dashboard.html
 
 - [ ] What is the final scope for demo-mode surfaces vs production-only surfaces?
   - Files: public/dashboard.html, public/dashboard.js

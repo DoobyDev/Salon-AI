@@ -1,4 +1,7 @@
-# Release Notes - 2026-02-22
+# Historical Release Notes - 2026-02-22
+
+This file is historical release context only. It is not the live source of truth for the current app state.
+Use `README.md`, `docs/APP_FEATURE_RECORD.md`, and `docs/tracking/` for current product and work status.
 
 ## Release Readiness Summary
 

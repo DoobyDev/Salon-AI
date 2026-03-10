@@ -1,6 +1,6 @@
-# AI Salon Receptionist
+# Ask Lexi | AI Salon Receptionist
 
-Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop, and beauty salon discovery, AI booking, role dashboards, and subscriber billing.
+Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop, and beauty salon discovery, Ask Lexi booking support, role dashboards, reminders/notifications, and subscriber billing.
 
 ## Platforms
 
@@ -8,7 +8,7 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 - Production Web: `https://www.aisalonreceptionist.co.uk`
 - Desktop: Electron app (`npm run desktop`)
 - Mobile:
-  - Installable PWA
+  - Installable PWA shell on the live web routes (`/`, `/auth`, `/dashboard`, `/legal`)
   - Native wrapper via Capacitor (Android/iOS)
 
 ## Project Layout
@@ -16,7 +16,7 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 - Structure reference: `docs/PROJECT_STRUCTURE.md`
 - Product and role feature catalog: `docs/APP_FEATURE_RECORD.md`
 - Business/legal templates and print packs: `docs/business_legal_pack/`
-- Public legal policy hub page: `public/legal.html`
+- Public legal policy hub route: `/legal` (served from `public/legal.html`)
 - Runtime logs are kept in `logs/` (instead of project root) for cleaner maintenance.
 
 ## Core Features
@@ -26,12 +26,14 @@ Full-stack multi-platform app (Web, Desktop, Mobile) for hair salon, barbershop,
 - Real dashboard pages:
   - `/auth`
   - `/dashboard`
+  - `/legal`
 - Prisma + PostgreSQL persistence
 - Redis-backed caching, distributed rate limiting, and job queues
 - Stripe and PayPal subscriber billing (checkout + webhooks, plus Stripe billing portal)
 - AI receptionist booking flow (OpenAI tool-calling)
 - Booking lifecycle APIs (create, cancel, reschedule)
 - SMS/Email booking notifications (Twilio + SendGrid)
+- Subscriber reminder settings, due-soon queueing, and scheduled reminder dispatch
 - Audit logging for auth, billing, chat, and booking events
 - Docker deployment support
 

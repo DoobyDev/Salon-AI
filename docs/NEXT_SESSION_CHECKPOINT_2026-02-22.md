@@ -1,4 +1,7 @@
-# Next Session Checkpoint (2026-02-22)
+# Historical Checkpoint (2026-02-22)
+
+This file is historical session context only. It is not the live source of truth for current work.
+Use `docs/tracking/` for active TODOs, TBD decisions, and FIXMEs.
 
 ## Current Status
 
@@ -13,7 +16,7 @@
   - legal links in footer
   - public legal hub page (`public/legal.html`)
 - Business/legal documentation pack created:
-  - `docs/business_legal_pack/` (legal, GDPR, security, business plan, print packs)
+  - `docs/business_legal_pack/` (legal, GDPR, security, business plan templates)
 - Root folder cleaned up (logs moved into `logs/`)
 
 ## Important Config Notes
@@ -48,4 +51,3 @@
 - `docs/RELEASE_NOTES_2026-02-22.md`
 - `docs/subscriber-dashboard-roadmap.md`
 - `.env.example`
-

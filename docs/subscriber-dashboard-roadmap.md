@@ -1,4 +1,7 @@
-# Subscriber Dashboard Roadmap
+# Historical Subscriber Dashboard Roadmap
+
+This file is historical roadmap context only. It is not the live source of truth for current priorities.
+Use `docs/APP_FEATURE_RECORD.md` for current capability coverage and `docs/tracking/` for open work.
 
 Last updated: 2026-02-21
 

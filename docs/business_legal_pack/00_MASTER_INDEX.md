@@ -1,6 +1,16 @@
 # Master Index
 
-Last updated: 2026-02-22
+Last updated: 2026-03-10
+
+Use this pack only as the current working set for Ask Lexi | AI Salon Receptionist.
+
+Current alignment notes:
+- Public legal hub route: `/legal`
+- Canonical account/dashboard routes: `/auth`, `/dashboard`
+- Installable PWA shell exists on the live web routes
+- Subscriber billing uses Stripe and PayPal subscription flows
+- Reminder settings, scheduled reminders, and notification logging are active product capabilities
+- OpenAI realtime voice and avatar provider rollout remain deferred until the end-of-build paid rollout
 
 ## Legal Documents
 
@@ -33,8 +43,3 @@ Last updated: 2026-02-22
 5. `business/24_RISK_REGISTER.md`
 6. `business/25_OPERATIONS_PLAN.md`
 7. `business/26_COMPLIANCE_CHECKLIST_UK.md`
-
-## Print-Ready Files
-
-1. `print/LEGAL_PRINT_PACK.html`
-2. `print/BUSINESS_PLAN_PRINT_PACK.html`

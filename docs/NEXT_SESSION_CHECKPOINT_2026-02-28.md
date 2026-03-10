@@ -1,4 +1,7 @@
-# Next Session Checkpoint (2026-02-28)
+# Historical Checkpoint (2026-02-28)
+
+This file is historical session context only. It is not the live source of truth for current work.
+Use `docs/tracking/` for active TODOs, TBD decisions, and FIXMEs.
 
 ## Current Product State
 

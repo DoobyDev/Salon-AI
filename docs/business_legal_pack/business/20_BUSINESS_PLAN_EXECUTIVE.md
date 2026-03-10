@@ -3,7 +3,7 @@
 ## Company
 
 - Name: [PLACEHOLDER]
-- Product: AI receptionist, bookings, dashboard analytics, accounting exports.
+- Product: Ask Lexi | AI Salon Receptionist. AI receptionist, bookings, dashboard analytics, reminders/notifications, and accounting exports.
 - Target segments: Hair Salon, Barbershop, Beauty Salon.
 
 ## Problem
@@ -20,6 +20,7 @@ One platform for:
 - Discovery/search and conversion
 - AI receptionist and booking workflows
 - Subscriber/admin dashboards with live revenue insights
+- Reminder settings, scheduled reminders, and communication-status visibility
 - Accounting export and integrations
 
 ## Revenue Model
@@ -41,9 +42,12 @@ One platform for:
 3. Retention and upsell analytics  
 4. Multi-location and advanced automation features
 
+## Current rollout note
+
+- OpenAI realtime voice and avatar-provider features are intentionally deferred until the end-of-build paid rollout and are not part of the current core launch scope.
+
 ## Risks and Mitigations
 
 - Compliance risk: legal reviews and policy controls
 - Churn risk: onboarding and ROI visibility
 - Payment risk: dual provider strategy (Stripe + PayPal)
-

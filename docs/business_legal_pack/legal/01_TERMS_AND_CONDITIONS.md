@@ -24,7 +24,10 @@ The platform provides:
 - Business discovery and search.
 - Booking slot visibility and booking management.
 - AI receptionist chat assistance.
+- Role-based dashboards for customers, subscribers, and admins.
+- Reminder settings, scheduled reminders, and notification status visibility.
 - Dashboard analytics and accounting exports.
+- Web, desktop, mobile-wrapper, and installable PWA shell access paths.
 
 No guarantee is made that AI output is accurate, complete, or suitable for legal, financial, or medical decisions.
 
@@ -50,6 +53,7 @@ Subscribers must:
 ## 7. Fees and Billing
 
 Billing terms are set in `05_SUBSCRIPTION_AND_BILLING_POLICY.md`.
+Subscriber billing is currently managed through Stripe and PayPal subscription flows exposed through the platform dashboard.
 
 ## 8. Data and Privacy
 
@@ -95,4 +99,3 @@ These Terms are governed by the laws of [PLACEHOLDER: JURISDICTION, e.g., Englan
 
 [PLACEHOLDER: LEGAL CONTACT EMAIL]  
 [PLACEHOLDER: REGISTERED ADDRESS]
-
