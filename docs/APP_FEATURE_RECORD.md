@@ -85,6 +85,7 @@ The app is designed to help salons:
 ## Landing Page / Public Marketing Features
 
 - Premium Ask Lexi landing page
+- Homepage hero now foregrounds a compact Lexi introduction strip from first load so visitors immediately see the AI receptionist without overloading the hero
 - Premium salon-inspired visual theme across landing page and dashboards
 - Shared theme-token approach so the main app colors can be changed from a small set of palette variables
 - Auth and legal pages now use page-level theme tokens instead of mostly hardcoded visual values
@@ -524,3 +525,8 @@ Status: oversight dashboard available
 - Added selected-day coverage pressure signals that compare diary load, stylist assignment, and weekly rota cover
 - Connected selected-day coverage pressure into subscriber Ask Lexi so she can recommend staffing and diary actions for that specific day
 - Made subscriber Ask Lexi context-aware so her guidance can reflect the selected customer, saved client record, recovery panel, message queue, and live booking draft
+
+### 2026-03-10
+
+- Updated the homepage hero so Lexi is visibly present from the first screen with a top-of-page portrait cue for new visitors
+- Refined the homepage Lexi intro into a more compact top-of-hero strip so first-load visibility stays clear without competing too heavily with the main portrait

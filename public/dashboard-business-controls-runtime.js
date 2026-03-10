@@ -122,7 +122,7 @@ export function createBusinessControlsRuntime(deps) {
         const li = document.createElement("li");
         li.innerHTML = `
           <strong>${item.name}</strong>
-          <small>${formatMoney(item.price)} ? Sessions: ${item.remainingSessions}/${item.sessionCount}</small>
+          <small>${formatMoney(item.price)} - Sessions: ${item.remainingSessions}/${item.sessionCount}</small>
           <small>Status: ${item.status}</small>
           <div class="commercial-actions manage-only">
             <button class="btn btn-ghost commercial-edit-package" type="button" data-package-id="${item.id}">Edit</button>
@@ -142,7 +142,7 @@ export function createBusinessControlsRuntime(deps) {
         li.innerHTML = `
           <strong>${gift.code} - ${gift.recipientName}</strong>
           <small>Balance: ${formatMoney(gift.remainingBalance)} / ${formatMoney(gift.initialBalance)} (${gift.status})</small>
-          <small>Issued: ${formatDateTime(gift.issuedAt)} ? Expires: ${gift.expiresAt ? formatDateTime(gift.expiresAt) : "Not set"}</small>
+          <small>Issued: ${formatDateTime(gift.issuedAt)} - Expires: ${gift.expiresAt ? formatDateTime(gift.expiresAt) : "Not set"}</small>
           <div class="commercial-actions">
             <button class="btn btn-ghost commercial-redeem-gift" type="button" data-gift-card-id="${gift.id}" ${gift.status === "active" ? "" : "disabled"}>Redeem Amount</button>
           </div>
@@ -188,17 +188,17 @@ export function createBusinessControlsRuntime(deps) {
           <img class="merch-card-thumb" src="${escapeHtml(item.imageUrl || "/icons/barber.svg")}" alt="${escapeHtml(item.name || "Product")}" />
           <div class="merch-card-copy">
             <strong>${escapeHtml(item.name)}</strong>
-            <small>${formatMoney(item.salePrice)} â€¢ Stock: ${escapeHtml(String(item.inventory || 0))} â€¢ ${escapeHtml(String(item.status || "active"))}</small>
+            <small>${formatMoney(item.salePrice)} - Stock: ${escapeHtml(String(item.inventory || 0))} - ${escapeHtml(String(item.status || "active"))}</small>
             <p>${escapeHtml(item.description || "No description set.")}</p>
           </div>
         </div>
         <div class="merch-chip-row">
-          <span>${item.shippingAvailable ? `Shipping on â€¢ ${formatMoney(item.shippingCost || 0)}` : "Collection only"}</span>
+          <span>${item.shippingAvailable ? `Shipping on - ${formatMoney(item.shippingCost || 0)}` : "Collection only"}</span>
           <span>${escapeHtml(String((item.shipments || []).length))} shipment${(item.shipments || []).length === 1 ? "" : "s"}</span>
         </div>
         <p class="merch-shipment-note">${
           latestShipment
-            ? `Latest shipment: ${escapeHtml(latestShipment.customerName || "Customer")} â€¢ ${escapeHtml(formatShipmentStatusLabel(latestShipment.status))}${latestShipment.trackingRef ? ` â€¢ Tracking: ${escapeHtml(latestShipment.trackingRef)}` : ""}`
+            ? `Latest shipment: ${escapeHtml(latestShipment.customerName || "Customer")} - ${escapeHtml(formatShipmentStatusLabel(latestShipment.status))}${latestShipment.trackingRef ? ` - Tracking: ${escapeHtml(latestShipment.trackingRef)}` : ""}`
             : "No shipments created yet for this product."
         }</p>
         <div class="commercial-actions manage-only">
@@ -308,7 +308,7 @@ export function createBusinessControlsRuntime(deps) {
     if (!channels.length) {
       ["Instagram", "Google", "Walk-in"].forEach((label) => {
         const li = document.createElement("li");
-        li.innerHTML = `<strong>${label}</strong><small>Bookings: 0 ? Revenue: ${formatMoney(0)} ? Spend: ${formatMoney(0)}</small><small>ROI: 0% ? Share: 0% ? Cancelled: 0</small><div class="commercial-actions manage-only"><button class="btn btn-ghost" type="button" data-module-jump="revenue">Open</button></div>`;
+        li.innerHTML = `<strong>${label}</strong><small>Bookings: 0 - Revenue: ${formatMoney(0)} - Spend: ${formatMoney(0)}</small><small>ROI: 0% - Share: 0% - Cancelled: 0</small><div class="commercial-actions manage-only"><button class="btn btn-ghost" type="button" data-module-jump="revenue">Open</button></div>`;
         revenueChannelList.appendChild(li);
       });
       if (getUserRole?.() === "subscriber") {
@@ -321,7 +321,7 @@ export function createBusinessControlsRuntime(deps) {
     channels.forEach((row) => {
       const roiText = typeof row.roiPercent === "number" ? `${row.roiPercent}%` : "n/a";
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${row.label || toChannelLabel(row.channel)}</strong><small>Bookings: ${row.bookings} ? Revenue: ${formatMoney(row.revenue)} ? Spend: ${formatMoney(row.spend)}</small><small>ROI: ${roiText} ? Share: ${row.sharePercent}% ? Cancelled: ${row.cancelledBookings || 0}</small><div class="commercial-actions manage-only"><button class="btn btn-ghost revenue-edit-spend" type="button" data-channel="${row.channel}" data-spend="${row.spend}">Edit</button><button class="btn btn-ghost revenue-delete-spend" type="button" data-channel="${row.channel}">Delete</button></div>`;
+      li.innerHTML = `<strong>${row.label || toChannelLabel(row.channel)}</strong><small>Bookings: ${row.bookings} - Revenue: ${formatMoney(row.revenue)} - Spend: ${formatMoney(row.spend)}</small><small>ROI: ${roiText} - Share: ${row.sharePercent}% - Cancelled: ${row.cancelledBookings || 0}</small><div class="commercial-actions manage-only"><button class="btn btn-ghost revenue-edit-spend" type="button" data-channel="${row.channel}" data-spend="${row.spend}">Edit</button><button class="btn btn-ghost revenue-delete-spend" type="button" data-channel="${row.channel}">Delete</button></div>`;
       revenueChannelList.appendChild(li);
     });
     renderExecutivePulse?.();

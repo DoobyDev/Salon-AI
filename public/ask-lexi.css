@@ -368,6 +368,58 @@ textarea {
   line-height: 1.6;
 }
 
+.hero-lexi-presence {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 27rem);
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.2), transparent 34%),
+    rgba(255, 250, 244, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-lexi-presence-image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 18px;
+  border: 1px solid rgba(150, 96, 63, 0.12);
+  box-shadow: 0 14px 26px rgba(103, 63, 38, 0.12);
+}
+
+.hero-lexi-presence-copy {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.hero-lexi-presence-copy p {
+  margin: 0;
+  color: var(--primary-strong);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-lexi-presence-copy strong {
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.15;
+}
+
+.hero-lexi-presence-copy small {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .hero-proof-grid,
 .section-grid,
 .journey-grid,
@@ -455,6 +507,8 @@ textarea {
   width: min(100%, 320px);
   display: block;
   margin: 0 auto;
+  aspect-ratio: 1 / 1;
+  object-position: center top;
   border-radius: 26px;
   box-shadow: 0 24px 46px rgba(103, 63, 38, 0.16);
 }
@@ -683,6 +737,17 @@ textarea {
   box-shadow: var(--shadow);
 }
 
+.dashboard-hero > :first-child {
+  flex: 1 1 28rem;
+  min-width: 0;
+}
+
+.dashboard-hero .action-strip {
+  flex: 0 1 26rem;
+  justify-content: flex-end;
+  align-self: stretch;
+}
+
 .dashboard-grid {
   display: grid;
   gap: 1rem;
@@ -835,6 +900,10 @@ textarea {
   display: flex;
   gap: 0.45rem;
   flex-wrap: wrap;
+}
+
+.agenda-filter-row .btn {
+  flex: 0 0 auto;
 }
 
 .agenda-filter-row .btn.is-active {
@@ -1279,6 +1348,10 @@ textarea {
   color: var(--danger);
 }
 
+.status-warning {
+  color: var(--primary-strong);
+}
+
 .status-neutral {
   color: var(--ink-soft);
 }
@@ -1287,10 +1360,13 @@ textarea {
   .hero-shell,
   .calendar-layout,
   .operator-os-grid,
-  .section-grid,
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+
   .insight-grid,
   .insight-grid-two {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .journey-grid,
@@ -1303,6 +1379,45 @@ textarea {
   .quick-booking-form textarea,
   .quick-booking-form button {
     grid-column: span 2;
+  }
+
+  .dashboard-card .section-head,
+  .dashboard-card .export-strip,
+  .dashboard-card .compact-form-inline {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .calendar-toolbar,
+  .agenda-filter-row,
+  .side-actions {
+    width: 100%;
+  }
+
+  .calendar-toolbar .btn,
+  .agenda-filter-row .btn,
+  .side-actions .btn {
+    flex: 1 1 10rem;
+  }
+
+  .calendar-toolbar strong {
+    flex: 1 1 100%;
+  }
+
+  .team-planner-grid {
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .team-planner-row {
+    min-width: 760px;
+  }
+
+  .admin-row,
+  .admin-table-accounts .admin-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
   }
 }
 
@@ -1317,12 +1432,33 @@ textarea {
   .dashboard-grid-subscriber,
   .metric-band,
   .hero-proof-grid,
+  .insight-grid,
+  .insight-grid-two,
   .journey-grid,
   .pricing-grid,
   .quick-booking-form,
   .customer-next-booking-grid,
   .selected-day-summary {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-hero .action-strip {
+    justify-content: flex-start;
+    align-self: auto;
+  }
+
+  .admin-row,
+  .admin-table-accounts .admin-row,
+  .channel-row,
+  .team-row {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-toolbar .btn,
+  .agenda-filter-row .btn,
+  .side-actions .btn {
+    width: 100%;
+    flex-basis: 100%;
   }
 
   .quick-booking-form textarea,
@@ -1369,6 +1505,17 @@ textarea {
   .hero-copy h1 {
     max-width: none;
     font-size: clamp(2.25rem, 12vw, 3.5rem);
+  }
+
+  .hero-lexi-presence {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    width: 100%;
+  }
+
+  .hero-lexi-presence-image {
+    width: 72px;
+    height: 72px;
   }
 
   .dashboard-hero h1 {

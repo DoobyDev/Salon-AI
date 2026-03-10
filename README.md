@@ -75,12 +75,25 @@ copy .env.example .env
 - `DIRECT_URL` (required for migrations/introspection when using a pooler)
 - `JWT_SECRET`
 - `OPENAI_API_KEY`
+- `OPENAI_REALTIME_MODEL` if you want live Lexi voice sessions
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD`
 - `REDIS_URL` (recommended for scale; local Docker mapping is `redis://localhost:6380`)
 - Stripe/PayPal/Twilio/SendGrid keys as needed
+- For Lexi live voice/avatar testing, also set:
+  - `LEXI_REALTIME_VOICE` (optional, defaults to `marin`)
+  - `LEXI_REALTIME_TRANSCRIBE_MODEL` (optional, defaults to `gpt-4o-mini-transcribe`)
+  - `LEXI_AVATAR_PROVIDER=heygen` if enabling avatar mode
+  - `HEYGEN_API_KEY`
+  - `HEYGEN_AVATAR_ID`
+  - `HEYGEN_VOICE_ID` (optional)
 - For production deployment, set:
   - `APP_URL=https://www.aisalonreceptionist.co.uk`
   - `CORS_ORIGIN=https://www.aisalonreceptionist.co.uk`
+
+Lexi realtime/avatar notes:
+- Without `OPENAI_REALTIME_MODEL`, Lexi popup voice mode stays in pending/text-fallback mode.
+- Without the HeyGen variables, avatar mode stays unavailable even if text chat and realtime voice are enabled.
+- Keep `APP_URL` and `CORS_ORIGIN` aligned with the environment you are actually testing.
 
 4. Prisma:
 ```bash

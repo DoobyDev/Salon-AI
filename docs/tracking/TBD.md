@@ -1,6 +1,10 @@
 # TBD Tracker
 
-Last updated: 2026-03-05
+Last updated: 2026-03-10
+
+Purpose:
+- Keep only unresolved product, UX, or technical decisions here.
+- Do not keep completed or already-decided items in this file.
 
 ## Decisions Needed
 - [ ] Should subscriber/admin get full live voice/avatar now, or later after customer/public hardening?

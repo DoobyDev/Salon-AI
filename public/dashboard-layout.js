@@ -52,27 +52,64 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     subscriberFullDemoModeSection
   } = ctx;
 
+  const hideSections = (sections = []) => {
+    sections.forEach((sectionEl) => hideSection(sectionEl));
+  };
+
+  const subscriberSecondarySections = [
+    subscriberExecutivePulseSection,
+    subscriberCopilotSection,
+    subscriberCommandCenterSection,
+    staffRosterSection,
+    waitlistSection,
+    operationsInsightsSection,
+    crmSection,
+    commercialSection,
+    merchSection,
+    revenueAttributionSection,
+    profitabilitySection,
+    subscriberSubscriptionSection,
+    first7DaysSnapshotSection,
+    metricsGrid
+  ];
+  const customerSections = [
+    customerJourneyActionsSection,
+    customerSearchSection,
+    customerReceptionSection,
+    customerLexiCalendarSection,
+    customerSlotsSection,
+    customerHistorySection,
+    customerAnalyticsSection
+  ];
+  const customerSecondarySections = [
+    customerJourneyActionsSection,
+    customerAnalyticsSection,
+    frontDeskSection
+  ];
+  const businessWorkspaceSections = [
+    businessGrowthSection,
+    subscriberExecutivePulseSection,
+    subscriberCopilotSection,
+    businessProfileSection,
+    socialMediaSection,
+    accountingIntegrationsSection,
+    subscriberCommandCenterSection,
+    staffRosterSection,
+    waitlistSection,
+    operationsInsightsSection,
+    crmSection,
+    commercialSection,
+    merchSection,
+    revenueAttributionSection,
+    profitabilitySection
+  ];
+
   const hideSubscriberSecondarySections = () => {
-    hideSection(subscriberExecutivePulseSection);
-    hideSection(subscriberCopilotSection);
-    hideSection(subscriberCommandCenterSection);
-    hideSection(staffRosterSection);
-    hideSection(waitlistSection);
-    hideSection(operationsInsightsSection);
-    hideSection(crmSection);
-    hideSection(commercialSection);
-    hideSection(merchSection);
-    hideSection(revenueAttributionSection);
-    hideSection(profitabilitySection);
-    hideSection(subscriberSubscriptionSection);
-    hideSection(first7DaysSnapshotSection);
-    hideSection(metricsGrid);
+    hideSections(subscriberSecondarySections);
   };
 
   const hideCustomerSecondarySections = () => {
-    hideSection(customerJourneyActionsSection);
-    hideSection(customerAnalyticsSection);
-    hideSection(frontDeskSection);
+    hideSections(customerSecondarySections);
   };
 
   hideSection(adminAccountSupportSection);
@@ -87,31 +124,11 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     if (manageBilling) manageBilling.style.display = "none";
   }
   if (role !== "subscriber" && role !== "admin") {
-    hideSection(businessGrowthSection);
-    hideSection(subscriberExecutivePulseSection);
-    hideSection(subscriberCopilotSection);
-    hideSection(businessProfileSection);
-    hideSection(socialMediaSection);
-    hideSection(accountingIntegrationsSection);
-    hideSection(subscriberCommandCenterSection);
-    hideSection(staffRosterSection);
-    hideSection(waitlistSection);
-    hideSection(operationsInsightsSection);
-    hideSection(crmSection);
-    hideSection(commercialSection);
-    hideSection(merchSection);
-    hideSection(revenueAttributionSection);
-    hideSection(profitabilitySection);
+    hideSections(businessWorkspaceSections);
     if (bookingSort) bookingSort.value = "newest";
   }
   if (role !== "customer") {
-    hideSection(customerJourneyActionsSection);
-    hideSection(customerSearchSection);
-    hideSection(customerReceptionSection);
-    hideSection(customerLexiCalendarSection);
-    hideSection(customerSlotsSection);
-    hideSection(customerHistorySection);
-    hideSection(customerAnalyticsSection);
+    hideSections(customerSections);
   }
   if (role !== "admin") {
     hideSection(adminCopilotSection);
@@ -142,17 +159,19 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     showSection(dashIdentityBlock);
     hideSubscriberSecondarySections();
     hideCustomerSecondarySections();
-    hideSection(subscriberCalendarSection);
-    hideSection(bookingOperationsSection);
-    hideSection(businessProfileSection);
-    hideSection(socialMediaSection);
-    hideSection(accountingIntegrationsSection);
-    hideSection(revenueAttributionSection);
-    hideSection(profitabilitySection);
-    hideSection(adminBusinessScope);
-    hideSection(adminCopilotSection);
-    hideSection(subscriberSubscriptionSection);
-    hideSection(first7DaysSnapshotSection);
+    hideSections([
+      subscriberCalendarSection,
+      bookingOperationsSection,
+      businessProfileSection,
+      socialMediaSection,
+      accountingIntegrationsSection,
+      revenueAttributionSection,
+      profitabilitySection,
+      adminBusinessScope,
+      adminCopilotSection,
+      subscriberSubscriptionSection,
+      first7DaysSnapshotSection
+    ]);
     initializeCustomerExperience();
   }
   if (role === "subscriber") {

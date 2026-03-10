@@ -1632,7 +1632,7 @@ function renderBusinessResults(results) {
     item.innerHTML = `
       <h4>${escapeHtml(business.name)}</h4>
       <p>${escapeHtml(business.location.city)}, ${escapeHtml(business.location.country)} | ${escapeHtml(business.location.postcode)}</p>
-      <p>${escapeHtml(business.phone)} ? Rating: ${business.rating} ? slots shown in profile</p>
+      <p>${escapeHtml(business.phone)} - Rating: ${business.rating} - slots shown in profile</p>
       <p>Services: ${escapeHtml(business.services.map((s) => s.name).join(", "))}</p>
       <div class="salon-actions">
         <button class="btn btn-view" data-salon-id="${escapeHtml(business.id)}">Choose</button>
@@ -2379,7 +2379,7 @@ async function loadConfig() {
   const policyText = config?.cancellationPolicy?.feeRule || "Cancellation policy unavailable.";
 
   if (featured) {
-    const featuredMeta = `${featured.name} ? ${featured.phone} ? ${featured.location.address}, ${featured.location.city} ? Cancellation: ${policyText}`;
+    const featuredMeta = `${featured.name} - ${featured.phone} - ${featured.location.address}, ${featured.location.city} - Cancellation: ${policyText}`;
     salonMeta.textContent = featuredMeta;
     if (heroSalonMeta) {
       heroSalonMeta.textContent = "Lexi gives customers a faster way to book than calling the salon, with service answers, live slot checks, and instant booking handoff in one place.";
