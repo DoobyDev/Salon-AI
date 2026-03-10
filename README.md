@@ -79,6 +79,10 @@ copy .env.example .env
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD`
 - `REDIS_URL` (recommended for scale; local Docker mapping is `redis://localhost:6380`)
 - Stripe/PayPal/Twilio/SendGrid keys as needed
+- For Stripe subscriber billing, set:
+  - `STRIPE_PRICE_ID_MONTHLY` for the monthly plan
+  - `STRIPE_PRICE_ID_YEARLY` for the yearly plan
+  - `STRIPE_PRICE_ID` is still accepted as a fallback monthly price id, but new setups should prefer `STRIPE_PRICE_ID_MONTHLY`
 - For Lexi live voice/avatar testing, also set:
   - `LEXI_REALTIME_VOICE` (optional, defaults to `marin`)
   - `LEXI_REALTIME_TRANSCRIBE_MODEL` (optional, defaults to `gpt-4o-mini-transcribe`)
@@ -86,6 +90,9 @@ copy .env.example .env
   - `HEYGEN_API_KEY`
   - `HEYGEN_AVATAR_ID`
   - `HEYGEN_VOICE_ID` (optional)
+- Optional runtime controls:
+  - `ACCOUNTING_DAILY_REVENUE_TARGET` to tune admin live-revenue target calculations
+  - `FORCE_LEXI_DEMO_SEED=1` to force Lexi demo business reseeding in development
 - For production deployment, set:
   - `APP_URL=https://www.aisalonreceptionist.co.uk`
   - `CORS_ORIGIN=https://www.aisalonreceptionist.co.uk`
@@ -94,6 +101,9 @@ Lexi realtime/avatar notes:
 - Without `OPENAI_REALTIME_MODEL`, Lexi popup voice mode stays in pending/text-fallback mode.
 - Without the HeyGen variables, avatar mode stays unavailable even if text chat and realtime voice are enabled.
 - Keep `APP_URL` and `CORS_ORIGIN` aligned with the environment you are actually testing.
+
+Billing env note:
+- Stripe checkout resolves the monthly plan from `STRIPE_PRICE_ID_MONTHLY` first, then falls back to `STRIPE_PRICE_ID`.
 
 4. Prisma:
 ```bash

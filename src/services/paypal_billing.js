@@ -68,8 +68,8 @@ export function createPayPalBillingService({
         application_context: {
           brand_name: "Salon AI",
           user_action: "SUBSCRIBE_NOW",
-          return_url: `${normalizedAppUrl}/dashboard.html?billing=success&provider=paypal`,
-          cancel_url: `${normalizedAppUrl}/dashboard.html?billing=cancel&provider=paypal`
+          return_url: `${normalizedAppUrl}/dashboard?billing=success&provider=paypal`,
+          cancel_url: `${normalizedAppUrl}/dashboard?billing=cancel&provider=paypal`
         }
       })
     });

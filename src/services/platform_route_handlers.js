@@ -68,11 +68,16 @@ export function createPlatformRouteHandlers({
     return res.sendFile(path.join(publicDir, "dashboard.html"));
   }
 
+  function legalPageHandler(_req, res) {
+    return res.sendFile(path.join(publicDir, "legal.html"));
+  }
+
   return {
     healthHandler,
     readinessHandler,
     configHandler,
     authPageHandler,
-    dashboardPageHandler
+    dashboardPageHandler,
+    legalPageHandler
   };
 }

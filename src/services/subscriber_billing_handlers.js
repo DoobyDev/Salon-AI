@@ -73,8 +73,8 @@ export function createSubscriberBillingHandlers({
       mode: "subscription",
       customer_email: user.email,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/dashboard.html?billing=success`,
-      cancel_url: `${appUrl}/dashboard.html?billing=cancel`,
+      success_url: `${appUrl}/dashboard?billing=success`,
+      cancel_url: `${appUrl}/dashboard?billing=cancel`,
       metadata: {
         businessId: business.id,
         userId: user.id,
@@ -153,7 +153,7 @@ export function createSubscriberBillingHandlers({
 
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
-      return_url: `${appUrl}/dashboard.html`
+      return_url: `${appUrl}/dashboard`
     });
     clearReadCache();
     await writeAuditLog({

@@ -48,17 +48,9 @@ Notes: Current `.env` mixes `APP_URL=https://salon-ai-1.onrender.com` with `CORS
 
 - [ ] Confirm production env completeness for billing, notifications, and Lexi realtime/avatar integrations.
 Files: `.env.example`, `README.md`, `server.js`
-Notes: `.env.example` and `README.md` were updated on 2026-03-10 for Lexi realtime/avatar variables. Production completeness still needs explicit review.
+Notes: `.env.example` and `README.md` now document Lexi realtime/avatar variables, Stripe monthly/yearly price IDs, and optional runtime controls. The remaining work is an explicit deploy-environment review to confirm the live values themselves are present and aligned.
 
 ## Testing And Verification
-
-- [ ] Run the new Lexi realtime test coverage in a non-sandboxed environment.
-Files: `tests/lexi_realtime.test.js`
-Notes: Test file was added on 2026-03-10 and syntax-checked, but Vitest execution is blocked in this sandbox by Windows `spawn EPERM`.
-
-- [ ] Run the targeted dashboard/backend test suite after the next dashboard or Lexi pass.
-Files: `tests/subscriber_dashboard.test.js`, `tests/lexi_realtime.test.js`, `tests/dashboard_admin_notification_health.test.js`, `tests/subscriber_communication_readiness.test.js`, `tests/subscriber_communication_summary.test.js`, `tests/subscriber_operations_insights.test.js`, `tests/subscriber_command_center.test.js`
-Notes: Prefer focused runs first, then full `npm test` when environment allows. `tests/subscriber_dashboard.test.js` was expanded on 2026-03-10 to cover communication readiness and due-soon reminder payloads, `tests/dashboard_admin_notification_health.test.js` now covers admin notification guidance logic, `tests/subscriber_communication_readiness.test.js` covers subscriber reminder-readiness plus due-soon reminder calculations, `tests/subscriber_communication_summary.test.js` covers the communications rollup helper, `tests/subscriber_operations_insights.test.js` covers no-show risk plus rebooking prompt generation, and `tests/subscriber_command_center.test.js` covers the command-center recommendation thresholds.
 
 - [ ] Manually verify reminder and notification flows with realistic bookings.
 Files: `server.js`, `public/dashboard.html`, `public/dashboard.js`
@@ -83,10 +75,6 @@ Notes: Customer/public scaffolding exists; broader rollout should be decided onl
 - [ ] Add targeted comments in complex runtime areas where behavior contracts are easy to break.
 Files: `public/dashboard.js`, `public/dashboard-calendar-pulse.js`, `server.js`, `public/app.js`
 Notes: One guard comment was added on 2026-03-10 for the admin quick-toggle/storyline contract, and another now protects the shared role-layout contract in `public/dashboard-startup-runtime.js`; continue selectively. Admin notification-health logic was also extracted into `public/dashboard-admin-notification-health.js`, subscriber readiness plus due-soon reminder logic were extracted into `src/services/subscriber_communication_readiness.js`, the subscriber communications rollup now lives in `src/services/subscriber_communication_summary.js`, subscriber no-show/rebooking calculations now live in `src/services/subscriber_operations_insights.js`, and command-center recommendation thresholds now live in `src/services/subscriber_command_center.js` to reduce risk inside larger files.
-
-- [ ] Add naming and folder conventions guidance, then enforce it on new code.
-Files: `docs/PROJECT_STRUCTURE.md`, `docs/tracking/REPO_REORG_PLAN.md`
-Notes: Keep this aligned with the ongoing modular dashboard split.
 
 ## Operations And Release Readiness
 

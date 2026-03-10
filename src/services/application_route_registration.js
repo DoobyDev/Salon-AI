@@ -84,7 +84,8 @@ export function registerApplicationRoutes({
   chatLimiter,
   publicChatHandler,
   authPageHandler,
-  dashboardPageHandler
+  dashboardPageHandler,
+  legalPageHandler
 } = {}) {
   app.get("/health", healthHandler);
   app.get("/readyz", readinessHandler);
@@ -180,4 +181,5 @@ export function registerApplicationRoutes({
 
   app.get("/auth", authPageHandler);
   app.get("/dashboard", dashboardPageHandler);
+  app.get("/legal", legalPageHandler);
 }

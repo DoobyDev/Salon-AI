@@ -1,6 +1,6 @@
 # App Feature Record
 
-Last updated: 2026-03-09
+Last updated: 2026-03-10
 
 Purpose:
 - Keep a permanent record of what the app can do.
@@ -424,6 +424,7 @@ Status: oversight dashboard available
 - Stripe checkout support
 - PayPal subscription support
 - Billing portal session support
+- Billing return/cancel redirects now use the canonical `/dashboard` route instead of static `.html` paths for Stripe, PayPal, and billing-portal flows
 - Subscriber billing summary support
 - Billing webhook handling
 - Platform subscription/revenue analytics support
@@ -530,3 +531,4 @@ Status: oversight dashboard available
 
 - Updated the homepage hero so Lexi is visibly present from the first screen with a top-of-page portrait cue for new visitors
 - Refined the homepage Lexi intro into a more compact top-of-hero strip so first-load visibility stays clear without competing too heavily with the main portrait
+- Corrected subscriber billing return paths so Stripe checkout, PayPal subscription approval, and billing-portal return flow all route back through the canonical `/dashboard` page

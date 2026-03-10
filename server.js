@@ -812,7 +812,8 @@ const {
   readinessHandler,
   configHandler,
   authPageHandler,
-  dashboardPageHandler
+  dashboardPageHandler,
+  legalPageHandler
 } = createPlatformRouteHandlers({
   // These handlers read live runtime state, so keep them composed from the current in-memory references here.
   prisma,
@@ -1048,7 +1049,8 @@ registerApplicationRoutes({
   chatLimiter,
   publicChatHandler,
   authPageHandler,
-  dashboardPageHandler
+  dashboardPageHandler,
+  legalPageHandler
 });
 
 app.use((err, _req, res, _next) => {
