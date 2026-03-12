@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask Lexi | Customer Dashboard</title>
+    <meta name="theme-color" content="#cb835f" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-admin9" />
+  </head>
+  <body class="ask-lexi-shell ask-lexi-dashboard" data-role="customer">
+    <header class="site-header dashboard-header">
+      <a class="brand-mark" href="/">
+        <span class="brand-mark-badge">L</span>
+        <span>
+          <strong>Ask Lexi</strong>
+          <small id="dashboardBrandRole">Customer dashboard</small>
+        </span>
+      </a>
+      <div class="site-actions">
+        <button class="btn btn-ghost" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="customer_dashboard">Ask Lexi</button>
+        <a class="btn btn-ghost" id="logoutBtn" href="/logout.html">Log out</a>
+      </div>
+    </header>
+
+    <main class="dashboard-frame">
+      <section class="dashboard-hero">
+        <div>
+          <p class="kicker" id="dashboardKicker">Customer booking workspace</p>
+          <h1 id="dashboardTitle">Your Booking Dashboard</h1>
+          <p class="lede" id="dashboardDescription">
+            Track upcoming appointments, revisit past visits, and use Ask Lexi to plan your next booking.
+          </p>
+          <div class="header-business-pill" id="dashboardBusinessPill">Customer workspace active</div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid-customer" id="customerDashboard">
+        <section class="dashboard-card" id="customerOnboardingCard">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Welcome</p>
+              <h2>How to use your dashboard</h2>
+            </div>
+          </div>
+          <div id="customerOnboardingContent"></div>
+        </section>
+
+        <article class="dashboard-card metric-band metric-band-compact">
+          <div class="metric-card">
+            <span>Total bookings</span>
+            <strong id="customerTotalBookings">0</strong>
+            <small id="customerBookingsMeta">Loading...</small>
+          </div>
+          <div class="metric-card">
+            <span>Upcoming</span>
+            <strong id="customerUpcomingBookings">0</strong>
+            <small>Confirmed appointments</small>
+          </div>
+          <div class="metric-card">
+            <span>Ready to rebook</span>
+            <strong id="customerLoyaltyPoints">0</strong>
+            <small>Visits likely due another booking</small>
+          </div>
+        </article>
+
+        <section class="dashboard-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Next visit</p>
+              <h2>Your next appointment</h2>
+            </div>
+            <button class="btn btn-ghost btn-small" id="customerAskLexiBtn" type="button">Ask Lexi</button>
+          </div>
+          <div class="customer-next-booking" id="customerNextBookingCard"></div>
+        </section>
+
+        <section class="dashboard-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">My bookings</p>
+              <h2>Upcoming and recent appointments</h2>
+            </div>
+          </div>
+          <div class="agenda-list" id="customerBookingsList"></div>
+        </section>
+
+        <section class="dashboard-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Useful for you</p>
+              <h2>Salons you use and when to book again</h2>
+            </div>
+          </div>
+          <div class="insight-grid insight-grid-two">
+            <div class="insight-panel">
+              <h3>Saved salons</h3>
+              <div class="channel-list" id="customerSavedSalons"></div>
+            </div>
+            <div class="insight-panel">
+              <h3>Rebooking suggestions</h3>
+              <div class="channel-list" id="customerRebookingPrompts"></div>
+            </div>
+          </div>
+        </section>
+
+        <details class="dashboard-disclosure">
+          <summary>
+            <span>Extras from your salons</span>
+            <small>Open for offers, gift cards, and aftercare notes when you need them.</small>
+          </summary>
+          <section class="dashboard-card dashboard-card-nested">
+            <div class="insight-grid insight-grid-two">
+              <div class="insight-panel">
+                <h3>Available at your salons</h3>
+                <div class="channel-list" id="customerOffersList"></div>
+              </div>
+              <div class="insight-panel">
+                <h3>Gift cards in your name</h3>
+                <div class="channel-list" id="customerGiftCards"></div>
+              </div>
+            </div>
+            <div class="insight-panel">
+              <h3>Recent aftercare notes</h3>
+              <div class="channel-list" id="customerAftercareList"></div>
+            </div>
+          </section>
+        </details>
+      </section>
+    </main>
+
+    <button class="lexi-fab lexi-fab-dashboard" id="dashboardLexiFab" type="button" aria-label="Open Ask Lexi">
+      Ask Lexi
+    </button>
+
+    <aside class="lexi-drawer" id="dashboardLexiDrawer" hidden>
+      <div class="lexi-drawer-head">
+        <div>
+          <p class="kicker">Ask Lexi</p>
+          <h2 id="drawerTitle">Customer booking assistant</h2>
+        </div>
+        <button class="btn btn-ghost btn-small" id="dashboardLexiCloseBtn" type="button">Close</button>
+      </div>
+      <div class="assistant-thread" id="subscriberAssistantThread"></div>
+      <form class="assistant-form assistant-form-stacked" id="subscriberAssistantForm">
+        <input id="subscriberAssistantInput" type="text" placeholder="Ask about bookings, rescheduling, salons, or your next appointment" />
+        <div class="assistant-quick-prompts">
+          <button class="prompt-chip" type="button" data-lexi-prompt="Help me book my next appointment">
+            Next appointment
+          </button>
+          <button class="prompt-chip" type="button" data-lexi-prompt="Which salon should I book with again?">
+            Which salon?
+          </button>
+          <button class="prompt-chip" type="button" data-lexi-prompt="Can you help me reschedule a booking?">
+            Reschedule help
+          </button>
+        </div>
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </aside>
+
+    <section class="lexi-modal" id="rescheduleModal" hidden>
+      <div class="lexi-modal-backdrop" id="rescheduleBackdrop"></div>
+      <div class="lexi-modal-card">
+        <div class="lexi-modal-head">
+          <div>
+            <p class="kicker">Booking change</p>
+            <h2>Reschedule appointment</h2>
+          </div>
+          <button class="btn btn-ghost btn-small" id="rescheduleCloseBtn" type="button">Close</button>
+        </div>
+        <p class="section-copy" id="rescheduleBookingSummary">Choose a new date and time for this booking.</p>
+        <form class="compact-form" id="rescheduleForm">
+          <input id="rescheduleDateInput" type="date" required />
+          <input id="rescheduleTimeInput" type="time" required />
+          <button class="btn" type="submit">Save new time</button>
+        </form>
+        <p class="form-message" id="rescheduleMessage"></p>
+      </div>
+    </section>
+
+    <script type="module" src="/dashboard.js?v=20260312-admin2"></script>
+    <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
+  </body>
+</html>

@@ -275,12 +275,9 @@ if (!token || !userRaw) {
     getBusinessHubModules: () => businessHubModules
   });
 
-  logoutBtn?.addEventListener("click", () => {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    localStorage.removeItem(AUTH_USER_KEY);
-    window.location.href = "/";
+  logoutBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.location.href = "/logout.html";
   });
 
   adminAskLexiBtn?.addEventListener("click", () => {

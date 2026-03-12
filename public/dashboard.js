@@ -2342,6 +2342,7 @@ const accountSessionControlsRuntime = createAccountSessionControlsRuntime({
   logoutBtn,
   subscriptionAutoRenewToggle
 });
+accountSessionControlsRuntime.bindAccountSessionControlsEvents();
 const dashboardSessionControlsRuntime = createDashboardSessionControlsRuntime({
   isDashboardManagerRole,
   getManageModeEnabled,
@@ -2896,7 +2897,6 @@ const dashboardManageModeRuntime = createDashboardManageModeRuntime({
 
 
 
-accountSessionControlsRuntime.bindAccountSessionControlsEvents();
 billingControlsRuntime.bindBillingControlEvents();
 
 businessReportingRuntime.bindBusinessReportingEvents();

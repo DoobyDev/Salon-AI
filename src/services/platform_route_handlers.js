@@ -66,7 +66,12 @@ export function createPlatformRouteHandlers({
 
   function dashboardPageHandler(req, res) {
     const requestedRole = String(req?.query?.role || "").trim().toLowerCase();
-    const dashboardFile = requestedRole === "admin" ? "dashboard-admin.html" : "dashboard.html";
+    const dashboardFile =
+      requestedRole === "admin"
+        ? "dashboard-admin.html"
+        : requestedRole === "customer"
+          ? "dashboard-customer.html"
+          : "dashboard.html";
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     return res.sendFile(path.join(publicDir, dashboardFile));
   }

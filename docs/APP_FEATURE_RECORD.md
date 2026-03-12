@@ -139,6 +139,10 @@ Status: simplified admin workspace active
 - Homepage hero no longer uses the extra portrait conversation block, and the Lexi image now sits inside a more polished framed visual treatment
 - Homepage hero now pushes Lexi as the unmistakable star of the page with a larger portrait stage, stronger framing, and supporting proof built around her presence
 - Homepage hero now presents Lexi as the dominant first-screen focal point with a larger portrait stage, richer in-image capability overlays, and tighter supporting copy so the page reads around her instead of beside her
+- Lower homepage sections now better match the Lexi-first hero direction with stronger proof-band, operator-workspace, commercial-control, booking-flow, and pricing framing
+- Public booking feed now sits as a cleaner supporting proof panel beside the outcomes section instead of feeling like a disconnected utility block
+- Pricing section now frames the offer more clearly as operating-system tiers rather than generic AI-chat positioning
+- Homepage now closes with a stronger CTA and operator-value summary section so the page ends with a clearer conversion moment instead of dropping straight into the footer
 - Premium salon-inspired visual theme across landing page and dashboards
 - Shared theme-token approach so the main app colors can be changed from a small set of palette variables
 - Auth and legal pages now use page-level theme tokens instead of mostly hardcoded visual values
@@ -171,6 +175,7 @@ Status: basic dashboard available
 ### Included now
 
 - Customer-specific dashboard view
+- Dedicated customer dashboard shell is now served for `/dashboard?role=customer` so the customer view no longer inherits the shared subscriber page chrome
 - Booking totals
 - Upcoming booking count
 - Ready-to-rebook summary
@@ -426,6 +431,7 @@ Status: simplified oversight dashboard available with preview-first admin flow
 ## Auth and Access Features
 
 - Shared auth entry point via `/auth`
+- Dashboard logout now routes all roles through a dedicated sign-out page that clears client auth state and returns straight to the homepage
 - Customer registration
 - Subscriber registration
 - Role-aware login
@@ -617,3 +623,7 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Merged the homepage Lexi portrait and live preview into one combined hero card so the right-hand stage now uses a single Lexi image and one unified panel
 - Tightened the homepage `#experience` section spacing by reducing outer hero padding and compressing the merged Lexi card layout
 - Reworked the homepage hero again so Lexi now leads the first screen with a more dominant portrait composition, stronger visual staging, and lighter supporting copy weight
+- Extended the homepage redesign below the hero so the outcomes, operator-workspace, commercial, booking-flow, and pricing sections now carry more of the same Lexi-first visual language
+- Reframed the public booking feed as a cleaner supporting proof panel and sharpened the pricing section so the offer reads more like system tiers than AI-chat packaging
+- Added a stronger homepage closing CTA section so the page now ends with a clearer subscriber-conversion prompt and a tighter operator-value recap
+- Split the customer dashboard onto a dedicated `/dashboard?role=customer` shell so customer chrome and logout behavior no longer depend on the shared subscriber shell

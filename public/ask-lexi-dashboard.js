@@ -4405,9 +4405,10 @@ els.roleButtons.forEach((button) => {
   });
 });
 
-els.logout?.addEventListener("click", () => {
+els.logout?.addEventListener("click", (event) => {
+  event.preventDefault();
   clearSession();
-  window.location.href = "/";
+  window.location.href = "/logout.html";
 });
 
 els.calendarPrevBtn?.addEventListener("click", () => {

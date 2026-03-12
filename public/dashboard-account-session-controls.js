@@ -13,13 +13,17 @@ export function createAccountSessionControlsRuntime(deps) {
   } = deps || {};
 
   function bindAccountSessionControlsEvents() {
-    logoutBtn?.addEventListener("click", () => {
+    logoutBtn?.addEventListener("click", (event) => {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      event?.stopImmediatePropagation?.();
+
       session.removeItem(authTokenKey);
       session.removeItem(authUserKey);
       storage.removeItem(authTokenKey);
       storage.removeItem(authUserKey);
       storage.removeItem("salonTheme");
-      win.location.href = "/";
+      win.location.assign("/logout.html");
     });
 
     subscriptionAutoRenewToggle?.addEventListener("change", () => {

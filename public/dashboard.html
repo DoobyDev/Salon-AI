@@ -15,28 +15,28 @@
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
     <link rel="stylesheet" href="/ask-lexi.css?v=20260312-admin9" />
   </head>
-  <body class="ask-lexi-shell ask-lexi-dashboard" data-role="subscriber">
+  <body class="ask-lexi-shell ask-lexi-dashboard" data-role="dashboard">
     <header class="site-header dashboard-header">
       <a class="brand-mark" href="/">
         <span class="brand-mark-badge">L</span>
         <span>
           <strong>Ask Lexi</strong>
-          <small id="dashboardBrandRole">Subscriber control room</small>
+          <small id="dashboardBrandRole">Dashboard</small>
         </span>
       </a>
       <div class="site-actions">
         <button class="btn btn-ghost" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
-        <button class="btn btn-ghost" id="logoutBtn" type="button">Log out</button>
+        <a class="btn btn-ghost" id="logoutBtn" href="/logout.html">Log out</a>
       </div>
     </header>
 
     <main class="dashboard-frame">
       <section class="dashboard-hero">
         <div>
-          <p class="kicker" id="dashboardKicker">Salon operator workspace</p>
-          <h1 id="dashboardTitle">Lexi Control Center</h1>
+          <p class="kicker" id="dashboardKicker">Dashboard workspace</p>
+          <h1 id="dashboardTitle">Ask Lexi Dashboard</h1>
           <p class="lede" id="dashboardDescription">
-            Your diary, customers, takings, reminders, and Ask Lexi in one clear workspace.
+            Loading your dashboard.
           </p>
           <div class="header-business-pill" id="dashboardBusinessPill">Loading workspace...</div>
         </div>
@@ -945,6 +945,64 @@
       </div>
     </section>
 
+    <script>
+      (() => {
+        const AUTH_TOKEN_KEY = "salon_ai_token";
+        const AUTH_USER_KEY = "salon_ai_user";
+        const params = new URLSearchParams(window.location.search);
+        const requestedRole = String(params.get("role") || "").trim().toLowerCase();
+        const logoutBtn = document.getElementById("logoutBtn");
+        const dashboardBrandRole = document.getElementById("dashboardBrandRole");
+        const dashboardKicker = document.getElementById("dashboardKicker");
+        const dashboardTitle = document.getElementById("dashboardTitle");
+        const dashboardDescription = document.getElementById("dashboardDescription");
+        const dashboardBusinessPill = document.getElementById("dashboardBusinessPill");
+
+        let sessionRole = "";
+        try {
+          const userRaw = sessionStorage.getItem(AUTH_USER_KEY);
+          const parsed = userRaw ? JSON.parse(userRaw) : null;
+          sessionRole = String(parsed?.role || "").trim().toLowerCase();
+        } catch {}
+
+        const role = requestedRole || sessionRole || "subscriber";
+        document.body?.setAttribute("data-role", role);
+
+        if (role === "customer") {
+          if (dashboardBrandRole) dashboardBrandRole.textContent = "Customer dashboard";
+          if (dashboardKicker) dashboardKicker.textContent = "Customer booking workspace";
+          if (dashboardTitle) dashboardTitle.textContent = "Your Booking Dashboard";
+          if (dashboardDescription) {
+            dashboardDescription.textContent =
+              "Track upcoming appointments, revisit past visits, and use Ask Lexi to plan your next booking.";
+          }
+          if (dashboardBusinessPill) dashboardBusinessPill.textContent = "Customer workspace active";
+        } else if (role === "admin") {
+          if (dashboardBrandRole) dashboardBrandRole.textContent = "Admin control room";
+          if (dashboardKicker) dashboardKicker.textContent = "Platform operations workspace";
+          if (dashboardTitle) dashboardTitle.textContent = "Admin Control Center";
+          if (dashboardDescription) {
+            dashboardDescription.textContent =
+              "Search accounts, open live dashboard previews, track app revenue, and watch platform status from one admin workspace.";
+          }
+          if (dashboardBusinessPill) dashboardBusinessPill.textContent = "Admin workspace active";
+        } else {
+          if (dashboardBrandRole) dashboardBrandRole.textContent = "Subscriber control room";
+          if (dashboardKicker) dashboardKicker.textContent = "Salon operator workspace";
+          if (dashboardTitle) dashboardTitle.textContent = "Lexi Control Center";
+          if (dashboardDescription) {
+            dashboardDescription.textContent =
+              "Your diary, customers, takings, reminders, and Ask Lexi in one clear workspace.";
+          }
+        }
+
+        logoutBtn?.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          window.location.assign("/logout.html");
+        });
+      })();
+    </script>
     <script type="module" src="/dashboard.js?v=20260312-admin2"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
