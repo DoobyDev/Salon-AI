@@ -37,6 +37,9 @@ export function registerApplicationRoutes({
   adminBusinessesHandler,
   adminAccountsHandler,
   adminAccountUpdateHandler,
+  adminFreeSubscriberAccessListHandler,
+  adminFreeSubscriberAccessGrantHandler,
+  adminFreeSubscriberAccessRevokeHandler,
   subscriberCopilotHandler,
   adminCopilotHandler,
   subscriberDashboardHandler,
@@ -125,6 +128,9 @@ export function registerApplicationRoutes({
   app.get("/api/admin/businesses", authRequired, requireRole("admin"), adminBusinessesHandler);
   app.get("/api/admin/accounts", authRequired, requireRole("admin"), adminAccountsHandler);
   app.patch("/api/admin/accounts/:userId", authRequired, requireRole("admin"), adminAccountUpdateHandler);
+  app.get("/api/admin/free-subscriber-access", authRequired, requireRole("admin"), adminFreeSubscriberAccessListHandler);
+  app.post("/api/admin/free-subscriber-access", authRequired, requireRole("admin"), adminFreeSubscriberAccessGrantHandler);
+  app.delete("/api/admin/free-subscriber-access/:email", authRequired, requireRole("admin"), adminFreeSubscriberAccessRevokeHandler);
 
   app.post("/api/copilot/subscriber", authRequired, requireRole("subscriber", "admin"), subscriberCopilotHandler);
   app.post("/api/admin/copilot", authRequired, requireRole("admin"), adminCopilotHandler);

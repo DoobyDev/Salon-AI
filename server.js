@@ -150,6 +150,7 @@ import {
 } from "./src/infrastructure/redis_runtime.js";
 import { createDistributedRateLimiter } from "./src/infrastructure/distributed_rate_limit.js";
 import { createEngagementRouteHandlers } from "./src/services/engagement_route_handlers.js";
+import { createFreeSubscriberAccessService } from "./src/services/free_subscriber_access.js";
 import { createJobRuntime } from "./src/infrastructure/jobs.js";
 
 if (!process.env.DATABASE_URL && process.env.DATABASE_URL_POOLER) {
@@ -314,10 +315,17 @@ const { signToken: issueAuthToken, authRequired, requireRole } = createAuthUtils
   jwt,
   jwtSecret
 });
+const freeSubscriberAccessService = createFreeSubscriberAccessService({
+  readFreeSubscriberAccessFile: appFileStores.freeSubscriberAccess.read,
+  writeFreeSubscriberAccessFile: appFileStores.freeSubscriberAccess.write,
+  getPrisma: () => prisma,
+  writeAuditLog: writeAuditEntry
+});
 const { registerSubscriberHandler, registerCustomerHandler, loginHandler } = createAuthRouteHandlers({
   prisma,
   bcrypt,
   signToken: issueAuthToken,
+  freeSubscriberAccessService,
   clearReadCache,
   writeAuditLog: writeAuditEntry,
   isValidEmail,
@@ -841,12 +849,16 @@ const {
   adminRevenueAnalyticsExportHandler,
   adminBusinessesHandler,
   adminAccountsHandler,
-  adminAccountUpdateHandler
+  adminAccountUpdateHandler,
+  adminFreeSubscriberAccessListHandler,
+  adminFreeSubscriberAccessGrantHandler,
+  adminFreeSubscriberAccessRevokeHandler
 } = createAdminPlatformHandlers({
   prisma,
   adminAppUsageService: adminUsageAnalyticsService,
   liveRevenueAnalyticsService,
   adminAccountSupportService: adminAccountPayloadService,
+  freeSubscriberAccessService,
   isValidEmail,
   writeAuditLog: writeAuditEntry
 });
@@ -1002,6 +1014,9 @@ registerApplicationRoutes({
   adminBusinessesHandler,
   adminAccountsHandler,
   adminAccountUpdateHandler,
+  adminFreeSubscriberAccessListHandler,
+  adminFreeSubscriberAccessGrantHandler,
+  adminFreeSubscriberAccessRevokeHandler,
   subscriberCopilotHandler,
   adminCopilotHandler,
   subscriberDashboardHandler,

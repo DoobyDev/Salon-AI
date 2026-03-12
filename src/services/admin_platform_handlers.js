@@ -27,6 +27,7 @@ export function createAdminPlatformHandlers({
   adminAppUsageService,
   liveRevenueAnalyticsService,
   adminAccountSupportService,
+  freeSubscriberAccessService,
   isValidEmail,
   writeAuditLog
 } = {}) {
@@ -52,12 +53,18 @@ export function createAdminPlatformHandlers({
     const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const yearStart = new Date(now.getFullYear(), 0, 1);
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+    const weekStartKey = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}`;
+    const monthStartKey = `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, "0")}-${String(monthStart.getDate()).padStart(2, "0")}`;
 
     const [
       businesses,
       users,
       subscribers,
       customers,
+      activeMonthlySubscribers,
+      activeYearlySubscribers,
+      freeLifetimeSubscribers,
       customerSignupsThisMonth,
       customerSignupsThisYear,
       subscriberSignupsThisMonth,
@@ -65,12 +72,23 @@ export function createAdminPlatformHandlers({
       bookings,
       cancelled,
       todayBookings,
+      weekBookings,
+      monthBookings,
+      todayLexiBookings,
+      weekLexiBookings,
+      monthLexiBookings,
+      todayRevenueAggregate,
+      weekRevenueAggregate,
+      monthRevenueAggregate,
       usage
     ] = await Promise.all([
       prisma.business.count(),
       prisma.user.count(),
       prisma.user.count({ where: { role: "subscriber" } }),
       prisma.user.count({ where: { role: "customer" } }),
+      prisma.subscription.count({ where: { status: "active", plan: "monthly" } }),
+      prisma.subscription.count({ where: { status: "active", plan: "yearly" } }),
+      freeSubscriberAccessService?.countActiveEntries?.() || 0,
       prisma.user.count({ where: { role: "customer", createdAt: { gte: monthStart } } }),
       prisma.user.count({ where: { role: "customer", createdAt: { gte: yearStart } } }),
       prisma.user.count({ where: { role: "subscriber", createdAt: { gte: monthStart } } }),
@@ -78,6 +96,14 @@ export function createAdminPlatformHandlers({
       prisma.booking.count(),
       prisma.booking.count({ where: { status: "cancelled" } }),
       prisma.booking.count({ where: { date: todayKey } }),
+      prisma.booking.count({ where: { date: { gte: weekStartKey, lte: todayKey } } }),
+      prisma.booking.count({ where: { date: { gte: monthStartKey, lte: todayKey } } }),
+      prisma.booking.count({ where: { source: "lexi", date: todayKey } }),
+      prisma.booking.count({ where: { source: "lexi", date: { gte: weekStartKey, lte: todayKey } } }),
+      prisma.booking.count({ where: { source: "lexi", date: { gte: monthStartKey, lte: todayKey } } }),
+      prisma.booking.aggregate({ where: { status: { not: "cancelled" }, date: todayKey }, _sum: { price: true } }),
+      prisma.booking.aggregate({ where: { status: { not: "cancelled" }, date: { gte: weekStartKey, lte: todayKey } }, _sum: { price: true } }),
+      prisma.booking.aggregate({ where: { status: { not: "cancelled" }, date: { gte: monthStartKey, lte: todayKey } }, _sum: { price: true } }),
       adminAppUsageService.computeAdminAppUsageAnalytics(14)
     ]);
 
@@ -87,12 +113,24 @@ export function createAdminPlatformHandlers({
         totalUsers: users,
         totalSubscribers: subscribers,
         totalCustomers: customers,
+        activeAppUsers: subscribers + customers,
+        activeMonthlySubscribers,
+        activeYearlySubscribers,
+        freeLifetimeSubscribers,
         customerSignupsThisMonth,
         customerSignupsThisYear,
         subscriberSignupsThisMonth,
         subscriberSignupsThisYear,
         totalBookings: bookings,
         todayBookings,
+        weekBookings,
+        monthBookings,
+        todayLexiBookings,
+        weekLexiBookings,
+        monthLexiBookings,
+        todayRevenue: Number(todayRevenueAggregate?._sum?.price || 0),
+        weekRevenue: Number(weekRevenueAggregate?._sum?.price || 0),
+        monthRevenue: Number(monthRevenueAggregate?._sum?.price || 0),
         cancelledBookings: cancelled,
         conversionRate: bookings ? Number((((bookings - cancelled) / bookings) * 100).toFixed(1)) : 0
       },
@@ -401,12 +439,41 @@ export function createAdminPlatformHandlers({
     return res.json({ account: await adminAccountSupportService.buildAdminSupportAccountPayload(updated) });
   }
 
+  async function adminFreeSubscriberAccessListHandler(_req, res) {
+    const entries = await freeSubscriberAccessService.listEntries();
+    return res.json({ entries });
+  }
+
+  async function adminFreeSubscriberAccessGrantHandler(req, res) {
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    if (!email) return res.status(400).json({ error: "Email is required." });
+    if (!isValidEmail(email)) return res.status(400).json({ error: "Invalid email format." });
+    const entries = await freeSubscriberAccessService.grantEmail(email, {
+      actorId: req.auth.sub,
+      actorRole: req.auth.role
+    });
+    return res.json({ entries });
+  }
+
+  async function adminFreeSubscriberAccessRevokeHandler(req, res) {
+    const email = String(req.params.email || "").trim().toLowerCase();
+    if (!email) return res.status(400).json({ error: "Email is required." });
+    const entries = await freeSubscriberAccessService.revokeEmail(email, {
+      actorId: req.auth.sub,
+      actorRole: req.auth.role
+    });
+    return res.json({ entries });
+  }
+
   return {
     adminDashboardHandler,
     adminRevenueAnalyticsHandler,
     adminRevenueAnalyticsExportHandler,
     adminBusinessesHandler,
     adminAccountsHandler,
-    adminAccountUpdateHandler
+    adminAccountUpdateHandler,
+    adminFreeSubscriberAccessListHandler,
+    adminFreeSubscriberAccessGrantHandler,
+    adminFreeSubscriberAccessRevokeHandler
   };
 }

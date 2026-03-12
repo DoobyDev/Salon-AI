@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerServiceWorker } from "../public/pwa-runtime.js";
+import { clearServiceWorkerState, registerServiceWorker } from "../public/pwa-runtime.js";
 
 describe("pwa runtime", () => {
   it("skips registration when service workers are unavailable", async () => {
@@ -34,5 +34,24 @@ describe("pwa runtime", () => {
 
     expect(register).toHaveBeenCalledWith("/sw.js", { scope: "/" });
     expect(result).toEqual({ supported: true, registered: true, registration });
+  });
+
+  it("clears existing salon-ai service workers and caches", async () => {
+    const unregister = vi.fn().mockResolvedValue(true);
+    const getRegistrations = vi.fn().mockResolvedValue([{ unregister }]);
+    const keys = vi.fn().mockResolvedValue(["salon-ai-v8", "other-cache"]);
+    const del = vi.fn().mockResolvedValue(true);
+
+    const result = await clearServiceWorkerState({
+      navigatorRef: { serviceWorker: { getRegistrations } },
+      cachesRef: { keys, delete: del }
+    });
+
+    expect(getRegistrations).toHaveBeenCalled();
+    expect(unregister).toHaveBeenCalled();
+    expect(keys).toHaveBeenCalled();
+    expect(del).toHaveBeenCalledWith("salon-ai-v8");
+    expect(del).not.toHaveBeenCalledWith("other-cache");
+    expect(result).toEqual({ cleared: true });
   });
 });

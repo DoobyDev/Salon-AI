@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask Lexi | Admin Dashboard</title>
+    <meta name="theme-color" content="#cb835f" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-admin9" />
+  </head>
+  <body class="ask-lexi-shell ask-lexi-dashboard admin-only-dashboard" data-role="admin">
+    <header class="site-header dashboard-header">
+      <a class="brand-mark" href="/">
+        <span class="brand-mark-badge">L</span>
+        <span>
+          <strong>Ask Lexi</strong>
+          <small>Admin control room</small>
+        </span>
+      </a>
+      <div class="site-actions">
+        <button class="btn ask-lexi-btn" id="adminAskLexiBtn" type="button">Ask Lexi</button>
+        <button class="btn btn-ghost" id="logoutBtn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <main class="dashboard-frame">
+      <section class="dashboard-grid dashboard-grid-admin admin-dashboard-grid">
+        <section class="dashboard-card admin-search-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Account search</p>
+              <h2>Find a subscriber or customer fast</h2>
+            </div>
+          </div>
+          <div class="admin-search-shell">
+            <p class="section-copy admin-search-copy">
+              Search a salon subscriber or customer account, then open the same dashboard they use.
+            </p>
+            <form class="compact-form compact-form-inline admin-search-form" id="adminAccountSearchForm">
+              <input id="adminAccountSearchInput" type="text" placeholder="Search salon, subscriber, customer, email, or city" />
+              <button class="btn btn-ghost btn-small" type="submit">Search</button>
+            </form>
+            <div class="admin-search-panels">
+              <div class="insight-panel admin-search-results-panel">
+                <div class="section-head section-head-compact">
+                  <div>
+                    <p class="kicker">Results</p>
+                    <h3>Matching accounts</h3>
+                  </div>
+                  <small class="admin-search-results-note">Click a result to open that live dashboard preview.</small>
+                </div>
+                <div class="admin-table admin-table-accounts" id="adminAccountsTable"></div>
+              </div>
+            </div>
+            <p class="form-message" id="adminAccountEditMessage"></p>
+          </div>
+        </section>
+
+        <section class="dashboard-card admin-revenue-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Section 3</p>
+              <h2>App revenue</h2>
+            </div>
+            <div class="inline-actions">
+              <div class="status-pill" id="adminRevenuePeriodPill">Loading period...</div>
+              <button class="btn btn-ghost btn-small" id="adminPlatformExportBtn" type="button">Export revenue CSV</button>
+            </div>
+          </div>
+          <p class="section-copy" id="adminRevenueNote">
+            Revenue from subscriber signups, subscriber count, and platform growth.
+          </p>
+          <div class="admin-platform-metric-grid" id="adminPlatformMetricGrid"></div>
+          <div class="admin-revenue-summary-grid" id="adminRevenueSummaryGrid"></div>
+          <div class="admin-revenue-visual-grid">
+            <div class="insight-panel admin-visual-panel" id="adminRevenueMixChart"></div>
+            <div class="insight-panel admin-visual-panel" id="adminRevenueHealthGauge"></div>
+            <div class="insight-panel admin-visual-panel" id="adminRevenueYieldGauge"></div>
+          </div>
+          <div class="admin-revenue-trend-graph" id="adminRevenueTrendGraph"></div>
+          <div class="admin-revenue-month-list" id="adminRevenueMonthlyList"></div>
+          <div class="admin-revenue-signal-grid" id="adminRevenueSignalList"></div>
+        </section>
+
+        <section class="dashboard-card" id="adminBusinessHubSection">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Section 4</p>
+              <h2>Business Hub</h2>
+            </div>
+          </div>
+          <p class="section-copy">
+            Click a card to open a focused admin page for that business area.
+          </p>
+          <div class="admin-business-hub-grid" id="adminBusinessHubGrid"></div>
+        </section>
+      </section>
+    </main>
+
+    <section class="lexi-modal" id="freeSubscriberModal" hidden>
+      <div class="lexi-modal-backdrop" id="freeSubscriberModalBackdrop"></div>
+      <div class="lexi-modal-card">
+        <div class="lexi-modal-head">
+          <div>
+            <p class="kicker">Free subscribers</p>
+            <h2>Manage lifetime promoter accounts</h2>
+          </div>
+          <button class="btn btn-ghost btn-small" id="freeSubscriberModalCloseBtn" type="button">Close</button>
+        </div>
+        <p class="section-copy">
+          Add an email to grant a complimentary lifetime subscriber account. Removing an email ends the free plan at the end of the current calendar month.
+        </p>
+        <form class="compact-form compact-form-inline" id="freeSubscriberGrantForm">
+          <input id="freeSubscriberEmailInput" type="email" placeholder="promoter@example.com" />
+          <button class="btn" type="submit">Grant free access</button>
+        </form>
+        <p class="form-message" id="freeSubscriberModalMessage"></p>
+        <div class="admin-free-subscriber-list" id="freeSubscriberList"></div>
+      </div>
+    </section>
+
+    <script type="module" src="/dashboard-admin-shell.js?v=20260312-admin3"></script>
+  </body>
+</html>

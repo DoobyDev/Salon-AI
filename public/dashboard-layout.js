@@ -4,6 +4,9 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     role,
     hideSection,
     showSection,
+    subscriberDashboard,
+    customerDashboard,
+    adminDashboard,
     adminAccountSupportSection,
     contactAdminBtn,
     subscriptionQuickPanel,
@@ -55,6 +58,18 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
   const hideSections = (sections = []) => {
     sections.forEach((sectionEl) => hideSection(sectionEl));
   };
+
+  hideSection(subscriberDashboard);
+  hideSection(customerDashboard);
+  hideSection(adminDashboard);
+
+  if (role === "subscriber") {
+    showSection(subscriberDashboard);
+  } else if (role === "customer") {
+    showSection(customerDashboard);
+  } else if (role === "admin") {
+    showSection(adminDashboard);
+  }
 
   const subscriberSecondarySections = [
     subscriberExecutivePulseSection,

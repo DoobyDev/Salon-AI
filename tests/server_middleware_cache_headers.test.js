@@ -46,6 +46,7 @@ describe("server middleware cache headers", () => {
 
     expect(cacheControlFor(setHeaders, "C:/app/public/index.html")).toBe("no-cache, no-store, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/dashboard.html")).toBe("no-cache, no-store, must-revalidate");
+    expect(cacheControlFor(setHeaders, "C:/app/public/dashboard-admin.html")).toBe("no-cache, no-store, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/auth.html")).toBe("no-cache, no-store, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/sw.js")).toBe("no-cache, no-store, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/manifest.webmanifest")).toBe("no-cache, no-store, must-revalidate");
@@ -57,6 +58,7 @@ describe("server middleware cache headers", () => {
     expect(cacheControlFor(setHeaders, "C:/app/public/styles.css")).toBe("no-cache, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/app.js")).toBe("no-cache, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/dashboard.js")).toBe("no-cache, must-revalidate");
+    expect(cacheControlFor(setHeaders, "C:/app/public/dashboard-admin-shell.js")).toBe("no-cache, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/auth.js")).toBe("no-cache, must-revalidate");
     expect(cacheControlFor(setHeaders, "C:/app/public/theme-toggle.js")).toBe("no-cache, must-revalidate");
   });

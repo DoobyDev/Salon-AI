@@ -21,6 +21,7 @@ export function createAppFileStores({ baseDir } = {}) {
   const socialMedia = createJsonFileBinding(path.join(dataDir, "social_media.json"));
   const businessReportQueue = createJsonFileBinding(path.join(dataDir, "business_report_email_queue.json"));
   const reminderSettings = createJsonFileBinding(path.join(dataDir, "reminder_settings.json"));
+  const freeSubscriberAccess = createJsonFileBinding(path.join(dataDir, "free_subscriber_access.json"));
 
   return {
     accountingIntegrations,
@@ -32,6 +33,7 @@ export function createAppFileStores({ baseDir } = {}) {
     profitabilityInputs,
     socialMedia,
     businessReportQueue,
-    reminderSettings
+    reminderSettings,
+    freeSubscriberAccess
   };
 }

@@ -1,6 +1,6 @@
 # TODO Tracker
 
-Last updated: 2026-03-11
+Last updated: 2026-03-12
 
 Purpose:
 - Keep one running list of work that is still incomplete, still needs testing, or still needs validation.
@@ -23,6 +23,14 @@ Local validation target for the next pass:
 - Automated checks passed on 2026-03-11: `npm run check`, `npm test`
 - Manual browser pass helper: `docs/DASHBOARD_MANUAL_QA_CHECKLIST_2026-03-11.md`
 
+Tomorrow restart point:
+- Admin dashboard has been split to a dedicated admin-only shell and is now in active design cleanup.
+- Today completed: top nav cleanup, full-width account search, direct dashboard preview launch from search results, KPI-focused revenue cards, free-subscriber email grant popup, cleaner Business Hub, combined monthly trend cards, and warmer admin card styling.
+- Next admin UX pass should focus on:
+  - simplifying or removing any remaining low-value Section 3 visuals
+  - refining Business Hub labels/cards/pages
+  - running a real browser QA pass across admin/subscriber/customer after the latest admin-shell split
+
 - [ ] Browser-verify PWA installability and shell updates on the live routes.
 Files: `public/index.html`, `public/auth.html`, `public/dashboard.html`, `public/legal.html`, `public/pwa-runtime.js`, `public/sw.js`, `public/manifest.webmanifest`
 Notes: The shared manifest link and service-worker registration were reconnected on 2026-03-10 for the active home/auth/dashboard/legal entrypoints. A headless Edge render pass on 2026-03-11 confirmed the live home/auth/legal routes load with the expected shared shell markup, but install prompt behavior, service-worker activation/update behavior, and stale-page regression checks still need an interactive browser session. The dashboard shell entrypoint was also corrected on 2026-03-11 so `public/dashboard.html` now loads `public/dashboard.js` instead of the older `public/ask-lexi-dashboard.js`; rerun browser installability checks against that live entrypoint.
@@ -39,9 +47,9 @@ Notes: Confirm current subscriber/admin/customer layouts still feel correct afte
 Files: `public/dashboard-calendar-pulse.js`, `public/dashboard.js`
 Notes: Code path was statically checked on 2026-03-10 and still keeps the storyline booking-driven. The admin dashboard control-center surface now has a 2026-03-11 authenticated first-view render capture, but the quick-toggle controls themselves were not exposed in the top-level admin first-view DOM during the browser pass, so this remaining check likely needs a managed-business/admin-drill-in state plus an in-browser click-through confirmation.
 
-- [ ] Browser-verify the admin accounts panel search, selection, and inline edit flow.
-Files: `public/dashboard.html`, `public/dashboard.js`, `public/dashboard-admin-support.js`
-Notes: The admin account tooling was rewired on 2026-03-10 to the current `adminAccountSearchForm` / `adminAccountsTable` / `adminAccountDetail` surface, and automated runtime coverage now exists for initial load, search submission, inline account edits, both managed-action buttons, and both booking/platform CSV export paths in `tests/admin_support_runtime.test.js`. An authenticated admin browser pass on 2026-03-11 confirmed the panel is present in the live dashboard layout, and live search, row selection, and inline subscriber business-name edit all worked against a temporary subscriber account. The remaining blocker was traced on 2026-03-11 to `public/dashboard.html` still loading the older `public/ask-lexi-dashboard.js` entrypoint while the current account-tooling/runtime/tests target `public/dashboard.js`. That entrypoint mismatch is now corrected and targeted tests are passing again; the remaining work is a fresh authenticated browser pass to confirm the managed-action buttons, managed-dashboard jump, popup launch, and visible CSV export flow on the live modular dashboard.
+- [ ] Browser-verify the new admin-only dashboard shell and admin search preview flow.
+Files: `public/dashboard-admin.html`, `public/dashboard-admin-shell.js`, `public/dashboard-admin-platform.js`, `public/dashboard-admin-support.js`, `src/services/platform_route_handlers.js`
+Notes: The admin dashboard was moved on 2026-03-12 to a dedicated `/dashboard?role=admin` shell so it no longer shares subscriber/customer DOM. The admin search area is now full width and opens subscriber/customer preview dashboards directly from result rows. The app revenue area was also rebuilt around operator KPIs plus free-subscriber management. Remaining work is a real browser pass to confirm layout, popup behavior, preview navigation, and overall clarity after the latest simplification pass.
 
 - [ ] Browser-validate merch analytics in both subscriber and admin managed-business views.
 Files: `public/dashboard-calendar-pulse.js`, `public/dashboard-merch-analytics.js`, `public/dashboard.js`

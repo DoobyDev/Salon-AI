@@ -334,6 +334,33 @@ describe("admin support runtime", () => {
     expect(harness.setDashActionStatus).toHaveBeenCalledWith("Opening Morgan Blake dashboard preview.");
   });
 
+  it("opens the subscriber preview dashboard when clicking a result row", async () => {
+    const harness = createRuntimeHarness();
+    harness.fetchImpl.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ accounts: [makeAccount()] })
+    });
+
+    harness.runtime.bindAdminSupportEvents();
+    await flushAsyncWork();
+
+    await harness.adminAccountsTable.dispatch("click", {
+      target: new FakeHTMLElement({
+        closest(selector) {
+          if (selector === "[data-admin-account-id]") {
+            const row = new FakeHTMLElement();
+            row.getAttribute = (name) => (name === "data-admin-account-id" ? "acct_subscriber_1" : "");
+            return row;
+          }
+          return null;
+        }
+      })
+    });
+
+    expect(harness.win.location.href).toBe("/dashboard?role=subscriber&adminPreview=1&businessId=biz_1");
+    expect(harness.setDashActionStatus).toHaveBeenCalledWith("Opening Morgan Blake dashboard preview.");
+  });
+
   it("opens the customer preview dashboard from the current admin account card", async () => {
     const harness = createRuntimeHarness();
     harness.fetchImpl.mockResolvedValueOnce({

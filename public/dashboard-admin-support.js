@@ -176,22 +176,40 @@ export function createAdminSupportRuntime(deps) {
     if (!adminAccountsTable) return;
     adminAccountsTable.innerHTML = cache.length
       ? cache.map((account) => `
-          <article class="admin-row ${String(account?.id || "") === selectedId ? "is-selected" : ""}" data-admin-account-id="${escapeHtml(String(account?.id || ""))}">
-            <div>
-              <strong>${escapeHtml(String(account?.name || "Account"))}</strong>
-              <small>${escapeHtml(String(account?.email || ""))}</small>
+          <article class="admin-row admin-account-result-row ${String(account?.id || "") === selectedId ? "is-selected" : ""}" data-admin-account-id="${escapeHtml(String(account?.id || ""))}" data-admin-account-open="dashboard">
+            <div class="admin-account-result-main">
+              <div>
+                <strong>${escapeHtml(String(account?.name || "Account"))}</strong>
+                <small>${escapeHtml(String(account?.email || ""))}</small>
+              </div>
+              <div class="admin-account-result-badges">
+                <span class="status-pill">${escapeHtml(roleLabel(account?.role))}</span>
+                <span class="status-pill">${escapeHtml(String(account?.business?.name || account?.business?.city || "No linked business"))}</span>
+              </div>
             </div>
-            <div>
-              <strong>${escapeHtml(roleLabel(account?.role))}</strong>
-              <small>${escapeHtml(String(account?.business?.name || account?.business?.city || "No linked business"))}</small>
+            <div class="admin-account-result-stats">
+              <div>
+                <strong>${escapeHtml(String(account?.stats?.bookingCount ?? account?.stats?.visitCount ?? 0))}</strong>
+                <small>${escapeHtml(isSubscriberAccount(account) ? "bookings" : "visits")}</small>
+              </div>
+              <div>
+                <strong>${escapeHtml(isSubscriberAccount(account) ? String(formatMoney?.(Number(account?.stats?.revenue || 0)) || "GBP 0") : String(account?.stats?.upcomingCount || 0))}</strong>
+                <small>${escapeHtml(isSubscriberAccount(account) ? String(account?.stats?.planLabel || "no plan") : "upcoming bookings")}</small>
+              </div>
+              <div>
+                <strong>${escapeHtml(String(formatDateShort?.(account?.stats?.lastBookingAt) || account?.stats?.lastBookingAt || "No recent booking"))}</strong>
+                <small>${escapeHtml("last activity")}</small>
+              </div>
             </div>
-            <div>
-              <strong>${escapeHtml(String(account?.stats?.bookingCount ?? account?.stats?.visitCount ?? 0))}</strong>
-              <small>${escapeHtml(isSubscriberAccount(account) ? "bookings" : "visits")}</small>
-            </div>
-            <div>
-              <strong>${escapeHtml(isSubscriberAccount(account) ? String(formatMoney?.(Number(account?.stats?.revenue || 0)) || "GBP 0") : String(account?.stats?.upcomingCount || 0))}</strong>
-              <small>${escapeHtml(isSubscriberAccount(account) ? String(account?.stats?.planLabel || "no plan") : "upcoming bookings")}</small>
+            <div class="admin-account-result-foot">
+              <small>
+                ${escapeHtml(
+                  isSubscriberAccount(account)
+                    ? `Open ${String(account?.business?.name || "subscriber")} dashboard preview`
+                    : `Open ${String(account?.name || "customer")} dashboard preview`
+                )}
+              </small>
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-dashboard">Open dashboard</button>
             </div>
           </article>
         `).join("")
@@ -219,17 +237,58 @@ export function createAdminSupportRuntime(deps) {
     const secondary = isSubscriber
       ? `${String(stats.planLabel || "no plan")} - ${String(account?.business?.city || "no city")}`
       : `${String(stats.linkedBusinesses || 0)} linked salons`;
+    const detailRows = isSubscriber
+      ? [
+          ["Business", String(account?.business?.name || "No linked business")],
+          ["City", String(account?.business?.city || "Not set")],
+          ["Plan", String(stats.planLabel || "Not set")],
+          ["Bookings", String(stats.bookingCount || 0)],
+          ["Revenue", String(formatMoney?.(Number(stats.revenue || 0)) || "GBP 0")],
+          ["Last booking", String(stats.lastBookingAt ? formatDateShort?.(stats.lastBookingAt) || stats.lastBookingAt : "No recent booking")]
+        ]
+      : [
+          ["Linked salon", String(account?.business?.name || "No primary salon linked")],
+          ["Visits", String(stats.visitCount || 0)],
+          ["Upcoming", String(stats.upcomingCount || 0)],
+          ["Linked salons", String(stats.linkedBusinesses || 0)],
+          ["Last booking", String(stats.lastBookingAt ? formatDateShort?.(stats.lastBookingAt) || stats.lastBookingAt : "No recent booking")],
+          ["Email", String(account?.email || "No email")]
+        ];
 
     adminAccountDetail.innerHTML = `
-      <article class="detail-card">
+      <article class="detail-card admin-account-hero-card">
+        <p class="kicker">${escapeHtml(roleLabel(account?.role))}</p>
         <strong>${escapeHtml(String(account?.name || "Account"))}</strong>
         <small>${escapeHtml(String(account?.email || ""))}</small>
-        <small>${escapeHtml(roleLabel(account?.role))}${account?.business?.name ? ` - ${escapeHtml(String(account.business.name || ""))}` : ""}</small>
+        <small>${account?.business?.name ? `${escapeHtml(String(account.business.name || ""))}` : escapeHtml(isSubscriber ? "Subscriber account" : "Customer account")}</small>
       </article>
-      <article class="detail-card">
-        <strong>Activity</strong>
-        <small>${escapeHtml(primary)}</small>
-        <small>${escapeHtml(secondary)}</small>
+      <article class="detail-card admin-account-summary-card">
+        <strong>Snapshot</strong>
+        <div class="admin-account-stat-grid">
+          <div class="admin-account-stat">
+            <span>Primary</span>
+            <strong>${escapeHtml(primary)}</strong>
+          </div>
+          <div class="admin-account-stat">
+            <span>Secondary</span>
+            <strong>${escapeHtml(secondary)}</strong>
+          </div>
+        </div>
+      </article>
+      <article class="detail-card admin-account-data-card">
+        <strong>${escapeHtml(isSubscriber ? "Subscriber data" : "Customer data")}</strong>
+        <div class="admin-account-data-list">
+          ${detailRows
+            .map(
+              ([label, value]) => `
+                <div class="admin-account-data-row">
+                  <span>${escapeHtml(label)}</span>
+                  <strong>${escapeHtml(value)}</strong>
+                </div>
+              `
+            )
+            .join("")}
+        </div>
       </article>
       <article class="detail-card">
         <strong>Recent activity</strong>
@@ -263,11 +322,13 @@ export function createAdminSupportRuntime(deps) {
   }
 
   function renderAdminAccountSupportModule() {
-    if (getUserRole?.() !== "admin" || !adminAccountsTable || !adminAccountDetail) return;
+    if (getUserRole?.() !== "admin" || !adminAccountsTable) return;
     const cache = Array.isArray(getAdminAccountSupportResultsCache?.()) ? getAdminAccountSupportResultsCache() : [];
     const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
     renderAdminAccountsTable(cache, selectedId);
-    renderAdminAccountDetailCard(adminAccountSupportSelectedAccount());
+    if (adminAccountDetail) {
+      renderAdminAccountDetailCard(adminAccountSupportSelectedAccount());
+    }
   }
 
   async function loadAdminAccountSupport(query = getAdminAccountQuery()) {
@@ -407,10 +468,18 @@ export function createAdminSupportRuntime(deps) {
     });
 
     adminAccountsTable?.addEventListener("click", (event) => {
-      const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-id]") : null;
-      if (!(target instanceof HTMLElement)) return;
-      setAdminAccountSupportSelectedId?.(String(target.getAttribute("data-admin-account-id") || "").trim());
+      const row = event.target instanceof HTMLElement ? event.target.closest("[data-admin-account-id]") : null;
+      if (!(row instanceof HTMLElement)) return;
+      const accountId = String(row.getAttribute("data-admin-account-id") || "").trim();
+      setAdminAccountSupportSelectedId?.(accountId);
       renderAdminAccountSupportModule();
+      const account = adminAccountSupportSelectedAccount();
+      if (!account) return;
+      const targetUrl = buildAccountPreviewUrl(account);
+      if (win.location) {
+        win.location.href = targetUrl;
+      }
+      setDashActionStatus?.(`Opening ${account.name || (isSubscriberAccount(account) ? account.business?.name : "customer")} dashboard preview.`);
     });
 
     adminAccountDetail?.addEventListener("click", async (event) => {

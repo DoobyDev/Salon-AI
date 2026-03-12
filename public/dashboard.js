@@ -107,7 +107,7 @@ import { createStaffRosterRuntime } from "./dashboard-staff-roster-runtime.js";
 import { createStaffDateUtilsRuntime } from "./dashboard-staff-date-utils.js";
 import { createStaffRotaWeekRuntime } from "./dashboard-staff-rota-week.js";
 import { createStaffRotaCoreRuntime } from "./dashboard-staff-rota-core.js";
-import { registerServiceWorker } from "./pwa-runtime.js";
+import { clearServiceWorkerState } from "./pwa-runtime.js";
 import {
   parseShiftDaysInput as parseStaffShiftDaysInput,
   formatDateKey as formatStaffDateKey,
@@ -125,7 +125,7 @@ import {
   buildWaitlistRecoveryPrefillDateTime as buildWaitlistRecoveryDateTime
 } from "./dashboard-waitlist-utils.js";
 
-registerServiceWorker();
+clearServiceWorkerState();
 
 const params = new URLSearchParams(window.location.search);
 // Dashboard mock/demo mode is disabled to preserve a stable live layout.
@@ -170,6 +170,46 @@ const currentRole = String(user.role || "").trim().toLowerCase();
 if (document.body) {
   document.body.setAttribute("data-role", currentRole);
 }
+
+function maybeShowFreeSubscriberWelcomePopup() {
+  if (currentRole !== "subscriber") return;
+  const shouldShow = Boolean(user?.showFreeSubscriberWelcome || user?.freeSubscriberLifetime);
+  const email = String(user?.email || "").trim().toLowerCase();
+  if (!shouldShow || !email || document.getElementById("freeSubscriberWelcomeModal")) return;
+  const storageKey = `salon_ai_free_subscriber_welcome_seen:${email}`;
+  if (localStorage.getItem(storageKey) === "1") return;
+
+  const overlay = document.createElement("section");
+  overlay.className = "lexi-modal";
+  overlay.id = "freeSubscriberWelcomeModal";
+  overlay.innerHTML = `
+    <div class="lexi-modal-backdrop" data-free-subscriber-welcome-close></div>
+    <div class="lexi-modal-card" role="dialog" aria-modal="true" aria-labelledby="freeSubscriberWelcomeTitle">
+      <div class="lexi-modal-head">
+        <div>
+          <p class="kicker">Welcome</p>
+          <h2 id="freeSubscriberWelcomeTitle">Your lifetime free subscriber account is active</h2>
+        </div>
+        <button class="btn btn-ghost btn-small" type="button" data-free-subscriber-welcome-close>Close</button>
+      </div>
+      <p class="section-copy">
+        This subscriber account has been approved for a complimentary lifetime free plan because it is linked to your promoter email address.
+      </p>
+      <button class="btn" type="button" data-free-subscriber-welcome-close>Continue</button>
+    </div>
+  `;
+  const close = () => {
+    localStorage.setItem(storageKey, "1");
+    user.showFreeSubscriberWelcome = false;
+    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    overlay.remove();
+  };
+  overlay.querySelectorAll("[data-free-subscriber-welcome-close]").forEach((node) => node.addEventListener("click", close));
+  document.body.appendChild(overlay);
+}
+
+maybeShowFreeSubscriberWelcomePopup();
+
 const moduleUsageRuntime = createModuleUsageRuntime({
   getRole: () => user?.role
 });
@@ -188,6 +228,9 @@ const dashboardKicker = document.getElementById("dashboardKicker");
 const dashboardTitle = document.getElementById("dashboardTitle");
 const dashboardDescription = document.getElementById("dashboardDescription");
 const dashboardBusinessPill = document.getElementById("dashboardBusinessPill");
+const subscriberDashboard = document.getElementById("subscriberDashboard");
+const customerDashboard = document.getElementById("customerDashboard");
+const adminDashboard = document.getElementById("adminDashboard");
 const dashboardPreferencesRuntime = createDashboardPreferencesRuntime({
   dashActionStatus,
   demoModeToggle,
@@ -1322,6 +1365,9 @@ const enforceDashboardRoleLayoutVisibility = () => {
     role: user.role,
     hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
     showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
+    subscriberDashboard,
+    customerDashboard,
+    adminDashboard,
     adminAccountSupportSection,
     contactAdminBtn,
     subscriptionQuickPanel,

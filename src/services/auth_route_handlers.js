@@ -2,6 +2,7 @@ export function createAuthRouteHandlers({
   prisma,
   bcrypt,
   signToken,
+  freeSubscriberAccessService,
   clearReadCache,
   writeAuditLog,
   isValidEmail,
@@ -81,6 +82,10 @@ export function createAuthRouteHandlers({
       }
     });
 
+    const freeSubscriberAccess = await freeSubscriberAccessService?.ensureSubscriberFreePlanByEmail?.(email, {
+      actorId: user.id,
+      actorRole: user.role
+    });
     const token = signToken(user);
     clearReadCache();
     await writeAuditLog({
@@ -100,7 +105,18 @@ export function createAuthRouteHandlers({
         }
       }
     });
-    return res.status(201).json({ token, user: { id: user.id, role: user.role, email: user.email } });
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        role: user.role,
+        email: user.email,
+        businessId: user.businessId || business.id,
+        name: user.name,
+        freeSubscriberLifetime: Boolean(freeSubscriberAccess?.granted),
+        showFreeSubscriberWelcome: Boolean(freeSubscriberAccess?.granted)
+      }
+    });
   }
 
   async function registerCustomerHandler(req, res) {
@@ -256,6 +272,7 @@ export function createAuthRouteHandlers({
       businessId: effectiveBusinessId
     };
     let customerPhone = null;
+    let freeSubscriberLifetime = false;
     if (effectiveRole === "customer" && user.email) {
       const latestCustomerBooking = await prisma.booking.findFirst({
         where: { customerEmail: user.email },
@@ -263,6 +280,9 @@ export function createAuthRouteHandlers({
         orderBy: [{ createdAt: "desc" }]
       });
       customerPhone = String(latestCustomerBooking?.customerPhone || "").trim() || null;
+    }
+    if (effectiveRole === "subscriber" && user.email) {
+      freeSubscriberLifetime = Boolean(await freeSubscriberAccessService?.isGranted?.(user.email));
     }
     const token = signToken(sessionUser);
     await writeAuditLog({
@@ -285,7 +305,9 @@ export function createAuthRouteHandlers({
         email: user.email,
         businessId: effectiveBusinessId,
         name: user.name,
-        phone: customerPhone
+        phone: customerPhone,
+        freeSubscriberLifetime,
+        showFreeSubscriberWelcome: freeSubscriberLifetime
       }
     });
   }

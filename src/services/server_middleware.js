@@ -74,6 +74,7 @@ export function applyServerMiddleware({
       if (
         normalizedPath.endsWith("/index.html") ||
         normalizedPath.endsWith("/dashboard.html") ||
+        normalizedPath.endsWith("/dashboard-admin.html") ||
         normalizedPath.endsWith("/auth.html") ||
         normalizedPath.endsWith("/sw.js") ||
         normalizedPath.endsWith("/manifest.webmanifest")
@@ -86,6 +87,7 @@ export function applyServerMiddleware({
         normalizedPath.endsWith("/styles.css") ||
         normalizedPath.endsWith("/app.js") ||
         normalizedPath.endsWith("/dashboard.js") ||
+        normalizedPath.endsWith("/dashboard-admin-shell.js") ||
         normalizedPath.endsWith("/auth.js") ||
         normalizedPath.endsWith("/theme-toggle.js")
       ) {

@@ -64,8 +64,11 @@ export function createPlatformRouteHandlers({
     return res.sendFile(path.join(publicDir, "auth.html"));
   }
 
-  function dashboardPageHandler(_req, res) {
-    return res.sendFile(path.join(publicDir, "dashboard.html"));
+  function dashboardPageHandler(req, res) {
+    const requestedRole = String(req?.query?.role || "").trim().toLowerCase();
+    const dashboardFile = requestedRole === "admin" ? "dashboard-admin.html" : "dashboard.html";
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    return res.sendFile(path.join(publicDir, dashboardFile));
   }
 
   function legalPageHandler(_req, res) {

@@ -21,3 +21,34 @@ export async function registerServiceWorker({
     return { supported: true, registered: false };
   }
 }
+
+export async function clearServiceWorkerState({
+  navigatorRef = globalThis.navigator,
+  cachesRef = globalThis.caches
+} = {}) {
+  const serviceWorker = navigatorRef?.serviceWorker;
+
+  try {
+    if (serviceWorker?.getRegistrations) {
+      const registrations = await serviceWorker.getRegistrations();
+      await Promise.all((Array.isArray(registrations) ? registrations : []).map((registration) => registration.unregister?.()));
+    }
+  } catch {
+    // Ignore cleanup failures; dashboard should still continue loading.
+  }
+
+  try {
+    if (cachesRef?.keys) {
+      const keys = await cachesRef.keys();
+      await Promise.all(
+        (Array.isArray(keys) ? keys : [])
+          .filter((key) => String(key || "").startsWith("salon-ai-"))
+          .map((key) => cachesRef.delete(key))
+      );
+    }
+  } catch {
+    // Ignore cache cleanup failures; dashboard should still continue loading.
+  }
+
+  return { cleared: true };
+}

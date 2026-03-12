@@ -1,6 +1,6 @@
 # App Feature Record
 
-Last updated: 2026-03-11
+Last updated: 2026-03-12
 
 Purpose:
 - Keep a permanent record of what the app can do.
@@ -84,6 +84,48 @@ The app is designed to help salons:
 - Explain likely notification-delivery problems and suggest the next admin checks in plain language
 - Launch notification-fix guidance directly from the admin dashboard for a selected salon
 - Protected admin realtime/avatar session startup now requires admin auth before live platform-assistant sessions can be created
+
+## Admin Dashboard Features
+
+Status: simplified admin workspace active
+
+### Included now
+
+- Dedicated admin-only dashboard shell is now served for `/dashboard?role=admin` so the admin view no longer shares the subscriber page structure
+- Sticky top nav simplified to:
+  - Ask Lexi
+  - Log out
+- Search area for subscriber salons and customer accounts
+- Search results now act as the main full-width admin workspace and open the same subscriber or customer dashboard preview directly on click
+- App revenue section showing:
+  - active app users
+  - monthly and yearly active subscriber split
+  - free lifetime promo subscriber count
+  - day, week, and month revenue cards
+  - day, week, and month booking cards
+  - day, week, and month Lexi-booking cards
+  - donut chart
+  - gauges
+  - trend graph
+  - monthly revenue rows
+  - signal cards
+- Business Hub grid with focused cards for:
+  - Accounting
+  - Social Media
+  - Merch
+  - Finance
+  - Cancellations
+  - Business Information
+  - Staff Setup
+  - Salon Features
+- Business Hub cards act as clean launch points for focused admin pages without keeping an extra detail section open on the main dashboard
+- Free-subscriber metric card now opens an admin popup for adding promoter email grants, reviewing granted emails, and removing free access when needed
+
+### Admin value
+
+- Keeps the admin screen simple and fast to scan
+- Separates platform search, revenue oversight, and business-area navigation into one clear operator view
+- Removes the old shared-role dashboard conflict that was making the admin page look like the subscriber dashboard
 
 ## Landing Page / Public Marketing Features
 
@@ -546,3 +588,11 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Simplified the admin dashboard by removing non-essential app-revenue, subscription-health, and billing-watch sections from the main live layout so the control room stays focused on operator actions
 - Rebuilt the admin dashboard around a search-first workflow with preview links into subscriber and customer dashboards, a clickable control-map card grid, a richer revenue studio, and a dedicated app-status section
 - Simplified the admin dashboard again into the intended four-section structure: top nav, account search, revenue, and a Business Hub card grid with focused admin detail pages
+
+### 2026-03-12
+
+- Split the admin dashboard onto a dedicated `/dashboard?role=admin` shell so it no longer inherits the shared subscriber/customer page structure
+- Kept the admin screen to the requested simple flow: top nav, search area, app revenue, and Business Hub
+- Added route-level serving for the admin-only shell plus no-store caching protection for the dedicated admin page asset
+- Expanded the admin revenue cards to show active app users, monthly/yearly subscriber split, free lifetime promo subscribers, period revenue, bookings, and Lexi bookings
+- Added email-linked free subscriber grant management plus subscriber welcome messaging for promoter accounts

@@ -30,6 +30,7 @@ export function createAdminPlatformRuntime(deps) {
     adminUsagePeriodPill,
     adminUsageNote,
     adminPlatformExportBtn,
+    onManageFreeSubscribers,
     getAdminPlatformAnalytics,
     setAdminPlatformAnalytics,
     getAdminRevenueAnalytics,
@@ -43,7 +44,20 @@ export function createAdminPlatformRuntime(deps) {
       analytics: {
         totalBusinesses: 48,
         totalUsers: 1264,
+        activeAppUsers: 1065,
+        activeMonthlySubscribers: 29,
+        activeYearlySubscribers: 12,
+        freeLifetimeSubscribers: 6,
         totalBookings: 8342,
+        todayBookings: 22,
+        weekBookings: 138,
+        monthBookings: 524,
+        todayLexiBookings: 7,
+        weekLexiBookings: 41,
+        monthLexiBookings: 163,
+        todayRevenue: 486,
+        weekRevenue: 3180,
+        monthRevenue: 12440,
         cancelledBookings: 618,
         conversionRate: 72.6
       },
@@ -173,34 +187,70 @@ export function createAdminPlatformRuntime(deps) {
     if (adminPlatformMetricGrid) {
       const analytics = adminPlatformAnalytics?.analytics || {};
       const cards = [
-        ["Businesses", String(analytics.totalBusinesses || 0)],
-        ["Users", String(analytics.totalUsers || 0)],
-        ["Bookings", String(analytics.totalBookings || 0)],
-        ["Cancelled", String(analytics.cancelledBookings || 0)],
-        ["Conversion", `${Number(analytics.conversionRate || 0).toFixed(1)}%`]
+        {
+          label: "Active app users",
+          value: String(analytics.activeAppUsers || Number(analytics.totalSubscribers || 0) + Number(analytics.totalCustomers || 0)),
+          detail: `${Number(analytics.totalSubscribers || 0)} subscribers • ${Number(analytics.totalCustomers || 0)} customers`
+        },
+        {
+          label: "Active subscribers",
+          value: String((Number(analytics.activeMonthlySubscribers || 0) + Number(analytics.activeYearlySubscribers || 0)) || 0),
+          detail: `${Number(analytics.activeMonthlySubscribers || 0)} monthly • ${Number(analytics.activeYearlySubscribers || 0)} yearly`
+        },
+        {
+          label: "Free subscribers",
+          value: String(Number(analytics.freeLifetimeSubscribers || 0)),
+          detail: "Complimentary lifetime promoter accounts",
+          action: "manage-free-subscribers"
+        }
       ];
-      adminPlatformMetricGrid.innerHTML = cards.map(([label, value]) => `
-        <article class="admin-platform-metric-card">
-          <p>${escapeHtml(label)}</p>
-          <strong>${escapeHtml(value)}</strong>
+      adminPlatformMetricGrid.innerHTML = cards.map((card) => `
+        <article class="admin-platform-metric-card"${card.action ? ` data-admin-metric-action="${escapeHtml(card.action)}"` : ""}>
+          <p>${escapeHtml(card.label)}</p>
+          <strong>${escapeHtml(card.value)}</strong>
+          <small>${escapeHtml(card.detail)}</small>
         </article>
       `).join("");
     }
 
     if (adminRevenueSummaryGrid) {
-      const summary = adminRevenueAnalytics?.summary || {};
+      const analytics = adminPlatformAnalytics?.analytics || {};
       const rows = [
-        ["Active subscriptions", String(summary.activeSubscriptions || 0)],
-        ["Estimated MRR", formatMoney(summary.estimatedMrr || 0)],
-        ["Avg plan value", formatMoney(summary.avgPlanValue || 0)],
-        [`Revenue (${summary.periodMonths || 6}m)`, formatMoney(summary.estimatedRevenueInPeriod || 0)],
-        ["Subscriber churn", String(summary.subscriptionCancellationsInPeriod || 0)],
-        ["Booking cancellations", String(summary.bookingCancellationsInPeriod || 0)]
+        {
+          label: "Revenue made",
+          value: formatMoney(analytics.todayRevenue || 0),
+          breakdown: [
+            `Today: ${formatMoney(analytics.todayRevenue || 0)}`,
+            `Week: ${formatMoney(analytics.weekRevenue || 0)}`,
+            `Month: ${formatMoney(analytics.monthRevenue || 0)}`
+          ]
+        },
+        {
+          label: "Bookings",
+          value: String(analytics.todayBookings || 0),
+          breakdown: [
+            `Today: ${Number(analytics.todayBookings || 0)}`,
+            `Week: ${Number(analytics.weekBookings || 0)}`,
+            `Month: ${Number(analytics.monthBookings || 0)}`
+          ]
+        },
+        {
+          label: "Bookings with Lexi",
+          value: String(analytics.todayLexiBookings || 0),
+          breakdown: [
+            `Today: ${Number(analytics.todayLexiBookings || 0)}`,
+            `Week: ${Number(analytics.weekLexiBookings || 0)}`,
+            `Month: ${Number(analytics.monthLexiBookings || 0)}`
+          ]
+        }
       ];
-      adminRevenueSummaryGrid.innerHTML = rows.map(([label, value]) => `
+      adminRevenueSummaryGrid.innerHTML = rows.map((row) => `
         <article class="admin-platform-summary-card">
-          <p>${escapeHtml(label)}</p>
-          <strong>${escapeHtml(value)}</strong>
+          <p>${escapeHtml(row.label)}</p>
+          <strong>${escapeHtml(row.value)}</strong>
+          <div class="admin-platform-summary-breakdown">
+            ${row.breakdown.map((item) => `<small>${escapeHtml(item)}</small>`).join("")}
+          </div>
         </article>
       `).join("");
     }
@@ -266,14 +316,34 @@ export function createAdminPlatformRuntime(deps) {
     if (adminRevenueTrendGraph) {
       const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
       const maxRevenue = Math.max(1, ...monthly.map((row) => Number(row?.estimatedSubscriptionRevenue || 0)));
-      adminRevenueTrendGraph.innerHTML = monthly.map((row) => {
+      adminRevenueTrendGraph.innerHTML = monthly.map((row, index) => {
         const revenue = Number(row?.estimatedSubscriptionRevenue || 0);
         const heightPct = Math.max(8, Math.round((revenue / maxRevenue) * 100));
+        const subscriptionCancellations = Number(row?.subscriptionCancellations || 0);
+        const bookingCancellations = Number(row?.bookingCancellations || 0);
+        const cancelCount = subscriptionCancellations + bookingCancellations;
+        const retainedPct = Math.max(0, Math.min(100, 100 - Math.round((cancelCount / Math.max(1, cancelCount + 12)) * 100)));
+        const accentClass = `is-accent-${(index % 4) + 1}`;
         return `
-          <article class="admin-revenue-trend-bar">
-            <span style="height:${heightPct}%;"></span>
-            <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
-            <small>${escapeHtml(formatMoney(revenue))}</small>
+          <article class="admin-revenue-trend-bar ${accentClass}">
+            <div class="admin-revenue-trend-head">
+              <div class="admin-revenue-trend-copy">
+                <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
+              </div>
+            </div>
+            <div class="admin-revenue-trend-bar-track">
+              <span style="height:${heightPct}%;"></span>
+            </div>
+            <div class="admin-revenue-trend-stats">
+              <article class="admin-revenue-month-stat"><p>Share</p><strong>${escapeHtml(`${heightPct}%`)}</strong><small>Vs top month</small></article>
+              <article class="admin-revenue-month-stat"><p>Sub churn</p><strong>${escapeHtml(String(subscriptionCancellations))}</strong><small>Cancelled plans</small></article>
+              <article class="admin-revenue-month-stat"><p>Booking loss</p><strong>${escapeHtml(String(bookingCancellations))}</strong><small>Cancelled bookings</small></article>
+              <article class="admin-revenue-month-stat"><p>Retention</p><strong>${escapeHtml(`${retainedPct}%`)}</strong><small>Lower drag is better</small></article>
+            </div>
+            <div class="admin-revenue-trend-meta">
+              <small>${escapeHtml(`${cancelCount} total cancels`)}</small>
+              <small>${escapeHtml(`Rank: ${heightPct >= 80 ? "Top" : heightPct >= 55 ? "Mid" : "Low"}`)}</small>
+            </div>
           </article>
         `;
       }).join("");
@@ -321,54 +391,20 @@ export function createAdminPlatformRuntime(deps) {
       ];
       adminRevenueSignalList.innerHTML = signalCards.map((card) => `
         <article class="admin-revenue-signal-card">
-          <p>${escapeHtml(card.label)}</p>
+          <div class="admin-revenue-signal-top">
+            <p>${escapeHtml(card.label)}</p>
+            <span class="admin-revenue-signal-chip">Signal</span>
+          </div>
           <strong>${escapeHtml(card.title)}</strong>
+          <div class="admin-revenue-signal-divider"></div>
           <small>${escapeHtml(card.detail)}</small>
         </article>
       `).join("");
     }
 
     if (adminRevenueMonthlyList) {
-      const monthly = Array.isArray(adminRevenueAnalytics?.monthly) ? adminRevenueAnalytics.monthly : [];
-      const maxRevenue = Math.max(1, ...monthly.map((row) => Number(row?.estimatedSubscriptionRevenue || 0)));
-      const periodRevenue = Math.max(1, Number(adminRevenueAnalytics?.summary?.estimatedRevenueInPeriod || 0));
-      adminRevenueMonthlyList.innerHTML = monthly.map((row, index) => {
-        const revenue = Number(row?.estimatedSubscriptionRevenue || 0);
-        const subscriptionCancellations = Number(row?.subscriptionCancellations || 0);
-        const bookingCancellations = Number(row?.bookingCancellations || 0);
-        const cancelCount = subscriptionCancellations + bookingCancellations;
-        const widthPct = Math.max(8, Math.round((revenue / maxRevenue) * 100));
-        const retainedPct = Math.max(0, Math.min(100, 100 - Math.round((cancelCount / Math.max(1, cancelCount + 12)) * 100)));
-        const revenueSharePct = Math.max(1, Math.round((revenue / periodRevenue) * 100));
-        const accentClass = `is-accent-${(index % 4) + 1}`;
-        return `
-          <article class="admin-revenue-month-row ${accentClass}">
-            <div class="admin-revenue-month-head">
-              <div class="admin-revenue-month-copy">
-                <p>Revenue Window</p>
-                <strong>${escapeHtml(String(row?.label || "Month"))}</strong>
-              </div>
-              <div class="admin-revenue-month-hero">
-                <span>${escapeHtml(formatMoney(revenue))}</span>
-                <small>${escapeHtml(`${revenueSharePct}% of period revenue`)}</small>
-              </div>
-            </div>
-            <div class="admin-revenue-month-bar">
-              <span style="width:${widthPct}%"></span>
-            </div>
-            <div class="admin-revenue-month-stats">
-              <article class="admin-revenue-month-stat"><p>Month Share</p><strong>${escapeHtml(`${widthPct}%`)}</strong><small>Compared with the top month in this view</small></article>
-              <article class="admin-revenue-month-stat"><p>Subscriber Churn</p><strong>${escapeHtml(String(subscriptionCancellations))}</strong><small>Subscription cancellations recorded in this month</small></article>
-              <article class="admin-revenue-month-stat"><p>Booking Loss</p><strong>${escapeHtml(String(bookingCancellations))}</strong><small>Booking cancellations affecting app revenue flow</small></article>
-              <article class="admin-revenue-month-stat"><p>Retention Signal</p><strong>${escapeHtml(`${retainedPct}%`)}</strong><small>Higher values mean lower cancellation drag in this window</small></article>
-            </div>
-            <div class="admin-revenue-month-meta">
-              <small>${escapeHtml(`${cancelCount} total cancellations this month`)}</small>
-              <small>${escapeHtml(`Revenue rank: ${widthPct >= 80 ? "Top tier" : widthPct >= 55 ? "Mid range" : "Recovery needed"}`)}</small>
-            </div>
-          </article>
-        `;
-      }).join("");
+      adminRevenueMonthlyList.innerHTML = "";
+      adminRevenueMonthlyList.hidden = true;
     }
 
     if (adminRevenuePeriodPill) {
@@ -472,6 +508,15 @@ export function createAdminPlatformRuntime(deps) {
   }
 
   function bindAdminPlatformEvents() {
+    adminPlatformMetricGrid?.addEventListener("click", (event) => {
+      const target = event.target instanceof HTMLElement ? event.target.closest("[data-admin-metric-action]") : null;
+      if (!(target instanceof HTMLElement)) return;
+      const action = String(target.getAttribute("data-admin-metric-action") || "").trim();
+      if (action === "manage-free-subscribers") {
+        onManageFreeSubscribers?.();
+      }
+    });
+
     adminPlatformExportBtn?.addEventListener("click", async () => {
       if (getUserRole?.() !== "admin") return;
       try {
