@@ -96,6 +96,25 @@ describe("booking lifecycle", () => {
     expect(typeof res.body.pagination.nextCursor).toBe("string");
   });
 
+  it("lets admins load customer bookings when previewing a customer dashboard", async () => {
+    prisma.booking.findMany.mockResolvedValue([
+      { id: "b3", createdAt: new Date("2026-02-20T12:00:00.000Z"), status: "confirmed", customerEmail: "preview@example.com" }
+    ]);
+
+    const token = makeToken({ role: "admin", email: "owner@example.com", businessId: "biz_1" });
+    const res = await request(app)
+      .get("/api/me/bookings?customerEmail=preview@example.com")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: {
+        AND: [expect.objectContaining({ customerEmail: "preview@example.com" })]
+      }
+    }));
+    expect(res.body.bookings).toHaveLength(1);
+  });
+
   it("requires auth for cancel", async () => {
     const res = await request(app).patch("/api/bookings/b1/cancel");
     expect(res.status).toBe(401);

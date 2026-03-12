@@ -100,4 +100,24 @@ describe("auth flows", () => {
     expect(res.status).toBe(401);
     expect(res.body.error).toBe("Invalid credentials.");
   });
+
+  it("rejects developer admin sign-in for non-admin accounts", async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: "user_1",
+      role: "subscriber",
+      name: "Alex Owner",
+      email: "alex@example.com",
+      businessId: "biz_1",
+      passwordHash: bcrypt.hashSync("correct-password", 4)
+    });
+
+    const res = await request(app).post("/api/auth/login").send({
+      email: "alex@example.com",
+      password: "correct-password",
+      requestedRole: "admin"
+    });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toBe("Admin access is only available to admin accounts.");
+  });
 });

@@ -1,7 +1,8 @@
 // Subscriber/admin command center runtime.
 export function createCommandCenterRuntime(deps) {
+  const fallbackNavigator = typeof globalThis !== "undefined" ? globalThis.navigator : undefined;
   const {
-    nav = navigator,
+    nav = fallbackNavigator,
     getUserRole,
     formatMoney,
     applyBookingFilters,

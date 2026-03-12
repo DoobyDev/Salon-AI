@@ -40,12 +40,14 @@ export function createDashboardRoutingUiSupportRuntime(deps) {
 
   function hideSection(sectionEl) {
     if (sectionEl) {
+      sectionEl.hidden = true;
       sectionEl.style.display = "none";
     }
   }
 
   function showSection(sectionEl) {
     if (sectionEl) {
+      sectionEl.hidden = false;
       sectionEl.style.display = "";
     }
   }

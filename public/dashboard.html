@@ -12,8 +12,8 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/salon-theme.css?v=20260309-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260309-app1" />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-admin1" />
   </head>
   <body class="ask-lexi-shell ask-lexi-dashboard" data-role="subscriber">
     <header class="site-header dashboard-header">
@@ -24,14 +24,9 @@
           <small id="dashboardBrandRole">Subscriber control room</small>
         </span>
       </a>
-      <nav class="role-switcher" aria-label="Dashboard mode">
-        <button class="role-pill is-active" type="button" data-role-switch="subscriber">Subscriber</button>
-        <button class="role-pill" type="button" data-role-switch="customer">Customer</button>
-        <button class="role-pill" type="button" data-role-switch="admin">Admin</button>
-      </nav>
       <div class="site-actions">
-        <button class="btn btn-ghost" id="dashboardLogoutBtn" type="button">Log out</button>
-        <a class="btn" href="/auth">Account</a>
+        <button class="btn btn-ghost" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
+        <button class="btn btn-ghost" id="logoutBtn" type="button">Log out</button>
       </div>
     </header>
 
@@ -726,259 +721,97 @@
       </section>
 
       <section class="dashboard-grid dashboard-grid-admin" id="adminDashboard" hidden>
-        <section class="dashboard-card" id="adminOnboardingCard">
+        <section class="dashboard-card admin-search-card" id="adminOnboardingCard">
           <div class="section-head">
             <div>
-              <p class="kicker">Control room</p>
-              <h2>How to use the admin dashboard</h2>
-            </div>
-          </div>
-          <div id="adminOnboardingContent"></div>
-        </section>
-
-        <article class="dashboard-card metric-band">
-          <div class="metric-card">
-            <span>Businesses</span>
-            <strong id="adminBusinessesMetric">0</strong>
-            <small id="adminBusinessesMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>Subscribers</span>
-            <strong id="adminSubscribersMetric">0</strong>
-            <small id="adminSubscribersMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>Customers</span>
-            <strong id="adminCustomersMetric">0</strong>
-            <small id="adminCustomersMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>Bookings</span>
-            <strong id="adminBookingsMetric">0</strong>
-            <small id="adminBookingsMeta">Loading...</small>
-          </div>
-        </article>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">App revenue</p>
-              <h2>How the app is performing financially</h2>
+              <p class="kicker">Quick search</p>
+              <h2>Open a subscriber or customer dashboard fast</h2>
             </div>
           </div>
           <p class="section-copy">
-            This shows the revenue health of the app itself, including subscription income and cancellation pressure.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Estimated MRR</span>
-              <strong id="adminMrrMetric">GBP 0</strong>
-              <small id="adminMrrMeta">Monthly recurring revenue from active subscriptions.</small>
-            </article>
-            <article class="mini-stat">
-              <span>Revenue in period</span>
-              <strong id="adminRevenuePeriodMetric">GBP 0</strong>
-              <small id="adminRevenuePeriodMeta">Total estimated subscription revenue across the tracked period.</small>
-            </article>
-            <article class="mini-stat">
-              <span>Subscription cancels</span>
-              <strong id="adminSubscriptionCancelMetric">0</strong>
-              <small id="adminSubscriptionCancelMeta">How many subscriber plans were cancelled in the tracked period.</small>
-            </article>
-            <article class="mini-stat">
-              <span>Booking cancels</span>
-              <strong id="adminBookingCancelMetric">0</strong>
-              <small id="adminBookingCancelMeta">Customer booking cancellations across the platform.</small>
-            </article>
-          </div>
-          <div class="chart-shell" id="adminRevenueChart"></div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Subscription health</p>
-              <h2>Plans, activity, and billing mix</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            This shows how subscriber plans are distributed, how many are active, and where commercial health looks weak.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Active plans</span>
-              <strong id="adminActivePlanMetric">0</strong>
-              <small id="adminActivePlanMeta">Subscribers currently live on the platform</small>
-            </article>
-            <article class="mini-stat">
-              <span>Inactive plans</span>
-              <strong id="adminInactivePlanMetric">0</strong>
-              <small id="adminInactivePlanMeta">Subscribers needing billing attention</small>
-            </article>
-            <article class="mini-stat">
-              <span>Top plan</span>
-              <strong id="adminTopPlanMetric">Starter</strong>
-              <small id="adminTopPlanMeta">Most common subscriber plan</small>
-            </article>
-            <article class="mini-stat">
-              <span>Quiet actives</span>
-              <strong id="adminQuietActiveMetric">0</strong>
-              <small id="adminQuietActiveMeta">Active salons with weak upcoming work</small>
-            </article>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Plan mix</h3>
-              <div class="channel-list" id="adminPlanMixList"></div>
-            </div>
-            <div class="insight-panel">
-              <h3>Subscriber health mix</h3>
-              <div class="channel-list" id="adminSubscriptionHealthList"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Billing watch</p>
-              <h2>Who needs billing attention next</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            This keeps renewals and inactive subscriptions easy to follow so the app operator can see what needs commercial attention next.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Renewing soon</span>
-              <strong id="adminRenewalSoonMetric">0</strong>
-              <small id="adminRenewalSoonMeta">Active subscribers renewing in the next 14 days</small>
-            </article>
-            <article class="mini-stat">
-              <span>This month</span>
-              <strong id="adminRenewalMonthMetric">0</strong>
-              <small id="adminRenewalMonthMeta">Active subscribers with a renewal date in the next 30 days</small>
-            </article>
-            <article class="mini-stat">
-              <span>Billing attention</span>
-              <strong id="adminBillingAttentionMetric">0</strong>
-              <small id="adminBillingAttentionMeta">Inactive or overdue subscriber plans to review</small>
-            </article>
-          </div>
-          <div class="channel-list" id="adminBillingList"></div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Notification health</p>
-              <h2>Which salons have communication delivery issues</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            This shows which businesses have recent SMS or email delivery failures, so the platform can spot communication problems before they affect bookings.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Businesses with failures</span>
-              <strong id="adminNotifIssueMetric">0</strong>
-              <small id="adminNotifIssueMeta">No delivery issues found</small>
-            </article>
-            <article class="mini-stat">
-              <span>Failed channels</span>
-              <strong id="adminNotifFailedMetric">0</strong>
-              <small id="adminNotifFailedMeta">No failed sends logged</small>
-            </article>
-            <article class="mini-stat">
-              <span>Successful sends</span>
-              <strong id="adminNotifSentMetric">0</strong>
-              <small id="adminNotifSentMeta">No sent notifications logged</small>
-            </article>
-          </div>
-          <div class="channel-list" id="adminNotifList"></div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Platform watch</p>
-              <h2>Businesses using the app</h2>
-            </div>
-            <button class="btn btn-ghost btn-small" id="adminExportBtn" type="button">Export revenue CSV</button>
-          </div>
-          <p class="section-copy">
-            Click any salon or barbershop to see who owns it, what plan it is on, how much booking activity it has, and whether it looks healthy.
-          </p>
-          <div class="insight-grid insight-grid-two">
-            <div class="admin-table" id="adminBusinessTable"></div>
-            <div class="insight-panel">
-              <h3>Selected business details</h3>
-              <div id="adminBusinessDetail"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Operational alerts</p>
-              <h2>Which businesses need attention first</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            This highlights salons and barbershops that look quiet, cancellation-heavy, inactive, or light on upcoming work so you can step in faster.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Attention now</span>
-              <strong id="adminAlertCriticalMetric">0</strong>
-              <small id="adminAlertCriticalMeta">Businesses needing fast review</small>
-            </article>
-            <article class="mini-stat">
-              <span>Quiet trading</span>
-              <strong id="adminAlertQuietMetric">0</strong>
-              <small id="adminAlertQuietMeta">Low booking or upcoming activity</small>
-            </article>
-            <article class="mini-stat">
-              <span>Cancel pressure</span>
-              <strong id="adminAlertCancelMetric">0</strong>
-              <small id="adminAlertCancelMeta">Higher cancellation risk</small>
-            </article>
-            <article class="mini-stat">
-              <span>Plan issues</span>
-              <strong id="adminAlertPlanMetric">0</strong>
-              <small id="adminAlertPlanMeta">Inactive or weak subscription health</small>
-            </article>
-          </div>
-          <div class="channel-list" id="adminAlertList"></div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Accounts</p>
-              <h2>Customer and subscriber accounts</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            Search for any subscriber or customer account, review their activity, and update basic account details.
+            Search a salon subscriber or customer account, then open the same dashboard view they use so you can inspect their live experience directly.
           </p>
           <form class="compact-form compact-form-inline" id="adminAccountSearchForm">
-            <input id="adminAccountSearchInput" type="text" placeholder="Search name, email, business, city, or country" />
+            <input id="adminAccountSearchInput" type="text" placeholder="Search salon, customer, email, city, or country" />
             <button class="btn btn-ghost btn-small" type="submit">Search</button>
           </form>
           <div class="insight-grid insight-grid-two">
             <div class="admin-table admin-table-accounts" id="adminAccountsTable"></div>
             <div class="insight-panel">
-              <h3>Selected account details</h3>
+              <h3>Selected account</h3>
               <div id="adminAccountDetail"></div>
-              <form class="compact-form" id="adminAccountEditForm">
+              <form class="compact-form" id="adminAccountEditForm" hidden>
                 <input id="adminEditName" type="text" placeholder="Account name" />
                 <input id="adminEditEmail" type="email" placeholder="Email" />
                 <input id="adminEditBusinessName" type="text" placeholder="Business name (subscriber only)" />
                 <button class="btn btn-ghost btn-small" type="submit">Save account</button>
               </form>
               <p class="form-message" id="adminAccountEditMessage"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-card admin-revenue-card" id="adminRevenueSection">
+          <div class="section-head">
+            <div>
+              <p class="kicker">App revenue</p>
+              <h2>Revenue from subscriber signups and subscriber growth</h2>
+            </div>
+            <div class="inline-actions">
+              <div class="status-pill" id="adminRevenuePeriodPill">Loading period...</div>
+              <button class="btn btn-ghost btn-small" id="adminPlatformExportBtn" type="button">Export revenue CSV</button>
+            </div>
+          </div>
+          <p class="section-copy" id="adminRevenueNote">
+            Revenue intelligence is loading.
+          </p>
+          <div class="admin-platform-metric-grid" id="adminPlatformMetricGrid"></div>
+          <div class="admin-revenue-summary-grid" id="adminRevenueSummaryGrid"></div>
+          <div class="admin-revenue-visual-grid">
+            <div class="insight-panel admin-visual-panel" id="adminRevenueMixChart"></div>
+            <div class="insight-panel admin-visual-panel" id="adminRevenueHealthGauge"></div>
+            <div class="insight-panel admin-visual-panel" id="adminRevenueYieldGauge"></div>
+          </div>
+          <div class="admin-revenue-trend-graph" id="adminRevenueTrendGraph"></div>
+          <div class="admin-revenue-month-list" id="adminRevenueMonthlyList"></div>
+          <div class="admin-revenue-signal-grid" id="adminRevenueSignalList"></div>
+        </section>
+
+        <section class="dashboard-card" id="adminBusinessHubSection">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Business hub</p>
+              <h2>Open a simple admin page for each business area</h2>
+            </div>
+          </div>
+          <p class="section-copy">
+            Each card opens a focused admin page with extended information for that area, so the dashboard stays simple and easy to navigate.
+          </p>
+          <div class="admin-business-hub-grid" id="adminBusinessHubGrid"></div>
+        </section>
+
+        <section class="dashboard-card admin-hub-detail-card" id="adminHubDetailSection" hidden>
+          <div class="section-head">
+            <div>
+              <p class="kicker" id="adminHubDetailKicker">Business hub</p>
+              <h2 id="adminHubDetailTitle">Admin detail page</h2>
+            </div>
+          </div>
+          <p class="section-copy" id="adminHubDetailSummary">
+            Choose a business hub card to open a focused admin page for that area.
+          </p>
+          <div class="admin-hub-detail-grid">
+            <div class="insight-panel">
+              <h3>What this page covers</h3>
+              <ul class="feature-list" id="adminHubDetailInfoList"></ul>
+            </div>
+            <div class="insight-panel">
+              <h3>Admin jobs</h3>
+              <ul class="feature-list" id="adminHubDetailJobsList"></ul>
+            </div>
+            <div class="insight-panel">
+              <h3>Expected outcome</h3>
+              <ul class="feature-list" id="adminHubDetailOutcomesList"></ul>
             </div>
           </div>
         </section>
@@ -1117,7 +950,7 @@
       </div>
     </section>
 
-    <script type="module" src="/ask-lexi-dashboard.js?v=20260309-app1"></script>
-    <script type="module" src="/salon-theme.js?v=20260309-theme2"></script>
+    <script type="module" src="/dashboard.js?v=20260312-admin1"></script>
+    <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
 </html>

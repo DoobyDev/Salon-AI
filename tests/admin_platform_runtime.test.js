@@ -212,4 +212,60 @@ describe("admin platform runtime", () => {
     expect(harness.win.URL.revokeObjectURL).toHaveBeenCalledWith("blob:admin-export");
     expect(harness.setDashActionStatus).toHaveBeenCalledWith("Platform revenue CSV exported.");
   });
+
+  it("falls back to mock admin analytics when live analytics are empty", async () => {
+    const harness = createHarness();
+    harness.fetchImpl
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          analytics: {
+            totalBusinesses: 0,
+            totalUsers: 0,
+            totalBookings: 0,
+            cancelledBookings: 0,
+            conversionRate: 0
+          },
+          usage: {
+            hourly: [],
+            weekdays: [],
+            summary: {
+              periodDays: 14,
+              busiestHourLabel: "00:00",
+              quietestHourLabel: "00:00",
+              bestUpdateWindowLabel: "00:00-03:00",
+              bestUpdateWindowEvents: 0,
+              roleCounts: { subscriber: 0, customer: 0, admin: 0, anonymous: 0 }
+            }
+          }
+        })
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          summary: {
+            activeSubscriptions: 0,
+            estimatedMrr: 0,
+            avgPlanValue: 0,
+            periodMonths: 6,
+            estimatedRevenueInPeriod: 0,
+            subscriptionCancellationsInPeriod: 0,
+            bookingCancellationsInPeriod: 0
+          },
+          monthly: [],
+          note: ""
+        })
+      });
+
+    await harness.runtime.loadAdminPlatformOverview();
+
+    expect(harness.getAdminPlatformAnalytics().analytics.totalBusinesses).toBeGreaterThan(0);
+    expect(harness.getAdminRevenueAnalytics().summary.activeSubscriptions).toBeGreaterThan(0);
+    expect(harness.getAdminUsageAnalytics().hourly.length).toBeGreaterThan(0);
+    expect(harness.setDashActionStatus).toHaveBeenCalledWith(
+      "Showing mock admin analytics so the dashboard stays fully populated.",
+      false,
+      2400
+    );
+  });
 });

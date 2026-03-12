@@ -757,6 +757,284 @@ textarea {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.dashboard-grid-admin {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-action-grid,
+.admin-business-hub-grid,
+.admin-platform-metric-grid,
+.admin-revenue-summary-grid,
+.admin-revenue-signal-grid,
+.admin-usage-summary-grid,
+.admin-usage-operations-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-action-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-business-hub-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-nav-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.28), transparent 42%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(244, 233, 221, 0.88));
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.admin-hub-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(29, 127, 119, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(242, 232, 220, 0.9));
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.admin-hub-card:hover,
+.admin-hub-card.is-selected {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 42px rgba(74, 84, 77, 0.12);
+  border-color: rgba(29, 127, 119, 0.28);
+}
+
+.admin-hub-card span {
+  color: var(--highlight);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-hub-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-nav-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 42px rgba(124, 76, 46, 0.16);
+}
+
+.admin-nav-card p,
+.admin-platform-metric-card p,
+.admin-platform-summary-card p,
+.admin-revenue-signal-card p,
+.admin-usage-operations-card p,
+.admin-revenue-month-stat p {
+  margin: 0;
+  color: var(--primary-strong);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-nav-card strong,
+.admin-platform-metric-card strong,
+.admin-platform-summary-card strong,
+.admin-revenue-signal-card strong,
+.admin-usage-operations-card strong,
+.admin-usage-hour-card strong,
+.admin-usage-weekday-card strong,
+.admin-usage-role-card strong,
+.admin-revenue-month-hero span,
+.admin-revenue-month-copy strong {
+  color: var(--ink);
+}
+
+.admin-platform-metric-grid,
+.admin-revenue-summary-grid,
+.admin-usage-summary-grid,
+.admin-usage-operations-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-platform-metric-card,
+.admin-platform-summary-card,
+.admin-revenue-signal-card,
+.admin-usage-operations-card,
+.admin-usage-hour-card,
+.admin-usage-weekday-card,
+.admin-usage-role-card,
+.admin-revenue-month-row {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(245, 235, 224, 0.86));
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-platform-metric-card strong,
+.admin-platform-summary-card strong {
+  display: block;
+  font-size: 1.8rem;
+  margin-top: 0.2rem;
+}
+
+.admin-revenue-visual-grid,
+.admin-status-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-status-columns {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.admin-visual-panel {
+  min-height: 260px;
+}
+
+.admin-revenue-trend-graph {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+}
+
+.admin-revenue-trend-bar {
+  min-height: 220px;
+  display: grid;
+  align-content: end;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 250, 245, 0.96), rgba(244, 230, 216, 0.88));
+}
+
+.admin-revenue-trend-bar span {
+  width: 100%;
+  min-height: 24px;
+  border-radius: 18px 18px 8px 8px;
+  background: linear-gradient(180deg, #f0b98d 0%, #c96d41 58%, #2d1910 100%);
+}
+
+.admin-revenue-donut-chart {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(255, 252, 248, 0.98) 0 38%, transparent 39%),
+    conic-gradient(#c96d41 0 calc(var(--revenue-fill, 0) * 1%), rgba(201, 109, 65, 0.18) 0 100%);
+}
+
+.admin-revenue-donut-copy,
+.admin-revenue-gauge-copy {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-revenue-donut-copy strong,
+.admin-revenue-gauge-copy strong {
+  font-size: 2rem;
+}
+
+.admin-revenue-meta-row,
+.admin-revenue-gauge-legend {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-revenue-meta-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.admin-revenue-gauge-track {
+  position: relative;
+  height: 112px;
+  border-radius: 112px 112px 0 0;
+  overflow: hidden;
+  background:
+    conic-gradient(from 180deg at 50% 100%, #cb835f 0 calc(var(--gauge-fill, 0) * 1.8deg), rgba(203, 131, 95, 0.18) 0 180deg);
+}
+
+.admin-revenue-gauge-track::after {
+  content: "";
+  position: absolute;
+  inset: 18px 18px 0 18px;
+  border-radius: 100px 100px 0 0;
+  background: rgba(255, 252, 248, 0.98);
+}
+
+.admin-revenue-month-list,
+.admin-usage-hourly-list,
+.admin-usage-weekday-list,
+.admin-usage-role-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-revenue-month-head,
+.admin-revenue-month-stats,
+.admin-revenue-month-meta {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-revenue-month-head {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.admin-revenue-month-bar,
+.admin-usage-hour-bar,
+.admin-usage-weekday-bar,
+.admin-usage-role-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(201, 109, 65, 0.12);
+  overflow: hidden;
+}
+
+.admin-revenue-month-bar span,
+.admin-usage-hour-bar span,
+.admin-usage-weekday-bar span,
+.admin-usage-role-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2f1a10 0%, #c96d41 52%, #efc49b 100%);
+}
+
+.admin-revenue-month-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-revenue-month-stat small,
+.admin-revenue-month-meta small,
+.admin-usage-hour-card small,
+.admin-usage-weekday-card small,
+.admin-usage-role-card small,
+.admin-revenue-signal-card small,
+.admin-usage-operations-card small,
+.admin-nav-card small {
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
 .diary-command-center {
   grid-column: 1 / -1;
 }
@@ -1372,7 +1650,17 @@ textarea {
   .journey-grid,
   .pricing-grid,
   .metric-band,
-  .quick-booking-form {
+  .quick-booking-form,
+  .admin-action-grid,
+  .admin-business-hub-grid,
+  .admin-platform-metric-grid,
+  .admin-revenue-summary-grid,
+  .admin-revenue-visual-grid,
+  .admin-usage-summary-grid,
+  .admin-usage-operations-grid,
+  .admin-revenue-month-stats,
+  .admin-hub-detail-grid,
+  .admin-status-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1438,7 +1726,17 @@ textarea {
   .pricing-grid,
   .quick-booking-form,
   .customer-next-booking-grid,
-  .selected-day-summary {
+  .selected-day-summary,
+  .admin-action-grid,
+  .admin-business-hub-grid,
+  .admin-platform-metric-grid,
+  .admin-revenue-summary-grid,
+  .admin-revenue-visual-grid,
+  .admin-usage-summary-grid,
+  .admin-usage-operations-grid,
+  .admin-revenue-month-stats,
+  .admin-hub-detail-grid,
+  .admin-status-columns {
     grid-template-columns: 1fr;
   }
 

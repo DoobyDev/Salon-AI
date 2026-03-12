@@ -1,7 +1,10 @@
 # Privacy Policy (UK GDPR)
 
-Effective date: [PLACEHOLDER: DATE]  
-Controller: [PLACEHOLDER: LEGAL ENTITY NAME]
+Draft status:
+- Working draft pending solicitor review before publication or reliance as final privacy wording.
+
+Effective date: TBD  
+Controller: Stuart Hall
 
 ## 1. Overview
 
@@ -23,7 +26,7 @@ We do not intentionally collect special category data unless explicitly required
 
 - Directly from users.
 - From subscriber businesses.
-- From integrated processors (Stripe, PayPal, Twilio, SendGrid, cloud/hosting).
+- From integrated processors and service providers (including Stripe, PayPal, Twilio, SendGrid, and OpenAI, plus hosting/infrastructure providers once finalized).
 
 ## 4. Purposes and Legal Bases
 
@@ -74,7 +77,7 @@ You may have rights to:
 - Objection
 - Withdraw consent (where consent is basis)
 
-Requests: [PLACEHOLDER: PRIVACY CONTACT EMAIL]
+Requests: stuhall44@gmail.com
 
 ## 11. Complaints
 

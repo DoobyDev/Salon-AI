@@ -2,6 +2,9 @@
 
 Last updated: 2026-03-10
 
+Status:
+- Draft working pack pending solicitor review before final publication or contractual use.
+
 Use this pack only as the current working set for Ask Lexi | AI Salon Receptionist.
 
 Current alignment notes:
@@ -34,6 +37,13 @@ Current alignment notes:
 17. `legal/17_ACCESS_CONTROL_AND_PASSWORD_POLICY.md`
 18. `legal/18_BACKUP_AND_BUSINESS_CONTINUITY_POLICY.md`
 19. `legal/19_VULNERABILITY_AND_PATCH_MANAGEMENT_POLICY.md`
+
+## Working Aids
+
+1. `LEGAL_INPUT_CHECKLIST.md`
+2. `LEGAL_MINIMUM_LAUNCH_INTAKE.md`
+3. `LEGAL_VALUES_TO_SUPPLY.md`
+4. `PLACEHOLDER_INVENTORY.md`
 
 ## Business Documents
 

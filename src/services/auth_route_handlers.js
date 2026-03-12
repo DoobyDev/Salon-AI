@@ -217,6 +217,21 @@ export function createAuthRouteHandlers({
       return res.status(401).json({ error: "Invalid credentials." });
     }
 
+    if (requestedRole === "admin" && user.role !== "admin") {
+      await writeAuditLog({
+        actorId: user.id,
+        actorRole: user.role,
+        action: "auth.login_failed_role_mismatch",
+        entityType: "user",
+        entityId: user.id,
+        metadata: {
+          requestedRole,
+          actualRole: user.role
+        }
+      });
+      return res.status(403).json({ error: "Admin access is only available to admin accounts." });
+    }
+
     let effectiveRole = user.role;
     let effectiveBusinessId = user.businessId || null;
     const canRoleSwitch = user.role === "admin" && ["admin", "subscriber", "customer"].includes(requestedRole);

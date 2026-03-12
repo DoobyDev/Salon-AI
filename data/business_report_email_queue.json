@@ -145,5 +145,1622 @@
         "email": "owner@example.com"
       }
     }
+  ],
+  "biz_report_1773168012640": [
+    {
+      "id": "85df38cf-cc71-4009-9027-6d239d164d1b",
+      "businessId": "biz_report_1773168012640",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T18:40:12.672Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773168294151": [
+    {
+      "id": "733253e7-25c9-43b4-aafa-b7844f40288c",
+      "businessId": "biz_report_1773168294151",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T18:44:54.190Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773168341983": [
+    {
+      "id": "399af1e9-e0b7-4a68-89e3-cb7e61fd6634",
+      "businessId": "biz_report_1773168341983",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T18:45:42.026Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773168374419": [
+    {
+      "id": "06bbf9b2-5e1b-45d9-85f8-74b883a9d36a",
+      "businessId": "biz_report_1773168374419",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T18:46:14.452Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773169586574": [
+    {
+      "id": "b47d6bcb-a82a-4ec4-86cf-66ce55224ddb",
+      "businessId": "biz_report_1773169586574",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:06:26.606Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773169604987": [
+    {
+      "id": "ae6c5166-8804-4a72-8642-215fb8f206ec",
+      "businessId": "biz_report_1773169604987",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:06:45.023Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773169914304": [
+    {
+      "id": "84842eb0-8bd4-4dec-a481-2853aa447346",
+      "businessId": "biz_report_1773169914304",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:11:54.354Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170264179": [
+    {
+      "id": "82904e61-37be-49ad-a56c-8155086b8db3",
+      "businessId": "biz_report_1773170264179",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:17:44.211Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170287416": [
+    {
+      "id": "0b8853a9-7d5b-4c95-a093-f321fe1fe542",
+      "businessId": "biz_report_1773170287416",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:18:07.455Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170329055": [
+    {
+      "id": "ff26fa73-0916-4525-ad36-1ca0a60670e7",
+      "businessId": "biz_report_1773170329055",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:18:49.098Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170438995": [
+    {
+      "id": "fd449328-973f-472b-aec9-65cd82b5cfe5",
+      "businessId": "biz_report_1773170438995",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:20:39.044Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170651399": [
+    {
+      "id": "cb231cfe-36bd-467f-8921-4c5c428939a5",
+      "businessId": "biz_report_1773170651399",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:24:11.446Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170839663": [
+    {
+      "id": "11e6aef9-0b62-47ac-aa73-832cb96296bf",
+      "businessId": "biz_report_1773170839663",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:27:19.700Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773170991628": [
+    {
+      "id": "8258a88b-8c49-47b9-b44d-73834c088a0d",
+      "businessId": "biz_report_1773170991628",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:29:51.662Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773171457574": [
+    {
+      "id": "e398a541-6eeb-418b-bb2e-92f9b71ccd9f",
+      "businessId": "biz_report_1773171457574",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T19:37:37.627Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173192634": [
+    {
+      "id": "7365a3f3-9c59-4b58-80ee-86830dc30ed8",
+      "businessId": "biz_report_1773173192634",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:06:32.678Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173338050": [
+    {
+      "id": "f4a70e9b-6e23-45c9-8228-3288c2fd1204",
+      "businessId": "biz_report_1773173338050",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:08:58.087Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173562416": [
+    {
+      "id": "c8ec6428-38be-4208-93bf-cdc4068340c0",
+      "businessId": "biz_report_1773173562416",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:12:42.472Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173656952": [
+    {
+      "id": "0148a332-f26a-47b9-af31-cf2466b2bf21",
+      "businessId": "biz_report_1773173656952",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:14:17.001Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173751808": [
+    {
+      "id": "00678036-2b6c-4adb-8759-cdacdf1020bb",
+      "businessId": "biz_report_1773173751808",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:15:51.853Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773173884071": [
+    {
+      "id": "da8b958c-0632-43c4-b565-f0aebce0700a",
+      "businessId": "biz_report_1773173884071",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:18:04.114Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174175992": [
+    {
+      "id": "cf1426af-c96b-484d-a8d9-25fad35cb1ff",
+      "businessId": "biz_report_1773174175992",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:22:56.036Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174364762": [
+    {
+      "id": "0373f5ed-445d-47fd-ae77-13b68208ce83",
+      "businessId": "biz_report_1773174364762",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:26:04.796Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174518694": [
+    {
+      "id": "ba1f25c7-4a0f-4f01-a7f0-33c79559784e",
+      "businessId": "biz_report_1773174518694",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:28:38.737Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174644954": [
+    {
+      "id": "4b7c7c51-c297-40c2-856e-535867637711",
+      "businessId": "biz_report_1773174644954",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:30:44.990Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174750771": [
+    {
+      "id": "50fbe5f9-ce0b-4752-8387-e4c5e6e65630",
+      "businessId": "biz_report_1773174750771",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:32:30.815Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174819557": [
+    {
+      "id": "a5ed9888-ea1b-453d-a7ff-c093f2e20049",
+      "businessId": "biz_report_1773174819557",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:33:39.597Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773174904703": [
+    {
+      "id": "230b2529-4a0f-4b63-8733-d1e490b1771d",
+      "businessId": "biz_report_1773174904703",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:35:04.746Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773175670211": [
+    {
+      "id": "b5db6d2c-0707-4057-97c0-27ab6fd5fe3b",
+      "businessId": "biz_report_1773175670211",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:47:50.249Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773175876076": [
+    {
+      "id": "55bee950-a9c8-4bd6-b726-cd0afcc96430",
+      "businessId": "biz_report_1773175876076",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:51:16.128Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773175910460": [
+    {
+      "id": "0dc56c97-73df-4f8e-9c6d-49b88c63958b",
+      "businessId": "biz_report_1773175910460",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:51:50.498Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773175935912": [
+    {
+      "id": "e8eabbed-7b01-4684-b307-fbb2a02096e1",
+      "businessId": "biz_report_1773175935912",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:52:15.957Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176020953": [
+    {
+      "id": "4efb7122-33a5-4d33-a5d1-e7ce842b415d",
+      "businessId": "biz_report_1773176020953",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:53:41.001Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176202927": [
+    {
+      "id": "be92a95d-7a58-48c4-9980-a749bee484b7",
+      "businessId": "biz_report_1773176202927",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:56:42.970Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176264179": [
+    {
+      "id": "4fbc7713-3b96-40fc-9070-8f6074ceb66b",
+      "businessId": "biz_report_1773176264179",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:57:44.224Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176379993": [
+    {
+      "id": "90c78df9-1ef6-4d6c-914b-52dec0f25e59",
+      "businessId": "biz_report_1773176379993",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T20:59:40.033Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176459134": [
+    {
+      "id": "64867ff8-bee8-4592-a04b-fbb9a21bc9d0",
+      "businessId": "biz_report_1773176459134",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:00:59.170Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176586474": [
+    {
+      "id": "a29dfd7f-3920-4787-8b53-f1094eb6ec9e",
+      "businessId": "biz_report_1773176586474",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:03:06.515Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176880692": [
+    {
+      "id": "a6d4d9d9-fd75-4e38-919c-e661e8a1bda9",
+      "businessId": "biz_report_1773176880692",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:08:00.737Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773176961453": [
+    {
+      "id": "53107c57-6ac7-42ec-8a1d-01f8d5b78449",
+      "businessId": "biz_report_1773176961453",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:09:21.505Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773177360268": [
+    {
+      "id": "92abfb56-3948-4ad3-b921-8097a4abd633",
+      "businessId": "biz_report_1773177360268",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:16:00.321Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773177531728": [
+    {
+      "id": "10d9a755-7228-4b17-b52f-1a7b815ae674",
+      "businessId": "biz_report_1773177531728",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:18:51.814Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773177689189": [
+    {
+      "id": "b53e72aa-f7f8-49ca-82c7-637883af6826",
+      "businessId": "biz_report_1773177689189",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:21:29.246Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773178744120": [
+    {
+      "id": "44ee5f71-5b50-4a15-99f7-7e4e168ca427",
+      "businessId": "biz_report_1773178744120",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:39:04.178Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773178872784": [
+    {
+      "id": "6a969143-b0eb-4322-8a21-2501ff710c39",
+      "businessId": "biz_report_1773178872784",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:41:12.829Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773179648975": [
+    {
+      "id": "ed4482a6-3a8d-4e86-aeaa-35c3188f2b85",
+      "businessId": "biz_report_1773179648975",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:54:09.019Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773179737398": [
+    {
+      "id": "e9a16f23-e960-4c5b-a927-e47355b703f4",
+      "businessId": "biz_report_1773179737398",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:55:37.453Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773179830172": [
+    {
+      "id": "c8711fe1-40f4-493c-88f3-c7bf61e617fb",
+      "businessId": "biz_report_1773179830172",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:57:10.215Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773179898198": [
+    {
+      "id": "8a3cfe89-ead2-4f01-8f6e-75b940fdf7eb",
+      "businessId": "biz_report_1773179898198",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:58:18.242Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773179986657": [
+    {
+      "id": "473613c5-9a81-40ea-9371-811ee01edf79",
+      "businessId": "biz_report_1773179986657",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T21:59:46.747Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180068132": [
+    {
+      "id": "31629f91-4340-4a0d-87d5-b403fa4e1468",
+      "businessId": "biz_report_1773180068132",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:01:08.178Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180128187": [
+    {
+      "id": "c5acb10c-8a1d-417a-a863-f9009506f09c",
+      "businessId": "biz_report_1773180128187",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:02:08.235Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180201067": [
+    {
+      "id": "316d3327-c099-4b3f-b8fa-2f2d445ec88c",
+      "businessId": "biz_report_1773180201067",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:03:21.112Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180266450": [
+    {
+      "id": "7b9684ea-d5c3-4333-85ed-e485da69ec80",
+      "businessId": "biz_report_1773180266450",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:04:26.497Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180289228": [
+    {
+      "id": "f3cc2cf3-1481-4f49-9a2e-4b66acb7b8b1",
+      "businessId": "biz_report_1773180289228",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:04:49.275Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180349318": [
+    {
+      "id": "735b3820-a1d7-4de3-bf8d-87e2bfbd6bd0",
+      "businessId": "biz_report_1773180349318",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:05:49.366Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180495516": [
+    {
+      "id": "03545b36-27db-4d98-b3e0-734d915684f6",
+      "businessId": "biz_report_1773180495516",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:08:15.557Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180641189": [
+    {
+      "id": "7bcb9b70-33f5-4f8f-9de4-0392d139cce2",
+      "businessId": "biz_report_1773180641189",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:10:41.257Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180661538": [
+    {
+      "id": "77ca6043-b706-44f5-845f-4dd48d08bcb9",
+      "businessId": "biz_report_1773180661538",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:11:01.603Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180818596": [
+    {
+      "id": "ddf30209-2d3c-4ff2-a6dc-a29329e0f1bd",
+      "businessId": "biz_report_1773180818596",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:13:38.639Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180908342": [
+    {
+      "id": "12249c6e-d6de-469f-9bb6-ff3561c77b69",
+      "businessId": "biz_report_1773180908342",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:15:08.397Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773180959050": [
+    {
+      "id": "2dc95940-63bb-4c09-ad6f-a03d7118583d",
+      "businessId": "biz_report_1773180959050",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:15:59.096Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181042199": [
+    {
+      "id": "eca928e1-968e-41e8-9ad3-e33a42c113bc",
+      "businessId": "biz_report_1773181042199",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:17:22.247Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181117979": [
+    {
+      "id": "cfa5498f-ddcb-46c4-81a8-362d7bf4f319",
+      "businessId": "biz_report_1773181117979",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:18:38.027Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181196021": [
+    {
+      "id": "8b2a5376-9874-408e-8aae-c0267c0b8002",
+      "businessId": "biz_report_1773181196021",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:19:56.071Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181653362": [
+    {
+      "id": "97511cef-599a-4d7c-b5f6-55728755d128",
+      "businessId": "biz_report_1773181653362",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:27:33.420Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181680482": [
+    {
+      "id": "0635c671-38d1-411d-9717-c3ee31a302ae",
+      "businessId": "biz_report_1773181680482",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:28:00.532Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181706869": [
+    {
+      "id": "7b4aaadb-905c-4544-ad58-eb5a6b3747ea",
+      "businessId": "biz_report_1773181706869",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:28:26.915Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181791035": [
+    {
+      "id": "fc15e785-9328-4f0d-9918-764b48788130",
+      "businessId": "biz_report_1773181791035",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:29:51.117Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181815194": [
+    {
+      "id": "7ce90676-7bdc-4b13-a0c7-8dcfab231c80",
+      "businessId": "biz_report_1773181815194",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:30:15.242Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181899833": [
+    {
+      "id": "ab95ee63-406a-4fa1-a203-370491932b01",
+      "businessId": "biz_report_1773181899833",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:31:39.890Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181922002": [
+    {
+      "id": "ea9ee41c-7100-4307-abe1-c9801bc0620b",
+      "businessId": "biz_report_1773181922002",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:32:02.068Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773181951800": [
+    {
+      "id": "c8a6e32c-a5a1-475f-bd9a-9a6019b52b6d",
+      "businessId": "biz_report_1773181951800",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:32:31.858Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773182004044": [
+    {
+      "id": "9a15ed65-c525-445e-b925-39917e18712c",
+      "businessId": "biz_report_1773182004044",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:33:24.193Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773182123468": [
+    {
+      "id": "ff62f545-79f3-4328-a915-63d9d35a4030",
+      "businessId": "biz_report_1773182123468",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-10T22:35:23.552Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773230912895": [
+    {
+      "id": "6b617223-ca58-4553-b58d-fd24106148a5",
+      "businessId": "biz_report_1773230912895",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-11T12:08:32.949Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "biz_report_1773230945449": [
+    {
+      "id": "834e824a-0ccf-4a6a-b3b8-cc314463f836",
+      "businessId": "biz_report_1773230945449",
+      "recipientEmail": "manager@example.com",
+      "subject": "Weekly report",
+      "note": "Please review before payroll",
+      "report": {
+        "metrics": {
+          "revenue": 1200
+        }
+      },
+      "queuedAt": "2026-03-11T12:09:05.506Z",
+      "status": "queued",
+      "requestedBy": {
+        "userId": "subscriber_report",
+        "role": "subscriber",
+        "email": "owner@example.com"
+      }
+    }
   ]
 }

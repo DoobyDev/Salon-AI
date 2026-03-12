@@ -43,6 +43,85 @@ export function createAdminSupportRuntime(deps) {
     setAdminAccountSupportSearchTimerId
   } = deps || {};
 
+  function buildMockAdminAccounts(query = "") {
+    const rows = [
+      {
+        id: "mock_subscriber_1",
+        role: "subscriber",
+        name: "Jade Mercer",
+        email: "jade@lunalocks.co.uk",
+        business: {
+          id: "mock_biz_1",
+          name: "Luna Locks Studio",
+          city: "Manchester"
+        },
+        stats: {
+          bookingCount: 184,
+          revenue: 12640,
+          planLabel: "growth",
+          lastBookingAt: "2026-03-11T15:30:00.000Z"
+        },
+        recentVisits: [
+          { service: "Balayage", businessName: "Luna Locks Studio", date: "2026-03-11" },
+          { service: "Cut & Finish", businessName: "Luna Locks Studio", date: "2026-03-10" }
+        ]
+      },
+      {
+        id: "mock_subscriber_2",
+        role: "subscriber",
+        name: "Marco Ellis",
+        email: "marco@atlasbarber.co.uk",
+        business: {
+          id: "mock_biz_2",
+          name: "Atlas Barber Co.",
+          city: "Liverpool"
+        },
+        stats: {
+          bookingCount: 142,
+          revenue: 9180,
+          planLabel: "starter",
+          lastBookingAt: "2026-03-11T11:10:00.000Z"
+        },
+        recentVisits: [
+          { service: "Skin Fade", businessName: "Atlas Barber Co.", date: "2026-03-11" }
+        ]
+      },
+      {
+        id: "mock_customer_1",
+        role: "customer",
+        name: "Ava Hart",
+        email: "ava.hart@example.com",
+        business: {
+          name: "Luna Locks Studio"
+        },
+        stats: {
+          visitCount: 9,
+          upcomingCount: 1,
+          linkedBusinesses: 2,
+          lastBookingAt: "2026-03-10T10:00:00.000Z"
+        },
+        recentVisits: [
+          { service: "Glossing", businessName: "Luna Locks Studio", date: "2026-03-10" },
+          { service: "Cut & Finish", businessName: "Atlas Barber Co.", date: "2026-02-22" }
+        ]
+      }
+    ];
+    const q = String(query || "").trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((account) => {
+      const haystack = [
+        account.name,
+        account.email,
+        account.business?.name,
+        account.business?.city,
+        account.role
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }
+
   function getAdminAccountQuery() {
     return String(adminAccountSearchInput?.value || "").trim();
   }
@@ -64,6 +143,35 @@ export function createAdminSupportRuntime(deps) {
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "Account";
   }
 
+  function isSubscriberAccount(account) {
+    return String(account?.role || "").trim().toLowerCase() === "subscriber";
+  }
+
+  function isCustomerAccount(account) {
+    return String(account?.role || "").trim().toLowerCase() === "customer";
+  }
+
+  function managedBusinessIdForAccount(account) {
+    return String(account?.business?.id || "").trim();
+  }
+
+  function buildAccountPreviewUrl(account) {
+    const url = new URL("/dashboard", win.location?.origin || "http://localhost");
+    const accountRole = String(account?.role || "").trim().toLowerCase();
+    url.searchParams.set("role", accountRole === "customer" ? "customer" : "subscriber");
+    url.searchParams.set("adminPreview", "1");
+    if (accountRole === "subscriber") {
+      const businessId = managedBusinessIdForAccount(account);
+      if (businessId) url.searchParams.set("businessId", businessId);
+    }
+    if (accountRole === "customer") {
+      const customerEmail = String(account?.email || "").trim().toLowerCase();
+      if (customerEmail) url.searchParams.set("customerEmail", customerEmail);
+      if (account?.name) url.searchParams.set("customerName", String(account.name || "").trim());
+    }
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
   function renderAdminAccountsTable(cache, selectedId) {
     if (!adminAccountsTable) return;
     adminAccountsTable.innerHTML = cache.length
@@ -79,11 +187,11 @@ export function createAdminSupportRuntime(deps) {
             </div>
             <div>
               <strong>${escapeHtml(String(account?.stats?.bookingCount ?? account?.stats?.visitCount ?? 0))}</strong>
-              <small>${escapeHtml(account?.role === "subscriber" ? "bookings" : "visits")}</small>
+              <small>${escapeHtml(isSubscriberAccount(account) ? "bookings" : "visits")}</small>
             </div>
             <div>
-              <strong>${escapeHtml(account?.role === "subscriber" ? String(formatMoney?.(Number(account?.stats?.revenue || 0)) || "GBP 0") : String(account?.stats?.upcomingCount || 0))}</strong>
-              <small>${escapeHtml(account?.role === "subscriber" ? String(account?.stats?.planLabel || "no plan") : "upcoming bookings")}</small>
+              <strong>${escapeHtml(isSubscriberAccount(account) ? String(formatMoney?.(Number(account?.stats?.revenue || 0)) || "GBP 0") : String(account?.stats?.upcomingCount || 0))}</strong>
+              <small>${escapeHtml(isSubscriberAccount(account) ? String(account?.stats?.planLabel || "no plan") : "upcoming bookings")}</small>
             </div>
           </article>
         `).join("")
@@ -103,10 +211,12 @@ export function createAdminSupportRuntime(deps) {
 
     const stats = account?.stats || {};
     const recentVisits = Array.isArray(account?.recentVisits) ? account.recentVisits : [];
-    const primary = account?.role === "subscriber"
+    const isSubscriber = isSubscriberAccount(account);
+    const managedBusinessId = managedBusinessIdForAccount(account);
+    const primary = isSubscriber
       ? `${String(stats.bookingCount || 0)} bookings - ${String(formatMoney?.(Number(stats.revenue || 0)) || "GBP 0")}`
       : `${String(stats.visitCount || 0)} visits - ${String(stats.upcomingCount || 0)} upcoming`;
-    const secondary = account?.role === "subscriber"
+    const secondary = isSubscriber
       ? `${String(stats.planLabel || "no plan")} - ${String(account?.business?.city || "no city")}`
       : `${String(stats.linkedBusinesses || 0)} linked salons`;
 
@@ -130,13 +240,13 @@ export function createAdminSupportRuntime(deps) {
               .join("")
           : `<small>${escapeHtml(String(stats.lastBookingAt ? formatDateShort?.(stats.lastBookingAt) : "No recent activity available."))}</small>`}
       </article>
-      ${account?.role === "subscriber" && account?.business?.id
+      ${(isSubscriber || isCustomerAccount(account))
         ? `
           <article class="detail-card">
             <strong>Managed actions</strong>
             <div class="agenda-item-actions">
-              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-dashboard">Open dashboard</button>
-              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-profile">Edit business info</button>
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-dashboard">Open ${isSubscriber ? "subscriber" : "customer"} dashboard</button>
+              ${isSubscriber && managedBusinessId ? '<button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-profile">Edit business info</button>' : ""}
             </div>
           </article>
         `
@@ -147,7 +257,7 @@ export function createAdminSupportRuntime(deps) {
     if (adminEditEmail) adminEditEmail.value = String(account?.email || "");
     if (adminEditBusinessName) {
       adminEditBusinessName.value = String(account?.business?.name || "");
-      adminEditBusinessName.disabled = account?.role !== "subscriber";
+      adminEditBusinessName.disabled = !isSubscriber;
     }
     setAdminAccountMessage("");
   }
@@ -164,15 +274,28 @@ export function createAdminSupportRuntime(deps) {
     if (getUserRole?.() !== "admin") return;
     const q = String(query || "").trim();
     const endpoint = q ? `/api/admin/accounts?query=${encodeURIComponent(q)}` : "/api/admin/accounts";
-    const res = await fetchImpl(endpoint, { headers: headers?.() });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Unable to load admin accounts.");
-    const accounts = Array.isArray(data?.accounts) ? data.accounts : [];
+    let accounts = [];
+    let usingMockData = false;
+    try {
+      const res = await fetchImpl(endpoint, { headers: headers?.() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unable to load admin accounts.");
+      accounts = Array.isArray(data?.accounts) ? data.accounts : [];
+    } catch {
+      usingMockData = true;
+    }
+    if (!accounts.length) {
+      accounts = buildMockAdminAccounts(q);
+      usingMockData = true;
+    }
     setAdminAccountSupportResultsCache?.(accounts);
     const selectedId = String(getAdminAccountSupportSelectedId?.() || "").trim();
     const selectedStillExists = accounts.some((account) => String(account?.id || "") === selectedId);
     setAdminAccountSupportSelectedId?.(selectedStillExists ? selectedId : String(accounts[0]?.id || "").trim());
     renderAdminAccountSupportModule();
+    if (usingMockData) {
+      setAdminAccountMessage("Showing mock account results so the admin search panel stays populated.", "neutral");
+    }
   }
 
   async function updateAdminAccount(values = {}) {
@@ -185,29 +308,30 @@ export function createAdminSupportRuntime(deps) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Unable to update account.");
-    if (account.role === "subscriber") {
+    if (isSubscriberAccount(account)) {
       await loadAdminBusinessOptions?.();
-      if (String(account?.business?.id || "") === String(getManagedBusinessId?.() || "").trim()) {
+      if (managedBusinessIdForAccount(account) === String(getManagedBusinessId?.() || "").trim()) {
         await reloadAdminManagedDashboard?.();
       }
     }
     await loadAdminAccountSupport(getAdminAccountQuery());
-    setDashActionStatus?.(`${account.role === "subscriber" ? "Subscriber" : "Customer"} account updated.`);
+    setDashActionStatus?.(`${isSubscriberAccount(account) ? "Subscriber" : "Customer"} account updated.`);
     setAdminAccountMessage("Account saved.", "success");
   }
 
   async function openAdminAccountSupportEditForm() {
     const account = adminAccountSupportSelectedAccount();
     if (!account) return;
+    const isSubscriber = isSubscriberAccount(account);
     const fields = [
       { id: "name", label: "Name", required: true, value: String(account?.name || "") },
       { id: "email", label: "Email", required: true, value: String(account?.email || "") }
     ];
-    if (account.role === "subscriber") {
+    if (isSubscriber) {
       fields.push({ id: "businessName", label: "Business Name", required: true, value: String(account?.business?.name || "") });
     }
     const values = await openManageForm?.({
-      title: `Edit ${account.role === "subscriber" ? "Subscriber" : "Customer"} Account`,
+      title: `Edit ${isSubscriber ? "Subscriber" : "Customer"} Account`,
       submitLabel: "Save Changes",
       fields
     });
@@ -295,24 +419,24 @@ export function createAdminSupportRuntime(deps) {
       const action = String(target.getAttribute("data-admin-account-action") || "").trim();
       const account = adminAccountSupportSelectedAccount();
       if (!account) return;
+      const isSubscriber = isSubscriberAccount(account);
+      const managedBusinessId = managedBusinessIdForAccount(account);
       try {
-        if (action === "open-dashboard" && account.role === "subscriber" && account?.business?.id) {
-          const nextBusinessId = String(account.business.id || "").trim();
-          setManagedBusinessId?.(nextBusinessId);
-          if (adminBusinessSelect) adminBusinessSelect.value = nextBusinessId;
-          syncAdminBusinessQueryParam?.();
-          await reloadAdminManagedDashboard?.();
-          renderModuleNavigator?.();
-          const closeModulePopupActive = getCloseModulePopupActive?.();
-          if (typeof closeModulePopupActive === "function") closeModulePopupActive();
-          subscriberCalendarSection?.scrollIntoView({ behavior: "smooth", block: "start" });
-          setDashActionStatus?.(`Loaded ${account.business.name || "subscriber"} dashboard.`);
+        if (action === "open-dashboard" && (isSubscriber || isCustomerAccount(account))) {
+          if (isSubscriber && managedBusinessId) {
+            setManagedBusinessId?.(managedBusinessId);
+            if (adminBusinessSelect) adminBusinessSelect.value = managedBusinessId;
+          }
+          const targetUrl = buildAccountPreviewUrl(account);
+          if (win.location) {
+            win.location.href = targetUrl;
+          }
+          setDashActionStatus?.(`Opening ${account.name || (isSubscriber ? account.business?.name : "customer")} dashboard preview.`);
           return;
         }
-        if (action === "open-profile" && account.role === "subscriber" && account?.business?.id) {
-          const nextBusinessId = String(account.business.id || "").trim();
-          setManagedBusinessId?.(nextBusinessId);
-          if (adminBusinessSelect) adminBusinessSelect.value = nextBusinessId;
+        if (action === "open-profile" && isSubscriber && managedBusinessId) {
+          setManagedBusinessId?.(managedBusinessId);
+          if (adminBusinessSelect) adminBusinessSelect.value = managedBusinessId;
           syncAdminBusinessQueryParam?.();
           await reloadAdminManagedDashboard?.();
           openInteractiveModulePopup?.("business_information");
@@ -334,7 +458,7 @@ export function createAdminSupportRuntime(deps) {
         await updateAdminAccount({
           name: String(adminEditName?.value || "").trim(),
           email: String(adminEditEmail?.value || "").trim(),
-          businessName: account.role === "subscriber" ? String(adminEditBusinessName?.value || "").trim() : ""
+          businessName: isSubscriberAccount(account) ? String(adminEditBusinessName?.value || "").trim() : ""
         });
       } catch (error) {
         setAdminAccountMessage(error.message, "error");

@@ -2,6 +2,9 @@
 
 This folder contains the active business and legal documentation pack for Ask Lexi | AI Salon Receptionist.
 
+Status:
+- Draft working pack pending solicitor review before final publication or contractual use.
+
 Important:
 - These are professional templates, not legal advice.
 - You should have a qualified solicitor/law firm review before publishing or signing.
@@ -16,6 +19,10 @@ Current product context this pack should match:
 ## Pack Structure
 
 - `00_MASTER_INDEX.md`: master index and document map.
+- `LEGAL_INPUT_CHECKLIST.md`: repo-backed list of legal/business values still required before finalizing placeholder-heavy documents.
+- `LEGAL_MINIMUM_LAUNCH_INTAKE.md`: shortest fill-in form for the public-facing legal launch requirements.
+- `LEGAL_VALUES_TO_SUPPLY.md`: single fill-in sheet for remaining company, jurisdiction, tax, refund, privacy, and security values.
+- `PLACEHOLDER_INVENTORY.md`: file-by-file placeholder count and line inventory for the remaining legal/business document cleanup.
 - `PRINTING_INSTRUCTIONS.md`: how to print or export the markdown documents when needed.
 - `legal/`: legal policies and agreements.
 - `business/`: business plan and operating documents.

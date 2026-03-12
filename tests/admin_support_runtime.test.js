@@ -86,6 +86,10 @@ function createRuntimeHarness() {
       fn();
       return 1;
     }),
+    location: {
+      origin: "http://localhost",
+      href: "http://localhost/dashboard?role=admin"
+    },
     URL: {
       createObjectURL: vi.fn(() => "blob:test"),
       revokeObjectURL: vi.fn()
@@ -202,6 +206,47 @@ describe("admin support runtime", () => {
     expect(harness.adminEditBusinessName.value).toBe("North Lane Studio");
   });
 
+  it("falls back to mock admin account results when live search is empty", async () => {
+    const harness = createRuntimeHarness();
+    harness.fetchImpl.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ accounts: [] })
+    });
+
+    harness.runtime.bindAdminSupportEvents();
+    await flushAsyncWork();
+
+    expect(harness.adminAccountsTable.innerHTML).toContain("Jade Mercer");
+    expect(harness.adminAccountDetail.innerHTML).toContain("Luna Locks Studio");
+    expect(harness.adminAccountEditMessage.textContent).toBe("Showing mock account results so the admin search panel stays populated.");
+  });
+
+  it("keeps managed actions visible when subscriber account strings need normalization", async () => {
+    const harness = createRuntimeHarness();
+    harness.fetchImpl.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        accounts: [
+          makeAccount({
+            role: " Subscriber ",
+            business: {
+              id: " biz_1 ",
+              name: "North Lane Studio",
+              city: "Leeds"
+            }
+          })
+        ]
+      })
+    });
+
+    harness.runtime.bindAdminSupportEvents();
+    await flushAsyncWork();
+
+    expect(harness.adminAccountDetail.innerHTML).toContain('data-admin-account-action="open-dashboard"');
+    expect(harness.adminAccountDetail.innerHTML).toContain('data-admin-account-action="open-profile"');
+    expect(harness.adminEditBusinessName.disabled).toBe(false);
+  });
+
   it("updates subscriber accounts inline and refreshes the managed dashboard when editing the selected business", async () => {
     const harness = createRuntimeHarness();
     const updated = makeAccount({
@@ -258,7 +303,7 @@ describe("admin support runtime", () => {
     expect(harness.setDashActionStatus).toHaveBeenCalledWith("Subscriber account updated.");
   });
 
-  it("opens the managed subscriber dashboard from the current admin account card", async () => {
+  it("opens the subscriber preview dashboard from the current admin account card", async () => {
     const harness = createRuntimeHarness();
     harness.fetchImpl.mockResolvedValueOnce({
       ok: true,
@@ -282,11 +327,53 @@ describe("admin support runtime", () => {
     });
 
     expect(harness.adminBusinessSelect.value).toBe("biz_1");
-    expect(harness.syncAdminBusinessQueryParam).toHaveBeenCalled();
-    expect(harness.reloadAdminManagedDashboard).toHaveBeenCalled();
-    expect(harness.renderModuleNavigator).toHaveBeenCalled();
-    expect(harness.subscriberCalendarSection.scrollIntoView).toHaveBeenCalled();
-    expect(harness.setDashActionStatus).toHaveBeenCalledWith("Loaded North Lane Studio dashboard.");
+    expect(harness.win.location.href).toBe("/dashboard?role=subscriber&adminPreview=1&businessId=biz_1");
+    expect(harness.reloadAdminManagedDashboard).not.toHaveBeenCalled();
+    expect(harness.renderModuleNavigator).not.toHaveBeenCalled();
+    expect(harness.subscriberCalendarSection.scrollIntoView).not.toHaveBeenCalled();
+    expect(harness.setDashActionStatus).toHaveBeenCalledWith("Opening Morgan Blake dashboard preview.");
+  });
+
+  it("opens the customer preview dashboard from the current admin account card", async () => {
+    const harness = createRuntimeHarness();
+    harness.fetchImpl.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        accounts: [
+          makeAccount({
+            id: "acct_customer_1",
+            role: "customer",
+            name: "Ava Hart",
+            email: "ava@example.com",
+            business: null,
+            stats: {
+              visitCount: 4,
+              upcomingCount: 1,
+              linkedBusinesses: 2
+            }
+          })
+        ]
+      })
+    });
+
+    harness.runtime.bindAdminSupportEvents();
+    await flushAsyncWork();
+
+    await harness.adminAccountDetail.dispatch("click", {
+      target: new FakeHTMLElement({
+        closest(selector) {
+          if (selector === "[data-admin-account-action]") {
+            const actionButton = new FakeHTMLElement();
+            actionButton.getAttribute = (name) => (name === "data-admin-account-action" ? "open-dashboard" : "");
+            return actionButton;
+          }
+          return null;
+        }
+      })
+    });
+
+    expect(harness.win.location.href).toBe("/dashboard?role=customer&adminPreview=1&customerEmail=ava%40example.com&customerName=Ava+Hart");
+    expect(harness.setDashActionStatus).toHaveBeenCalledWith("Opening Ava Hart dashboard preview.");
   });
 
   it("submits admin account searches against the current query", async () => {

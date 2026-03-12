@@ -230,12 +230,15 @@ export function createBookingRouteHandlers({
     const cursorDate = cursorPayload?.createdAt ? new Date(cursorPayload.createdAt) : null;
     const cursorId = cursorPayload?.id ? String(cursorPayload.id) : "";
     const adminBusinessId = String(req.query.businessId || "").trim();
+    const adminCustomerEmail = String(req.query.customerEmail || "").trim().toLowerCase();
     const filterAnd = [];
 
     if (req.auth.role === "subscriber") {
       filterAnd.push({ businessId: req.auth.businessId || "" });
     } else if (req.auth.role === "admin" && adminBusinessId) {
       filterAnd.push({ businessId: adminBusinessId });
+    } else if (req.auth.role === "admin" && adminCustomerEmail) {
+      filterAnd.push({ customerEmail: adminCustomerEmail });
     } else if (req.auth.role === "customer") {
       filterAnd.push({ customerEmail: req.auth.email || "" });
     }

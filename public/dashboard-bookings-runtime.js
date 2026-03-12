@@ -4,8 +4,10 @@ export function createBookingsRuntime(deps) {
     fetchImpl = fetch,
     getUserRole,
     getManagedBusinessId,
+    getPreviewCustomerEmail,
     headers,
     withManagedBusiness,
+    withCustomerPreview,
     escapeHtml,
     parseBookingDate,
     toDateKey,
@@ -282,8 +284,9 @@ export function createBookingsRuntime(deps) {
 
   async function loadMetrics() {
     const role = getUserRole?.();
+    const managedBusinessId = String(getManagedBusinessId?.() || "").trim();
     if (role === "admin") {
-      if (!getManagedBusinessId?.()) {
+      if (!managedBusinessId) {
         setSubscriberCommandCenter?.(null);
         setOperationsInsights?.(null);
         renderCommandCenter?.();
@@ -301,7 +304,12 @@ export function createBookingsRuntime(deps) {
       renderOperationsInsights?.();
       return;
     }
-    const endpoint = `/api/dashboard/${role}`;
+    let endpoint = `/api/dashboard/${role}`;
+    if (role === "subscriber" && managedBusinessId) {
+      endpoint = withManagedBusiness?.(endpoint) || `${endpoint}?businessId=${encodeURIComponent(managedBusinessId)}`;
+    } else if (role === "customer") {
+      endpoint = withCustomerPreview?.(endpoint) || endpoint;
+    }
     const res = await fetchImpl(endpoint, { headers: headers?.() });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Unable to load dashboard metrics.");
@@ -331,10 +339,14 @@ export function createBookingsRuntime(deps) {
   async function loadBookings({ append = false } = {}) {
     const role = getUserRole?.();
     const managedBusinessId = String(getManagedBusinessId?.() || "").trim();
+    const previewCustomerEmail = String(getPreviewCustomerEmail?.() || "").trim().toLowerCase();
     const params = new URLSearchParams({ limit: role === "admin" ? "500" : "50" });
     const endpoint = role === "admin" ? "/api/bookings" : "/api/me/bookings";
-    if (role === "subscriber" && managedBusinessId) {
+    if ((role === "subscriber" || role === "admin") && managedBusinessId) {
       params.set("businessId", managedBusinessId);
+    }
+    if (role === "customer" && previewCustomerEmail) {
+      params.set("customerEmail", previewCustomerEmail);
     }
     if (append && getNextBookingsCursor?.()) params.set("cursor", getNextBookingsCursor());
     const res = await fetchImpl(`${endpoint}?${params.toString()}`, { headers: headers?.() });

@@ -7,6 +7,11 @@ export function createDashboardRoleChromeRuntime(deps) {
     setManagedBusinessId,
     hideSection,
     showSection,
+    dashboardBrandRole,
+    dashboardKicker,
+    dashboardTitle,
+    dashboardDescription,
+    dashboardBusinessPill,
     dashTitle,
     dashUser,
     dashRoleHint,
@@ -19,6 +24,56 @@ export function createDashboardRoleChromeRuntime(deps) {
   function initializeDashboardRoleChrome() {
     const currentRole = String(getCurrentRole?.() || "").trim().toLowerCase();
     const user = getUser?.() || {};
+
+    if (dashboardBrandRole) {
+      if (currentRole === "admin") {
+        dashboardBrandRole.textContent = "Admin control room";
+      } else if (currentRole === "customer") {
+        dashboardBrandRole.textContent = "Customer dashboard";
+      } else {
+        dashboardBrandRole.textContent = "Subscriber control room";
+      }
+    }
+
+    if (dashboardKicker) {
+      if (currentRole === "admin") {
+        dashboardKicker.textContent = "Platform operations workspace";
+      } else if (currentRole === "customer") {
+        dashboardKicker.textContent = "Customer booking workspace";
+      } else {
+        dashboardKicker.textContent = "Salon operator workspace";
+      }
+    }
+
+    if (dashboardTitle) {
+      if (currentRole === "admin") {
+        dashboardTitle.textContent = "Admin Control Center";
+      } else if (currentRole === "customer") {
+        dashboardTitle.textContent = "Your Booking Dashboard";
+      } else {
+        dashboardTitle.textContent = "Lexi Control Center";
+      }
+    }
+
+    if (dashboardDescription) {
+      if (currentRole === "admin") {
+        dashboardDescription.textContent = "Search accounts, open live dashboard previews, track app revenue, and watch platform status from one admin workspace.";
+      } else if (currentRole === "customer") {
+        dashboardDescription.textContent = "Track upcoming appointments, revisit past visits, and use Ask Lexi to plan your next booking.";
+      } else {
+        dashboardDescription.textContent = "Your diary, customers, takings, reminders, and Ask Lexi in one clear workspace.";
+      }
+    }
+
+    if (dashboardBusinessPill) {
+      if (currentRole === "admin") {
+        dashboardBusinessPill.textContent = "Admin workspace active";
+      } else if (currentRole === "customer") {
+        dashboardBusinessPill.textContent = "Customer workspace active";
+      } else {
+        dashboardBusinessPill.textContent = "Loading workspace...";
+      }
+    }
 
     if (dashTitle) {
       if (currentRole === "subscriber") {

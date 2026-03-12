@@ -1,6 +1,6 @@
 # App Feature Record
 
-Last updated: 2026-03-10
+Last updated: 2026-03-11
 
 Purpose:
 - Keep a permanent record of what the app can do.
@@ -146,12 +146,9 @@ Status: basic dashboard available
 
 ### Suggested future expansion
 
-- Self-service cancel
-- Self-service reschedule
-- Next appointment spotlight card
-- Preferred salons / saved salons
-- Rebooking suggestions
 - Customer profile and preferences
+- Preferred salons management beyond the current saved-salon activity summary
+- Deeper communication preferences and notification controls
 
 ## Subscriber Dashboard Features
 
@@ -293,36 +290,23 @@ Status: operational owner dashboard available
 
 ## Admin Dashboard Features
 
-Status: oversight dashboard available
+Status: simplified oversight dashboard available with preview-first admin flow
 
-### Platform oversight
+### Admin workspace layout
 
 - Admin-specific dashboard view
-- Total businesses metric
-- Total subscribers metric
-- Total customers metric
-- Total bookings metric
-- Today booking visibility
-- Monthly signup visibility for subscribers and customers
+- Sticky admin top nav now trimmed down to the two core controls:
+  - Ask Lexi
+  - Log out
+- Admin dashboard now follows a simpler four-section order:
+  - top nav
+  - account search
+  - app revenue
+  - business hub
+- Admin dashboard now avoids the older watchboard-style first screen so the page is easier to scan and navigate
 
-### Portfolio visibility
+### Account search and preview
 
-- Business list for platform oversight
-- Cross-business operational alert board for quiet, cancellation-heavy, inactive, or weak-upcoming salons
-- Subscription health summary for active vs inactive subscriber plans
-- Plan mix visibility across subscriber businesses
-- Quiet active-business visibility so admins can spot commercially weak salons even when plans are still active
-- Billing watchboard for upcoming renewals, month-ahead renewals, and subscriber plans needing commercial follow-up
-- Cross-business notification-health view for salons with recent SMS/email delivery failures
-- Admin Ask Lexi now uses selected-business and alert-board context to answer which businesses need attention and why
-- Location and business-type visibility per business
-- Admin selectable business drilldown panel
-- Business owner visibility per salon account
-- Subscriber plan and subscription status visibility per business
-- Renewal date visibility and billing state guidance inside selected business details
-- Business health label for quick admin review
-- Per-business booking, revenue, customer, and service counts
-- Recent business booking activity visibility
 - Admin account oversight list for subscribers and customers
 - Admin account search by:
   - name
@@ -331,24 +315,39 @@ Status: oversight dashboard available
   - city
   - country
 - Admin selected-account drilldown panel
-- Admin account editing for:
-  - account name
-  - account email
-  - subscriber business name
-- Admin account search, detail review, inline editing, and managed-dashboard jump actions now run through the current dashboard accounts panel instead of a stale hidden support surface
+- Admin managed action to open the linked subscriber dashboard as a live admin preview
+- Admin managed action to open the linked customer dashboard as a live admin preview
+- Admin managed business-profile shortcut remains available for subscriber accounts
+- Admin preview routing now supports customer analytics and booking loading through admin-authorized customer email scope
 - Admin recent account activity visibility
 
 ### Platform revenue and analytics
 
 - Admin revenue analytics endpoint support
+- Revenue section now focuses on subscriber signups, recurring app revenue, and growth visuals
+- Revenue section now surfaces subscriber and earnings visuals including:
+  - summary cards
+  - donut mix chart
+  - retention gauge
+  - booking-yield gauge
+  - monthly trend graph
+  - monthly revenue rows
+  - signal cards
+- Admin revenue and account-search sections now fall back to mock populated data when live platform data is empty, so the admin layout can still be reviewed visually during setup and early rollout
 - Platform revenue analytics CSV export entry point
-- Admin can oversee app/platform revenue instead of only business revenue
-- Admin platform revenue card set for:
-  - estimated MRR
-  - revenue in period
-  - subscription cancellations
-  - booking cancellations
-- Admin revenue trend chart from platform analytics payload
+
+### Business hub
+
+- Business Hub now appears as a simple admin card grid instead of a mixed control-map/status surface
+- Each Business Hub card opens a focused admin page view using the dashboard URL for:
+  - business information
+  - staff
+  - salon features
+  - social media
+  - merch
+  - accounting
+  - finance
+  - cancellations
 
 ### Ask Lexi for admins
 
@@ -539,3 +538,11 @@ Status: oversight dashboard available
 - Reconnected the installable PWA shell so the current public, auth, dashboard, and legal pages all expose the shared manifest and register the shared service worker
 - Matched Lexi avatar-session auth gating to the realtime-session rules so subscriber/admin live avatar sessions now enforce the same protected-scope access checks
 - Reconciled the admin account tooling to the current dashboard accounts panel so search, detail review, inline edits, and managed-dashboard jump actions now use one live admin surface
+
+### 2026-03-11
+
+- Hardened the admin accounts panel so managed-dashboard and business-profile actions still render when live subscriber account payloads need role/business identifier normalization
+- Corrected the customer dashboard feature record so already-shipped self-service, spotlight, and saved-salon items no longer appear under future expansion
+- Simplified the admin dashboard by removing non-essential app-revenue, subscription-health, and billing-watch sections from the main live layout so the control room stays focused on operator actions
+- Rebuilt the admin dashboard around a search-first workflow with preview links into subscriber and customer dashboards, a clickable control-map card grid, a richer revenue studio, and a dedicated app-status section
+- Simplified the admin dashboard again into the intended four-section structure: top nav, account search, revenue, and a Business Hub card grid with focused admin detail pages

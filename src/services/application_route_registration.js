@@ -131,7 +131,7 @@ export function registerApplicationRoutes({
   app.get("/api/dashboard/subscriber", authRequired, requireRole("subscriber", "admin"), subscriberDashboardHandler);
   app.post("/api/operations/recovery/mark-action", authRequired, requireRole("subscriber", "admin"), recoveryActionMarkHandler);
   app.post("/api/operations/rebooking/mark-sent", authRequired, requireRole("subscriber", "admin"), rebookingMarkSentHandler);
-  app.get("/api/dashboard/customer", authRequired, requireRole("customer"), customerDashboardHandler);
+  app.get("/api/dashboard/customer", authRequired, requireRole("customer", "admin"), customerDashboardHandler);
   app.get("/api/crm/segments", authRequired, requireRole("subscriber", "admin"), crmSegmentsHandler);
   app.post("/api/crm/campaigns/send", authRequired, requireRole("subscriber", "admin"), crmCampaignSendHandler);
 

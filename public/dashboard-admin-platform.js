@@ -38,6 +38,81 @@ export function createAdminPlatformRuntime(deps) {
     setAdminUsageAnalytics
   } = deps || {};
 
+  function buildMockAdminPlatformAnalytics() {
+    return {
+      analytics: {
+        totalBusinesses: 48,
+        totalUsers: 1264,
+        totalBookings: 8342,
+        cancelledBookings: 618,
+        conversionRate: 72.6
+      },
+      usage: {
+        hourly: [
+          { label: "06:00", total: 22, loginCount: 5, lexiCount: 3 },
+          { label: "09:00", total: 74, loginCount: 18, lexiCount: 21 },
+          { label: "12:00", total: 81, loginCount: 22, lexiCount: 19 },
+          { label: "15:00", total: 67, loginCount: 16, lexiCount: 17 },
+          { label: "18:00", total: 48, loginCount: 11, lexiCount: 12 },
+          { label: "21:00", total: 26, loginCount: 6, lexiCount: 7 }
+        ],
+        weekdays: [
+          { label: "Mon", total: 188 },
+          { label: "Tue", total: 201 },
+          { label: "Wed", total: 214 },
+          { label: "Thu", total: 239 },
+          { label: "Fri", total: 264 },
+          { label: "Sat", total: 177 },
+          { label: "Sun", total: 96 }
+        ],
+        summary: {
+          periodDays: 14,
+          busiestHourLabel: "12:00",
+          quietestHourLabel: "03:00",
+          bestUpdateWindowLabel: "02:00-05:00",
+          bestUpdateWindowEvents: 9,
+          roleCounts: {
+            subscriber: 644,
+            customer: 421,
+            admin: 39,
+            anonymous: 18
+          }
+        }
+      }
+    };
+  }
+
+  function buildMockAdminRevenueAnalytics() {
+    return {
+      summary: {
+        activeSubscriptions: 41,
+        estimatedMrr: 2009,
+        avgPlanValue: 49,
+        periodMonths: 6,
+        estimatedRevenueInPeriod: 11484,
+        subscriptionCancellationsInPeriod: 5,
+        bookingCancellationsInPeriod: 618
+      },
+      monthly: [
+        { label: "Oct", estimatedSubscriptionRevenue: 1715, subscriptionCancellations: 1, bookingCancellations: 95 },
+        { label: "Nov", estimatedSubscriptionRevenue: 1792, subscriptionCancellations: 0, bookingCancellations: 91 },
+        { label: "Dec", estimatedSubscriptionRevenue: 1840, subscriptionCancellations: 1, bookingCancellations: 104 },
+        { label: "Jan", estimatedSubscriptionRevenue: 1911, subscriptionCancellations: 1, bookingCancellations: 118 },
+        { label: "Feb", estimatedSubscriptionRevenue: 2058, subscriptionCancellations: 1, bookingCancellations: 101 },
+        { label: "Mar", estimatedSubscriptionRevenue: 2168, subscriptionCancellations: 1, bookingCancellations: 109 }
+      ],
+      note: "Mock admin revenue view is active so layout and visuals stay populated while live platform data grows."
+    };
+  }
+
+  function hasUsablePlatformAnalytics(payload) {
+    return Number(payload?.analytics?.totalBusinesses || 0) > 0 || Number(payload?.analytics?.totalUsers || 0) > 0;
+  }
+
+  function hasUsableRevenueAnalytics(payload) {
+    return Number(payload?.summary?.activeSubscriptions || 0) > 0 || Array.isArray(payload?.monthly) && payload.monthly.length > 0;
+  }
+
   function renderAdminUsageIntelligenceContent() {
     if (getUserRole?.() !== "admin") return;
     const adminUsageAnalytics = getAdminUsageAnalytics?.();
@@ -364,14 +439,32 @@ export function createAdminPlatformRuntime(deps) {
 
   async function loadAdminPlatformOverview() {
     if (getUserRole?.() !== "admin") return;
-    const [analyticsRes, revenueRes] = await Promise.all([
-      fetchImpl("/api/dashboard/admin", { headers: headers?.() }),
-      fetchImpl("/api/dashboard/admin/revenue-analytics", { headers: headers?.() })
-    ]);
-    const analyticsData = await analyticsRes.json();
-    const revenueData = await revenueRes.json();
-    if (!analyticsRes.ok) throw new Error(analyticsData.error || "Unable to load admin platform analytics.");
-    if (!revenueRes.ok) throw new Error(revenueData.error || "Unable to load admin revenue analytics.");
+    let analyticsData = null;
+    let revenueData = null;
+    let usingMockData = false;
+    try {
+      const [analyticsRes, revenueRes] = await Promise.all([
+        fetchImpl("/api/dashboard/admin", { headers: headers?.() }),
+        fetchImpl("/api/dashboard/admin/revenue-analytics", { headers: headers?.() })
+      ]);
+      analyticsData = await analyticsRes.json();
+      revenueData = await revenueRes.json();
+      if (!analyticsRes.ok) throw new Error(analyticsData.error || "Unable to load admin platform analytics.");
+      if (!revenueRes.ok) throw new Error(revenueData.error || "Unable to load admin revenue analytics.");
+    } catch {
+      usingMockData = true;
+    }
+
+    if (!hasUsablePlatformAnalytics(analyticsData) || !hasUsableRevenueAnalytics(revenueData)) {
+      usingMockData = true;
+    }
+
+    if (usingMockData) {
+      analyticsData = buildMockAdminPlatformAnalytics();
+      revenueData = buildMockAdminRevenueAnalytics();
+      setDashActionStatus?.("Showing mock admin analytics so the dashboard stays fully populated.", false, 2400);
+    }
+
     setAdminPlatformAnalytics?.(analyticsData || null);
     setAdminUsageAnalytics?.(analyticsData?.usage || null);
     setAdminRevenueAnalytics?.(revenueData || null);

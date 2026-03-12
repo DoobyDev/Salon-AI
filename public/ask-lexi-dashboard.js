@@ -3867,6 +3867,75 @@ function setAdminAccountMessage(text, mode = "neutral") {
   els.adminAccountEditMessage.className = `form-message ${mode === "error" ? "status-negative" : mode === "success" ? "status-positive" : "status-neutral"}`;
 }
 
+function isSubscriberAdminAccount(account) {
+  return String(account?.role || "").trim().toLowerCase() === "subscriber";
+}
+
+function adminAccountBusinessId(account) {
+  return String(account?.business?.id || "").trim();
+}
+
+function closeAdminBusinessProfilePopup() {
+  document.getElementById("adminBusinessProfilePopup")?.remove();
+}
+
+function openAdminBusinessProfilePopup(business) {
+  if (!business) return;
+  closeAdminBusinessProfilePopup();
+  const overlay = document.createElement("section");
+  overlay.id = "adminBusinessProfilePopup";
+  overlay.className = "lexi-modal";
+  overlay.innerHTML = `
+    <div class="lexi-modal-backdrop" data-admin-business-popup-close></div>
+    <div class="lexi-modal-card" role="dialog" aria-modal="true" aria-labelledby="adminBusinessProfilePopupTitle">
+      <div class="lexi-modal-head">
+        <div>
+          <p class="kicker">Managed business</p>
+          <h2 id="adminBusinessProfilePopupTitle">${escapeHtml(business.name || "Business profile")}</h2>
+        </div>
+        <button class="btn btn-ghost btn-small" type="button" data-admin-business-popup-close>Close</button>
+      </div>
+      <div class="insight-grid insight-grid-two">
+        <article class="detail-card">
+          <strong>Owner and plan</strong>
+          <small>${escapeHtml(business.owner?.name || "No owner linked yet")}</small>
+          <small>${escapeHtml(business.owner?.email || business.email || "No email saved")}</small>
+          <small>${escapeHtml(`${cap(business.subscription?.plan || "no plan")} plan - ${cap(business.subscription?.status || "inactive")}`)}</small>
+        </article>
+        <article class="detail-card">
+          <strong>Business snapshot</strong>
+          <small>${escapeHtml(String(business.stats?.customerCount || 0))} known customers</small>
+          <small>${escapeHtml(String(business.stats?.serviceCount || 0))} services live</small>
+          <small>${escapeHtml(String(business.stats?.upcomingBookings || 0))} upcoming bookings</small>
+          <small>${escapeHtml(String(business.stats?.cancelledBookings || 0))} cancelled bookings</small>
+        </article>
+        <article class="detail-card">
+          <strong>Contact and location</strong>
+          <small>${escapeHtml(business.phone || "No phone saved")}</small>
+          <small>${escapeHtml([business.address, business.city, business.postcode, business.country].filter(Boolean).join(", ") || "No address saved")}</small>
+          <small>${escapeHtml(`Rating ${Number(business.rating || 0).toFixed(1)}`)}</small>
+        </article>
+        <article class="detail-card">
+          <strong>Main services</strong>
+          ${
+            Array.isArray(business.services) && business.services.length
+              ? business.services.map((service) => `<small>${escapeHtml(service.name || "Service")}</small>`).join("")
+              : "<small>No services saved yet.</small>"
+          }
+        </article>
+      </div>
+    </div>
+  `;
+  overlay.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target === overlay || target.hasAttribute("data-admin-business-popup-close") || target.closest("[data-admin-business-popup-close]")) {
+      closeAdminBusinessProfilePopup();
+    }
+  });
+  document.body.appendChild(overlay);
+}
+
 function renderAdminAccountDetail() {
   if (!els.adminAccountDetail) return;
   const account = state.adminAccounts.find((row) => row.id === state.selectedAdminAccountId) || null;
@@ -3879,12 +3948,14 @@ function renderAdminAccountDetail() {
   }
 
   const recentVisits = Array.isArray(account.recentVisits) ? account.recentVisits : [];
+  const isSubscriber = isSubscriberAdminAccount(account);
+  const businessId = adminAccountBusinessId(account);
   const statsPrimary =
-    account.role === "subscriber"
+    isSubscriber
       ? `${String(account.stats?.bookingCount || 0)} bookings - ${currency(account.stats?.revenue || 0)} revenue`
       : `${String(account.stats?.visitCount || 0)} visits - ${String(account.stats?.upcomingCount || 0)} upcoming`;
   const statsSecondary =
-    account.role === "subscriber"
+    isSubscriber
       ? `${account.stats?.planLabel || "no plan"} - ${account.business?.city || "no city"}`
       : `${String(account.stats?.linkedBusinesses || 0)} linked salons`;
 
@@ -3915,13 +3986,26 @@ function renderAdminAccountDetail() {
           : `<small>${escapeHtml(account.stats?.lastBookingAt ? new Date(account.stats.lastBookingAt).toLocaleString("en-GB") : "No recent activity available.")}</small>`
       }
     </article>
+    ${
+      isSubscriber && businessId
+        ? `
+          <article class="detail-card">
+            <strong>Managed actions</strong>
+            <div class="agenda-item-actions">
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-dashboard">Open dashboard</button>
+              <button class="btn btn-ghost btn-small" type="button" data-admin-account-action="open-profile">Edit business info</button>
+            </div>
+          </article>
+        `
+        : ""
+    }
   `;
 
   if (els.adminEditName) els.adminEditName.value = String(account.name || "");
   if (els.adminEditEmail) els.adminEditEmail.value = String(account.email || "");
   if (els.adminEditBusinessName) {
     els.adminEditBusinessName.value = String(account.business?.name || "");
-    els.adminEditBusinessName.disabled = account.role !== "subscriber";
+    els.adminEditBusinessName.disabled = !isSubscriber;
   }
 }
 
@@ -5060,6 +5144,29 @@ els.adminAccountsTable?.addEventListener("click", (event) => {
   renderAdminAccounts(state.adminAccounts);
   renderAdminAccountDetail();
   setAdminAccountMessage("");
+});
+
+els.adminAccountDetail?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const button = target.closest("[data-admin-account-action]");
+  if (!(button instanceof HTMLElement)) return;
+  const action = String(button.getAttribute("data-admin-account-action") || "").trim();
+  const account = state.adminAccounts.find((row) => row.id === state.selectedAdminAccountId) || null;
+  if (!account || !isSubscriberAdminAccount(account)) return;
+  const business = selectAdminBusiness(adminAccountBusinessId(account), { scroll: true });
+  if (!business) {
+    setAdminAccountMessage("Linked business details are not available yet.", "error");
+    return;
+  }
+  if (action === "open-dashboard") {
+    setAdminAccountMessage(`Loaded ${business.name || "subscriber"} business details.`, "success");
+    return;
+  }
+  if (action === "open-profile") {
+    openAdminBusinessProfilePopup(business);
+    setAdminAccountMessage(`Opened ${business.name || "subscriber"} profile.`, "success");
+  }
 });
 
 els.adminAccountSearchForm?.addEventListener("submit", async (event) => {

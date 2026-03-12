@@ -1,6 +1,9 @@
 # Subscription and Billing Policy
 
-Effective date: [PLACEHOLDER: DATE]
+Draft status:
+- Working draft pending solicitor review before publication or reliance as final billing terms.
+
+Effective date: TBD
 
 ## 1. Plans
 
@@ -18,6 +21,7 @@ Current operational billing notes:
 - Stripe checkout returns subscribers to the canonical `/dashboard` route after success or cancellation.
 - PayPal subscription approval/cancel flows also return to the canonical `/dashboard` route.
 - Stripe billing-portal returns also route back to `/dashboard`.
+- Billing applies to the subscriber account tier of Ask Lexi | AI Salon Receptionist.
 
 ## 3. Renewal
 
@@ -25,7 +29,7 @@ Subscriptions renew automatically unless cancelled before renewal date.
 
 ## 4. Taxes
 
-Prices are [PLACEHOLDER: VAT inclusive/exclusive].  
+Prices are VAT exclusive.  
 Subscribers are responsible for applicable taxes unless stated otherwise.
 
 ## 5. Failed Payments

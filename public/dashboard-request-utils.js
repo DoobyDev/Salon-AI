@@ -2,6 +2,8 @@
 export function createDashboardRequestUtilsRuntime({
   getToken,
   getUserRole,
+  getAuthRole,
+  getPreviewCustomerEmail,
   getManagedBusinessId
 }) {
   function headers() {
@@ -12,16 +14,27 @@ export function createDashboardRequestUtilsRuntime({
   }
 
   function withManagedBusiness(path) {
-    if (getUserRole() !== "admin") return path;
+    const authRole = typeof getAuthRole === "function" ? getAuthRole() : getUserRole();
+    if (authRole !== "admin") return path;
     const scope = String(getManagedBusinessId() || "").trim();
     if (!scope) return path;
     const separator = path.includes("?") ? "&" : "?";
     return `${path}${separator}businessId=${encodeURIComponent(scope)}`;
   }
 
+  function withCustomerPreview(path) {
+    const authRole = typeof getAuthRole === "function" ? getAuthRole() : getUserRole();
+    if (authRole !== "admin") return path;
+    const customerEmail = String(getPreviewCustomerEmail?.() || "").trim().toLowerCase();
+    if (!customerEmail) return path;
+    const separator = path.includes("?") ? "&" : "?";
+    return `${path}${separator}customerEmail=${encodeURIComponent(customerEmail)}`;
+  }
+
   function canManageBusinessModules() {
     if (getUserRole() === "subscriber") return true;
-    if (getUserRole() === "admin") {
+    const authRole = typeof getAuthRole === "function" ? getAuthRole() : getUserRole();
+    if (authRole === "admin") {
       return Boolean(String(getManagedBusinessId() || "").trim());
     }
     return false;
@@ -30,6 +43,7 @@ export function createDashboardRequestUtilsRuntime({
   return {
     headers,
     withManagedBusiness,
+    withCustomerPreview,
     canManageBusinessModules
   };
 }

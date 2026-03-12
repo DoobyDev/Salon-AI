@@ -1,12 +1,15 @@
 # Terms and Conditions
 
-Effective date: [PLACEHOLDER: DATE]  
-Operator: [PLACEHOLDER: LEGAL ENTITY NAME] ("Company", "we", "us")
+Draft status:
+- Working draft pending solicitor review before publication or reliance as final legal terms.
+
+Effective date: TBD  
+Operator: Stuart Hall ("Company", "we", "us")
 
 ## 1. Scope
 
 These Terms govern use of:
-- Website and app services branded as [PLACEHOLDER: BRAND NAME].
+- Website and app services branded as Ask Lexi | AI Salon Receptionist.
 - Subscriber dashboards and customer-facing booking/reception features.
 - Related API, desktop, and mobile interfaces.
 
@@ -93,9 +96,9 @@ You agree to indemnify Company from claims arising from your misuse, unlawful co
 
 ## 15. Governing Law and Jurisdiction
 
-These Terms are governed by the laws of [PLACEHOLDER: JURISDICTION, e.g., England and Wales], with courts located in [PLACEHOLDER: VENUE].
+These Terms are governed by the laws of England and Wales, with courts located in [PLACEHOLDER: VENUE].
 
 ## 16. Contact
 
-[PLACEHOLDER: LEGAL CONTACT EMAIL]  
-[PLACEHOLDER: REGISTERED ADDRESS]
+stuhall44@gmail.com  
+10 Wilson House, Denton Drive, Northwich, Cheshire, CW97XJ

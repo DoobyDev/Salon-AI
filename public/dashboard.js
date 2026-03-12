@@ -1,6 +1,6 @@
-import { applyDashboardRoleLayoutVisibility } from "./dashboard-layout.js";
-import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js";
-import { createBusinessHubRuntime } from "./dashboard-business-hub-popup.js";
+import { applyDashboardRoleLayoutVisibility } from "./dashboard-layout.js?v=20260312-admin1";
+import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js?v=20260312-admin1";
+import { createBusinessHubRuntime } from "./dashboard-business-hub-popup.js?v=20260312-admin1";
 import { createModuleUsageRuntime } from "./dashboard-module-usage.js";
 import { createModuleStatusRuntime } from "./dashboard-module-status.js";
 import { createModuleCatalogRuntime } from "./dashboard-module-catalog.js";
@@ -20,11 +20,11 @@ import { createModuleWorkboardRuntime } from "./dashboard-module-workboard.js";
 import { createModulePopupRuntime } from "./dashboard-module-popups.js";
 import { createModuleClickRouterRuntime } from "./dashboard-module-click-router.js";
 import { createModuleNavigationRuntime } from "./dashboard-module-navigation.js";
-import { createDashboardRoutingUiSupportRuntime } from "./dashboard-routing-ui-support.js";
-import { createDashboardRequestUtilsRuntime } from "./dashboard-request-utils.js";
+import { createDashboardRoutingUiSupportRuntime } from "./dashboard-routing-ui-support.js?v=20260312-admin1";
+import { createDashboardRequestUtilsRuntime } from "./dashboard-request-utils.js?v=20260312-admin1";
 import { createDashboardSharedUtilsRuntime } from "./dashboard-shared-utils.js";
 import { createDashboardPreferencesRuntime } from "./dashboard-preferences-runtime.js";
-import { createDashboardRoleChromeRuntime } from "./dashboard-role-chrome.js";
+import { createDashboardRoleChromeRuntime } from "./dashboard-role-chrome.js?v=20260312-admin1";
 import { createDashboardCopilotUiRuntime } from "./dashboard-copilot-ui.js";
 import { createDashboardStatusUtilsRuntime } from "./dashboard-status-utils.js";
 import { createDashboardMobileNavRuntime } from "./dashboard-mobile-nav.js";
@@ -86,13 +86,14 @@ import { createExecutivePulseUtilsRuntime } from "./dashboard-executive-pulse-ut
 import { createCalendarDiaryRuntime } from "./dashboard-calendar-diary.js";
 import { createWorkspaceStarRuntime } from "./dashboard-workspace-star.js";
 import { createBusinessProfileRuntime } from "./dashboard-business-profile.js";
-import { createAdminSupportRuntime } from "./dashboard-admin-support.js";
+import { createAdminSupportRuntime } from "./dashboard-admin-support.js?v=20260312-admin1";
 import { createAdminBusinessRuntime } from "./dashboard-admin-business-runtime.js";
 import { createAdminBusinessLoadingRuntime } from "./dashboard-admin-business-loading.js";
 import { createAdminBusinessControlsRuntime } from "./dashboard-admin-business-controls.js";
 import { createAdminManagedControlsRuntime } from "./dashboard-admin-managed-controls.js";
 import { createBusinessCopilotRuntime } from "./dashboard-business-copilot.js";
-import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js";
+import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js?v=20260312-admin1";
+import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260312-admin1";
 import { createBusinessReportingRuntime } from "./dashboard-business-reporting.js";
 import { createBusinessGrowthPanelRuntime } from "./dashboard-business-growth-panel.js";
 import { createBusinessControlsRuntime } from "./dashboard-business-controls-runtime.js";
@@ -106,6 +107,7 @@ import { createStaffRosterRuntime } from "./dashboard-staff-roster-runtime.js";
 import { createStaffDateUtilsRuntime } from "./dashboard-staff-date-utils.js";
 import { createStaffRotaWeekRuntime } from "./dashboard-staff-rota-week.js";
 import { createStaffRotaCoreRuntime } from "./dashboard-staff-rota-core.js";
+import { registerServiceWorker } from "./pwa-runtime.js";
 import {
   parseShiftDaysInput as parseStaffShiftDaysInput,
   formatDateKey as formatStaffDateKey,
@@ -123,11 +125,16 @@ import {
   buildWaitlistRecoveryPrefillDateTime as buildWaitlistRecoveryDateTime
 } from "./dashboard-waitlist-utils.js";
 
+registerServiceWorker();
+
 const params = new URLSearchParams(window.location.search);
 // Dashboard mock/demo mode is disabled to preserve a stable live layout.
 const isMockMode = false;
 const roleParam = String(params.get("role") || "").trim().toLowerCase();
 const adminBusinessParam = String(params.get("businessId") || "").trim();
+const adminPageParam = String(params.get("adminPage") || "").trim().toLowerCase();
+const previewCustomerEmailParam = String(params.get("customerEmail") || "").trim().toLowerCase();
+const previewCustomerNameParam = String(params.get("customerName") || "").trim();
 
 const AUTH_TOKEN_KEY = "salon_ai_token";
 const AUTH_USER_KEY = "salon_ai_user";
@@ -147,6 +154,18 @@ const user = isMockMode
       email: "morgan@lumenstudio.example"
     }
   : JSON.parse(userRaw || "{}");
+const authRole = String(user.role || "").trim().toLowerCase();
+const isAdminPreview = authRole === "admin" && (roleParam === "subscriber" || roleParam === "customer");
+if (isAdminPreview) {
+  user.role = roleParam;
+  if (roleParam === "subscriber" && adminBusinessParam) {
+    user.businessId = adminBusinessParam;
+  }
+  if (roleParam === "customer") {
+    if (previewCustomerEmailParam) user.email = previewCustomerEmailParam;
+    if (previewCustomerNameParam) user.name = previewCustomerNameParam;
+  }
+}
 const currentRole = String(user.role || "").trim().toLowerCase();
 if (document.body) {
   document.body.setAttribute("data-role", currentRole);
@@ -164,6 +183,11 @@ const toDateKey = (...args) => dashboardSharedUtilsRuntime.toDateKey(...args);
 const todayDateKeyLocal = (...args) => dashboardSharedUtilsRuntime.todayDateKeyLocal(...args);
 const writeToClipboard = (...args) => dashboardSharedUtilsRuntime.writeToClipboard(...args);
 const initializeUiDensity = (...args) => dashboardPreferencesRuntime.initializeUiDensity(...args);
+const dashboardBrandRole = document.getElementById("dashboardBrandRole");
+const dashboardKicker = document.getElementById("dashboardKicker");
+const dashboardTitle = document.getElementById("dashboardTitle");
+const dashboardDescription = document.getElementById("dashboardDescription");
+const dashboardBusinessPill = document.getElementById("dashboardBusinessPill");
 const dashboardPreferencesRuntime = createDashboardPreferencesRuntime({
   dashActionStatus,
   demoModeToggle,
@@ -450,7 +474,7 @@ const adminBusinessScope = document.getElementById("adminBusinessScope");
 const adminBusinessSearch = document.getElementById("adminBusinessSearch");
 const adminBusinessSelect = document.getElementById("adminBusinessSelect");
 const adminBusinessStatus = document.getElementById("adminBusinessStatus");
-const adminPlatformSection = document.getElementById("adminPlatformSection");
+const adminPlatformSection = document.getElementById("adminDashboard");
 const adminExecutiveControlMount = document.getElementById("adminExecutiveControlMount");
 const adminPlatformMetricGrid = document.getElementById("adminPlatformMetricGrid");
 const adminRevenueSummaryGrid = document.getElementById("adminRevenueSummaryGrid");
@@ -470,6 +494,14 @@ const adminUsageOperationsGrid = document.getElementById("adminUsageOperationsGr
 const adminUsagePeriodPill = document.getElementById("adminUsagePeriodPill");
 const adminUsageNote = document.getElementById("adminUsageNote");
 const adminPlatformExportBtn = document.getElementById("adminPlatformExportBtn");
+const adminBusinessHubGrid = document.getElementById("adminBusinessHubGrid");
+const adminHubDetailSection = document.getElementById("adminHubDetailSection");
+const adminHubDetailKicker = document.getElementById("adminHubDetailKicker");
+const adminHubDetailTitle = document.getElementById("adminHubDetailTitle");
+const adminHubDetailSummary = document.getElementById("adminHubDetailSummary");
+const adminHubDetailInfoList = document.getElementById("adminHubDetailInfoList");
+const adminHubDetailJobsList = document.getElementById("adminHubDetailJobsList");
+const adminHubDetailOutcomesList = document.getElementById("adminHubDetailOutcomesList");
 const adminManagedBusinessLabel = document.getElementById("adminManagedBusinessLabel");
 const adminManagedBusinessMeta = document.getElementById("adminManagedBusinessMeta");
 const adminManagedOpenCalendarBtn = document.getElementById("adminManagedOpenCalendarBtn");
@@ -800,6 +832,11 @@ const dashboardRoleChromeRuntime = createDashboardRoleChromeRuntime({
   },
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
+  dashboardBrandRole,
+  dashboardKicker,
+  dashboardTitle,
+  dashboardDescription,
+  dashboardBusinessPill,
   dashTitle,
   dashUser,
   dashRoleHint,
@@ -814,10 +851,13 @@ dashboardRoleChromeRuntime.initializeDashboardRoleChrome();
 const dashboardRequestUtilsRuntime = createDashboardRequestUtilsRuntime({
   getToken: () => token,
   getUserRole: () => user?.role,
+  getAuthRole: () => authRole,
+  getPreviewCustomerEmail: () => previewCustomerEmailParam,
   getManagedBusinessId: () => managedBusinessId
 });
 const headers = (...args) => dashboardRequestUtilsRuntime.headers(...args);
 const withManagedBusiness = (...args) => dashboardRequestUtilsRuntime.withManagedBusiness(...args);
+const withCustomerPreview = (...args) => dashboardRequestUtilsRuntime.withCustomerPreview(...args);
 const canManageBusinessModules = (...args) => dashboardRequestUtilsRuntime.canManageBusinessModules(...args);
 
 const dashboardStatusUtilsRuntime = createDashboardStatusUtilsRuntime({
@@ -1205,8 +1245,10 @@ const businessGrowthPanelRuntime = createBusinessGrowthPanelRuntime({
 const bookingsRuntime = createBookingsRuntime({
   getUserRole: () => user?.role,
   getManagedBusinessId: () => managedBusinessId,
+  getPreviewCustomerEmail: () => previewCustomerEmailParam,
   headers,
   withManagedBusiness,
+  withCustomerPreview,
   escapeHtml,
   parseBookingDate,
   toDateKey,
@@ -1402,6 +1444,25 @@ const businessHubRuntime = createBusinessHubRuntime({
   setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey)
 });
+const adminHubRuntime = createAdminHubRuntime({
+  getUserRole: () => user?.role,
+  getAdminPage: () => adminPageParam,
+  escapeHtml,
+  getBusinessHubModules: () => getBusinessHubModulesForRole({
+    role: "admin",
+    moduleDefinitionByKey
+  })
+});
+if (currentRole === "admin") {
+  adminHubRuntime.renderAdminBusinessHub(adminBusinessHubGrid, adminHubDetailSection, {
+    adminHubDetailKicker,
+    adminHubDetailTitle,
+    adminHubDetailSummary,
+    adminHubDetailInfoList,
+    adminHubDetailJobsList,
+    adminHubDetailOutcomesList
+  });
+}
 
 const moduleStatusRuntime = createModuleStatusRuntime({
   escapeHtml,

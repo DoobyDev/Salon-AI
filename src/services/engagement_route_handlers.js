@@ -79,9 +79,23 @@ export function createEngagementRouteHandlers({
   }
 
   async function customerDashboardHandler(req, res) {
-    const bookings = await prisma.booking.findMany({ where: { customerEmail: req.auth.email || "" } });
+    const requestedCustomerEmail = req.auth.role === "admin"
+      ? String(req.query.customerEmail || "").trim().toLowerCase()
+      : String(req.auth.email || "").trim().toLowerCase();
+    if (!requestedCustomerEmail) {
+      return res.status(400).json({ error: "Customer email is required." });
+    }
+
+    const bookings = await prisma.booking.findMany({ where: { customerEmail: requestedCustomerEmail } });
     const savedBusinesses = new Set(bookings.map((booking) => booking.businessId)).size;
-    const user = req.auth?.sub ? await prisma.user.findUnique({ where: { id: req.auth.sub }, select: { name: true, email: true } }) : null;
+    let user = null;
+    if (req.auth.role === "admin") {
+      user = typeof prisma.user?.findFirst === "function"
+        ? await prisma.user.findFirst({ where: { email: requestedCustomerEmail }, select: { name: true, email: true } })
+        : null;
+    } else if (req.auth?.sub && typeof prisma.user?.findUnique === "function") {
+      user = await prisma.user.findUnique({ where: { id: req.auth.sub }, select: { name: true, email: true } });
+    }
     const visitedBusinessIds = Array.from(new Set(bookings.map((booking) => String(booking.businessId || "").trim()).filter(Boolean)));
     const offersByBusiness = [];
     const matchingGiftCards = [];
@@ -94,8 +108,8 @@ export function createEngagementRouteHandlers({
       const memberships = (Array.isArray(record?.memberships) ? record.memberships : []).filter((row) => String(row.status || "").toLowerCase() === "active");
       const packages = (Array.isArray(record?.packages) ? record.packages : []).filter((row) => String(row.status || "").toLowerCase() === "active");
       const merch = (Array.isArray(record?.merch) ? record.merch : []).filter((row) => String(row.status || "").toLowerCase() === "active");
-      const giftCards = (Array.isArray(record?.giftCards) ? record.giftCards : []).filter((row) => {
-        const recipient = String(row.recipientName || "").trim().toLowerCase();
+        const giftCards = (Array.isArray(record?.giftCards) ? record.giftCards : []).filter((row) => {
+          const recipient = String(row.recipientName || "").trim().toLowerCase();
         const userName = String(user?.name || "").trim().toLowerCase();
         return userName && recipient && recipient === userName && String(row.status || "").toLowerCase() === "active";
       });
