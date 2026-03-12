@@ -16,8 +16,8 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/salon-theme.css?v=20260309-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260309-app1" />
+    <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme2" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-homepage2" />
   </head>
   <body class="ask-lexi-shell ask-lexi-home">
     <header class="site-header">
@@ -40,103 +40,138 @@
       </div>
     </header>
 
-    <main class="page-frame">
-      <section class="hero-shell" id="experience">
-        <div class="hero-copy">
-          <div class="hero-lexi-presence" aria-label="Lexi introduction">
-            <img
-              src="/LEXI_IMG.png"
-              alt="Ask Lexi AI salon receptionist portrait"
-              class="hero-lexi-presence-image"
-              width="626"
-              height="626"
-              loading="eager"
-              decoding="async"
-              fetchpriority="high"
-            />
-            <div class="hero-lexi-presence-copy">
-              <p>Meet Lexi</p>
-              <strong>Your AI salon receptionist</strong>
-              <small>Booking help, salon answers, and next steps from the first screen.</small>
-            </div>
+    <main class="page-frame home-page-frame">
+      <section class="home-hero section-card" id="experience">
+        <div class="home-hero-copy">
+          <div class="home-hero-copy-top">
+            <p class="kicker">AI front desk for salons, barbershops, aesthetics, and beauty studios</p>
+            <h1>Meet Lexi, the AI receptionist your clients trust first.</h1>
+            <p class="lede">
+              Lexi is the face of the app from the first second: answering service questions, guiding bookings, calming front-desk pressure, and turning every conversation into something useful for the owner.
+            </p>
           </div>
-          <p class="kicker">24/7 salon reception. Faster bookings. Cleaner operations.</p>
-          <h1>The AI receptionist that actually runs a salon front desk.</h1>
-          <p class="lede">
-            Ask Lexi answers service questions, recommends treatments, books appointments, manages diary pressure,
-            and gives salon owners one control room for bookings, revenue, staff coverage, and accounting export.
-          </p>
           <div class="hero-actions">
-            <a class="btn" href="/auth?role=subscriber&mode=register">Launch your salon</a>
-            <a class="btn btn-ghost" href="/dashboard?role=subscriber">Open owner dashboard</a>
+            <a class="btn" href="/auth?role=subscriber&mode=register">Start free trial</a>
+            <button class="btn btn-ghost" id="homeHeroAskLexiBtn" type="button">Talk to Lexi</button>
+            <button class="btn btn-ghost" id="homeHeroFlowBtn" type="button">See the booking path</button>
           </div>
-          <div class="hero-proof-grid" aria-label="Product outcomes">
-            <article class="proof-card">
-              <span>Missed-call recovery</span>
-              <strong>Capture bookings after hours instead of losing them to voicemail.</strong>
+          <div class="home-hero-note">
+            <strong>Built to lead the page.</strong>
+            <small>She should feel premium, capable, and central to the product before anyone reads the rest of the homepage.</small>
+          </div>
+          <div class="home-hero-metrics" aria-label="Homepage proof points">
+            <article class="home-hero-metric">
+              <span>24/7 cover</span>
+              <strong>Never leave new bookings sitting in voicemail.</strong>
             </article>
-            <article class="proof-card">
-              <span>Front desk calm</span>
-              <strong>Let Lexi handle routine booking, prep, reschedule, and follow-up questions.</strong>
-            </article>
-            <article class="proof-card">
+            <article class="home-hero-metric">
               <span>Owner control</span>
-              <strong>Run diary, revenue, accounting export, and next actions from one workspace.</strong>
+              <strong>Diary, revenue, reminders, and recovery in one operating view.</strong>
+            </article>
+            <article class="home-hero-metric">
+              <span>Real replies</span>
+              <strong>Service guidance, prep advice, and booking next steps in plain language.</strong>
             </article>
           </div>
         </div>
 
-        <div class="hero-stage">
-          <section class="portrait-card" aria-label="Lexi">
-            <img
-              src="/LEXI_IMG.png"
-              alt="Ask Lexi AI salon receptionist"
-              class="portrait-image"
-              width="626"
-              height="626"
-              loading="eager"
-              decoding="async"
-              fetchpriority="high"
-            />
-            <div class="portrait-copy">
-              <p>Ask Lexi</p>
-              <strong>Receptionist. Consultant. Booking manager.</strong>
-              <small>Built for salons, barbershops, aesthetics, and beauty studios.</small>
-            </div>
-          </section>
-
-          <section class="conversation-card" aria-label="Lexi live preview">
-            <div class="conversation-head">
+        <div class="home-hero-stage">
+          <section class="home-lexi-card" aria-label="Lexi stage">
+            <div class="home-lexi-intro">
               <div>
-                <p>Live booking preview</p>
-                <strong>Short replies. Clear next steps. No dead-end chat.</strong>
+                <p class="kicker">Meet Lexi</p>
+                <h2>Your AI salon receptionist</h2>
               </div>
-              <span class="status-pill">Live preview</span>
             </div>
-            <div class="conversation-thread" id="homePreviewThread">
-              <article class="bubble bubble-user">Do you have balayage appointments this Friday after 4?</article>
-              <article class="bubble bubble-lexi">Yes. I can offer two late colour slots. Do you want the earliest available or a senior colour stylist?</article>
-              <article class="bubble bubble-user">Earliest available please.</article>
-              <article class="bubble bubble-lexi">Best option is 4:30 PM. I can take your details and hold that now.</article>
+            <div class="home-lexi-nameplate" aria-hidden="true">LEXI</div>
+            <div class="home-lexi-visual">
+              <div class="home-lexi-glow home-lexi-glow-one" aria-hidden="true"></div>
+              <div class="home-lexi-glow home-lexi-glow-two" aria-hidden="true"></div>
+              <div class="home-lexi-ring" aria-hidden="true"></div>
+              <div class="home-lexi-visual-panel" aria-hidden="true"></div>
+              <article class="home-lexi-orbit home-lexi-orbit-top" aria-label="Lexi capability">
+                <span>Always on</span>
+                <strong>Captures bookings after hours</strong>
+              </article>
+              <article class="home-lexi-orbit home-lexi-orbit-bottom" aria-label="Lexi capability">
+                <span>Understands salon flow</span>
+                <strong>Services, prep, timing, reschedules, rebooking</strong>
+              </article>
+              <img
+                src="/3d-lexi.png"
+                alt="Ask Lexi AI salon receptionist portrait"
+                class="home-lexi-image"
+                width="626"
+                height="626"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
+              />
             </div>
-            <div class="conversation-actions">
-              <button class="btn" id="homeAskLexiBtn" type="button">Ask Lexi</button>
-              <button class="btn btn-ghost" id="homeBookingFlowBtn" type="button">Show booking path</button>
+            <div class="home-lexi-summary">
+              <strong>Receptionist. Consultant. Booking manager.</strong>
+              <small>Built to answer, guide, book, and hand the owner a cleaner operating picture.</small>
+            </div>
+            <blockquote hidden>
+              “She should look like the person customers trust first, not a feature card buried in the layout.”
+            </blockquote>
+            <div class="home-lexi-support">
+              <article class="home-lexi-support-card">
+                <span>Booking voice</span>
+                <strong>Clear, calm, premium replies that move people forward.</strong>
+              </article>
+              <article class="home-lexi-support-card">
+                <span>Salon brain</span>
+                <strong>Service matching, prep guidance, reschedules, and next-step recommendations.</strong>
+              </article>
+              <article class="home-lexi-support-card">
+                <span>Owner signal</span>
+                <strong>Everything she handles feeds the diary, reminders, recovery, and revenue picture.</strong>
+              </article>
+            </div>
+            <div class="home-lexi-capability-band">
+              <span>Bookings</span>
+              <span>Service advice</span>
+              <span>Prep questions</span>
+              <span>Diary pressure</span>
+              <span>Recovery prompts</span>
             </div>
           </section>
         </div>
       </section>
 
-      <section class="section-grid section-grid-tight">
-        <article class="section-card stat-panel">
-          <p class="kicker">Real front desk work</p>
-          <h2>Lexi does more than answer questions.</h2>
-          <p>
-            She qualifies requests, recommends services, protects pricing accuracy, offers slots, gathers details,
-            confirms bookings, and keeps the owner informed.
-          </p>
-        </article>
-        <article class="section-card live-feed-card">
+      <section class="home-command-grid">
+        <section class="home-command-deck section-card">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Front desk outcomes</p>
+              <h2>One complete section for what the product actually changes.</h2>
+            </div>
+            <p class="section-copy">
+              Ask Lexi is built for the real salon bottlenecks: missed calls, scattered diary decisions, unclear follow-up, weak handoff between booking and owner action, and revenue leakage from cancellations.
+            </p>
+          </div>
+          <div class="home-command-grid-inner">
+            <article class="home-command-card">
+              <span>Missed-call recovery</span>
+              <strong>Capture late demand instead of losing it outside opening hours.</strong>
+            </article>
+            <article class="home-command-card">
+              <span>Front desk calm</span>
+              <strong>Handle routine questions and booking friction without interrupting the team.</strong>
+            </article>
+            <article class="home-command-card">
+              <span>Owner visibility</span>
+              <strong>See diary pressure, reminders, recovery work, and revenue from one place.</strong>
+            </article>
+            <article class="home-command-card">
+              <span>Commercial control</span>
+              <strong>Turn cancellations, open gaps, and rebooking opportunities into visible next actions.</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="home-feed-shell section-card" aria-label="Recent bookings">
           <div class="section-head section-head-compact">
             <div>
               <p class="kicker">Recent bookings</p>
@@ -145,35 +180,33 @@
             <button class="btn btn-ghost btn-small" id="homeRefreshFeedBtn" type="button">Refresh</button>
           </div>
           <div class="live-booking-feed" id="homeBookingFeed"></div>
-        </article>
+        </section>
       </section>
 
-      <section class="operator-os-shell section-card" id="operator-os">
+      <section class="home-operator-shell section-card" id="operator-os">
         <div class="section-head">
           <div>
             <p class="kicker">Subscriber workspace</p>
-            <h2>The salon owner's operating system.</h2>
+            <h2>The operating system for salon owners, not just the receptionist.</h2>
           </div>
           <p class="section-copy">
-            The dashboard is built around the day-to-day reality of running a salon: a full-width diary, revenue
-            visibility, customer recovery, accounting extract, and Ask Lexi actions everywhere.
+            The subscriber dashboard is designed around the working day: live diary control, customer follow-up, recovery, reminders, checkout, and finance visibility.
           </p>
         </div>
-
-        <div class="operator-os-grid">
-          <article class="workspace-card workspace-card-diary">
+        <div class="home-operator-grid">
+          <article class="home-operator-diary">
             <div class="workspace-card-head">
               <div>
-                <p class="kicker">Booking diary</p>
-                <h3>Full-width diary for daily use</h3>
+                <p class="kicker">Diary-first</p>
+                <h3>The booking day stays central.</h3>
               </div>
-              <span class="workspace-badge">Main working surface</span>
+              <span class="workspace-badge">Main surface</span>
             </div>
             <div class="diary-preview">
               <div class="diary-preview-toolbar">
                 <span>Monday</span>
                 <strong>09:00-18:30</strong>
-                <button class="btn btn-ghost btn-small" type="button">Ask Lexi</button>
+                <button class="btn btn-ghost btn-small" id="homeOperatorAskLexiBtn" type="button">Ask Lexi</button>
               </div>
               <div class="diary-preview-grid">
                 <article>
@@ -199,129 +232,132 @@
               </div>
             </div>
           </article>
-
-          <article class="workspace-card">
-            <div class="workspace-card-head">
-              <div>
-                <p class="kicker">Revenue</p>
-                <h3>Takings and accounting export</h3>
-              </div>
-            </div>
+          <article class="home-operator-card">
+            <p class="kicker">Recovery</p>
+            <h3>Work the weak spots before revenue disappears.</h3>
             <ul class="feature-list">
-              <li>See day, week, month, and rolling revenue clearly.</li>
-              <li>Export bookings for accounting in CSV format.</li>
-              <li>Track gross revenue, realized revenue, and cancellations.</li>
+              <li>Spot late cancellations, risky bookings, and open gaps faster.</li>
+              <li>Push rebooking and waitlist actions from one place.</li>
+              <li>Keep the next commercial decision visible during the day.</li>
             </ul>
           </article>
-
-          <article class="workspace-card">
-            <div class="workspace-card-head">
-              <div>
-                <p class="kicker">Ask Lexi actions</p>
-                <h3>Available throughout the app</h3>
-              </div>
-            </div>
+          <article class="home-operator-card">
+            <p class="kicker">Checkout and reminders</p>
+            <h3>Keep revenue, communication, and rebooking tied together.</h3>
             <ul class="feature-list">
-              <li>Book a client without leaving the current screen.</li>
-              <li>Ask how to use any module or fix an operational issue.</li>
-              <li>Get help on gaps, no-show risk, and rebooking prompts.</li>
+              <li>Control reminder readiness and due-soon follow-up.</li>
+              <li>Support checkout actions, offers, gift cards, and retail prompts.</li>
+              <li>Hand off better context from front desk work to owner actions.</li>
             </ul>
           </article>
         </div>
       </section>
 
-      <section class="section-grid" id="revenue">
-        <article class="section-card feature-panel">
+      <section class="home-commercial-shell" id="revenue">
+        <article class="section-card home-commercial-copy">
           <p class="kicker">Commercial control</p>
-          <h2>Revenue, retention, and recovery in one place.</h2>
+          <h2>Revenue, retention, recovery, and accounting without spreadsheet drift.</h2>
           <p>
-            Owners need more than a booking calendar. Ask Lexi gives a live revenue view, profitability context,
-            cancellation recovery prompts, and accountant-ready extracts without spreadsheet chaos.
+            Ask Lexi keeps the commercial side visible in the same product as the booking flow, so salon owners can see what was booked, what was lost, what can be recovered, and what needs exporting.
           </p>
-          <ul class="feature-list">
-            <li>Live revenue tracking from the booking stream</li>
-            <li>Profit and cost visibility for cleaner decision-making</li>
-            <li>Waitlist and rebooking prompts to recover lost revenue</li>
-          </ul>
+          <div class="home-commercial-list">
+            <article class="detail-card">
+              <span>Revenue visibility</span>
+              <strong>Track day, week, month, and rolling takings with live booking context.</strong>
+            </article>
+            <article class="detail-card">
+              <span>Recovery pressure</span>
+              <strong>Turn cancellations, no-show risk, and rebooking prompts into actions.</strong>
+            </article>
+            <article class="detail-card">
+              <span>Accountant-ready export</span>
+              <strong>Keep clean booking records ready for finance workflows and reporting.</strong>
+            </article>
+          </div>
         </article>
-        <article class="section-card stats-panel">
-          <div class="stat-stack">
-            <div>
+        <article class="section-card home-commercial-board">
+          <div class="home-commercial-stats">
+            <article>
               <span>Today</span>
               <strong>GBP 2,480</strong>
               <small>Confirmed booking revenue</small>
-            </div>
-            <div>
+            </article>
+            <article>
               <span>Recoverable</span>
               <strong>GBP 420</strong>
               <small>From cancellations and open gaps</small>
-            </div>
-            <div>
-              <span>Export ready</span>
-              <strong>CSV</strong>
-              <small>For accountant and finance workflows</small>
-            </div>
+            </article>
+            <article>
+              <span>Accounting</span>
+              <strong>CSV ready</strong>
+              <small>Exportable for finance and bookkeeping</small>
+            </article>
+          </div>
+          <div class="home-commercial-signal">
+            <p class="kicker">Owner readout</p>
+            <h3>Bookings, reminders, checkout, and finance stay in the same operating loop.</h3>
+            <small>That matters because most salons do not lose money from one big mistake. They lose it from hidden small misses across the week.</small>
           </div>
         </article>
       </section>
 
-      <section class="section-card journey-shell">
+      <section class="home-flow-shell section-card">
         <div class="section-head">
           <div>
             <p class="kicker">Booking flow</p>
-            <h2>One clean route from question to confirmed appointment.</h2>
+            <h2>From customer question to confirmed appointment to owner action.</h2>
           </div>
         </div>
-        <div class="journey-grid">
-          <article class="journey-card">
+        <div class="home-flow-grid">
+          <article class="home-flow-step">
             <span>01</span>
             <strong>Customer asks</strong>
-            <p>Services, suitability, prep, price, timing, or stylist preference.</p>
+            <p>Services, suitability, prep, price, timing, or who they should book with.</p>
           </article>
-          <article class="journey-card">
+          <article class="home-flow-step">
             <span>02</span>
             <strong>Lexi guides</strong>
-            <p>Recommends the right treatment and keeps the choice set manageable.</p>
+            <p>She narrows the choice, recommends the right option, and keeps the reply useful.</p>
           </article>
-          <article class="journey-card">
+          <article class="home-flow-step">
             <span>03</span>
             <strong>Lexi books</strong>
-            <p>Offers suitable slots, collects details, and confirms clearly.</p>
+            <p>Slots, details, confirmation, and next steps happen in one clean flow.</p>
           </article>
-          <article class="journey-card">
+          <article class="home-flow-step">
             <span>04</span>
-            <strong>Owner operates</strong>
-            <p>Diary, revenue, reminders, accounting, and recovery run from one dashboard.</p>
+            <strong>Owner sees it</strong>
+            <p>The booking lands inside a wider operating dashboard built for the salon day.</p>
           </article>
         </div>
       </section>
 
-      <section class="section-card pricing-shell" id="pricing">
+      <section class="home-pricing-shell section-card" id="pricing">
         <div class="section-head">
           <div>
-            <p class="kicker">Pricing</p>
-            <h2>Sell the outcome, not "a chatbot".</h2>
+            <p class="kicker">Pricing position</p>
+            <h2>Sell the system, not “an AI chatbot”.</h2>
           </div>
           <a class="btn btn-ghost" href="/auth?role=subscriber&mode=register">Create salon account</a>
         </div>
-        <div class="pricing-grid">
-          <article class="pricing-card pricing-card-primary">
+        <div class="home-pricing-grid">
+          <article class="home-pricing-card home-pricing-card-primary">
             <span>Core</span>
             <strong>Lexi Reception</strong>
-            <p>24/7 AI receptionist, beauty guidance, booking flow, and owner dashboard.</p>
-            <small>Best for owner-operators and small teams.</small>
+            <p>24/7 booking receptionist, service guidance, and owner-facing daily control room.</p>
+            <small>Best for owner-operators and small teams that need front-desk cover immediately.</small>
           </article>
-          <article class="pricing-card">
+          <article class="home-pricing-card">
             <span>Growth</span>
             <strong>Control Room</strong>
-            <p>Advanced operations, recovery prompts, revenue control, and accounting workflows.</p>
-            <small>Best for busy salons with stronger diary pressure.</small>
+            <p>Stronger recovery, reminders, revenue visibility, checkout, and operational support.</p>
+            <small>Best for busy salons where diary pressure and follow-up mistakes cost real money.</small>
           </article>
-          <article class="pricing-card">
+          <article class="home-pricing-card">
             <span>Platform</span>
             <strong>Managed Portfolio</strong>
-            <p>Admin oversight for multiple businesses, billing, health, and support operations.</p>
-            <small>Best for internal management or multi-site rollout.</small>
+            <p>Admin oversight, subscriber support, portfolio reporting, and multi-business control.</p>
+            <small>Best for internal management teams and broader salon group operations.</small>
           </article>
         </div>
       </section>
@@ -376,7 +412,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/ask-lexi-home.js?v=20260309-app1"></script>
-    <script type="module" src="/salon-theme.js?v=20260309-theme2"></script>
+    <script type="module" src="/ask-lexi-home.js?v=20260312-homepage1"></script>
+    <script type="module" src="/salon-theme.js?v=20260312-theme2"></script>
   </body>
 </html>

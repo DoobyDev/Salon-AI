@@ -1,4 +1,4 @@
-const CACHE_NAME = "salon-ai-v9";
+const CACHE_NAME = "salon-ai-v10";
 const ASSETS = [
   "/",
   "/index.html",
@@ -10,7 +10,7 @@ const ASSETS = [
   "/manifest.webmanifest",
   "/icons/icon.svg",
   "/icons/icon-maskable.svg",
-  "/LEXI_IMG.png"
+  "/3d-lexi.png"
 ];
 
 self.addEventListener("install", (event) => {

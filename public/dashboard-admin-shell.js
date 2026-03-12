@@ -336,12 +336,27 @@ if (!token || !userRaw) {
     }
   });
 
+  const adminHubDetailSection = document.getElementById("adminHubDetailSection");
+
   adminSupportRuntime.bindAdminSupportEvents();
   adminPlatformRuntime.bindAdminPlatformEvents();
   adminPlatformRuntime.loadAdminPlatformOverview();
   adminHubRuntime.renderAdminBusinessHub(
     document.getElementById("adminBusinessHubGrid"),
-    null,
-    {}
+    adminHubDetailSection,
+    {
+      adminHubDetailKicker: document.getElementById("adminHubDetailKicker"),
+      adminHubDetailTitle: document.getElementById("adminHubDetailTitle"),
+      adminHubDetailSummary: document.getElementById("adminHubDetailSummary"),
+      adminHubDetailInfoList: document.getElementById("adminHubDetailInfoList"),
+      adminHubDetailJobsList: document.getElementById("adminHubDetailJobsList"),
+      adminHubDetailOutcomesList: document.getElementById("adminHubDetailOutcomesList")
+    }
   );
+
+  if (adminPage && adminHubDetailSection) {
+    window.requestAnimationFrame(() => {
+      adminHubDetailSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 }

@@ -131,6 +131,14 @@ Status: simplified admin workspace active
 
 - Premium Ask Lexi landing page
 - Homepage hero now foregrounds a compact Lexi introduction strip from first load so visitors immediately see the AI receptionist without overloading the hero
+- Homepage hero now anchors the Lexi introduction strip inside the main portrait card so the identity cue and hero image read as one combined stage
+- Homepage Lexi portrait card now blends the intro strip and main hero image into one unified visual composition instead of separate stacked image blocks
+- Homepage hero now uses a single combined Lexi stage on the right, folding the live booking preview into the main portrait card instead of splitting it into a second card
+- Homepage hero spacing has been tightened so the `#experience` section reads denser and wastes less vertical space around the combined Lexi stage
+- Homepage `#experience` now works as one fuller combined section, replacing the old portrait chat preview with denser supporting content and a stronger Lexi stage
+- Homepage hero no longer uses the extra portrait conversation block, and the Lexi image now sits inside a more polished framed visual treatment
+- Homepage hero now pushes Lexi as the unmistakable star of the page with a larger portrait stage, stronger framing, and supporting proof built around her presence
+- Homepage hero now presents Lexi as the dominant first-screen focal point with a larger portrait stage, richer in-image capability overlays, and tighter supporting copy so the page reads around her instead of beside her
 - Premium salon-inspired visual theme across landing page and dashboards
 - Shared theme-token approach so the main app colors can be changed from a small set of palette variables
 - Auth and legal pages now use page-level theme tokens instead of mostly hardcoded visual values
@@ -227,6 +235,9 @@ Status: operational owner dashboard available
 - Expected revenue metrics
 - Reminders due soon metric
 - On duty today metric
+- Diary-first dashboard layout tightened so daily-use cards waste less vertical space
+- Two-column subscriber panels now avoid unnecessary equal-height stretching, reducing dead space in customer, revenue, checkout, and recovery sections
+- Selected-customer and recovery side panels now stay pinned more reliably on larger layouts so follow-up and prevention actions remain in view while scanning lists
 - Recommended action list
 - Communication-status view for reminder, confirmation, and rebooking activity already logged by the team
 - Live notification delivery status for booking SMS/email outcomes, including sent and failed channel counts
@@ -596,3 +607,13 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Added route-level serving for the admin-only shell plus no-store caching protection for the dedicated admin page asset
 - Expanded the admin revenue cards to show active app users, monthly/yearly subscriber split, free lifetime promo subscribers, period revenue, bookings, and Lexi bookings
 - Added email-linked free subscriber grant management plus subscriber welcome messaging for promoter accounts
+- Restored focused Business Hub detail pages on the dedicated admin shell so `adminPage` links open the intended area-specific guidance instead of only highlighting a card
+- Tightened subscriber dashboard card spacing and stopped short panels from stretching to the tallest neighbor so the daily workspace wastes less space
+- Kept subscriber customer and recovery detail panels in-view more reliably on wide layouts by removing extra container gap and pinning the action side panels
+- Rebuilt the homepage `#experience` area into one denser hero section and removed the old portrait conversation preview in favor of stronger support cards and improved portrait framing
+- Reworked the homepage hero again so Lexi dominates the section visually instead of sharing equal weight with generic marketing cards
+- Moved the homepage Lexi introduction strip into the top of the main portrait card so the hero identity cue sits directly with the primary Lexi image
+- Refined the homepage Lexi portrait styling so the intro strip and hero image now read as one polished, unified card
+- Merged the homepage Lexi portrait and live preview into one combined hero card so the right-hand stage now uses a single Lexi image and one unified panel
+- Tightened the homepage `#experience` section spacing by reducing outer hero padding and compressing the merged Lexi card layout
+- Reworked the homepage hero again so Lexi now leads the first screen with a more dominant portrait composition, stronger visual staging, and lighter supporting copy weight

@@ -24,12 +24,18 @@ Local validation target for the next pass:
 - Manual browser pass helper: `docs/DASHBOARD_MANUAL_QA_CHECKLIST_2026-03-11.md`
 
 Tomorrow restart point:
-- Admin dashboard has been split to a dedicated admin-only shell and is now in active design cleanup.
-- Today completed: top nav cleanup, full-width account search, direct dashboard preview launch from search results, KPI-focused revenue cards, free-subscriber email grant popup, cleaner Business Hub, combined monthly trend cards, and warmer admin card styling.
-- Next admin UX pass should focus on:
-  - simplifying or removing any remaining low-value Section 3 visuals
-  - refining Business Hub labels/cards/pages
-  - running a real browser QA pass across admin/subscriber/customer after the latest admin-shell split
+- Admin dashboard code pass is in a good stop state after the dedicated admin-shell fixes, Business Hub detail restore, inline action feedback restore, and first-round subscriber layout tightening.
+- Homepage work is now the active design track.
+- Today completed on the homepage:
+  - rebuilt `#experience` into one denser combined hero section
+  - removed the old portrait conversation block
+  - pushed Lexi into the dominant first-screen focal point with a larger portrait stage and in-image capability overlays
+  - removed the homepage `status-pill`
+  - removed the homepage `home-lexi-quote` treatment from active presentation
+- Next homepage pass should focus on:
+  - browser-reviewing the hero visually at desktop and mobile widths
+  - deciding whether the rest of the homepage should be brought up to the same visual standard as the top section
+  - then either continuing the homepage redesign or switching back to the subscriber dashboard
 
 - [ ] Browser-verify PWA installability and shell updates on the live routes.
 Files: `public/index.html`, `public/auth.html`, `public/dashboard.html`, `public/legal.html`, `public/pwa-runtime.js`, `public/sw.js`, `public/manifest.webmanifest`

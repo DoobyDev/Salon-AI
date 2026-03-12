@@ -24,32 +24,28 @@ Route:
 Checks:
 - Confirm the admin dashboard loads instead of redirecting back to `/auth`.
 - Confirm the top admin metrics render.
-- Confirm the business list and account panel both appear.
+- Confirm the account search area, revenue section, and Business Hub all appear.
 
 ### Admin accounts panel
 
 In the `Customer and subscriber accounts` section:
 
 - Search for a subscriber account by name or email.
-- Click a subscriber row.
-- Confirm the detail card shows:
-  - account name
-  - email
-  - business name
-  - managed action buttons
-
-Expected managed actions:
-- `Open dashboard`
-- `Edit business info`
+- Confirm matching rows render with role, business context, and quick stats.
+- Click a subscriber row or the `Open dashboard` action.
+- Confirm the app opens that subscriber's live dashboard preview.
 
 Then verify:
-- Clicking `Open dashboard` changes the managed business context and loads that business dashboard state.
-- Clicking `Edit business info` opens the business-information popup/workspace modal.
-- `Export accounting CSV` still works visibly from the page.
-- `Platform revenue CSV` still works visibly from the page.
+- searching for a customer account also opens the correct customer dashboard preview
+- the admin page shows a visible inline status/feedback message after preview actions
+- the result rows still feel clear and clickable at desktop width
+
+Revenue/admin extras:
+- `Export revenue CSV` still works visibly from the page.
+- Clicking the free-subscriber metric/card path still opens the lifetime promoter modal.
 
 Pass note:
-- If the managed action buttons are visible and both actions work from the live page, the main admin-account runtime blocker can be closed.
+- If search results render clearly and direct preview launch works for subscriber and customer rows from the live page, the main admin preview-flow blocker can be closed.
 
 ### Admin control-center toggles
 

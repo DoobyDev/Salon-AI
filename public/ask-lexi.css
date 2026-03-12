@@ -290,10 +290,11 @@ textarea {
 }
 
 .hero-shell {
-  padding: 1.4rem;
+  padding: 1.05rem;
   display: grid;
   grid-template-columns: minmax(0, 1.06fr) minmax(360px, 0.94fr);
-  gap: 1.2rem;
+  gap: 0.85rem;
+  align-items: stretch;
 }
 
 .hero-copy,
@@ -434,7 +435,25 @@ textarea {
 
 .hero-proof-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 1.2rem;
+  margin-top: 0.9rem;
+}
+
+.hero-support-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.95rem;
+}
+
+.hero-support-card {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-height: 0;
+}
+
+.hero-support-card h2 {
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
 }
 
 .proof-card,
@@ -492,7 +511,7 @@ textarea {
 
 .hero-stage {
   display: grid;
-  gap: 1rem;
+  gap: 0.7rem;
 }
 
 .portrait-card,
@@ -503,21 +522,169 @@ textarea {
   background: rgba(255, 251, 246, 0.92);
 }
 
+.portrait-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.85rem;
+  min-height: 100%;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 177, 131, 0.34), transparent 34%),
+    radial-gradient(circle at 10% 90%, rgba(29, 127, 119, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.99), rgba(246, 237, 228, 0.93));
+}
+
+.portrait-card::before {
+  content: "";
+  position: absolute;
+  inset: 0.8rem;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 214, 188, 0.92), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(250, 242, 234, 0.2));
+  pointer-events: none;
+}
+
+.portrait-card .hero-lexi-presence {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0.1rem 0.1rem 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.portrait-card .hero-lexi-presence-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid rgba(150, 96, 63, 0.1);
+  box-shadow: 0 10px 20px rgba(103, 63, 38, 0.1);
+}
+
+.portrait-card .hero-lexi-presence-copy {
+  gap: 0.18rem;
+}
+
+.portrait-card .hero-lexi-presence-copy strong {
+  font-size: 1rem;
+}
+
+.portrait-card .hero-lexi-presence-copy small {
+  max-width: 22rem;
+}
+
+.portrait-visual-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0.8rem 0.6rem 0.35rem;
+}
+
+.portrait-visual-orb {
+  position: absolute;
+  inset: 1rem 2rem 0.8rem;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255, 232, 212, 0.95), transparent 34%),
+    radial-gradient(circle at 50% 78%, rgba(239, 177, 131, 0.34), transparent 42%),
+    linear-gradient(180deg, rgba(255, 248, 242, 0.86), rgba(242, 231, 220, 0.2));
+  filter: blur(0.2px);
+}
+
 .portrait-image {
+  position: relative;
+  z-index: 1;
   width: min(100%, 320px);
   display: block;
   margin: 0 auto;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 0.96;
+  object-fit: cover;
   object-position: center top;
-  border-radius: 26px;
-  box-shadow: 0 24px 46px rgba(103, 63, 38, 0.16);
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: linear-gradient(180deg, rgba(255, 250, 245, 0.88), rgba(242, 231, 220, 0.9));
+  box-shadow:
+    0 28px 52px rgba(103, 63, 38, 0.18),
+    0 0 0 12px rgba(255, 248, 242, 0.62);
 }
 
 .portrait-copy {
-  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
   text-align: center;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.3rem;
+}
+
+.portrait-copy p,
+.portrait-support-card span {
+  color: var(--primary-strong);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.portrait-support-grid {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.portrait-support-card {
+  align-content: start;
+  gap: 0.38rem;
+  padding: 0.8rem;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(245, 235, 224, 0.9));
+}
+
+.portrait-capability-strip {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(127, 76, 48, 0.1);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 250, 0.92), rgba(247, 238, 230, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 16px 28px rgba(108, 68, 42, 0.08);
+}
+
+.portrait-capability-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.portrait-capability-list span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(199, 122, 78, 0.16);
+  background: rgba(255, 248, 241, 0.88);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .conversation-thread,
@@ -755,6 +922,30 @@ textarea {
 
 .dashboard-grid-subscriber {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-grid-subscriber > .dashboard-card {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  min-height: 0;
+  padding: 1.05rem;
+}
+
+.dashboard-grid-subscriber > .dashboard-card > .section-head {
+  margin-bottom: 0;
+}
+
+.dashboard-grid-subscriber > .dashboard-card > .section-copy,
+.dashboard-grid-subscriber > .dashboard-card > .form-message {
+  margin: 0;
+}
+
+.dashboard-grid-subscriber .revenue-grid,
+.dashboard-grid-subscriber .insight-grid,
+.dashboard-grid-subscriber .insight-grid-two,
+.dashboard-grid-subscriber .selected-day-summary {
+  align-items: start;
 }
 
 .dashboard-grid-admin {
@@ -1581,7 +1772,16 @@ textarea {
 #recoveryDetailCard {
   display: grid;
   gap: 0.7rem;
-  margin-bottom: 0.85rem;
+}
+
+.subscriber-detail-panel,
+.subscriber-guide-panel {
+  align-content: start;
+}
+
+.subscriber-detail-panel #subscriberCustomerDetail,
+.subscriber-detail-panel #recoveryDetailCard {
+  margin-bottom: 0;
 }
 
 .detail-card {
@@ -1888,6 +2088,495 @@ textarea {
   background: rgba(255, 250, 245, 0.74);
 }
 
+.ask-lexi-home .page-frame.home-page-frame {
+  gap: 1.35rem;
+}
+
+.ask-lexi-home .site-header {
+  border-radius: 28px;
+}
+
+.ask-lexi-home .section-card {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 250, 0.94), rgba(245, 234, 222, 0.84));
+}
+
+.home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(480px, 1.22fr);
+  gap: 1rem;
+  padding: 1.1rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 218, 186, 0.58), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(29, 127, 119, 0.16), transparent 22%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(243, 230, 216, 0.92));
+}
+
+.home-hero-copy,
+.home-hero-stage,
+.home-lexi-card,
+.home-command-deck,
+.home-feed-shell,
+.home-operator-shell,
+.home-commercial-copy,
+.home-commercial-board,
+.home-flow-shell,
+.home-pricing-shell {
+  min-width: 0;
+}
+
+.home-hero-copy {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 0.35rem 0.15rem 0.35rem 0;
+}
+
+.home-hero-copy-top {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.home-hero-copy-top h1 {
+  margin: 0;
+  max-width: 9ch;
+  font-family: "Fraunces", serif;
+  font-size: clamp(3.8rem, 6.8vw, 6.9rem);
+  line-height: 0.84;
+  letter-spacing: -0.05em;
+}
+
+.home-hero-copy .lede {
+  max-width: 52ch;
+  font-size: 1.02rem;
+}
+
+.home-hero-note {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem 1.05rem;
+  border-left: 3px solid rgba(187, 105, 63, 0.3);
+  background: rgba(255, 248, 242, 0.82);
+  border-radius: 0 20px 20px 0;
+}
+
+.home-hero-note strong {
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.home-hero-metrics,
+.home-command-grid,
+.home-command-grid-inner,
+.home-operator-grid,
+.home-commercial-shell,
+.home-commercial-list,
+.home-commercial-stats,
+.home-flow-grid,
+.home-pricing-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-hero-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-hero-metric,
+.home-command-card,
+.home-flow-step,
+.home-pricing-card,
+.home-stage-panel,
+.home-commercial-stats article {
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(246, 236, 226, 0.88));
+  box-shadow: var(--shadow-soft);
+}
+
+.home-hero-metric,
+.home-command-card,
+.home-flow-step,
+.home-pricing-card,
+.home-stage-panel,
+.home-commercial-stats article {
+  padding: 1rem;
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.home-hero-metric span,
+.home-command-card span,
+.home-flow-step span,
+.home-pricing-card span,
+.home-commercial-stats span {
+  color: var(--primary-strong);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-hero-metric strong,
+.home-command-card strong,
+.home-flow-step strong,
+.home-stage-panel h3,
+.home-commercial-signal h3,
+.home-pricing-card strong {
+  color: var(--ink);
+}
+
+.home-hero-stage {
+  display: grid;
+  gap: 0.95rem;
+  align-content: stretch;
+  min-width: 0;
+}
+
+.home-lexi-card {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-height: 100%;
+  padding: 1.15rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at 52% 0%, rgba(239, 177, 131, 0.5), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(29, 127, 119, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 251, 246, 0.99), rgba(241, 228, 214, 0.95));
+  box-shadow: 0 30px 72px rgba(107, 69, 44, 0.18);
+}
+
+.home-lexi-card::before {
+  content: "";
+  position: absolute;
+  inset: 0.85rem;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  pointer-events: none;
+}
+
+.home-lexi-intro,
+.home-commercial-shell {
+  align-items: start;
+}
+
+.home-lexi-intro,
+.home-commercial-shell,
+.home-command-grid {
+  display: grid;
+}
+
+.home-lexi-intro {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  position: relative;
+  z-index: 1;
+  align-items: start;
+}
+
+.home-lexi-intro h2 {
+  margin: 0.12rem 0 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.7rem, 2.8vw, 2.8rem);
+  letter-spacing: -0.04em;
+}
+
+.home-lexi-nameplate {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(5.4rem, 10vw, 9rem);
+  line-height: 0.85;
+  letter-spacing: -0.08em;
+  color: rgba(143, 81, 55, 0.09);
+  pointer-events: none;
+}
+
+.home-lexi-visual {
+  position: relative;
+  z-index: 1;
+  min-height: 700px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 34px;
+}
+
+.home-lexi-visual-panel {
+  position: absolute;
+  inset: 1rem;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 236, 220, 0.98), transparent 32%),
+    linear-gradient(180deg, rgba(255, 248, 242, 0.94), rgba(240, 226, 212, 0.42));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -40px 60px rgba(199, 145, 111, 0.08);
+}
+
+.home-lexi-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(26px);
+  opacity: 0.92;
+}
+
+.home-lexi-glow-one {
+  width: 320px;
+  height: 320px;
+  top: 1.1rem;
+  background: rgba(255, 214, 188, 0.74);
+}
+
+.home-lexi-glow-two {
+  width: 420px;
+  height: 420px;
+  bottom: 0.8rem;
+  background: rgba(29, 127, 119, 0.18);
+}
+
+.home-lexi-ring {
+  position: absolute;
+  width: min(100%, 580px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 0 0 22px rgba(255, 247, 239, 0.3),
+    0 0 0 54px rgba(255, 247, 239, 0.14);
+}
+
+.home-lexi-image {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
+  aspect-ratio: 1 / 1.08;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 46px 88px rgba(98, 60, 35, 0.24),
+    0 0 0 18px rgba(255, 248, 241, 0.6);
+}
+
+.home-lexi-orbit {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 0.25rem;
+  max-width: 220px;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 251, 246, 0.9);
+  box-shadow: 0 18px 34px rgba(94, 58, 34, 0.14);
+  backdrop-filter: blur(10px);
+  animation: lexiFloat 6s ease-in-out infinite;
+}
+
+.home-lexi-orbit span {
+  color: var(--primary-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-lexi-orbit strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.home-lexi-orbit-top {
+  top: 2rem;
+  left: 1.5rem;
+}
+
+.home-lexi-orbit-bottom {
+  right: 1.4rem;
+  bottom: 2rem;
+  animation-delay: -3s;
+}
+
+@keyframes lexiFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.home-lexi-summary {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.home-lexi-summary strong {
+  font-size: clamp(1.28rem, 2.1vw, 1.7rem);
+}
+
+.home-lexi-support {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.home-lexi-support-card {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-height: 0;
+  padding: 0.95rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(245, 235, 224, 0.9));
+}
+
+.home-lexi-support-card span {
+  color: var(--primary-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-lexi-capability-band {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  padding-top: 0.1rem;
+}
+
+.home-lexi-capability-band span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.42rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 248, 241, 0.9);
+  border: 1px solid rgba(199, 122, 78, 0.16);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.home-command-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+}
+
+.home-command-grid-inner {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-feed-shell {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-operator-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-operator-grid {
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 0.9fr));
+}
+
+.home-operator-diary,
+.home-operator-card {
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 28px;
+  padding: 1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(244, 233, 221, 0.88));
+  box-shadow: var(--shadow-soft);
+}
+
+.home-operator-diary {
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.22), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(244, 233, 221, 0.9));
+}
+
+.home-operator-card {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.home-commercial-shell {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.home-commercial-copy,
+.home-commercial-board {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-commercial-list {
+  grid-template-columns: 1fr;
+}
+
+.home-commercial-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-commercial-signal {
+  padding: 1rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(245, 235, 224, 0.9));
+}
+
+.home-flow-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-flow-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.home-pricing-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-pricing-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-pricing-card {
+  min-height: 100%;
+}
+
+.home-pricing-card-primary {
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.28), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 245, 0.98), rgba(244, 232, 220, 0.9));
+}
+
 .status-positive {
   color: var(--success);
 }
@@ -1905,6 +2594,9 @@ textarea {
 }
 
 @media (max-width: 1200px) {
+  .home-hero,
+  .home-command-grid,
+  .home-commercial-shell,
   .hero-shell,
   .calendar-layout,
   .operator-os-grid,
@@ -1919,6 +2611,11 @@ textarea {
 
   .journey-grid,
   .pricing-grid,
+  .home-hero-metrics,
+  .home-command-grid-inner,
+  .home-commercial-stats,
+  .home-flow-grid,
+  .home-pricing-grid,
   .metric-band,
   .quick-booking-form,
   .admin-action-grid,
@@ -1959,6 +2656,48 @@ textarea {
     flex: 1 1 10rem;
   }
 
+  .subscriber-detail-panel,
+  .subscriber-guide-panel {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .hero-support-grid,
+  .portrait-support-grid,
+  .home-lexi-support {
+    grid-template-columns: 1fr;
+  }
+
+  .home-operator-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-operator-diary {
+    grid-column: 1 / -1;
+  }
+
+  .home-hero-copy {
+    padding-right: 0;
+  }
+
+  .home-lexi-visual {
+      min-height: 600px;
+    }
+
+  .home-lexi-image {
+      width: min(100%, 470px);
+    }
+
+    .home-lexi-orbit-top {
+      top: 1.5rem;
+      left: 1rem;
+    }
+
+    .home-lexi-orbit-bottom {
+      right: 1rem;
+      bottom: 1.4rem;
+    }
+
   .calendar-toolbar strong {
     flex: 1 1 100%;
   }
@@ -1987,9 +2726,19 @@ textarea {
     align-items: flex-start;
   }
 
+  .home-hero,
+  .home-operator-grid,
   .dashboard-grid-subscriber,
   .metric-band,
   .hero-proof-grid,
+  .hero-support-grid,
+  .home-hero-metrics,
+  .home-command-grid,
+  .home-command-grid-inner,
+  .home-commercial-shell,
+  .home-commercial-stats,
+  .home-flow-grid,
+  .home-pricing-grid,
   .insight-grid,
   .insight-grid-two,
   .journey-grid,
@@ -2015,11 +2764,36 @@ textarea {
     align-self: auto;
   }
 
+  .home-lexi-intro,
+  .home-hero .section-head,
+  .home-operator-shell .section-head,
+  .home-pricing-shell .section-head {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-hero-copy-top h1 {
+    max-width: none;
+  }
+
+  .home-lexi-nameplate {
+      font-size: clamp(3.4rem, 16vw, 6rem);
+      top: 1.6rem;
+      right: 1rem;
+    }
+
   .admin-row,
   .admin-table-accounts .admin-row,
   .channel-row,
   .team-row {
     grid-template-columns: 1fr;
+  }
+
+  .subscriber-detail-panel,
+  .subscriber-guide-panel {
+    position: static;
+    top: auto;
   }
 
   .calendar-toolbar .btn,
@@ -2075,6 +2849,10 @@ textarea {
     font-size: clamp(2.25rem, 12vw, 3.5rem);
   }
 
+  .home-hero-copy-top h1 {
+    font-size: clamp(2.4rem, 13vw, 4rem);
+  }
+
   .hero-lexi-presence {
     grid-template-columns: 1fr;
     justify-items: start;
@@ -2084,6 +2862,41 @@ textarea {
   .hero-lexi-presence-image {
     width: 72px;
     height: 72px;
+  }
+
+  .home-lexi-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .home-lexi-visual {
+      min-height: 400px;
+    }
+
+  .home-lexi-image {
+      width: min(100%, 320px);
+      border-radius: 34px;
+    }
+
+    .home-lexi-orbit {
+      display: none;
+    }
+
+  .home-lexi-glow-one {
+      width: 170px;
+      height: 170px;
+  }
+
+  .home-lexi-glow-two {
+    width: 200px;
+    height: 200px;
+  }
+
+  .home-lexi-ring {
+      width: min(100%, 330px);
+    }
+
+  .home-lexi-nameplate {
+    font-size: clamp(2.6rem, 18vw, 4.2rem);
   }
 
   .dashboard-hero h1 {

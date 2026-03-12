@@ -47,6 +47,7 @@
               <input id="adminAccountSearchInput" type="text" placeholder="Search salon, subscriber, customer, email, or city" />
               <button class="btn btn-ghost btn-small" type="submit">Search</button>
             </form>
+            <div class="status-pill status-neutral" id="dashActionStatus" hidden></div>
             <div class="admin-search-panels">
               <div class="insight-panel admin-search-results-panel">
                 <div class="section-head section-head-compact">
@@ -100,6 +101,32 @@
             Click a card to open a focused admin page for that business area.
           </p>
           <div class="admin-business-hub-grid" id="adminBusinessHubGrid"></div>
+        </section>
+
+        <section class="dashboard-card admin-hub-detail-card" id="adminHubDetailSection" hidden>
+          <div class="section-head">
+            <div>
+              <p class="kicker" id="adminHubDetailKicker">Business hub</p>
+              <h2 id="adminHubDetailTitle">Admin detail page</h2>
+            </div>
+          </div>
+          <p class="section-copy" id="adminHubDetailSummary">
+            Choose a business hub card to open a focused admin page for that area.
+          </p>
+          <div class="admin-hub-detail-grid">
+            <div class="insight-panel">
+              <h3>What this page covers</h3>
+              <ul class="feature-list" id="adminHubDetailInfoList"></ul>
+            </div>
+            <div class="insight-panel">
+              <h3>Admin jobs</h3>
+              <ul class="feature-list" id="adminHubDetailJobsList"></ul>
+            </div>
+            <div class="insight-panel">
+              <h3>Expected outcome</h3>
+              <ul class="feature-list" id="adminHubDetailOutcomesList"></ul>
+            </div>
+          </div>
         </section>
       </section>
     </main>

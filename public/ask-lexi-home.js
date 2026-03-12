@@ -1,10 +1,10 @@
 import { registerServiceWorker } from "./pwa-runtime.js";
 
-const homePreviewThread = document.getElementById("homePreviewThread");
 const homeBookingFeed = document.getElementById("homeBookingFeed");
 const homeRefreshFeedBtn = document.getElementById("homeRefreshFeedBtn");
-const homeAskLexiBtn = document.getElementById("homeAskLexiBtn");
-const homeBookingFlowBtn = document.getElementById("homeBookingFlowBtn");
+const homeHeroAskLexiBtn = document.getElementById("homeHeroAskLexiBtn");
+const homeHeroFlowBtn = document.getElementById("homeHeroFlowBtn");
+const homeOperatorAskLexiBtn = document.getElementById("homeOperatorAskLexiBtn");
 const homeLexiFab = document.getElementById("homeLexiFab");
 const homeLexiModal = document.getElementById("homeLexiModal");
 const homeLexiCloseBtn = document.getElementById("homeLexiCloseBtn");
@@ -15,6 +15,7 @@ const homePromptButtons = Array.from(document.querySelectorAll("[data-home-lexi-
 const modalCloseTargets = Array.from(document.querySelectorAll("[data-close-home-lexi]"));
 
 const PUBLIC_HISTORY = [];
+const BOOKING_FLOW_PROMPT = "How does Ask Lexi take a customer from question to confirmed booking?";
 
 registerServiceWorker();
 
@@ -140,46 +141,14 @@ async function sendPublicLexiMessage(message) {
   }
 }
 
-function rotatePreviewConversation() {
-  if (!homePreviewThread) return;
-  const sequences = [
-    [
-      ["user", "Can Lexi book same-day barber appointments?"],
-      ["lexi", "Yes. She can offer live slots, gather details, and confirm the booking in one flow."],
-      ["user", "What if the client asks about beard treatment too?"],
-      ["lexi", "Lexi can recommend the add-on and include it in the appointment if the schedule allows."]
-    ],
-    [
-      ["user", "How do owners export bookings for accounting?"],
-      ["lexi", "From the owner dashboard they can export accountant-ready CSV with gross and realized revenue."],
-      ["user", "Can they still ask Lexi from that screen?"],
-      ["lexi", "Yes. Ask Lexi stays available throughout the app, including diary and revenue views."]
-    ]
-  ];
-  let sequenceIndex = 0;
-
-  setInterval(() => {
-    sequenceIndex = (sequenceIndex + 1) % sequences.length;
-    const sequence = sequences[sequenceIndex];
-    homePreviewThread.innerHTML = "";
-    sequence.forEach(([role, text]) => {
-      const article = document.createElement("article");
-      article.className = `bubble ${role === "user" ? "bubble-user" : "bubble-lexi"}`;
-      article.textContent = text;
-      homePreviewThread.appendChild(article);
-    });
-  }, 7000);
-}
-
 homeRefreshFeedBtn?.addEventListener("click", () => {
   loadPublicBookingFeed();
 });
 
-homeAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
+homeHeroAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
+homeOperatorAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
 homeLexiFab?.addEventListener("click", () => openHomeLexiModal());
-homeBookingFlowBtn?.addEventListener("click", () =>
-  openHomeLexiModal("How does Ask Lexi take a customer from question to confirmed booking?")
-);
+homeHeroFlowBtn?.addEventListener("click", () => openHomeLexiModal(BOOKING_FLOW_PROMPT));
 homeLexiCloseBtn?.addEventListener("click", closeHomeLexiModal);
 modalCloseTargets.forEach((node) => node.addEventListener("click", closeHomeLexiModal));
 
@@ -206,4 +175,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 loadPublicBookingFeed();
-rotatePreviewConversation();
