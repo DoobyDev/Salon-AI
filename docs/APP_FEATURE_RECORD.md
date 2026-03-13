@@ -659,3 +659,4 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Reshaped the Ask Lexi popup further into a more landscape-first window with a lower overall height so the bottom of the chat composer stays visible more reliably on screen
 - Fixed the Ask Lexi popup scroll behavior so the modal keeps a stable overall shape and only the Lexi/user conversation thread scrolls inside it
 - Refined the Ask Lexi popup visual design again without changing its outer footprint, giving the rail, chat shell, thread, and composer a cleaner premium live-agent presentation
+- Rebuilt the homepage `#experience` section from a clean dedicated layout again so Lexi stays visually dominant in a full-width hero without relying on leftover earlier hero-card styles
