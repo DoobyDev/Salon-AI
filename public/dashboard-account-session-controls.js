@@ -23,7 +23,7 @@ export function createAccountSessionControlsRuntime(deps) {
       storage.removeItem(authTokenKey);
       storage.removeItem(authUserKey);
       storage.removeItem("salonTheme");
-      win.location.assign("/logout.html");
+      win.location.assign("/?logout=1");
     });
 
     subscriptionAutoRenewToggle?.addEventListener("change", () => {

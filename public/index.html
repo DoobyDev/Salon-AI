@@ -17,7 +17,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme2" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-homepage2" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-homepage18" />
   </head>
   <body class="ask-lexi-shell ask-lexi-home">
     <header class="site-header">
@@ -36,71 +36,41 @@
       </nav>
       <div class="site-actions">
         <a class="btn btn-ghost" href="/auth">Log in</a>
+        <button class="btn ask-lexi-btn" id="homeHeaderAskLexiBtn" type="button">Ask Lexi</button>
         <a class="btn" href="/auth?role=subscriber&mode=register">Start free trial</a>
       </div>
     </header>
 
     <main class="page-frame home-page-frame">
       <section class="home-hero section-card" id="experience">
-        <div class="home-hero-copy">
-          <div class="home-hero-copy-top">
-            <p class="kicker">AI front desk for salons, barbershops, aesthetics, and beauty studios</p>
-            <h1>Meet Lexi, the AI receptionist your clients trust first.</h1>
+        <div class="experience-shell">
+          <div class="experience-copy">
+            <p class="kicker">Meet Lexi</p>
+            <h1>Lexi gives every salon a premium front desk, even when nobody is free to answer.</h1>
             <p class="lede">
-              Lexi is the face of the app from the first second: answering service questions, guiding bookings, calming front-desk pressure, and turning every conversation into something useful for the owner.
+              She handles booking questions, captures demand after hours, and keeps clients moving without dragging the team away from service.
             </p>
-          </div>
-          <div class="hero-actions">
-            <a class="btn" href="/auth?role=subscriber&mode=register">Start free trial</a>
-            <button class="btn btn-ghost" id="homeHeroAskLexiBtn" type="button">Talk to Lexi</button>
-            <button class="btn btn-ghost" id="homeHeroFlowBtn" type="button">See the booking path</button>
-          </div>
-          <div class="home-hero-note">
-            <strong>Built to lead the page.</strong>
-            <small>She should feel premium, capable, and central to the product before anyone reads the rest of the homepage.</small>
-          </div>
-          <div class="home-hero-metrics" aria-label="Homepage proof points">
-            <article class="home-hero-metric">
-              <span>24/7 cover</span>
-              <strong>Never leave new bookings sitting in voicemail.</strong>
-            </article>
-            <article class="home-hero-metric">
-              <span>Owner control</span>
-              <strong>Diary, revenue, reminders, and recovery in one operating view.</strong>
-            </article>
-            <article class="home-hero-metric">
-              <span>Real replies</span>
-              <strong>Service guidance, prep advice, and booking next steps in plain language.</strong>
-            </article>
-          </div>
-        </div>
-
-        <div class="home-hero-stage">
-          <section class="home-lexi-card" aria-label="Lexi stage">
-            <div class="home-lexi-intro">
-              <div>
-                <p class="kicker">Meet Lexi</p>
-                <h2>Your AI salon receptionist</h2>
-              </div>
-            </div>
-            <div class="home-lexi-nameplate" aria-hidden="true">LEXI</div>
-            <div class="home-lexi-visual">
-              <div class="home-lexi-glow home-lexi-glow-one" aria-hidden="true"></div>
-              <div class="home-lexi-glow home-lexi-glow-two" aria-hidden="true"></div>
-              <div class="home-lexi-ring" aria-hidden="true"></div>
-              <div class="home-lexi-visual-panel" aria-hidden="true"></div>
-              <article class="home-lexi-orbit home-lexi-orbit-top" aria-label="Lexi capability">
+            <div class="experience-inline-points" aria-label="Lexi highlights">
+              <article>
                 <span>Always on</span>
-                <strong>Captures bookings after hours</strong>
+                <strong>Books while the salon is busy or closed.</strong>
               </article>
-              <article class="home-lexi-orbit home-lexi-orbit-bottom" aria-label="Lexi capability">
-                <span>Understands salon flow</span>
-                <strong>Services, prep, timing, reschedules, rebooking</strong>
+              <article>
+                <span>Salon-aware</span>
+                <strong>Handles prep, timings, rebooking, and reschedules.</strong>
               </article>
+            </div>
+          </div>
+
+          <section class="experience-agent-card" aria-label="Lexi stage">
+            <div class="experience-agent-visual">
+              <div class="experience-agent-glow experience-agent-glow-one" aria-hidden="true"></div>
+              <div class="experience-agent-glow experience-agent-glow-two" aria-hidden="true"></div>
+              <div class="experience-agent-ring" aria-hidden="true"></div>
               <img
                 src="/3d-lexi.png"
                 alt="Ask Lexi AI salon receptionist portrait"
-                class="home-lexi-image"
+                class="experience-agent-image"
                 width="626"
                 height="626"
                 loading="eager"
@@ -108,30 +78,15 @@
                 fetchpriority="high"
               />
             </div>
-            <div class="home-lexi-summary">
+            <div class="experience-agent-copy">
+              <p class="experience-agent-label">Your AI salon receptionist</p>
               <strong>Receptionist. Consultant. Booking manager.</strong>
-              <small>Built to answer, guide, book, and hand the owner a cleaner operating picture.</small>
-            </div>
-            <div class="home-lexi-support">
-              <article class="home-lexi-support-card">
-                <span>Booking voice</span>
-                <strong>Clear, calm, premium replies that move people forward.</strong>
-              </article>
-              <article class="home-lexi-support-card">
-                <span>Salon brain</span>
-                <strong>Service matching, prep guidance, reschedules, and next-step recommendations.</strong>
-              </article>
-              <article class="home-lexi-support-card">
-                <span>Owner signal</span>
-                <strong>Everything she handles feeds the diary, reminders, recovery, and revenue picture.</strong>
-              </article>
-            </div>
-            <div class="home-lexi-capability-band">
-              <span>Bookings</span>
-              <span>Service advice</span>
-              <span>Prep questions</span>
-              <span>Diary pressure</span>
-              <span>Recovery prompts</span>
+              <small>Built to answer clearly, sound premium, and move every enquiry toward the next booking action.</small>
+              <div class="experience-agent-tags">
+                <span>Bookings</span>
+                <span>Service advice</span>
+                <span>Reschedules</span>
+              </div>
             </div>
           </section>
         </div>
@@ -174,6 +129,16 @@
               <strong>Turn cancellations, open gaps, and rebooking opportunities into visible next actions.</strong>
               <small>The product does not stop at chat. It feeds the follow-up work that protects the week.</small>
             </article>
+            <article class="home-command-card">
+              <span>Rebooking momentum</span>
+              <strong>Keep clients moving into the next visit instead of letting the relationship go cold.</strong>
+              <small>Lexi supports follow-up and rebooking prompts so the next appointment stays easier to secure.</small>
+            </article>
+            <article class="home-command-card">
+              <span>Better client guidance</span>
+              <strong>Give clients clearer prep, timing, and service answers before they ever need to call back.</strong>
+              <small>The experience feels more confident, more premium, and less dependent on a busy team member being free.</small>
+            </article>
           </div>
         </section>
 
@@ -215,7 +180,7 @@
               <div class="diary-preview-toolbar">
                 <span>Monday</span>
                 <strong>09:00-18:30</strong>
-                <button class="btn btn-ghost btn-small" id="homeOperatorAskLexiBtn" type="button">Ask Lexi</button>
+                <button class="btn ask-lexi-btn btn-small" id="homeOperatorAskLexiBtn" type="button">Ask Lexi</button>
               </div>
               <div class="diary-preview-grid">
                 <article>
@@ -480,40 +445,88 @@
       </section>
     </main>
 
-    <button class="lexi-fab" id="homeLexiFab" type="button" aria-label="Open Ask Lexi">
-      Ask Lexi
-    </button>
-
     <section class="lexi-modal" id="homeLexiModal" hidden>
       <div class="lexi-modal-backdrop" data-close-home-lexi></div>
-      <div class="lexi-modal-card" role="dialog" aria-modal="true" aria-labelledby="homeLexiModalTitle">
+      <div class="lexi-modal-card home-lexi-modal-card" role="dialog" aria-modal="true" aria-labelledby="homeLexiModalTitle">
         <div class="lexi-modal-head">
-          <div>
+          <div class="home-lexi-modal-intro">
             <p class="kicker">Ask Lexi</p>
             <h2 id="homeLexiModalTitle">Live booking assistant</h2>
+            <p class="home-lexi-modal-copy">
+              The AI salon agent that answers like front-of-house, guides service choice, and moves each conversation toward a booking.
+            </p>
+            <div class="home-lexi-modal-badges" aria-label="Lexi capabilities">
+              <span>Live AI salon agent</span>
+              <span>Books and reschedules</span>
+              <span>Service-match guidance</span>
+            </div>
           </div>
           <button class="btn btn-ghost btn-small" id="homeLexiCloseBtn" type="button">Close</button>
         </div>
-        <div class="assistant-thread assistant-thread-public" id="homeLexiAssistantThread"></div>
-        <form class="assistant-form assistant-form-stacked" id="homeLexiAssistantForm">
-          <input
-            id="homeLexiAssistantInput"
-            type="text"
-            placeholder="Ask about services, timings, bookings, prep, or how the app works"
-          />
-          <div class="assistant-quick-prompts">
-            <button class="prompt-chip" type="button" data-home-lexi-prompt="Book a balayage this Friday after 4 PM">
-              Book balayage
-            </button>
-            <button class="prompt-chip" type="button" data-home-lexi-prompt="What does Ask Lexi do for salon owners?">
-              Owner overview
-            </button>
-            <button class="prompt-chip" type="button" data-home-lexi-prompt="How do accounting exports work?">
-              Accounting export
-            </button>
+        <div class="home-lexi-modal-layout">
+          <div class="home-lexi-modal-rail">
+            <article class="home-lexi-agent-portrait-card" aria-label="Lexi live agent identity">
+              <div class="home-lexi-agent-portrait-frame">
+                <img
+                  src="/3d-lexi.png"
+                  alt="Lexi AI salon agent portrait"
+                  class="home-lexi-agent-portrait"
+                  width="626"
+                  height="626"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+              <div class="home-lexi-agent-identity">
+                <span>Lexi live agent</span>
+                <strong>AI salon receptionist</strong>
+                <small>Built to sound calm, premium, helpful, and booking-focused from the first reply.</small>
+              </div>
+            </article>
+            <article class="home-lexi-agent-card">
+              <span>Agent status</span>
+              <strong>Lexi is ready to take a live salon enquiry.</strong>
+              <small>Best for bookings, service questions, prep advice, timings, reschedules, and owner-value questions.</small>
+            </article>
+            <article class="home-lexi-agent-card">
+              <span>What feels different</span>
+              <strong>She should sound premium, calm, and useful.</strong>
+              <small>The box needs to sell the product before a user even sends the first message.</small>
+            </article>
           </div>
-          <button class="btn" type="submit">Send</button>
-        </form>
+          <div class="home-lexi-chat-shell">
+            <div class="home-lexi-chat-head">
+              <div>
+                <p class="kicker">Conversation</p>
+                <strong>Customer-facing salon assistant</strong>
+              </div>
+              <span class="home-lexi-chat-status">Live</span>
+            </div>
+            <div class="assistant-thread assistant-thread-public" id="homeLexiAssistantThread"></div>
+            <form class="assistant-form assistant-form-stacked home-lexi-assistant-form" id="homeLexiAssistantForm">
+              <input
+                id="homeLexiAssistantInput"
+                type="text"
+                placeholder="Ask about services, timings, bookings, prep, or how the app works"
+              />
+              <div class="assistant-quick-prompts home-lexi-prompt-grid">
+                <button class="prompt-chip" type="button" data-home-lexi-prompt="Book a balayage this Friday after 4 PM">
+                  Book balayage
+                </button>
+                <button class="prompt-chip" type="button" data-home-lexi-prompt="What does Ask Lexi do for salon owners?">
+                  Owner overview
+                </button>
+                <button class="prompt-chip" type="button" data-home-lexi-prompt="How do accounting exports work?">
+                  Accounting export
+                </button>
+              </div>
+              <div class="home-lexi-send-row">
+                <small>Designed to feel like the salon's best front-of-house agent, not a generic chatbot.</small>
+                <button class="btn ask-lexi-btn" type="submit">Send to Lexi</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -529,7 +542,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/ask-lexi-home.js?v=20260312-homepage1"></script>
+    <script type="module" src="/ask-lexi-home.js?v=20260313-homepage3"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme2"></script>
   </body>
 </html>

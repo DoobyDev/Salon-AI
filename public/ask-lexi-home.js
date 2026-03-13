@@ -1,11 +1,12 @@
 import { registerServiceWorker } from "./pwa-runtime.js";
 
+const AUTH_TOKEN_KEY = "salon_ai_token";
+const AUTH_USER_KEY = "salon_ai_user";
 const homeBookingFeed = document.getElementById("homeBookingFeed");
 const homeRefreshFeedBtn = document.getElementById("homeRefreshFeedBtn");
+const homeHeaderAskLexiBtn = document.getElementById("homeHeaderAskLexiBtn");
 const homeHeroAskLexiBtn = document.getElementById("homeHeroAskLexiBtn");
-const homeHeroFlowBtn = document.getElementById("homeHeroFlowBtn");
 const homeOperatorAskLexiBtn = document.getElementById("homeOperatorAskLexiBtn");
-const homeLexiFab = document.getElementById("homeLexiFab");
 const homeLexiModal = document.getElementById("homeLexiModal");
 const homeLexiCloseBtn = document.getElementById("homeLexiCloseBtn");
 const homeLexiAssistantThread = document.getElementById("homeLexiAssistantThread");
@@ -15,8 +16,21 @@ const homePromptButtons = Array.from(document.querySelectorAll("[data-home-lexi-
 const modalCloseTargets = Array.from(document.querySelectorAll("[data-close-home-lexi]"));
 
 const PUBLIC_HISTORY = [];
-const BOOKING_FLOW_PROMPT = "How does Ask Lexi take a customer from question to confirmed booking?";
+function handleLogoutQueryFlag() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("logout") !== "1") return;
+  try {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+  } catch {}
+  params.delete("logout");
+  const nextUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+  window.history.replaceState({}, "", nextUrl);
+}
 
+handleLogoutQueryFlag();
 registerServiceWorker();
 
 function appendAssistantMessage(container, role, text) {
@@ -145,10 +159,9 @@ homeRefreshFeedBtn?.addEventListener("click", () => {
   loadPublicBookingFeed();
 });
 
+homeHeaderAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
 homeHeroAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
 homeOperatorAskLexiBtn?.addEventListener("click", () => openHomeLexiModal());
-homeLexiFab?.addEventListener("click", () => openHomeLexiModal());
-homeHeroFlowBtn?.addEventListener("click", () => openHomeLexiModal(BOOKING_FLOW_PROMPT));
 homeLexiCloseBtn?.addEventListener("click", closeHomeLexiModal);
 modalCloseTargets.forEach((node) => node.addEventListener("click", closeHomeLexiModal));
 

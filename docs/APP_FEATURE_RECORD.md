@@ -139,6 +139,9 @@ Status: simplified admin workspace active
 - Homepage hero no longer uses the extra portrait conversation block, and the Lexi image now sits inside a more polished framed visual treatment
 - Homepage hero now pushes Lexi as the unmistakable star of the page with a larger portrait stage, stronger framing, and supporting proof built around her presence
 - Homepage hero now presents Lexi as the dominant first-screen focal point with a larger portrait stage, richer in-image capability overlays, and tighter supporting copy so the page reads around her instead of beside her
+- Homepage hero messaging now frames Lexi more clearly as both the customer-facing front-of-house presence and the owner-facing operating signal
+- Homepage `#experience` section has now been tightened again so more of the full hero reads above the fold without needing to scroll to its lower edge
+- Homepage hero has since been compressed further by removing extra stacked support blocks and shrinking the Lexi stage so the section itself is materially shorter
 - Lower homepage sections now better match the Lexi-first hero direction with stronger proof-band, operator-workspace, commercial-control, booking-flow, and pricing framing
 - Public booking feed now sits as a cleaner supporting proof panel beside the outcomes section instead of feeling like a disconnected utility block
 - Pricing section now frames the offer more clearly as operating-system tiers rather than generic AI-chat positioning
@@ -157,6 +160,7 @@ Status: simplified admin workspace active
   - calmer front desk operations
   - owner control
 - Live Ask Lexi modal on homepage
+- Homepage Ask Lexi modal now presents a stronger premium live-agent chat surface with clearer capability framing, a richer conversation shell, and a more polished composer area
 - Public booking activity feed from demo booking endpoint
 - Clear CTA path to:
   - log in
@@ -627,3 +631,31 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Reframed the public booking feed as a cleaner supporting proof panel and sharpened the pricing section so the offer reads more like system tiers than AI-chat packaging
 - Added a stronger homepage closing CTA section so the page now ends with a clearer subscriber-conversion prompt and a tighter operator-value recap
 - Split the customer dashboard onto a dedicated `/dashboard?role=customer` shell so customer chrome and logout behavior no longer depend on the shared subscriber shell
+- Refined the homepage hero copy again so the main header, supporting note, and proof points use the left-hand space more effectively without enlarging the hero
+- Redesigned the homepage Ask Lexi popup so the main product interaction now looks more like a premium live salon agent chat surface than a basic modal
+- Tightened the homepage hero again by reducing copy load and visual height so the full section becomes visible sooner while keeping Lexi as the focal point
+- Compressed the homepage hero again by removing extra stacked support content and reducing the portrait-stage height so the section reads shorter above the fold
+- Restored the preferred `Meet Lexi` homepage hero look and reduced its visual footprint with a smaller portrait stage, tighter spacing, and shorter supporting elements so the section sits higher above the fold
+- Simplified the homepage `#experience` hero further by removing the two proof cards beneath the main CTA row so the opening section reads cleaner and shorter
+- Removed the homepage `#experience` CTA buttons so the opening Lexi section now acts as a cleaner brand-introduction panel rather than a multi-action conversion block
+- Compressed the `Meet Lexi` card itself so the portrait stage, overlays, summary, and capability chips sit closer to the shorter left-hand copy block instead of extending well below it
+- Reframed the homepage `#experience` headline and lede with stronger sales-led wording around front-desk coverage, after-hours booking capture, and owner control
+- Expanded the homepage front-desk outcomes section with additional sales cards covering rebooking momentum and clearer client guidance
+- Added a top-nav Ask Lexi action on the homepage so the main product interaction is reachable from the header alongside the existing dashboard header Ask Lexi controls
+- Refreshed homepage and dashboard script asset versions so header Ask Lexi buttons consistently pick up the current popup/runtime behavior instead of stale cached code
+- Reshaped the homepage Ask Lexi popup into a wider landscape layout with Lexi anchored on the left and the live chat surface taking the larger right-hand panel
+- Refreshed homepage and dashboard stylesheet asset versions so Ask Lexi modal layout updates are not hidden behind stale cached CSS
+- Rebalanced the homepage `#experience` Lexi card into a compact horizontal composition so the section keeps the preferred `Meet Lexi` look without growing taller
+- Tightened the homepage `#experience` Lexi card again with a fixed compact desktop height, smaller portrait treatment, and simplified overlays so the section stays contained without growing
+- Simplified the homepage `Meet Lexi` card structure into one flatter image-and-copy row so the `#experience` section stays compact without depending on oversized portrait staging
+- Rolled the homepage `#experience` section back from the full rebuild into the preferred compact `Meet Lexi` hero direction while keeping the section height controlled
+- Replaced the homepage `#experience` hero again with a cleaner dedicated two-part composition that keeps Lexi central while holding the section to a tighter, more controlled height
+- Corrected the rebuilt homepage `#experience` layout so the new hero uses the full section width instead of collapsing into the first column of the old shared hero grid
+- Widened the homepage `#experience` Lexi portrait treatment so the agent image reads less slim while still fitting inside the same compact section height
+- Centered and widened the homepage `#experience` Lexi portrait further, and added supporting caption text around the image so the right-hand card feels more deliberate without growing taller
+- Increased the homepage `#experience` Lexi portrait size again so the agent image holds more visual presence inside the right-hand card without expanding the section height
+- Simplified the homepage `#experience` Lexi card again by removing extra portrait callouts and enlarging the centered portrait treatment so Lexi holds the visual focus more confidently
+- Reduced the Ask Lexi popup footprint with a narrower modal width, tighter internal padding, a smaller portrait rail, and a shorter chat thread so the window feels less oversized
+- Reshaped the Ask Lexi popup further into a more landscape-first window with a lower overall height so the bottom of the chat composer stays visible more reliably on screen
+- Fixed the Ask Lexi popup scroll behavior so the modal keeps a stable overall shape and only the Lexi/user conversation thread scrolls inside it
+- Refined the Ask Lexi popup visual design again without changing its outer footprint, giving the rail, chat shell, thread, and composer a cleaner premium live-agent presentation

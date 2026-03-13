@@ -277,7 +277,7 @@ if (!token || !userRaw) {
 
   logoutBtn?.addEventListener("click", (event) => {
     event.preventDefault();
-    window.location.href = "/logout.html";
+    window.location.href = "/?logout=1";
   });
 
   adminAskLexiBtn?.addEventListener("click", () => {

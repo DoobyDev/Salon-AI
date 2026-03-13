@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260312-admin9" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard8" />
   </head>
   <body class="ask-lexi-shell ask-lexi-dashboard" data-role="customer">
     <header class="site-header dashboard-header">
@@ -25,8 +25,8 @@
         </span>
       </a>
       <div class="site-actions">
-        <button class="btn btn-ghost" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="customer_dashboard">Ask Lexi</button>
-        <a class="btn btn-ghost" id="logoutBtn" href="/logout.html">Log out</a>
+        <button class="btn ask-lexi-btn" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="customer_dashboard">Ask Lexi</button>
+        <a class="btn btn-ghost" id="logoutBtn" href="/?logout=1">Log out</a>
       </div>
     </header>
 
@@ -77,7 +77,7 @@
               <p class="kicker">Next visit</p>
               <h2>Your next appointment</h2>
             </div>
-            <button class="btn btn-ghost btn-small" id="customerAskLexiBtn" type="button">Ask Lexi</button>
+            <button class="btn ask-lexi-btn btn-small" id="customerAskLexiBtn" type="button">Ask Lexi</button>
           </div>
           <div class="customer-next-booking" id="customerNextBookingCard"></div>
         </section>
@@ -186,7 +186,7 @@
       </div>
     </section>
 
-    <script type="module" src="/dashboard.js?v=20260312-admin2"></script>
+    <script type="module" src="/dashboard.js?v=20260313-dashboard3"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
 </html>

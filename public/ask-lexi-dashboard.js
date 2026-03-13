@@ -4408,7 +4408,7 @@ els.roleButtons.forEach((button) => {
 els.logout?.addEventListener("click", (event) => {
   event.preventDefault();
   clearSession();
-  window.location.href = "/logout.html";
+  window.location.href = "/?logout=1";
 });
 
 els.calendarPrevBtn?.addEventListener("click", () => {

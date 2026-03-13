@@ -214,6 +214,17 @@ textarea {
   box-shadow: none;
 }
 
+.ask-lexi-btn {
+  background: linear-gradient(135deg, #22140f 0%, #bb693f 55%, #efc49b 100%);
+  color: #fff8f2;
+  border-color: rgba(127, 76, 48, 0.16);
+  box-shadow: 0 14px 28px rgba(145, 78, 45, 0.2);
+}
+
+.ask-lexi-btn:hover {
+  box-shadow: 0 18px 34px rgba(145, 78, 45, 0.24);
+}
+
 .btn-small {
   padding: 0.55rem 0.8rem;
   font-size: 0.84rem;
@@ -2080,6 +2091,334 @@ textarea {
   color: var(--ink-soft);
 }
 
+.home-lexi-modal-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.68rem;
+  width: min(1080px, calc(100vw - 2rem));
+  max-height: 88vh;
+  overflow: hidden;
+  padding: 0.82rem 0.9rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 184, 0.54), transparent 24%),
+    radial-gradient(circle at 88% 10%, rgba(29, 127, 119, 0.12), transparent 20%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.995), rgba(240, 227, 212, 0.97));
+  border: 1px solid rgba(132, 77, 48, 0.14);
+  box-shadow:
+    0 36px 100px rgba(76, 45, 26, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.home-lexi-modal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0.55rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  pointer-events: none;
+}
+
+.home-lexi-modal-intro {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.home-lexi-modal-copy {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.home-lexi-modal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.home-lexi-modal-badges span,
+.home-lexi-chat-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 0;
+  padding: 0.36rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(187, 105, 63, 0.14);
+  background: rgba(255, 249, 243, 0.94);
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.home-lexi-modal-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.62fr) minmax(0, 1.38fr);
+  gap: 0.68rem;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.home-lexi-modal-rail,
+.home-lexi-chat-shell,
+.home-lexi-agent-card,
+.home-lexi-agent-portrait-card {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.home-lexi-modal-rail {
+  align-content: start;
+  grid-template-rows: auto auto auto;
+  gap: 0.56rem;
+}
+
+.home-lexi-agent-card,
+.home-lexi-agent-portrait-card,
+.home-lexi-chat-shell {
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(246, 236, 226, 0.92));
+  box-shadow:
+    0 16px 32px rgba(92, 57, 34, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.home-lexi-agent-portrait-card,
+.home-lexi-agent-card {
+  padding: 0.72rem;
+}
+
+.home-lexi-agent-portrait-card {
+  background:
+    radial-gradient(circle at top, rgba(255, 216, 189, 0.46), transparent 30%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.99), rgba(243, 231, 218, 0.94));
+  align-content: start;
+}
+
+.home-lexi-agent-portrait-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 172px;
+  padding: 0.45rem 0.42rem 0.08rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 233, 214, 0.95), transparent 34%),
+    radial-gradient(circle at 50% 78%, rgba(239, 177, 131, 0.24), transparent 42%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.92), rgba(247, 238, 230, 0.84));
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.54);
+}
+
+.home-lexi-agent-portrait-frame::before {
+  content: "";
+  position: absolute;
+  width: 68%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 244, 236, 0.82);
+  box-shadow:
+    0 0 0 14px rgba(255, 247, 239, 0.44),
+    0 0 0 32px rgba(255, 247, 239, 0.18);
+}
+
+.home-lexi-agent-portrait {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 148px);
+  aspect-ratio: 1 / 1.08;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 20px;
+  box-shadow: 0 16px 28px rgba(103, 63, 38, 0.16);
+}
+
+.home-lexi-agent-identity {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.home-lexi-agent-identity span {
+  color: var(--primary-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-lexi-agent-identity strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+  letter-spacing: -0.02em;
+}
+
+.home-lexi-agent-identity small {
+  color: var(--ink-soft);
+  line-height: 1.42;
+  font-size: 0.78rem;
+}
+
+.home-lexi-agent-card span,
+.home-lexi-chat-head strong + span {
+  color: var(--primary-strong);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.home-lexi-agent-card strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+
+.home-lexi-agent-card small {
+  color: var(--ink-soft);
+  line-height: 1.4;
+  font-size: 0.78rem;
+}
+
+.home-lexi-chat-shell {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  padding: 0.72rem;
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.15), transparent 26%),
+    linear-gradient(180deg, rgba(255, 253, 250, 0.995), rgba(244, 234, 223, 0.94));
+}
+
+.home-lexi-chat-head,
+.home-lexi-send-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.home-lexi-chat-head strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.98rem;
+  letter-spacing: -0.02em;
+}
+
+.home-lexi-chat-status {
+  background: linear-gradient(180deg, rgba(255, 248, 241, 0.95), rgba(244, 230, 216, 0.9));
+}
+
+.assistant-thread-public {
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  padding: 0.5rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(247, 239, 231, 0.92));
+  box-shadow: inset 0 1px 2px rgba(110, 67, 40, 0.05);
+}
+
+.home-lexi-assistant-form {
+  padding: 0.72rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 249, 242, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.home-lexi-prompt-grid {
+  gap: 0.5rem;
+}
+
+.home-lexi-assistant-form .prompt-chip {
+  border-color: rgba(187, 105, 63, 0.12);
+  background: rgba(255, 252, 248, 0.92);
+  color: var(--ink);
+}
+
+.home-lexi-assistant-form .prompt-chip:hover {
+  background: rgba(246, 236, 226, 0.96);
+}
+
+.home-lexi-send-row small {
+  max-width: 28ch;
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.home-lexi-assistant-form input {
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: inset 0 1px 2px rgba(115, 73, 45, 0.04);
+}
+
+.home-lexi-chat-shell .assistant-message {
+  border-radius: 18px;
+  padding: 0.88rem 0.94rem;
+  box-shadow: 0 10px 18px rgba(103, 63, 38, 0.05);
+}
+
+.home-lexi-chat-shell .assistant-message.is-assistant {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.99), rgba(246, 237, 229, 0.94));
+  border: 1px solid rgba(115, 73, 45, 0.08);
+}
+
+.home-lexi-chat-shell .assistant-message.is-user {
+  background: linear-gradient(180deg, rgba(34, 20, 15, 0.94), rgba(116, 67, 41, 0.92));
+  color: #fffaf5;
+  margin-left: auto;
+}
+
+.home-lexi-chat-shell .assistant-message.is-system {
+  background: rgba(247, 240, 233, 0.82);
+}
+
+.home-lexi-assistant-form input {
+  min-height: 56px;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 18px;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.home-lexi-prompt-grid {
+  gap: 0.65rem;
+}
+
+.home-lexi-send-row small {
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
+.assistant-message {
+  border-radius: 22px;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 12px 24px rgba(103, 63, 38, 0.06);
+}
+
+.assistant-message.is-assistant {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(247, 239, 232, 0.92));
+}
+
+.assistant-message.is-user {
+  max-width: 82%;
+}
+
+.assistant-message.is-system {
+  border-style: dashed;
+}
+
 .empty-state {
   border: 1px dashed var(--line-strong);
   border-radius: 18px;
@@ -2103,9 +2442,9 @@ textarea {
 
 .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(480px, 1.22fr);
-  gap: 1rem;
-  padding: 1.1rem;
+  grid-template-columns: minmax(0, 0.86fr) minmax(400px, 1.14fr);
+  gap: 0.62rem;
+  padding: 0.62rem;
   background:
     radial-gradient(circle at top left, rgba(255, 218, 186, 0.58), transparent 28%),
     radial-gradient(circle at 86% 18%, rgba(29, 127, 119, 0.16), transparent 22%),
@@ -2128,41 +2467,204 @@ textarea {
 .home-hero-copy {
   display: grid;
   align-content: start;
-  gap: 1rem;
-  padding: 0.35rem 0.15rem 0.35rem 0;
+  gap: 0.65rem;
+  padding: 0.1rem 0.05rem 0.1rem 0;
 }
 
 .home-hero-copy-top {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.5rem;
 }
 
 .home-hero-copy-top h1 {
   margin: 0;
   max-width: 9ch;
   font-family: "Fraunces", serif;
-  font-size: clamp(3.8rem, 6.8vw, 6.9rem);
-  line-height: 0.84;
+  font-size: clamp(2.45rem, 4.4vw, 4.35rem);
+  line-height: 0.9;
   letter-spacing: -0.05em;
 }
 
 .home-hero-copy .lede {
-  max-width: 52ch;
-  font-size: 1.02rem;
+  max-width: 40ch;
+  font-size: 0.88rem;
+  line-height: 1.44;
 }
 
-.home-hero-note {
+#experience.home-hero {
   display: grid;
-  gap: 0.2rem;
-  padding: 1rem 1.05rem;
-  border-left: 3px solid rgba(187, 105, 63, 0.3);
-  background: rgba(255, 248, 242, 0.82);
-  border-radius: 0 20px 20px 0;
+  grid-template-columns: 1fr;
+  padding: 0.62rem;
 }
 
-.home-hero-note strong {
-  font-size: 0.95rem;
+.experience-shell,
+.experience-inline-points,
+.experience-agent-card {
+  display: grid;
+}
+
+.experience-shell {
+  width: 100%;
+  grid-template-columns: minmax(0, 0.96fr) minmax(420px, 1.04fr);
+  gap: 0.7rem;
+  align-items: stretch;
+}
+
+.experience-copy,
+.experience-agent-copy {
+  display: grid;
+  align-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.experience-copy h1 {
+  margin: 0;
+  max-width: 10ch;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.3rem, 4.2vw, 4rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
   color: var(--ink);
+}
+
+.experience-copy .lede {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 0.9rem;
+  line-height: 1.46;
+  color: var(--ink-soft);
+}
+
+.experience-inline-points {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.44rem;
+  margin-top: 0.05rem;
+}
+
+.experience-inline-points article {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.56rem 0.62rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(247, 239, 231, 0.9));
+  box-shadow: 0 10px 20px rgba(92, 57, 34, 0.06);
+}
+
+.experience-inline-points span,
+.experience-agent-label {
+  color: var(--primary-strong);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.experience-inline-points strong,
+.experience-agent-copy strong {
+  color: var(--ink);
+}
+
+.experience-inline-points strong {
+  font-size: 0.8rem;
+  line-height: 1.22;
+}
+
+.experience-agent-card {
+  grid-template-columns: 284px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.72rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 40% 10%, rgba(239, 177, 131, 0.4), transparent 32%),
+    radial-gradient(circle at 78% 78%, rgba(29, 127, 119, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(255, 251, 246, 0.99), rgba(241, 228, 214, 0.95));
+  box-shadow: 0 30px 72px rgba(107, 69, 44, 0.18);
+}
+
+.experience-agent-visual {
+  position: relative;
+  min-height: 224px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.experience-agent-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(24px);
+  opacity: 0.92;
+}
+
+.experience-agent-glow-one {
+  width: 154px;
+  height: 154px;
+  top: 0.22rem;
+  background: rgba(255, 214, 188, 0.74);
+}
+
+.experience-agent-glow-two {
+  width: 176px;
+  height: 176px;
+  bottom: 0.16rem;
+  background: rgba(29, 127, 119, 0.18);
+}
+
+.experience-agent-ring {
+  position: absolute;
+  width: 246px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 0 0 6px rgba(255, 247, 239, 0.3),
+    0 0 0 12px rgba(255, 247, 239, 0.14);
+}
+
+.experience-agent-image {
+  position: relative;
+  z-index: 1;
+  width: 232px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center 14%;
+  border-radius: 22px;
+  box-shadow: 0 16px 28px rgba(98, 60, 35, 0.16);
+}
+
+.experience-agent-copy strong {
+  font-size: 1.02rem;
+  line-height: 1.24;
+}
+
+.experience-agent-copy small {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.38;
+}
+
+.experience-agent-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.24rem;
+  padding-top: 0.08rem;
+}
+
+.experience-agent-tags span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.3rem;
+  border-radius: 999px;
+  background: rgba(255, 248, 241, 0.9);
+  border: 1px solid rgba(199, 122, 78, 0.16);
+  color: var(--ink);
+  font-size: 0.54rem;
+  font-weight: 700;
 }
 
 .home-hero-metrics,
@@ -2179,7 +2681,8 @@ textarea {
 }
 
 .home-hero-metrics {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
 }
 
 .home-hero-metric,
@@ -2201,10 +2704,10 @@ textarea {
 .home-pricing-card,
 .home-stage-panel,
 .home-commercial-stats article {
-  padding: 1rem;
+  padding: 0.72rem;
   display: grid;
   align-content: start;
-  gap: 0.35rem;
+  gap: 0.22rem;
 }
 
 .home-hero-metric span,
@@ -2231,19 +2734,19 @@ textarea {
 .home-hero-stage {
   display: grid;
   gap: 0.95rem;
-  align-content: stretch;
+  align-content: start;
   min-width: 0;
 }
 
 .home-lexi-card {
   position: relative;
   display: grid;
-  gap: 1rem;
+  gap: 0.45rem;
   align-content: start;
-  min-height: 100%;
-  padding: 1.15rem;
+  min-height: auto;
+  padding: 0.58rem;
   border: 1px solid rgba(115, 73, 45, 0.12);
-  border-radius: 36px;
+  border-radius: 22px;
   background:
     radial-gradient(circle at 52% 0%, rgba(239, 177, 131, 0.5), transparent 34%),
     radial-gradient(circle at 50% 72%, rgba(29, 127, 119, 0.12), transparent 28%),
@@ -2254,8 +2757,8 @@ textarea {
 .home-lexi-card::before {
   content: "";
   position: absolute;
-  inset: 0.85rem;
-  border-radius: 28px;
+  inset: 0.54rem;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.62);
   pointer-events: none;
 }
@@ -2273,26 +2776,26 @@ textarea {
 
 .home-lexi-intro {
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.8rem;
+  gap: 0.32rem;
   position: relative;
   z-index: 1;
   align-items: start;
 }
 
 .home-lexi-intro h2 {
-  margin: 0.12rem 0 0;
+  margin: 0.08rem 0 0;
   font-family: "Fraunces", serif;
-  font-size: clamp(1.7rem, 2.8vw, 2.8rem);
+  font-size: clamp(1.02rem, 1.55vw, 1.34rem);
   letter-spacing: -0.04em;
 }
 
 .home-lexi-nameplate {
   position: absolute;
-  top: 0.9rem;
-  right: 0.9rem;
+  top: 0.48rem;
+  right: 0.54rem;
   z-index: 0;
   font-family: "Fraunces", serif;
-  font-size: clamp(5.4rem, 10vw, 9rem);
+  font-size: clamp(2.45rem, 4.6vw, 3.5rem);
   line-height: 0.85;
   letter-spacing: -0.08em;
   color: rgba(143, 81, 55, 0.09);
@@ -2302,17 +2805,17 @@ textarea {
 .home-lexi-visual {
   position: relative;
   z-index: 1;
-  min-height: 700px;
+  min-height: 170px;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 34px;
+  border-radius: 18px;
 }
 
 .home-lexi-visual-panel {
   position: absolute;
-  inset: 1rem;
-  border-radius: 32px;
+  inset: 0.52rem;
+  border-radius: 18px;
   background: transparent;
   box-shadow: none;
 }
@@ -2325,80 +2828,49 @@ textarea {
 }
 
 .home-lexi-glow-one {
-  width: 320px;
-  height: 320px;
-  top: 1.1rem;
+  width: 120px;
+  height: 120px;
+  top: 0.22rem;
   background: rgba(255, 214, 188, 0.74);
 }
 
 .home-lexi-glow-two {
-  width: 420px;
-  height: 420px;
-  bottom: 0.8rem;
+  width: 142px;
+  height: 142px;
+  bottom: 0.12rem;
   background: rgba(29, 127, 119, 0.18);
 }
 
 .home-lexi-ring {
   position: absolute;
-  width: min(100%, 580px);
+  width: min(100%, 176px);
   aspect-ratio: 1;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.58);
   box-shadow:
-    0 0 0 22px rgba(255, 247, 239, 0.3),
-    0 0 0 54px rgba(255, 247, 239, 0.14);
+    0 0 0 7px rgba(255, 247, 239, 0.3),
+    0 0 0 14px rgba(255, 247, 239, 0.14);
 }
 
 .home-lexi-image {
   position: relative;
   z-index: 1;
-  width: min(100%, 560px);
+  width: min(100%, 154px);
   aspect-ratio: 1 / 1.08;
   object-fit: cover;
   object-position: center top;
-  border-radius: 56px;
+  border-radius: 15px;
   border: 0;
-  box-shadow: 0 46px 88px rgba(98, 60, 35, 0.24);
+  box-shadow: 0 12px 22px rgba(98, 60, 35, 0.16);
 }
 
-.home-lexi-orbit {
-  position: absolute;
-  z-index: 2;
+.home-lexi-compact {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 0.25rem;
-  max-width: 220px;
-  padding: 0.9rem 1rem;
-  border: 1px solid rgba(115, 73, 45, 0.12);
-  border-radius: 22px;
-  background: rgba(255, 251, 246, 0.9);
-  box-shadow: 0 18px 34px rgba(94, 58, 34, 0.14);
-  backdrop-filter: blur(10px);
-  animation: lexiFloat 6s ease-in-out infinite;
-}
-
-.home-lexi-orbit span {
-  color: var(--primary-strong);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.home-lexi-orbit strong {
-  color: var(--ink);
-  font-size: 0.92rem;
-  line-height: 1.3;
-}
-
-.home-lexi-orbit-top {
-  top: 2rem;
-  left: 1.5rem;
-}
-
-.home-lexi-orbit-bottom {
-  right: 1.4rem;
-  bottom: 2rem;
-  animation-delay: -3s;
+  grid-template-columns: 164px minmax(0, 1fr);
+  gap: 0.68rem;
+  align-items: center;
 }
 
 @keyframes lexiFloat {
@@ -2415,40 +2887,18 @@ textarea {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 0.25rem;
-  text-align: center;
+  align-content: start;
+  gap: 0.1rem;
+  text-align: left;
 }
 
 .home-lexi-summary strong {
-  font-size: clamp(1.28rem, 2.1vw, 1.7rem);
+  font-size: clamp(0.88rem, 1.1vw, 1rem);
 }
 
-.home-lexi-support {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.home-lexi-support-card {
-  display: grid;
-  align-content: start;
-  gap: 0.35rem;
-  min-height: 0;
-  padding: 0.95rem;
-  border: 1px solid rgba(115, 73, 45, 0.1);
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255, 252, 248, 0.97), rgba(245, 235, 224, 0.9));
-}
-
-.home-lexi-support-card span {
-  color: var(--primary-strong);
-  font-size: 0.74rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.home-lexi-summary small {
+  font-size: 0.72rem;
+  line-height: 1.32;
 }
 
 .home-lexi-capability-band {
@@ -2456,19 +2906,19 @@ textarea {
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  justify-content: center;
-  padding-top: 0.1rem;
+  gap: 0.22rem;
+  justify-content: flex-start;
+  padding-top: 0.2rem;
 }
 
 .home-lexi-capability-band span {
   display: inline-flex;
   align-items: center;
-  padding: 0.42rem 0.7rem;
+  padding: 0.16rem 0.28rem;
   border-radius: 999px;
   background: rgba(255, 248, 241, 0.9);
   border: 1px solid rgba(199, 122, 78, 0.16);
-  font-size: 0.78rem;
+  font-size: 0.52rem;
   font-weight: 700;
 }
 
@@ -2830,12 +3280,26 @@ textarea {
   .home-command-head,
   .home-commercial-board-lower,
   .home-commercial-ledger,
-  .home-close-grid {
+  .home-close-grid,
+  .home-lexi-modal-layout {
     grid-template-columns: 1fr;
   }
 
   .home-command-proof {
     justify-content: flex-start;
+  }
+
+  .experience-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-agent-card {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .home-lexi-compact {
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 0.56rem;
   }
 
   .journey-grid,
@@ -2909,23 +3373,18 @@ textarea {
     padding-right: 0;
   }
 
-  .home-lexi-visual {
-      min-height: 600px;
-    }
+  .home-lexi-card {
+    padding: 0.54rem;
+  }
+
+  .home-lexi-compact {
+    grid-template-columns: 136px minmax(0, 1fr);
+    gap: 0.52rem;
+  }
 
   .home-lexi-image {
-      width: min(100%, 470px);
-    }
-
-    .home-lexi-orbit-top {
-      top: 1.5rem;
-      left: 1rem;
-    }
-
-    .home-lexi-orbit-bottom {
-      right: 1rem;
-      bottom: 1.4rem;
-    }
+    width: min(100%, 130px);
+  }
 
   .calendar-toolbar strong {
     flex: 1 1 100%;
@@ -3007,8 +3466,45 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .experience-inline-points,
+  .experience-agent-card {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-copy h1 {
+    max-width: none;
+  }
+
+  .experience-agent-copy {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .experience-agent-tags {
+    justify-content: center;
+  }
+
+  .home-lexi-compact {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .home-lexi-summary,
+  .home-lexi-capability-band {
+    text-align: center;
+    justify-content: center;
+  }
+
   .home-flow-step::after {
     display: none;
+  }
+
+  .home-lexi-modal-card {
+    width: min(100vw - 1rem, 880px);
+  }
+
+  .home-lexi-send-row {
+    align-items: flex-start;
   }
 
   .home-hero-copy-top h1 {
@@ -3016,10 +3512,10 @@ textarea {
   }
 
   .home-lexi-nameplate {
-      font-size: clamp(3.4rem, 16vw, 6rem);
-      top: 1.6rem;
-      right: 1rem;
-    }
+    font-size: clamp(3rem, 14vw, 5rem);
+    top: 1.2rem;
+    right: 0.8rem;
+  }
 
   .admin-row,
   .admin-table-accounts .admin-row,
@@ -3087,6 +3583,30 @@ textarea {
     font-size: clamp(2.25rem, 12vw, 3.5rem);
   }
 
+  #experience.home-hero {
+    padding: 0.62rem;
+  }
+
+  .experience-copy h1 {
+    font-size: clamp(2rem, 10.5vw, 3rem);
+  }
+
+  .home-lexi-visual {
+    min-height: 180px;
+  }
+
+  .home-lexi-image {
+    width: min(100%, 146px);
+  }
+
+  .experience-agent-visual {
+    min-height: 146px;
+  }
+
+  .experience-agent-image {
+    width: 182px;
+  }
+
   .home-hero-copy-top h1 {
     font-size: clamp(2.4rem, 13vw, 4rem);
   }
@@ -3106,32 +3626,46 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .home-lexi-modal-card {
+    margin-top: 2vh;
+    padding: 0.82rem;
+  }
+
+  .assistant-thread-public {
+    min-height: 0;
+    max-height: none;
+  }
+
+  .home-lexi-send-row .btn {
+    width: 100%;
+  }
+
   .home-lexi-visual {
-      min-height: 400px;
-    }
+    min-height: 220px;
+  }
 
   .home-lexi-image {
-      width: min(100%, 320px);
-      border-radius: 34px;
-    }
+    width: min(100%, 172px);
+    border-radius: 20px;
+  }
 
-    .home-lexi-orbit {
-      display: none;
-    }
+  .home-lexi-orbit {
+    display: none;
+  }
 
   .home-lexi-glow-one {
-      width: 170px;
-      height: 170px;
+    width: 140px;
+    height: 140px;
   }
 
   .home-lexi-glow-two {
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
   }
 
   .home-lexi-ring {
-      width: min(100%, 330px);
-    }
+    width: min(100%, 250px);
+  }
 
   .home-lexi-nameplate {
     font-size: clamp(2.6rem, 18vw, 4.2rem);
