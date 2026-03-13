@@ -2,11 +2,6 @@
 export function createModuleDefinitionsRuntime(deps) {
   const {
     getUserRole,
-    customerSearchSection,
-    customerReceptionSection,
-    customerSlotsSection,
-    customerHistorySection,
-    customerAnalyticsSection,
     subscriberExecutivePulseSection,
     subscriberSubscriptionSection,
     frontDeskSection,
@@ -52,48 +47,7 @@ export function createModuleDefinitionsRuntime(deps) {
   function moduleDefinitionsForRole() {
     const role = getUserRole?.();
     if (role === "customer") {
-      return [
-        {
-          key: "customer_search",
-          section: customerSearchSection,
-          label: "Business Search",
-          features: ["Advanced filters", "Business type targeting", "Rating/date match"],
-          howItWorks: "Filter by service, location, rating, date, and business type.",
-          howItHelps: "Find the best local option faster and reduce booking friction."
-        },
-        {
-          key: "customer_chat",
-          section: customerReceptionSection,
-          label: "AI Receptionist",
-          features: ["Live AI receptionist", "Service Q&A", "Booking guidance"],
-          howItWorks: "Ask the AI receptionist for slots, services, and contact details.",
-          howItHelps: "Get answers instantly and convert intent into booked appointments."
-        },
-        {
-          key: "customer_slots",
-          section: customerSlotsSection,
-          label: "Slots and Contact",
-          features: ["Available time slots", "Phone/email visibility", "Selected business context"],
-          howItWorks: "View live slot windows and contact info for selected businesses.",
-          howItHelps: "Speed up decision-making and reduce drop-off before booking."
-        },
-        {
-          key: "customer_history",
-          section: customerHistorySection,
-          label: "Visit and Booking History",
-          features: ["Past visits", "Upcoming bookings", "Single timeline view"],
-          howItWorks: "Track previous and upcoming appointments in one place.",
-          howItHelps: "Improves rebooking confidence and customer retention."
-        },
-        {
-          key: "customer_analytics",
-          section: customerAnalyticsSection,
-          label: "Personal Analytics",
-          features: ["Booking trends", "Completion/cancel view", "Personal-only metrics"],
-          howItWorks: "Summarizes completion, cancellations, and activity trends.",
-          howItHelps: "Gives customers a simple view of personal booking behavior."
-        }
-      ].map(normalizeModuleConfig).filter((mod) => mod?.enabled !== false);
+      return [];
     }
 
     if (role === "subscriber" || role === "admin") {

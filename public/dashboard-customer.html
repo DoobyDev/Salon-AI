@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard8" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard31" />
   </head>
   <body class="ask-lexi-shell ask-lexi-dashboard" data-role="customer">
     <header class="site-header dashboard-header">
@@ -25,7 +25,7 @@
         </span>
       </a>
       <div class="site-actions">
-        <button class="btn ask-lexi-btn" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="customer_dashboard">Ask Lexi</button>
+        <button class="btn ask-lexi-btn" id="headerAskLexiBtn" type="button">Ask Lexi</button>
         <a class="btn btn-ghost" id="logoutBtn" href="/?logout=1">Log out</a>
       </div>
     </header>
@@ -43,16 +43,6 @@
       </section>
 
       <section class="dashboard-grid dashboard-grid-customer" id="customerDashboard">
-        <section class="dashboard-card" id="customerOnboardingCard">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Welcome</p>
-              <h2>How to use your dashboard</h2>
-            </div>
-          </div>
-          <div id="customerOnboardingContent"></div>
-        </section>
-
         <article class="dashboard-card metric-band metric-band-compact">
           <div class="metric-card">
             <span>Total bookings</span>
@@ -77,7 +67,6 @@
               <p class="kicker">Next visit</p>
               <h2>Your next appointment</h2>
             </div>
-            <button class="btn ask-lexi-btn btn-small" id="customerAskLexiBtn" type="button">Ask Lexi</button>
           </div>
           <div class="customer-next-booking" id="customerNextBookingCard"></div>
         </section>
@@ -136,36 +125,6 @@
       </section>
     </main>
 
-    <button class="lexi-fab lexi-fab-dashboard" id="dashboardLexiFab" type="button" aria-label="Open Ask Lexi">
-      Ask Lexi
-    </button>
-
-    <aside class="lexi-drawer" id="dashboardLexiDrawer" hidden>
-      <div class="lexi-drawer-head">
-        <div>
-          <p class="kicker">Ask Lexi</p>
-          <h2 id="drawerTitle">Customer booking assistant</h2>
-        </div>
-        <button class="btn btn-ghost btn-small" id="dashboardLexiCloseBtn" type="button">Close</button>
-      </div>
-      <div class="assistant-thread" id="subscriberAssistantThread"></div>
-      <form class="assistant-form assistant-form-stacked" id="subscriberAssistantForm">
-        <input id="subscriberAssistantInput" type="text" placeholder="Ask about bookings, rescheduling, salons, or your next appointment" />
-        <div class="assistant-quick-prompts">
-          <button class="prompt-chip" type="button" data-lexi-prompt="Help me book my next appointment">
-            Next appointment
-          </button>
-          <button class="prompt-chip" type="button" data-lexi-prompt="Which salon should I book with again?">
-            Which salon?
-          </button>
-          <button class="prompt-chip" type="button" data-lexi-prompt="Can you help me reschedule a booking?">
-            Reschedule help
-          </button>
-        </div>
-        <button class="btn" type="submit">Send</button>
-      </form>
-    </aside>
-
     <section class="lexi-modal" id="rescheduleModal" hidden>
       <div class="lexi-modal-backdrop" id="rescheduleBackdrop"></div>
       <div class="lexi-modal-card">
@@ -186,7 +145,8 @@
       </div>
     </section>
 
-    <script type="module" src="/dashboard.js?v=20260313-dashboard3"></script>
+    <script type="module" src="/dashboard-shared-lexi-entry.js?v=20260313-dashboard8"></script>
+    <script type="module" src="/dashboard.js?v=20260313-dashboard46"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
 </html>

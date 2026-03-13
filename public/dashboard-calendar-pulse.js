@@ -35,7 +35,6 @@ export function createCalendarPulseRuntime(deps) {
     renderCalendarFeatureSidebarLexi,
     renderCalendarDiaryWeekStrip,
     updateBookingRangeControls,
-    renderBusinessAiWorkspace,
     renderWorkspaceStarPanel,
     applyBookingFilters,
     focusBookingOperations,
@@ -736,8 +735,6 @@ export function createCalendarPulseRuntime(deps) {
     });
     renderCalendarDiaryWeekStrip?.();
     updateBookingRangeControls?.();
-    renderBusinessAiWorkspace?.("subscriber");
-    renderBusinessAiWorkspace?.("admin");
     renderWorkspaceStarPanel?.();
   }
 
@@ -771,8 +768,6 @@ export function createCalendarPulseRuntime(deps) {
       }
       applyBookingFilters?.();
       renderSubscriberCalendar();
-      renderBusinessAiWorkspace?.("subscriber");
-      renderBusinessAiWorkspace?.("admin");
       openCalendarDayWorkspace?.(dateKey);
     });
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "salon-ai-v10";
+const CACHE_NAME = "salon-ai-v72";
 const ASSETS = [
   "/",
   "/index.html",
@@ -6,7 +6,17 @@ const ASSETS = [
   "/dashboard",
   "/legal",
   "/styles.css",
+  "/ask-lexi.css",
   "/app.js",
+  "/ask-lexi-home.js",
+  "/shared-ask-lexi-popup.js",
+  "/shared-ask-lexi-presets.js",
+  "/dashboard-shared-lexi-entry.js",
+  "/dashboard-subscriber-business-hub.js",
+  "/dashboard.js",
+  "/dashboard-admin-shell.js",
+  "/dashboard-admin-hub.js",
+  "/dashboard-business-hub.js",
   "/manifest.webmanifest",
   "/icons/icon.svg",
   "/icons/icon-maskable.svg",
@@ -39,9 +49,18 @@ function shouldRefreshFromNetwork(url) {
     url.pathname === "/dashboard" ||
     url.pathname === "/legal" ||
     url.pathname === "/styles.css" ||
+    url.pathname === "/ask-lexi.css" ||
     url.pathname === "/app.js" ||
+    url.pathname === "/ask-lexi-home.js" ||
+    url.pathname === "/shared-ask-lexi-popup.js" ||
+    url.pathname === "/shared-ask-lexi-presets.js" ||
+    url.pathname === "/dashboard-shared-lexi-entry.js" ||
+    url.pathname === "/dashboard-subscriber-business-hub.js" ||
     url.pathname === "/dashboard.html" ||
     url.pathname === "/dashboard.js" ||
+    url.pathname === "/dashboard-admin-shell.js" ||
+    url.pathname === "/dashboard-admin-hub.js" ||
+    url.pathname === "/dashboard-business-hub.js" ||
     url.pathname === "/auth.html" ||
     url.pathname === "/auth.js" ||
     url.pathname === "/manifest.webmanifest"

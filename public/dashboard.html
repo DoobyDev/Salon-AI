@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard8" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard31" />
   </head>
   <body class="ask-lexi-shell ask-lexi-dashboard" data-role="dashboard">
     <header class="site-header dashboard-header">
@@ -25,57 +25,13 @@
         </span>
       </a>
       <div class="site-actions">
-        <button class="btn ask-lexi-btn" id="headerAskLexiBtn" type="button" data-open-subscriber-lexi="daily_workspace">Ask Lexi</button>
+        <button class="btn ask-lexi-btn" id="headerAskLexiBtn" type="button">Ask Lexi</button>
         <a class="btn btn-ghost" id="logoutBtn" href="/?logout=1">Log out</a>
       </div>
     </header>
 
     <main class="dashboard-frame">
-      <section class="dashboard-hero">
-        <div>
-          <p class="kicker" id="dashboardKicker">Dashboard workspace</p>
-          <h1 id="dashboardTitle">Ask Lexi Dashboard</h1>
-          <p class="lede" id="dashboardDescription">
-            Loading your dashboard.
-          </p>
-          <div class="header-business-pill" id="dashboardBusinessPill">Loading workspace...</div>
-        </div>
-      </section>
-
       <section class="dashboard-grid dashboard-grid-subscriber" id="subscriberDashboard" hidden>
-        <section class="dashboard-card" id="subscriberOnboardingCard">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Quick start</p>
-              <h2>What to do first</h2>
-            </div>
-          </div>
-          <div id="subscriberOnboardingContent"></div>
-        </section>
-
-        <article class="dashboard-card metric-band">
-          <div class="metric-card">
-            <span>Today's bookings</span>
-            <strong id="subscriberBookingsMetric">0</strong>
-            <small id="subscriberBookingsMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>Expected revenue</span>
-            <strong id="subscriberRevenueMetric">GBP 0</strong>
-            <small id="subscriberRevenueMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>Reminders due soon</span>
-            <strong id="subscriberLexiMetric">0</strong>
-            <small id="subscriberLexiMeta">Loading...</small>
-          </div>
-          <div class="metric-card">
-            <span>On duty today</span>
-            <strong id="subscriberCoverageMetric">0</strong>
-            <small id="subscriberCoverageMeta">Loading...</small>
-          </div>
-        </article>
-
         <section class="dashboard-card diary-command-center">
           <div class="section-head">
             <div>
@@ -125,514 +81,76 @@
               <div class="agenda-list" id="selectedDayAgenda"></div>
               <div class="side-actions">
                 <button class="btn" id="selectedDayAddBookingBtn" type="button">Add booking</button>
-                <button class="btn ask-lexi-btn" id="selectedDayAskLexiBtn" type="button">Ask Lexi</button>
               </div>
             </aside>
           </div>
         </section>
 
-        <section class="dashboard-card" id="checkoutHubSection">
+        <section class="dashboard-card" id="subscriberBusinessHubSection">
           <div class="section-head">
             <div>
-              <p class="kicker">Next actions</p>
-              <h2>What needs attention now</h2>
-            </div>
-          </div>
-          <div class="ops-list" id="subscriberOpsList"></div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Customers</p>
-              <h2>Client view for quick follow-up</h2>
+              <p class="kicker">Business hub</p>
+              <h2>Business Hub</h2>
             </div>
           </div>
           <p class="section-copy">
-            Search a customer and click their name to see visit history, spend, next booking, and the best next step to take.
+            Click a card to open a focused admin page for that business area.
           </p>
-          <form class="compact-form compact-form-inline" id="subscriberCustomerSearchForm">
-            <input id="subscriberCustomerSearchInput" type="text" placeholder="Search customer name, email, phone, or service" />
-            <button class="btn btn-ghost btn-small" type="submit">Search</button>
-          </form>
-          <div class="insight-grid insight-grid-two">
-            <div class="admin-table admin-table-accounts" id="subscriberCustomerTable"></div>
-            <div class="insight-panel subscriber-detail-panel">
-              <h3>Selected customer details</h3>
-              <div id="subscriberCustomerDetail"></div>
-            </div>
+          <div class="admin-business-hub-grid" id="subscriberBusinessHubGrid">
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="business_profile">
+              <p>Core setup</p>
+              <strong>Business Information</strong>
+              <small>Business name, contact details, hours, services, and the setup data Lexi and customers rely on.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="staff">
+              <p>Team control</p>
+              <strong>Staff Setup</strong>
+              <small>Team members, shift cover, capacity planning, and the staffing details behind your diary.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="frontdesk">
+              <p>Customer view</p>
+              <strong>Salon Features</strong>
+              <small>What customers see about the salon, including front-desk presentation, services, and trust-building details.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="social">
+              <p>Brand links</p>
+              <strong>Social Media</strong>
+              <small>Linked socials, brand touchpoints, and the public profile links tied to the business.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="merch">
+              <p>Retail sales</p>
+              <strong>Merch</strong>
+              <small>Retail products, pricing, images, and shipment records for in-salon product sales.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="accounting">
+              <p>Money admin</p>
+              <strong>Accounting</strong>
+              <small>Revenue exports, provider links, and the bookkeeping side of the business.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="profitability">
+              <p>Margin view</p>
+              <strong>Finance</strong>
+              <small>Break-even, payroll impact, costs, and the numbers that show what is driving profit.</small>
+              <span>Open page</span>
+            </a>
+            <a class="admin-hub-card" href="/dashboard?role=subscriber#subscriberBusinessHubSection" data-business-hub-key="operations">
+              <p>Recovery actions</p>
+              <strong>Cancellations</strong>
+              <small>No-show risk, rebooking opportunities, and the actions that help protect chair time.</small>
+              <span>Open page</span>
+            </a>
           </div>
         </section>
 
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Revenue and accounting</p>
-              <h2>Takings, profitability, and export</h2>
-            </div>
-            <div class="inline-actions">
-              <select id="revenueTimeframeSelect" class="select-control">
-                <option value="today">Today</option>
-                <option value="7d">Last 7 days</option>
-                <option value="30d">Last 30 days</option>
-              </select>
-              <button class="btn btn-ghost btn-small" id="revenueRefreshBtn" type="button">Refresh</button>
-            </div>
-          </div>
-
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Revenue in range</span>
-              <strong id="revenueRangeValue">GBP 0</strong>
-              <small id="revenueRangeMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>Cancellation rate</span>
-              <strong id="revenueCancelRate">0%</strong>
-              <small id="revenueCancelMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>Estimated profit</span>
-              <strong id="profitValue">GBP 0</strong>
-              <small id="profitMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>Breakeven revenue</span>
-              <strong id="breakevenValue">GBP 0</strong>
-              <small id="breakevenMeta">Loading...</small>
-            </article>
-          </div>
-
-          <div class="chart-shell" id="revenueBars"></div>
-          <div class="export-strip">
-            <div>
-              <strong>Accounting export</strong>
-              <p>Download accountant-ready bookings CSV with gross and realized revenue.</p>
-            </div>
-            <button class="btn" id="accountingExportBtn" type="button">Export CSV</button>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Checkout and retention</p>
-              <h2>Checkout, rebooking, and retail</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            Keep checkout simple: rebook the next visit, recommend retail, and issue gift cards without leaving the dashboard.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Memberships live</span>
-              <strong id="checkoutMembershipMetric">0</strong>
-              <small id="checkoutMembershipMeta">Active recurring offers available to sell</small>
-            </article>
-            <article class="mini-stat">
-              <span>Packages live</span>
-              <strong id="checkoutPackageMetric">0</strong>
-              <small id="checkoutPackageMeta">Service bundles ready at checkout</small>
-            </article>
-            <article class="mini-stat">
-              <span>Gift cards live</span>
-              <strong id="checkoutGiftCardMetric">0</strong>
-              <small id="checkoutGiftCardMeta">Outstanding gift-card balances still active</small>
-            </article>
-            <article class="mini-stat">
-              <span>Retail products</span>
-              <strong id="checkoutRetailMetric">0</strong>
-              <small id="checkoutRetailMeta">Active products ready to recommend</small>
-            </article>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Memberships and packages</h3>
-              <div class="channel-list" id="checkoutOffersList"></div>
-            </div>
-            <div class="insight-panel">
-              <h3>Retail and gift cards</h3>
-              <div class="channel-list" id="checkoutRetailList"></div>
-            </div>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Issue gift card</h3>
-              <form class="compact-form" id="giftCardIssueForm">
-                <input id="giftCardPurchaserInput" type="text" placeholder="Purchaser name" required />
-                <input id="giftCardRecipientInput" type="text" placeholder="Recipient name" required />
-                <input id="giftCardBalanceInput" type="number" min="1" step="0.01" placeholder="Balance" required />
-                <input id="giftCardExpiryInput" type="date" />
-                <button class="btn btn-ghost btn-small" type="submit">Issue gift card</button>
-              </form>
-              <p class="form-message" id="giftCardIssueMessage"></p>
-            </div>
-            <div class="insight-panel">
-              <h3>Checkout guidance</h3>
-              <div id="checkoutGuidanceCard"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Recovery view</p>
-              <h2>Recover lost bookings and fill weak days faster</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            This view brings together today's cancellations, risky upcoming bookings, rebooking opportunities, and waitlist demand so you can protect revenue quickly.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Late cancels today</span>
-              <strong id="recoveryLateCancelsMetric">0</strong>
-              <small id="recoveryLateCancelsMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>High no-show risk</span>
-              <strong id="recoveryHighRiskMetric">0</strong>
-              <small id="recoveryHighRiskMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>Rebooking chances</span>
-              <strong id="recoveryRebookingMetric">0</strong>
-              <small id="recoveryRebookingMeta">Clients ready to bring back</small>
-            </article>
-            <article class="mini-stat">
-              <span>Waitlist ready</span>
-              <strong id="recoveryWaitlistMetric">0</strong>
-              <small id="recoveryWaitlistMeta">People ready to contact</small>
-            </article>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Gaps to fill first</h3>
-              <div class="channel-list" id="recoveryPriorityList"></div>
-            </div>
-            <div class="insight-panel">
-              <h3>Recovery actions</h3>
-              <div class="channel-list" id="recoveryActionList"></div>
-            </div>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel subscriber-detail-panel">
-              <h3>No-show prevention</h3>
-              <p class="section-copy">Pick the most urgent booking and work through the next step clearly.</p>
-              <div id="recoveryDetailCard"></div>
-              <p class="form-message" id="recoveryMessage"></p>
-            </div>
-            <div class="insight-panel subscriber-guide-panel">
-              <h3>What to do here</h3>
-              <div class="detail-card">
-                <strong>Use this area to stop lost revenue before it happens</strong>
-                <small>Review the risky booking, copy the reminder wording, mark when you have reached out, and jump back into the diary if the day needs filling.</small>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <details class="dashboard-disclosure">
-          <summary>
-            <span>Business setup and team planning</span>
-            <small>Open only when you need integrations, rota changes, or deeper setup tools.</small>
-          </summary>
-          <section class="dashboard-card dashboard-card-nested">
-            <div class="insight-grid">
-              <div class="insight-panel">
-                <h3>Revenue attribution</h3>
-                <div class="channel-list" id="channelList"></div>
-              </div>
-              <div class="insight-panel">
-                <h3>Accounting integrations</h3>
-                <div class="integration-list" id="integrationList"></div>
-                <form class="compact-form" id="integrationConnectForm">
-                  <select id="integrationProvider" class="select-control">
-                    <option value="quickbooks">QuickBooks</option>
-                    <option value="xero">Xero</option>
-                    <option value="freshbooks">FreshBooks</option>
-                    <option value="sage">Sage</option>
-                  </select>
-                  <input id="integrationAccountLabel" type="text" placeholder="Account label" />
-                  <select id="integrationSyncMode" class="select-control">
-                    <option value="daily">Daily sync</option>
-                    <option value="manual">Manual sync</option>
-                  </select>
-                  <button class="btn btn-ghost btn-small" type="submit">Connect</button>
-                </form>
-              </div>
-              <div class="insight-panel">
-                <h3>Team coverage</h3>
-                <div class="team-list" id="teamList"></div>
-              </div>
-            </div>
-            <div class="insight-panel">
-              <div class="section-head">
-                <div>
-                  <h3>Weekly team planner</h3>
-                  <p class="section-copy" id="teamPlannerMeta">Loading weekly team view...</p>
-                </div>
-                <div class="agenda-filter-row" id="teamPlannerWeekControls">
-                  <button class="btn btn-ghost btn-small" id="teamPlannerPrevBtn" type="button">Previous week</button>
-                  <button class="btn btn-ghost btn-small" id="teamPlannerCurrentBtn" type="button">This week</button>
-                  <button class="btn btn-ghost btn-small" id="teamPlannerNextBtn" type="button">Next week</button>
-                </div>
-              </div>
-              <div class="team-planner-grid" id="teamPlannerGrid"></div>
-              <div class="insight-grid insight-grid-two">
-                <div class="detail-card" id="teamPlannerEditor"></div>
-                <div class="detail-card">
-                  <strong>Planner actions</strong>
-                  <small>Pick a team member and day, set the status and shift, then save the weekly rota.</small>
-                  <div class="agenda-item-actions">
-                    <button class="btn btn-ghost btn-small" id="teamPlannerDiscardBtn" type="button">Discard edits</button>
-                    <button class="btn btn-ghost btn-small" id="teamPlannerResetBtn" type="button">Reset saved week</button>
-                    <button class="btn btn-small" id="teamPlannerSaveBtn" type="button">Save weekly rota</button>
-                  </div>
-                  <p class="form-message" id="teamPlannerMessage"></p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </details>
-
-        <details class="dashboard-disclosure">
-          <summary>
-            <span>Extra follow-up tools</span>
-            <small>Open when you want broader rebooking campaigns, not just today's diary work.</small>
-          </summary>
-          <section class="dashboard-card dashboard-card-nested">
-            <div class="insight-grid insight-grid-two">
-              <div class="insight-panel">
-                <h3>Follow-up groups</h3>
-                <div class="channel-list" id="subscriberSegmentsList"></div>
-              </div>
-              <div class="insight-panel">
-                <h3>Suggested message</h3>
-                <div id="subscriberSegmentDetail"></div>
-                <form class="compact-form" id="subscriberCampaignForm">
-                  <input id="subscriberCampaignMessage" type="text" placeholder="Message to send" />
-                  <button class="btn btn-ghost btn-small" type="submit">Mark follow-up sent</button>
-                </form>
-                <p class="form-message" id="subscriberCampaignMessageState"></p>
-              </div>
-            </div>
-          </section>
-        </details>
-
-        <details class="dashboard-disclosure">
-          <summary>
-            <span>Message queue</span>
-            <small>Open when you want a broader outreach queue for rebooking, confirmations, or waitlist follow-up.</small>
-          </summary>
-          <section class="dashboard-card dashboard-card-nested">
-            <div class="revenue-grid">
-              <article class="mini-stat">
-                <span>Messages waiting</span>
-                <strong id="messageQueueMetric">0</strong>
-                <small id="messageQueueMeta">Loading...</small>
-              </article>
-              <article class="mini-stat">
-                <span>Rebooking prompts</span>
-                <strong id="messageRebookingMetric">0</strong>
-                <small id="messageRebookingMeta">Clients ready to bring back</small>
-              </article>
-              <article class="mini-stat">
-                <span>Risk checks</span>
-                <strong id="messageRiskMetric">0</strong>
-                <small id="messageRiskMeta">Bookings needing confirmation</small>
-              </article>
-              <article class="mini-stat">
-                <span>Waitlist replies</span>
-                <strong id="messageWaitlistMetric">0</strong>
-                <small id="messageWaitlistMeta">People ready to offer a slot</small>
-              </article>
-            </div>
-            <div class="insight-grid insight-grid-two">
-              <div class="insight-panel">
-                <h3>Message queue</h3>
-                <div class="channel-list" id="subscriberMessageQueue"></div>
-              </div>
-              <div class="insight-panel">
-                <h3>Selected message</h3>
-                <div id="subscriberMessageDetail"></div>
-                <p class="form-message" id="subscriberMessageBoardState"></p>
-              </div>
-            </div>
-          </section>
-        </details>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Communication status</p>
-              <h2>What has already been followed up</h2>
-            </div>
-          </div>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Reminders logged</span>
-              <strong id="commReminderMetric">0</strong>
-              <small id="commReminderMeta">No reminder activity yet</small>
-            </article>
-            <article class="mini-stat">
-              <span>Confirmed replies</span>
-              <strong id="commConfirmedMetric">0</strong>
-              <small id="commConfirmedMeta">No confirmation activity yet</small>
-            </article>
-            <article class="mini-stat">
-              <span>Rebooking sent</span>
-              <strong id="commRebookingMetric">0</strong>
-              <small id="commRebookingMeta">No rebooking prompts marked yet</small>
-            </article>
-            <article class="mini-stat">
-              <span>Setup status</span>
-              <strong id="commReadyMetric">Checking</strong>
-              <small id="commReadyMeta">Checking channel readiness</small>
-            </article>
-            <article class="mini-stat">
-              <span>Reachable upcoming</span>
-              <strong id="commCoverageMetric">0%</strong>
-              <small id="commCoverageMeta">No upcoming contact coverage yet</small>
-            </article>
-            <article class="mini-stat">
-              <span>Delivered notifications</span>
-              <strong id="commDeliveryMetric">0</strong>
-              <small id="commDeliveryMeta">No live delivery records yet</small>
-            </article>
-            <article class="mini-stat">
-              <span>Failed channels</span>
-              <strong id="commFailedMetric">0</strong>
-              <small id="commFailedMeta">No failed delivery attempts yet</small>
-            </article>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Recent communication activity</h3>
-              <div class="channel-list" id="commRecentList"></div>
-            </div>
-            <div class="insight-panel">
-              <h3>Communication setup</h3>
-              <div id="commGuidanceCard"></div>
-            </div>
-          </div>
-          <div class="insight-panel">
-            <h3>Reminders due soon</h3>
-            <div class="channel-list" id="commDueSoonList"></div>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Reminder settings</h3>
-              <form class="compact-form" id="commSettingsForm">
-                <select id="commLiveRemindersEnabled" class="select-control">
-                  <option value="true">Live reminders on</option>
-                  <option value="false">Manual follow-up only</option>
-                </select>
-                <select id="commChannelPreference" class="select-control">
-                  <option value="auto">Best available channel</option>
-                  <option value="sms">Prefer SMS</option>
-                  <option value="email">Prefer email</option>
-                  <option value="manual">Manual follow-up only</option>
-                </select>
-                <select id="commReminderLeadHours" class="select-control">
-                  <option value="2">2 hours before</option>
-                  <option value="24">24 hours before</option>
-                  <option value="48">48 hours before</option>
-                  <option value="72">72 hours before</option>
-                </select>
-                <select id="commManualFallbackEnabled" class="select-control">
-                  <option value="true">Fallback to manual follow-up</option>
-                  <option value="false">No manual fallback</option>
-                </select>
-                <button class="btn btn-ghost btn-small" type="submit">Save reminder settings</button>
-              </form>
-              <p class="form-message" id="commSettingsMessage"></p>
-            </div>
-            <div class="insight-panel">
-              <h3>Current reminder plan</h3>
-              <div id="commSettingsDetail"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Waitlist recovery</p>
-              <h2>Fill cancelled or open slots faster</h2>
-            </div>
-          </div>
-          <p class="section-copy">
-            Keep a simple waitlist of people who still want an appointment. When a slot opens, mark them as contacted and work through the list quickly.
-          </p>
-          <div class="revenue-grid">
-            <article class="mini-stat">
-              <span>Total entries</span>
-              <strong id="waitlistTotalMetric">0</strong>
-              <small id="waitlistTotalMeta">Loading...</small>
-            </article>
-            <article class="mini-stat">
-              <span>Waiting</span>
-              <strong id="waitlistWaitingMetric">0</strong>
-              <small id="waitlistWaitingMeta">People ready to contact</small>
-            </article>
-            <article class="mini-stat">
-              <span>Contacted</span>
-              <strong id="waitlistContactedMetric">0</strong>
-              <small id="waitlistContactedMeta">Already contacted</small>
-            </article>
-            <article class="mini-stat">
-              <span>Booked</span>
-              <strong id="waitlistBookedMetric">0</strong>
-              <small id="waitlistBookedMeta">Recovered into bookings</small>
-            </article>
-          </div>
-          <div class="insight-grid insight-grid-two">
-            <div class="insight-panel">
-              <h3>Add to waitlist</h3>
-              <form class="compact-form" id="waitlistForm">
-                <input id="waitlistCustomerName" type="text" placeholder="Customer name" />
-                <input id="waitlistCustomerPhone" type="text" placeholder="Phone" />
-                <input id="waitlistCustomerEmail" type="email" placeholder="Email (optional)" />
-                <input id="waitlistService" type="text" placeholder="Wanted service" />
-                <input id="waitlistPreferredDate" type="date" />
-                <input id="waitlistPreferredTime" type="time" />
-                <textarea id="waitlistNotes" rows="3" placeholder="Notes"></textarea>
-                <button class="btn btn-ghost btn-small" type="submit">Add to waitlist</button>
-              </form>
-              <p class="form-message" id="waitlistMessage"></p>
-            </div>
-            <div class="insight-panel">
-              <h3>Waitlist entries</h3>
-              <div class="channel-list" id="waitlistEntries"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card">
-          <div class="export-strip">
-            <div>
-              <strong>Open booking panel</strong>
-              <p>Use this for new bookings, repeat visits, and customer callbacks.</p>
-            </div>
-            <button class="btn" id="openQuickBookingBtn" type="button">Open booking panel</button>
-          </div>
-          <p class="form-message" id="quickBookingMessage"></p>
-        </section>
       </section>
 
       <section class="dashboard-grid dashboard-grid-customer" id="customerDashboard" hidden>
-        <section class="dashboard-card" id="customerOnboardingCard">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Welcome</p>
-              <h2>How to use your dashboard</h2>
-            </div>
-          </div>
-          <div id="customerOnboardingContent"></div>
-        </section>
-
         <article class="dashboard-card metric-band metric-band-compact">
           <div class="metric-card">
             <span>Total bookings</span>
@@ -657,7 +175,6 @@
               <p class="kicker">Next visit</p>
               <h2>Your next appointment</h2>
             </div>
-            <button class="btn ask-lexi-btn btn-small" id="customerAskLexiBtn" type="button">Ask Lexi</button>
           </div>
           <div class="customer-next-booking" id="customerNextBookingCard"></div>
         </section>
@@ -784,64 +301,8 @@
           </p>
           <div class="admin-business-hub-grid" id="adminBusinessHubGrid"></div>
         </section>
-
-        <section class="dashboard-card admin-hub-detail-card" id="adminHubDetailSection" hidden>
-          <div class="section-head">
-            <div>
-              <p class="kicker" id="adminHubDetailKicker">Business hub</p>
-              <h2 id="adminHubDetailTitle">Admin detail page</h2>
-            </div>
-          </div>
-          <p class="section-copy" id="adminHubDetailSummary">
-            Choose a business hub card to open a focused admin page for that area.
-          </p>
-          <div class="admin-hub-detail-grid">
-            <div class="insight-panel">
-              <h3>What this page covers</h3>
-              <ul class="feature-list" id="adminHubDetailInfoList"></ul>
-            </div>
-            <div class="insight-panel">
-              <h3>Admin jobs</h3>
-              <ul class="feature-list" id="adminHubDetailJobsList"></ul>
-            </div>
-            <div class="insight-panel">
-              <h3>Expected outcome</h3>
-              <ul class="feature-list" id="adminHubDetailOutcomesList"></ul>
-            </div>
-          </div>
-        </section>
       </section>
     </main>
-
-    <button class="lexi-fab lexi-fab-dashboard" id="dashboardLexiFab" type="button" aria-label="Open Ask Lexi">
-      Ask Lexi
-    </button>
-
-    <aside class="lexi-drawer" id="dashboardLexiDrawer" hidden>
-      <div class="lexi-drawer-head">
-        <div>
-          <p class="kicker">Ask Lexi</p>
-          <h2 id="drawerTitle">Salon business assistant</h2>
-        </div>
-        <button class="btn btn-ghost btn-small" id="dashboardLexiCloseBtn" type="button">Close</button>
-      </div>
-      <div class="assistant-thread" id="subscriberAssistantThread"></div>
-      <form class="assistant-form assistant-form-stacked" id="subscriberAssistantForm">
-        <input id="subscriberAssistantInput" type="text" placeholder="Ask about bookings, gaps, rebooking, revenue, or how to use the app" />
-        <div class="assistant-quick-prompts">
-          <button class="prompt-chip" type="button" data-lexi-prompt="Book a haircut for tomorrow at 3 PM">
-            Book customer
-          </button>
-          <button class="prompt-chip" type="button" data-lexi-prompt="What should I focus on today?">
-            Today's priorities
-          </button>
-          <button class="prompt-chip" type="button" data-lexi-prompt="How do I export my accounting data?">
-            Accounting help
-          </button>
-        </div>
-        <button class="btn" type="submit">Send</button>
-      </form>
-    </aside>
 
     <section class="lexi-modal" id="rescheduleModal" hidden>
       <div class="lexi-modal-backdrop" id="rescheduleBackdrop"></div>
@@ -1003,7 +464,9 @@
         });
       })();
     </script>
-    <script type="module" src="/dashboard.js?v=20260313-dashboard3"></script>
+    <script type="module" src="/dashboard-shared-lexi-entry.js?v=20260313-dashboard8"></script>
+    <script type="module" src="/dashboard-subscriber-business-hub.js?v=20260313-subscriber8"></script>
+    <script type="module" src="/dashboard.js?v=20260313-dashboard46"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
 </html>

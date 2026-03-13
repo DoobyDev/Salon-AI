@@ -7,10 +7,6 @@ export function createDashboardStatusUtilsRuntime(deps) {
     accountingLiveNote
   } = deps || {};
 
-  function isSubscriberCleanSlate() {
-    return getUserRole?.() === "subscriber" && (Array.isArray(getBookingRows?.()) ? getBookingRows().length : 0) === 0;
-  }
-
   function shouldRenderTopMetricsGrid() {
     const role = String(getUserRole?.() || "").trim().toLowerCase();
     return !(role === "subscriber" || role === "admin");
@@ -36,7 +32,6 @@ export function createDashboardStatusUtilsRuntime(deps) {
   }
 
   return {
-    isSubscriberCleanSlate,
     shouldRenderTopMetricsGrid,
     formatDateShort,
     setAccountingStatus,

@@ -18,6 +18,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Cleaner customer communication and fewer avoidable booking mistakes.",
       "A stronger setup foundation for the rest of the business modules.",
       "Better trust because the profile always reflects the real business."
+    ],
+    editFields: [
+      { key: "profile_identity", label: "Business identity", placeholder: "Record the live business name, contact details, address, and any profile changes still to update." },
+      { key: "profile_hours", label: "Hours and services", placeholder: "Note current opening hours, key service updates, and anything Lexi or customers should see correctly." },
+      { key: "profile_actions", label: "Next actions", placeholder: "Write the next profile fixes or updates you want to complete for this area." }
     ]
   },
   {
@@ -39,6 +44,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Better day-to-day staffing control and clearer capacity planning.",
       "Less scheduling confusion during peak periods or cover gaps.",
       "A diary that better matches the team actually available to deliver services."
+    ],
+    editFields: [
+      { key: "staff_team", label: "Team setup", placeholder: "Capture who is active, who needs adding, and any role or rota updates still to make." },
+      { key: "staff_capacity", label: "Capacity and cover", placeholder: "Write current cover gaps, busy-day pressure points, and any staffing changes needed." },
+      { key: "staff_actions", label: "Next actions", placeholder: "List the next staffing actions you want to take in this area." }
     ]
   },
   {
@@ -60,6 +70,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "A clearer booking journey with fewer customer drop-offs.",
       "Stronger presentation of the salon brand and service menu.",
       "Better alignment between what the business offers and what customers see."
+    ],
+    editFields: [
+      { key: "frontdesk_services", label: "Customer-facing setup", placeholder: "Note what customers currently see, what looks strong, and what still needs improving." },
+      { key: "frontdesk_trust", label: "Trust and presentation", placeholder: "Record any service copy, imagery, policy, or trust-detail changes needed." },
+      { key: "frontdesk_actions", label: "Next actions", placeholder: "List the next front-desk or customer-view fixes you want to make." }
     ]
   },
   {
@@ -81,6 +96,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Better brand consistency across the salon's public presence.",
       "Improved discovery from social traffic into bookings or contact.",
       "Less confusion from old, missing, or broken links."
+    ],
+    editFields: [
+      { key: "social_channels", label: "Live channels", placeholder: "Write which social channels are active, missing, or need updating." },
+      { key: "social_brand", label: "Brand consistency", placeholder: "Note any mismatched usernames, broken links, or brand issues to fix." },
+      { key: "social_actions", label: "Next actions", placeholder: "List the next social-media tasks you want to complete." }
     ]
   },
   {
@@ -102,6 +122,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Stronger retail control and better visibility over non-service revenue.",
       "Cleaner fulfilment workflows for shipped orders.",
       "A more complete customer offer beyond appointments alone."
+    ],
+    editFields: [
+      { key: "merch_products", label: "Product range", placeholder: "Record what products are live, what needs adding, and any pricing or imagery gaps." },
+      { key: "merch_sales", label: "Sales and fulfilment", placeholder: "Note stock concerns, best sellers, shipment issues, or retail opportunities." },
+      { key: "merch_actions", label: "Next actions", placeholder: "List the next merch tasks you want to complete." }
     ]
   },
   {
@@ -123,6 +148,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Tidier finance admin and faster accountant handoff.",
       "Less manual effort during reconciliation and export tasks.",
       "A clearer bookkeeping workflow inside the dashboard."
+    ],
+    editFields: [
+      { key: "accounting_exports", label: "Exports and records", placeholder: "Write what finance records are current, missing, or still need exporting." },
+      { key: "accounting_providers", label: "Provider links", placeholder: "Note any accounting provider setup, reconciliation issues, or bookkeeping follow-up." },
+      { key: "accounting_actions", label: "Next actions", placeholder: "List the next accounting admin tasks you want to complete." }
     ]
   },
   {
@@ -144,6 +174,11 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Clearer owner visibility over what is driving profit.",
       "Faster understanding of cost pressure and break-even position.",
       "More confident financial decisions based on live business signals."
+    ],
+    editFields: [
+      { key: "finance_margin", label: "Margin signals", placeholder: "Record what is helping or hurting margin right now." },
+      { key: "finance_costs", label: "Cost pressure", placeholder: "Note payroll, overhead, or pricing issues that need review." },
+      { key: "finance_actions", label: "Next actions", placeholder: "List the next finance or profitability actions you want to take." }
     ]
   },
   {
@@ -165,15 +200,44 @@ export const BUSINESS_HUB_CARD_CONFIG = [
       "Better protection of booked time and repeat visits.",
       "Clearer response to cancellations and no-show disruption.",
       "Less revenue leakage from unfilled gaps in the diary."
+    ],
+    editFields: [
+      { key: "operations_patterns", label: "Cancellation patterns", placeholder: "Write what cancellation or no-show patterns you are seeing." },
+      { key: "operations_recovery", label: "Recovery plan", placeholder: "Note your current gap-filling, rebooking, or policy actions." },
+      { key: "operations_actions", label: "Next actions", placeholder: "List the next cancellation-recovery tasks you want to complete." }
     ]
   }
 ];
 
+export const BUSINESS_HUB_MODULE_FALLBACK_MAP = {
+  business_profile: { label: "Business Information", howItHelps: "Core business setup for the platform." },
+  staff: { label: "Staff Setup", howItHelps: "Team and rota administration." },
+  frontdesk: { label: "Salon Features", howItHelps: "Customer-facing business features." },
+  social: { label: "Social Media", howItHelps: "Public social links and brand touchpoints." },
+  merch: { label: "Merch", howItHelps: "Retail and shipped product oversight." },
+  accounting: { label: "Accounting", howItHelps: "Finance exports and bookkeeping support." },
+  profitability: { label: "Finance", howItHelps: "Profitability and margin visibility." },
+  operations: { label: "Cancellations", howItHelps: "Recovery and cancellation visibility." }
+};
+
+export function getBusinessHubModuleFallback(key) {
+  return BUSINESS_HUB_MODULE_FALLBACK_MAP[String(key || "").trim()] || null;
+}
+
 export function getBusinessHubModulesForRole({ role, moduleDefinitionByKey }) {
   if (!(role === "subscriber" || role === "admin")) return [];
   return BUSINESS_HUB_CARD_CONFIG.map((item) => {
-    const mod = moduleDefinitionByKey(item.key);
-    if (!mod) return null;
-    return { ...item, mod };
-  }).filter(Boolean);
+    const mod = typeof moduleDefinitionByKey === "function"
+      ? moduleDefinitionByKey(item.key)
+      : null;
+    const fallback = getBusinessHubModuleFallback(item.key);
+    return {
+      ...item,
+      mod: mod || fallback || {
+        key: item.key,
+        label: item.title,
+        howItHelps: item.summary
+      }
+    };
+  });
 }

@@ -2,8 +2,10 @@ import { clearServiceWorkerState } from "./pwa-runtime.js";
 import { createDashboardSharedUtilsRuntime } from "./dashboard-shared-utils.js";
 import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js";
 import { createAdminSupportRuntime } from "./dashboard-admin-support.js";
-import { createAdminHubRuntime } from "./dashboard-admin-hub.js";
-import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js";
+import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin10";
+import { getBusinessHubModulesForRole, getBusinessHubModuleFallback } from "./dashboard-business-hub.js?v=20260313-admin6";
+import { createSharedAskLexiPopup } from "./shared-ask-lexi-popup.js";
+import { buildPrimaryAskLexiPopupOptions } from "./shared-ask-lexi-presets.js";
 
 clearServiceWorkerState();
 
@@ -22,7 +24,6 @@ if (!token || !userRaw) {
   window.location.href = `/dashboard?role=${encodeURIComponent(fallbackRole)}`;
 } else {
   const params = new URLSearchParams(window.location.search);
-  const adminPage = String(params.get("adminPage") || "").trim().toLowerCase();
 
   const sharedUtils = createDashboardSharedUtilsRuntime();
   const formatMoney = (...args) => sharedUtils.formatMoney(...args);
@@ -56,12 +57,12 @@ if (!token || !userRaw) {
   const state = {
     adminPlatformAnalytics: null,
     adminRevenueAnalytics: null,
-    adminUsageAnalytics: null,
     adminAccountSupportResultsCache: [],
     adminAccountSupportSelectedId: "",
     adminAccountSupportSearchTimerId: null,
     freeSubscriberEntries: []
   };
+  let openDefaultBusinessHubModal = () => {};
 
   function setDashActionStatus(message = "", isError = false, timeoutMs = 2200) {
     if (!dashActionStatus) return;
@@ -152,19 +153,7 @@ if (!token || !userRaw) {
 
   const businessHubModules = getBusinessHubModulesForRole({
     role: "admin",
-    moduleDefinitionByKey: (key) => {
-      const map = {
-        business_profile: { label: "Business Information", howItHelps: "Core business setup for the platform." },
-        staff: { label: "Staff Setup", howItHelps: "Team and rota administration." },
-        frontdesk: { label: "Salon Features", howItHelps: "Customer-facing business features." },
-        social: { label: "Social Media", howItHelps: "Public social links and brand touchpoints." },
-        merch: { label: "Merch", howItHelps: "Retail and shipped product oversight." },
-        accounting: { label: "Accounting", howItHelps: "Finance exports and bookkeeping support." },
-        profitability: { label: "Finance", howItHelps: "Profitability and margin visibility." },
-        operations: { label: "Cancellations", howItHelps: "Recovery and cancellation visibility." }
-      };
-      return map[key] || { label: key, howItHelps: "" };
-    }
+    moduleDefinitionByKey: (key) => getBusinessHubModuleFallback(key) || { label: key, howItHelps: "" }
   });
 
   const adminSupportRuntime = createAdminSupportRuntime({
@@ -176,34 +165,13 @@ if (!token || !userRaw) {
     escapeHtml,
     formatDateShort,
     formatMoney,
-    openManageForm: async () => null,
-    loadAdminBusinessOptions: async () => {},
-    reloadAdminManagedDashboard: async () => {},
     setDashActionStatus,
-    syncAdminBusinessQueryParam: () => {},
-    renderModuleNavigator: () => {},
-    getCloseModulePopupActive: () => false,
-    openInteractiveModulePopup: () => {
-      window.location.href = "/dashboard?role=admin&adminPage=business_profile#adminHubDetailSection";
-    },
-    canManageBusinessModules: () => false,
+    openInteractiveModulePopup: () => openDefaultBusinessHubModal(),
     setAccountingStatus: setDashActionStatus,
-    getManagedBusinessId: () => "",
-    setManagedBusinessId: () => {},
-    adminBusinessSelect: null,
-    subscriberCalendarSection: null,
     adminAccountSearchForm: document.getElementById("adminAccountSearchForm"),
     adminAccountSearchInput: document.getElementById("adminAccountSearchInput"),
     adminAccountsTable: document.getElementById("adminAccountsTable"),
-    adminAccountDetail: null,
-    adminAccountEditForm: null,
-    adminEditName: null,
-    adminEditEmail: null,
-    adminEditBusinessName: null,
     adminAccountEditMessage: document.getElementById("adminAccountEditMessage"),
-    accountingBookingExportBtn: null,
-    accountingPlatformExportBtn: null,
-    withManagedBusiness: (url) => url,
     getAdminAccountSupportResultsCache: () => state.adminAccountSupportResultsCache,
     setAdminAccountSupportResultsCache: (value) => {
       state.adminAccountSupportResultsCache = Array.isArray(value) ? value : [];
@@ -219,16 +187,12 @@ if (!token || !userRaw) {
   });
 
   const adminPlatformRuntime = createAdminPlatformRuntime({
-    win: window,
-    doc: document,
     fetchImpl: fetch,
     getUserRole: () => "admin",
     headers,
     escapeHtml,
     formatMoney,
-    formatDateShort,
     setDashActionStatus,
-    renderAdminManagedBusinessSummary: () => {},
     parseExportFileName: (...args) => adminSupportRuntime.parseExportFileName(...args),
     adminPlatformMetricGrid: document.getElementById("adminPlatformMetricGrid"),
     adminRevenueSummaryGrid: document.getElementById("adminRevenueSummaryGrid"),
@@ -240,13 +204,6 @@ if (!token || !userRaw) {
     adminRevenueSignalList: document.getElementById("adminRevenueSignalList"),
     adminRevenuePeriodPill: document.getElementById("adminRevenuePeriodPill"),
     adminRevenueNote: document.getElementById("adminRevenueNote"),
-    adminUsageSummaryGrid: null,
-    adminUsageHourlyList: null,
-    adminUsageWeekdayList: null,
-    adminUsageRoleGrid: null,
-    adminUsageOperationsGrid: null,
-    adminUsagePeriodPill: null,
-    adminUsageNote: null,
     adminPlatformExportBtn: document.getElementById("adminPlatformExportBtn"),
     onManageFreeSubscribers: () => {
       openFreeSubscriberModal().catch((error) => {
@@ -261,27 +218,29 @@ if (!token || !userRaw) {
     getAdminRevenueAnalytics: () => state.adminRevenueAnalytics,
     setAdminRevenueAnalytics: (value) => {
       state.adminRevenueAnalytics = value;
-    },
-    getAdminUsageAnalytics: () => state.adminUsageAnalytics,
-    setAdminUsageAnalytics: (value) => {
-      state.adminUsageAnalytics = value;
     }
   });
 
   const adminHubRuntime = createAdminHubRuntime({
     getUserRole: () => "admin",
-    getAdminPage: () => adminPage,
     escapeHtml,
     getBusinessHubModules: () => businessHubModules
   });
+  openDefaultBusinessHubModal = () => {
+    const firstCard = businessHubModules[0] || null;
+    if (firstCard) adminHubRuntime.openBusinessHubModal(firstCard);
+  };
+  createSharedAskLexiPopup(
+    buildPrimaryAskLexiPopupOptions({
+      triggerButtons: [adminAskLexiBtn],
+      source: "dashboard-admin",
+      role: "admin"
+    })
+  );
 
   logoutBtn?.addEventListener("click", (event) => {
     event.preventDefault();
     window.location.href = "/?logout=1";
-  });
-
-  adminAskLexiBtn?.addEventListener("click", () => {
-    setDashActionStatus("Open a subscriber or customer preview from search if you want the full Ask Lexi dashboard context.", false, 3200);
   });
 
   freeSubscriberModalCloseBtn?.addEventListener("click", closeFreeSubscriberModal);
@@ -333,27 +292,8 @@ if (!token || !userRaw) {
     }
   });
 
-  const adminHubDetailSection = document.getElementById("adminHubDetailSection");
-
   adminSupportRuntime.bindAdminSupportEvents();
   adminPlatformRuntime.bindAdminPlatformEvents();
   adminPlatformRuntime.loadAdminPlatformOverview();
-  adminHubRuntime.renderAdminBusinessHub(
-    document.getElementById("adminBusinessHubGrid"),
-    adminHubDetailSection,
-    {
-      adminHubDetailKicker: document.getElementById("adminHubDetailKicker"),
-      adminHubDetailTitle: document.getElementById("adminHubDetailTitle"),
-      adminHubDetailSummary: document.getElementById("adminHubDetailSummary"),
-      adminHubDetailInfoList: document.getElementById("adminHubDetailInfoList"),
-      adminHubDetailJobsList: document.getElementById("adminHubDetailJobsList"),
-      adminHubDetailOutcomesList: document.getElementById("adminHubDetailOutcomesList")
-    }
-  );
-
-  if (adminPage && adminHubDetailSection) {
-    window.requestAnimationFrame(() => {
-      adminHubDetailSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
+  adminHubRuntime.renderAdminBusinessHub(document.getElementById("adminBusinessHubGrid"));
 }

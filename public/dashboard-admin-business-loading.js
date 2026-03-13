@@ -3,7 +3,7 @@ export function createAdminBusinessLoadingRuntime(deps) {
   const {
     getUserRole,
     headers,
-    adminBusinessSelect,
+    adminBusinessSelect = null,
     getAdminBusinessParam,
     getManagedBusinessId,
     setManagedBusinessId,

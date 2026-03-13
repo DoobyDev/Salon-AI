@@ -26,7 +26,6 @@ export function createCalendarDiaryRuntime(deps) {
     setBookingDateFilter,
     applyBookingFilters,
     renderSubscriberCalendar,
-    renderBusinessAiWorkspace,
     openCalendarDayWorkspace,
     openManageForm,
     createBooking,
@@ -94,8 +93,6 @@ export function createCalendarDiaryRuntime(deps) {
     });
     applyBookingFilters?.();
     renderSubscriberCalendar?.();
-    renderBusinessAiWorkspace?.("subscriber");
-    renderBusinessAiWorkspace?.("admin");
     if (options.openDayWorkspace) {
       openCalendarDayWorkspace?.(safeDateKey);
     }

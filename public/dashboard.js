@@ -1,6 +1,5 @@
 import { applyDashboardRoleLayoutVisibility } from "./dashboard-layout.js?v=20260312-admin1";
-import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js?v=20260312-admin1";
-import { createBusinessHubRuntime } from "./dashboard-business-hub-popup.js?v=20260312-admin1";
+import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js?v=20260313-admin6";
 import { createModuleUsageRuntime } from "./dashboard-module-usage.js";
 import { createModuleStatusRuntime } from "./dashboard-module-status.js";
 import { createModuleCatalogRuntime } from "./dashboard-module-catalog.js";
@@ -25,26 +24,13 @@ import { createDashboardRequestUtilsRuntime } from "./dashboard-request-utils.js
 import { createDashboardSharedUtilsRuntime } from "./dashboard-shared-utils.js";
 import { createDashboardPreferencesRuntime } from "./dashboard-preferences-runtime.js";
 import { createDashboardRoleChromeRuntime } from "./dashboard-role-chrome.js?v=20260312-admin1";
-import { createDashboardCopilotUiRuntime } from "./dashboard-copilot-ui.js";
 import { createDashboardStatusUtilsRuntime } from "./dashboard-status-utils.js";
-import { createDashboardMobileNavRuntime } from "./dashboard-mobile-nav.js";
 import { createDashboardStartupRuntime } from "./dashboard-startup-runtime.js";
 import { createBookingFilterRuntime } from "./dashboard-booking-filters.js";
 import { createCalendarDayWorkspaceRuntime } from "./dashboard-calendar-day-workspace.js";
-import { createCustomerLexiPopupRuntime } from "./dashboard-customer-lexi-popup.js";
-import { createCustomerLexiRealtimeRuntime } from "./dashboard-customer-lexi-realtime.js";
-import { createCustomerLexiPlannerRuntime } from "./dashboard-customer-lexi-planner.js";
-import { createCustomerLexiCalendarEventsRuntime } from "./dashboard-customer-lexi-calendar-events.js";
-import { createAiLaunchControlsRuntime } from "./dashboard-ai-launch-controls.js";
 import { createManageCrmActionsRuntime } from "./dashboard-manage-crm-actions.js";
 import { createManageSocialActionsRuntime } from "./dashboard-manage-social-actions.js";
-import { createCustomerReceptionRuntime } from "./dashboard-customer-reception.js";
-import { createCustomerAnalyticsRuntime } from "./dashboard-customer-analytics.js";
-import { createCustomerInteractionsRuntime } from "./dashboard-customer-interactions.js";
-import { createCustomerBootstrapRuntime } from "./dashboard-customer-bootstrap.js";
-import { createFrontDeskMockRuntime } from "./dashboard-frontdesk-mock.js";
 import { createMockDashboardRuntime } from "./dashboard-mock-runtime.js";
-import { frontDeskMock, customerSalonDirectory } from "./dashboard-customer-data.js";
 import { fallbackText as t } from "./dashboard-text.js";
 import {
   MANAGE_MODE_STORAGE_KEY,
@@ -89,11 +75,8 @@ import { createBusinessProfileRuntime } from "./dashboard-business-profile.js";
 import { createAdminSupportRuntime } from "./dashboard-admin-support.js?v=20260312-admin1";
 import { createAdminBusinessRuntime } from "./dashboard-admin-business-runtime.js";
 import { createAdminBusinessLoadingRuntime } from "./dashboard-admin-business-loading.js";
-import { createAdminBusinessControlsRuntime } from "./dashboard-admin-business-controls.js";
-import { createAdminManagedControlsRuntime } from "./dashboard-admin-managed-controls.js";
-import { createBusinessCopilotRuntime } from "./dashboard-business-copilot.js";
-import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js?v=20260312-admin1";
-import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260312-admin1";
+import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js?v=20260313-admin2";
+import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin10";
 import { createBusinessReportingRuntime } from "./dashboard-business-reporting.js";
 import { createBusinessGrowthPanelRuntime } from "./dashboard-business-growth-panel.js";
 import { createBusinessControlsRuntime } from "./dashboard-business-controls-runtime.js";
@@ -228,6 +211,8 @@ const dashboardKicker = document.getElementById("dashboardKicker");
 const dashboardTitle = document.getElementById("dashboardTitle");
 const dashboardDescription = document.getElementById("dashboardDescription");
 const dashboardBusinessPill = document.getElementById("dashboardBusinessPill");
+const dashActionStatus = document.getElementById("dashActionStatus");
+const demoModeToggle = document.getElementById("demoModeToggle");
 const subscriberDashboard = document.getElementById("subscriberDashboard");
 const customerDashboard = document.getElementById("customerDashboard");
 const adminDashboard = document.getElementById("adminDashboard");
@@ -291,49 +276,9 @@ const lexiPendingRemindersRuntime = createLexiPendingRemindersRuntime({
 const dashTitle = document.getElementById("dashTitle");
 const dashUser = document.getElementById("dashUser");
 const dashRoleHint = document.getElementById("dashRoleHint");
-const dashActionStatus = document.getElementById("dashActionStatus");
 const dashboardOverviewSection = document.getElementById("dashboardOverviewSection");
 const dashIdentityBlock = dashTitle?.parentElement || null;
 const frontDeskSection = document.getElementById("frontDeskSection");
-const customerSearchSection = document.getElementById("customerSearchSection");
-const customerSearchForm = document.getElementById("customerSearchForm");
-const customerSearchQuery = document.getElementById("customerSearchQuery");
-const customerSearchService = document.getElementById("customerSearchService");
-const customerSearchBusinessType = document.getElementById("customerSearchBusinessType");
-const customerSearchLocation = document.getElementById("customerSearchLocation");
-const customerSearchRating = document.getElementById("customerSearchRating");
-const customerSearchDate = document.getElementById("customerSearchDate");
-const customerSearchReset = document.getElementById("customerSearchReset");
-const customerSearchResults = document.getElementById("customerSearchResults");
-const customerReceptionSection = document.getElementById("customerReceptionSection");
-const customerReceptionMessages = document.getElementById("customerReceptionMessages");
-const customerReceptionForm = document.getElementById("customerReceptionForm");
-const customerReceptionInput = document.getElementById("customerReceptionInput");
-const customerReceptionClear = document.getElementById("customerReceptionClear");
-const customerChatGuideHint = document.getElementById("customerChatGuideHint");
-const customerLexiLaunchBtn = document.getElementById("customerLexiLaunchBtn");
-const customerLexiLaunchBookingBtn = document.getElementById("customerLexiLaunchBookingBtn");
-const customerLexiCalendarSection = document.getElementById("customerLexiCalendarSection");
-const customerLexiPlannerMeta = document.getElementById("customerLexiPlannerMeta");
-const customerLexiStaffLegend = document.getElementById("customerLexiStaffLegend");
-const customerLexiAskNextBest = document.getElementById("customerLexiAskNextBest");
-const customerLexiCalendarMonth = document.getElementById("customerLexiCalendarMonth");
-const customerLexiCalendarMeta = document.getElementById("customerLexiCalendarMeta");
-const customerLexiCalendarGrid = document.getElementById("customerLexiCalendarGrid");
-const customerLexiCalendarViewTabs = document.getElementById("customerLexiCalendarViewTabs");
-const customerLexiCalendarPrev = document.getElementById("customerLexiCalendarPrev");
-const customerLexiCalendarNext = document.getElementById("customerLexiCalendarNext");
-const customerLexiDaySummary = document.getElementById("customerLexiDaySummary");
-const customerSlotsSection = document.getElementById("customerSlotsSection");
-const customerSelectedSalonLabel = document.getElementById("customerSelectedSalonLabel");
-const customerSalonContact = document.getElementById("customerSalonContact");
-const customerAvailableSlots = document.getElementById("customerAvailableSlots");
-const customerHistorySection = document.getElementById("customerHistorySection");
-const customerHistoryIntro = document.getElementById("customerHistoryIntro");
-const customerBookingHistory = document.getElementById("customerBookingHistory");
-const customerAnalyticsSection = document.getElementById("customerAnalyticsSection");
-const customerAnalyticsGrid = document.getElementById("customerAnalyticsGrid");
-const customerControlMetricGrid = document.getElementById("customerControlMetricGrid");
 const metricsGrid = document.getElementById("metricsGrid");
 const subscriberCommandCenterSection = document.getElementById("subscriberCommandCenterSection");
 const commandCenterCards = document.getElementById("commandCenterCards");
@@ -375,8 +320,6 @@ const onboardingChecklist = document.getElementById("onboardingChecklist");
 const first7DaysGrid = document.getElementById("first7DaysGrid");
 const first7DaysSnapshotSection = document.getElementById("first7DaysSnapshotSection");
 const businessHubIntro = document.getElementById("businessHubIntro");
-const businessHubCardsGrid = document.getElementById("businessHubCardsGrid");
-const dashboardQuickActionsSection = document.getElementById("dashboardQuickActionsSection");
 const subscriberFullDemoModeSection = document.getElementById("subscriberFullDemoModeSection");
 const subscriberFullDemoModeSummary = document.getElementById("subscriberFullDemoModeSummary");
 const subscriberFullDemoModeModules = document.getElementById("subscriberFullDemoModeModules");
@@ -394,9 +337,6 @@ const workspaceStarTodayCount = document.getElementById("workspaceStarTodayCount
 const workspaceStarTodayRevenue = document.getElementById("workspaceStarTodayRevenue");
 const workspaceStarLexiPrompt = document.getElementById("workspaceStarLexiPrompt");
 const workspaceStarLexiHint = document.getElementById("workspaceStarLexiHint");
-const mobileBottomNav = document.getElementById("mobileBottomNav");
-const mobileQuickSheetOverlay = document.getElementById("mobileQuickSheetOverlay");
-const mobileQuickSheetClose = document.getElementById("mobileQuickSheetClose");
 const loadMoreBookingsBtn = document.getElementById("loadMoreBookings");
 const bookingsCountLabel = document.getElementById("bookingsCountLabel");
 const subscriberCalendarSection = document.getElementById("subscriberCalendarSection");
@@ -438,42 +378,6 @@ const executivePulseActionsSubtitle = document.getElementById("executivePulseAct
 const executivePulseSnapshotList = document.getElementById("executivePulseSnapshotList");
 const executivePulseSnapshotsTitle = document.getElementById("executivePulseSnapshotsTitle");
 const executivePulseSnapshotsSubtitle = document.getElementById("executivePulseSnapshotsSubtitle");
-const subscriberCopilotSection = document.getElementById("subscriberCopilotSection");
-const subscriberCopilotForm = document.getElementById("subscriberCopilotForm");
-const subscriberCopilotInput = document.getElementById("subscriberCopilotInput");
-const subscriberCopilotSend = document.getElementById("subscriberCopilotSend");
-const subscriberCopilotClear = document.getElementById("subscriberCopilotClear");
-const subscriberCopilotAnswer = document.getElementById("subscriberCopilotAnswer");
-const subscriberCopilotFindings = document.getElementById("subscriberCopilotFindings");
-const subscriberCopilotFixes = document.getElementById("subscriberCopilotFixes");
-const subscriberCopilotSnapshot = document.getElementById("subscriberCopilotSnapshot");
-const subscriberCopilotLinks = document.getElementById("subscriberCopilotLinks");
-const subscriberBusinessAiContext = document.getElementById("subscriberBusinessAiContext");
-const subscriberAiScopeChips = document.getElementById("subscriberAiScopeChips");
-const subscriberAiQuickRoutines = document.getElementById("subscriberAiQuickRoutines");
-const subscriberCopilotOpenPopup = document.getElementById("subscriberCopilotOpenPopup");
-const subscriberCopilotPopup = document.getElementById("subscriberCopilotPopup");
-const subscriberCopilotPopupClose = document.getElementById("subscriberCopilotPopupClose");
-const subscriberCopilotMessages = document.getElementById("subscriberCopilotMessages");
-const subscriberCopilotMicBtn = document.getElementById("subscriberCopilotMicBtn");
-const subscriberCopilotMicStopBtn = document.getElementById("subscriberCopilotMicStopBtn");
-const adminCopilotSection = document.getElementById("adminCopilotSection");
-const adminCopilotForm = document.getElementById("adminCopilotForm");
-const adminCopilotInput = document.getElementById("adminCopilotInput");
-const adminCopilotSend = document.getElementById("adminCopilotSend");
-const adminCopilotClear = document.getElementById("adminCopilotClear");
-const adminCopilotAnswer = document.getElementById("adminCopilotAnswer");
-const adminCopilotFindings = document.getElementById("adminCopilotFindings");
-const adminCopilotFixes = document.getElementById("adminCopilotFixes");
-const adminBusinessAiContext = document.getElementById("adminBusinessAiContext");
-const adminAiScopeChips = document.getElementById("adminAiScopeChips");
-const adminAiQuickRoutines = document.getElementById("adminAiQuickRoutines");
-const adminCopilotOpenPopup = document.getElementById("adminCopilotOpenPopup");
-const adminCopilotPopup = document.getElementById("adminCopilotPopup");
-const adminCopilotPopupClose = document.getElementById("adminCopilotPopupClose");
-const adminCopilotMessages = document.getElementById("adminCopilotMessages");
-const adminCopilotMicBtn = document.getElementById("adminCopilotMicBtn");
-const adminCopilotMicStopBtn = document.getElementById("adminCopilotMicStopBtn");
 const accountingIntegrationsSection = document.getElementById("accountingIntegrationsSection");
 const accountingConnectForm = document.getElementById("accountingConnectForm");
 const accountingProvider = document.getElementById("accountingProvider");
@@ -500,7 +404,6 @@ const accountingCustomApply = document.getElementById("accountingCustomApply");
 const logoutBtn = document.getElementById("logoutBtn");
 const manageModeToggle = document.getElementById("manageModeToggle");
 const contactAdminBtn = document.getElementById("contactAdminBtn");
-const demoModeToggle = document.getElementById("demoModeToggle");
 const uiDensityToggle = document.getElementById("uiDensityToggle");
 const subscriptionBillingCycle = document.getElementById("subscriptionBillingCycle");
 const subscriptionBillingProvider = document.getElementById("subscriptionBillingProvider");
@@ -513,12 +416,7 @@ const subscriptionPaymentConnectNote = document.getElementById("subscriptionPaym
 const subscriptionCurrentPlanLabel = document.getElementById("subscriptionCurrentPlanLabel");
 const subscriptionCurrentPlanMeta = document.getElementById("subscriptionCurrentPlanMeta");
 const subscriptionAutoRenewToggle = document.getElementById("subscriptionAutoRenewToggle");
-const adminBusinessScope = document.getElementById("adminBusinessScope");
-const adminBusinessSearch = document.getElementById("adminBusinessSearch");
-const adminBusinessSelect = document.getElementById("adminBusinessSelect");
-const adminBusinessStatus = document.getElementById("adminBusinessStatus");
 const adminPlatformSection = document.getElementById("adminDashboard");
-const adminExecutiveControlMount = document.getElementById("adminExecutiveControlMount");
 const adminPlatformMetricGrid = document.getElementById("adminPlatformMetricGrid");
 const adminRevenueSummaryGrid = document.getElementById("adminRevenueSummaryGrid");
 const adminRevenueMixChart = document.getElementById("adminRevenueMixChart");
@@ -529,28 +427,9 @@ const adminRevenueMonthlyList = document.getElementById("adminRevenueMonthlyList
 const adminRevenueSignalList = document.getElementById("adminRevenueSignalList");
 const adminRevenuePeriodPill = document.getElementById("adminRevenuePeriodPill");
 const adminRevenueNote = document.getElementById("adminRevenueNote");
-const adminUsageSummaryGrid = document.getElementById("adminUsageSummaryGrid");
-const adminUsageHourlyList = document.getElementById("adminUsageHourlyList");
-const adminUsageWeekdayList = document.getElementById("adminUsageWeekdayList");
-const adminUsageRoleGrid = document.getElementById("adminUsageRoleGrid");
-const adminUsageOperationsGrid = document.getElementById("adminUsageOperationsGrid");
-const adminUsagePeriodPill = document.getElementById("adminUsagePeriodPill");
-const adminUsageNote = document.getElementById("adminUsageNote");
 const adminPlatformExportBtn = document.getElementById("adminPlatformExportBtn");
+const subscriberBusinessHubGrid = document.getElementById("subscriberBusinessHubGrid");
 const adminBusinessHubGrid = document.getElementById("adminBusinessHubGrid");
-const adminHubDetailSection = document.getElementById("adminHubDetailSection");
-const adminHubDetailKicker = document.getElementById("adminHubDetailKicker");
-const adminHubDetailTitle = document.getElementById("adminHubDetailTitle");
-const adminHubDetailSummary = document.getElementById("adminHubDetailSummary");
-const adminHubDetailInfoList = document.getElementById("adminHubDetailInfoList");
-const adminHubDetailJobsList = document.getElementById("adminHubDetailJobsList");
-const adminHubDetailOutcomesList = document.getElementById("adminHubDetailOutcomesList");
-const adminManagedBusinessLabel = document.getElementById("adminManagedBusinessLabel");
-const adminManagedBusinessMeta = document.getElementById("adminManagedBusinessMeta");
-const adminManagedOpenCalendarBtn = document.getElementById("adminManagedOpenCalendarBtn");
-const adminManagedOpenHubBtn = document.getElementById("adminManagedOpenHubBtn");
-const adminManagedOpenProfileBtn = document.getElementById("adminManagedOpenProfileBtn");
-const adminManagedAskLexiBtn = document.getElementById("adminManagedAskLexiBtn");
 const adminAccountSearchForm = document.getElementById("adminAccountSearchForm");
 const adminAccountSearchInput = document.getElementById("adminAccountSearchInput");
 const adminAccountsTable = document.getElementById("adminAccountsTable");
@@ -567,7 +446,6 @@ let bookingRows = [];
 let nextBookingsCursor = null;
 let adminPlatformAnalytics = null;
 let adminRevenueAnalytics = null;
-let adminUsageAnalytics = null;
 let adminAccountSupportResultsCache = [];
 let adminAccountSupportSelectedId = "";
 let adminAccountSupportSearchTimerId = null;
@@ -606,33 +484,6 @@ let revenueAttributionPayload = null;
 let profitabilityPayload = null;
 let managedBusinessId = "";
 let adminBusinessOptions = [];
-let customerSalonResults = [];
-let openCopilotPopupRole = "";
-let lastCopilotPopupTrigger = null;
-let businessCopilotPopupHosts = { subscriber: null, admin: null };
-let businessCopilotPopupPlaceholders = { subscriber: null, admin: null };
-let selectedCustomerSalonId = "";
-let customerReceptionTranscript = [];
-let customerLexiCalendarMonthCursor = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-let customerLexiSelectedDateKey = "";
-let customerLexiCalendarView = "day";
-let customerLexiPopupOpen = false;
-let customerLexiPopupOverlay = null;
-let customerLexiPopupContainer = null;
-let customerLexiChatPlaceholder = null;
-let customerLexiPopupLastFocus = null;
-let customerLexiSpeechRecognition = null;
-let customerLexiMicListening = false;
-let customerLexiAvatarConfigPromise = null;
-let customerLexiRealtimeSessionPromise = null;
-let customerLexiRealtimeSession = null;
-let customerLexiRealtimeConnection = null;
-let customerLexiAvatarSessionPromise = null;
-let customerLexiAvatarSession = null;
-let customerLexiAvatarRoom = null;
-let customerLexiLivekitScriptPromise = null;
-let businessLexiSpeechRecognition = { subscriber: null, admin: null };
-let businessLexiMicListening = { subscriber: false, admin: false };
 let lexiPendingReminderTimerId = null;
 let lexiPendingSnoozeUntil = 0;
 let lexiPendingLastPopupSignature = "";
@@ -644,8 +495,6 @@ let dashboardDemoFillModeEnabled = false;
 let manageModeEnabled = false;
 let inlineEditObserver = null;
 let inlineEditApplyTimerId = null;
-let subscriberAiScope = "today";
-let adminAiScope = "diagnostics";
 const socialMediaSection = document.getElementById("socialMediaSection");
 const socialMediaForm = document.getElementById("socialMediaForm");
 const facebookInput = document.getElementById("facebookInput");
@@ -781,11 +630,6 @@ const profitSoftwareInput = document.getElementById("profitSoftwareInput");
 const profitOtherInput = document.getElementById("profitOtherInput");
 const profitCogsPercentInput = document.getElementById("profitCogsPercentInput");
 const profitStatusNote = document.getElementById("profitStatusNote");
-const frontDeskMockRuntime = createFrontDeskMockRuntime({
-  getFrontDeskMock: () => frontDeskMock
-});
-
-frontDeskMockRuntime.bindFrontDeskMockLoad();
 const calendarDayUtilsRuntime = createCalendarDayUtilsRuntime({
   parseServiceEditorText,
   getBusinessProfileServicesValue: () => businessProfileServices?.value,
@@ -864,15 +708,22 @@ const manageSocialActionsRuntime = createManageSocialActionsRuntime({
 });
 const loadSocialMediaLinks = (...args) => businessProfileRuntime.loadSocialMediaLinks(...args);
 const parseServiceEditorText = (...args) => businessProfileRuntime.parseServiceEditorText(...args);
+const setManagedBusinessIdValue = (value) => {
+  managedBusinessId = String(value || "").trim();
+};
+const loadAdminBusinessOptionsForCurrentRole = () => adminBusinessLoadingRuntime.loadAdminBusinessOptions();
+const reloadAdminManagedDashboardForCurrentRole = () => adminBusinessLoadingRuntime.reloadAdminManagedDashboard();
+const setAdminBusinessStatusMessage = (message, isError = false) => {
+  adminBusinessRuntime.setAdminBusinessStatus(message, isError);
+};
+const loadAdminPlatformOverviewForCurrentRole = () => adminPlatformRuntime.loadAdminPlatformOverview();
 
 businessProfileRuntime.bindBusinessProfileEvents();
 const dashboardRoleChromeRuntime = createDashboardRoleChromeRuntime({
   getCurrentRole: () => currentRole,
   getUser: () => user,
   getAdminBusinessParam: () => adminBusinessParam,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
+  setManagedBusinessId: setManagedBusinessIdValue,
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
   dashboardBrandRole,
@@ -884,7 +735,6 @@ const dashboardRoleChromeRuntime = createDashboardRoleChromeRuntime({
   dashUser,
   dashRoleHint,
   dashActionStatus,
-  adminBusinessScope,
   dashIdentityBlock,
   dashboardOverviewSection
 });
@@ -909,7 +759,6 @@ const dashboardStatusUtilsRuntime = createDashboardStatusUtilsRuntime({
   accountingStatusNote,
   accountingLiveNote
 });
-const isSubscriberCleanSlate = (...args) => dashboardStatusUtilsRuntime.isSubscriberCleanSlate(...args);
 const formatDateShort = (...args) => dashboardStatusUtilsRuntime.formatDateShort(...args);
 const shouldRenderTopMetricsGrid = (...args) => dashboardStatusUtilsRuntime.shouldRenderTopMetricsGrid(...args);
 const setAccountingStatus = (...args) => dashboardStatusUtilsRuntime.setAccountingStatus(...args);
@@ -928,98 +777,19 @@ const renderCrmSegments = (...args) => operationsRuntime.renderCrmSegments(...ar
 const sendCrmCampaign = (...args) => operationsRuntime.sendCrmCampaign(...args);
 const upsertWaitlistEntry = (...args) => operationsRuntime.upsertWaitlistEntry(...args);
 
-const dashboardCopilotUiRuntime = createDashboardCopilotUiRuntime();
-
-const businessCopilotRuntime = createBusinessCopilotRuntime({
-  t,
-  getUserRole: () => user?.role,
-  headers,
-  escapeHtml,
-  formatMoney,
-  renderCopilotList: (el, items, emptyText) => dashboardCopilotUiRuntime.renderCopilotList(el, items, emptyText),
-  moduleDefinitionByKey,
-  selectedCalendarDateSummary: () => calendarPulseRuntime.selectedCalendarDateSummary(),
-  parseBookingDate,
-  toDateKey,
-  todayDateKeyLocal,
-  getBookingRows: () => bookingRows,
-  getStaffWorkingForDate: (dateObj) => staffDateUtilsRuntime.getStaffWorkingForDate(dateObj),
-  getWaitlistRows: () => waitlistRows,
-  getOperationsInsights: () => operationsInsights,
-  getAccountingRows: () => accountingRows,
-  getManagedBusinessId: () => managedBusinessId,
-  getSubscriberAiScope: () => subscriberAiScope,
-  setSubscriberAiScope: (value) => {
-    subscriberAiScope = String(value || "").trim().toLowerCase();
-  },
-  getAdminAiScope: () => adminAiScope,
-  setAdminAiScope: (value) => {
-    adminAiScope = String(value || "").trim().toLowerCase();
-  },
-  DashboardSpeechRecognition,
-  setDashActionStatus,
-  getOpenCopilotPopupRole: () => openCopilotPopupRole,
-  setOpenCopilotPopupRole: (value) => {
-    openCopilotPopupRole = String(value || "");
-  },
-  getLastCopilotPopupTrigger: () => lastCopilotPopupTrigger,
-  setLastCopilotPopupTrigger: (value) => {
-    lastCopilotPopupTrigger = value ?? null;
-  },
-  getBusinessCopilotPopupHosts: () => businessCopilotPopupHosts,
-  setBusinessCopilotPopupHost: (role, value) => {
-    businessCopilotPopupHosts[role] = value ?? null;
-  },
-  getBusinessCopilotPopupPlaceholders: () => businessCopilotPopupPlaceholders,
-  setBusinessCopilotPopupPlaceholder: (role, value) => {
-    businessCopilotPopupPlaceholders[role] = value ?? null;
-  },
-  getBusinessLexiSpeechRecognition: () => businessLexiSpeechRecognition,
-  setBusinessLexiSpeechRecognition: (role, value) => {
-    businessLexiSpeechRecognition[role] = value ?? null;
-  },
-  getBusinessLexiMicListening: () => businessLexiMicListening,
-  setBusinessLexiMicListening: (role, value) => {
-    businessLexiMicListening[role] = value === true;
-  },
-  customerReceptionInput,
-  subscriberCopilotForm,
-  subscriberCopilotInput,
-  subscriberCopilotSend,
-  subscriberCopilotClear,
-  subscriberCopilotAnswer,
-  subscriberCopilotFindings,
-  subscriberCopilotFixes,
-  subscriberCopilotSnapshot,
-  subscriberCopilotLinks,
-  subscriberBusinessAiContext,
-  subscriberAiScopeChips,
-  subscriberCopilotOpenPopup,
-  subscriberCopilotPopup,
-  subscriberCopilotPopupClose,
-  subscriberCopilotMessages,
-  subscriberCopilotMicBtn,
-  subscriberCopilotMicStopBtn,
-  adminCopilotForm,
-  adminCopilotInput,
-  adminCopilotSend,
-  adminCopilotClear,
-  adminCopilotAnswer,
-  adminCopilotFindings,
-  adminCopilotFixes,
-  adminBusinessAiContext,
-  adminAiScopeChips,
-  adminCopilotOpenPopup,
-  adminCopilotPopup,
-  adminCopilotPopupClose,
-  adminCopilotMessages,
-  adminCopilotMicBtn,
-  adminCopilotMicStopBtn
-});
-
 const openCalendarDiaryWalkIn = (...args) => calendarDiaryRuntime.openCalendarDiaryWalkIn(...args);
-const askSubscriberCopilot = (...args) => businessCopilotRuntime.askSubscriberCopilot(...args);
-const askAdminCopilot = (...args) => businessCopilotRuntime.askAdminCopilot(...args);
+const openDashboardSharedLexiPopup = (role = "subscriber", options = {}) => {
+  window.openDashboardSharedLexiPopup?.({
+    ...options,
+    role: String(role || "subscriber").trim().toLowerCase()
+  });
+};
+const submitDashboardSharedLexiPrompt = () => {
+  window.submitDashboardSharedLexiPrompt?.();
+};
+const resetDashboardSharedLexiPopup = (initialMessage = "") => {
+  window.resetDashboardSharedLexiPopup?.(initialMessage);
+};
 
 dashboardDemoFillModeEnabled = dashboardPreferencesRuntime.loadDashboardDemoFillPreference();
 dashboardPreferencesRuntime.refreshDemoModeToggle();
@@ -1030,33 +800,21 @@ if (isDashboardDemoDataModeActive()) {
 const adminBusinessRuntime = createAdminBusinessRuntime({
   getUserRole: () => user?.role,
   getManagedBusinessId: () => managedBusinessId,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
+  setManagedBusinessId: setManagedBusinessIdValue,
   getAdminBusinessOptions: () => adminBusinessOptions,
-  normalizeText: (value) => bookingsRuntime.normalizeText(value),
-  adminBusinessSearch,
-  adminBusinessSelect,
-  adminBusinessStatus,
-  adminManagedBusinessLabel,
-  adminManagedBusinessMeta
+  normalizeText: (value) => bookingsRuntime.normalizeText(value)
 });
 const adminBusinessLoadingRuntime = createAdminBusinessLoadingRuntime({
   getUserRole: () => user?.role,
   headers,
-  adminBusinessSelect,
   getAdminBusinessParam: () => adminBusinessParam,
   getManagedBusinessId: () => managedBusinessId,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
+  setManagedBusinessId: setManagedBusinessIdValue,
   getAdminBusinessOptions: () => adminBusinessOptions,
   setAdminBusinessOptions: (value) => {
     adminBusinessOptions = Array.isArray(value) ? value : [];
   },
-  setAdminBusinessStatus: (message, isError = false) => {
-    adminBusinessRuntime.setAdminBusinessStatus(message, isError);
-  },
+  setAdminBusinessStatus: setAdminBusinessStatusMessage,
   renderAdminBusinessSelect: (options = adminBusinessOptions, { syncState = true } = {}) => {
     adminBusinessRuntime.renderAdminBusinessSelect(options, { syncState });
   },
@@ -1090,7 +848,6 @@ const adminPlatformRuntime = createAdminPlatformRuntime({
   headers,
   escapeHtml,
   formatMoney,
-  formatDateShort,
   setDashActionStatus,
   renderAdminManagedBusinessSummary: () => {
     adminBusinessRuntime.renderAdminManagedBusinessSummary();
@@ -1106,13 +863,6 @@ const adminPlatformRuntime = createAdminPlatformRuntime({
   adminRevenueSignalList,
   adminRevenuePeriodPill,
   adminRevenueNote,
-  adminUsageSummaryGrid,
-  adminUsageHourlyList,
-  adminUsageWeekdayList,
-  adminUsageRoleGrid,
-  adminUsageOperationsGrid,
-  adminUsagePeriodPill,
-  adminUsageNote,
   adminPlatformExportBtn,
   getAdminPlatformAnalytics: () => adminPlatformAnalytics,
   setAdminPlatformAnalytics: (value) => {
@@ -1121,10 +871,6 @@ const adminPlatformRuntime = createAdminPlatformRuntime({
   getAdminRevenueAnalytics: () => adminRevenueAnalytics,
   setAdminRevenueAnalytics: (value) => {
     adminRevenueAnalytics = value ?? null;
-  },
-  getAdminUsageAnalytics: () => adminUsageAnalytics,
-  setAdminUsageAnalytics: (value) => {
-    adminUsageAnalytics = value ?? null;
   }
 });
 
@@ -1135,21 +881,15 @@ const adminSupportRuntime = createAdminSupportRuntime({
   formatDateShort,
   formatMoney,
   openManageForm,
-  loadAdminBusinessOptions: () => adminBusinessLoadingRuntime.loadAdminBusinessOptions(),
-  reloadAdminManagedDashboard: () => adminBusinessLoadingRuntime.reloadAdminManagedDashboard(),
+  loadAdminBusinessOptions: loadAdminBusinessOptionsForCurrentRole,
+  reloadAdminManagedDashboard: reloadAdminManagedDashboardForCurrentRole,
   setDashActionStatus,
   syncAdminBusinessQueryParam: () => dashboardRoutingUiSupportRuntime.syncAdminBusinessQueryParam(),
-  renderModuleNavigator,
-  getCloseModulePopupActive: () => closeModulePopupActive,
   openInteractiveModulePopup,
   canManageBusinessModules,
   setAccountingStatus,
   getManagedBusinessId: () => managedBusinessId,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
-  adminBusinessSelect,
-  subscriberCalendarSection,
+  setManagedBusinessId: setManagedBusinessIdValue,
   adminAccountSearchForm,
   adminAccountSearchInput,
   adminAccountsTable,
@@ -1175,45 +915,6 @@ const adminSupportRuntime = createAdminSupportRuntime({
     adminAccountSupportSearchTimerId = value ?? null;
   }
 });
-const adminManagedControlsRuntime = createAdminManagedControlsRuntime({
-  getUserRole: () => user?.role,
-  getManagedBusinessId: () => managedBusinessId,
-  getAdminBusinessOptions: () => adminBusinessOptions,
-  showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
-  openInteractiveModulePopup,
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  subscriberCalendarSection,
-  businessGrowthSection,
-  adminManagedOpenCalendarBtn,
-  adminManagedOpenHubBtn,
-  adminManagedOpenProfileBtn,
-  adminManagedAskLexiBtn,
-  adminCopilotInput,
-  adminCopilotForm
-});
-const adminBusinessControlsRuntime = createAdminBusinessControlsRuntime({
-  getUserRole: () => user?.role,
-  getManagedBusinessId: () => managedBusinessId,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
-  getAdminBusinessOptions: () => adminBusinessOptions,
-  filteredAdminBusinessOptions: () => adminBusinessRuntime.filteredAdminBusinessOptions(),
-  renderAdminBusinessSelect: (options = adminBusinessOptions, { syncState = true } = {}) => {
-    adminBusinessRuntime.renderAdminBusinessSelect(options, { syncState });
-  },
-  setAdminBusinessStatus: (message, isError = false) => {
-    adminBusinessRuntime.setAdminBusinessStatus(message, isError);
-  },
-  renderAdminManagedBusinessSummary: () => {
-    adminBusinessRuntime.renderAdminManagedBusinessSummary();
-  },
-  syncAdminBusinessQueryParam: () => dashboardRoutingUiSupportRuntime.syncAdminBusinessQueryParam(),
-  reloadAdminManagedDashboard: () => adminBusinessLoadingRuntime.reloadAdminManagedDashboard(),
-  adminBusinessSearch,
-  adminBusinessSelect
-});
-
 const businessReportingRuntime = createBusinessReportingRuntime({
   getUserRole: () => user?.role,
   getUserEmail: () => user?.email,
@@ -1258,7 +959,6 @@ const businessGrowthPanelRuntime = createBusinessGrowthPanelRuntime({
   getUserRole: () => user?.role,
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
-  renderBusinessHubCards: () => businessHubRuntime.renderBusinessHubCards(),
   formatDateShort,
   formatMoney,
   escapeHtml,
@@ -1300,7 +1000,6 @@ const bookingsRuntime = createBookingsRuntime({
   setDashActionStatus,
   showManageToast,
   syncLexiPendingReminders: () => lexiPendingRemindersRuntime.syncLexiPendingReminders(),
-  refreshCustomerDashboard: () => customerAnalyticsRuntime.refreshCustomerDashboard(),
   renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
   renderBusinessGrowthPanel: () => businessGrowthPanelRuntime.renderBusinessGrowthPanel(),
@@ -1394,24 +1093,16 @@ const enforceDashboardRoleLayoutVisibility = () => {
     profitabilitySection,
     bookingSort,
     customerJourneyActionsSection,
-    customerSearchSection,
-    customerReceptionSection,
-    customerLexiCalendarSection,
-    customerSlotsSection,
-    customerHistorySection,
-    customerAnalyticsSection,
     adminCopilotSection,
     accountingPlatformExportBtn,
     adminPlatformSection,
     frontDeskSection,
     bookingOperationsSection,
     metricsGrid,
-    dashboardQuickActionsSection,
     subscriberCalendarSection,
     bookingStatus,
     setActiveStatusChip,
     dashIdentityBlock,
-    adminBusinessScope,
     initializeCustomerExperience,
     subscriberFullDemoModeSection
   });
@@ -1432,11 +1123,6 @@ const contactAdminRuntime = createContactAdminRuntime({
 
 const moduleDefinitionsRuntime = createModuleDefinitionsRuntime({
   getUserRole: () => user?.role,
-  customerSearchSection,
-  customerReceptionSection,
-  customerSlotsSection,
-  customerHistorySection,
-  customerAnalyticsSection,
   subscriberExecutivePulseSection,
   subscriberSubscriptionSection,
   frontDeskSection,
@@ -1470,29 +1156,8 @@ const moduleDefinitionByKey = (...args) => moduleCatalogRuntime.moduleDefinition
 const moduleUsesInteractivePopup = (...args) => moduleCatalogRuntime.moduleUsesInteractivePopup(...args);
 const moduleUsesInfoPopup = (...args) => moduleCatalogRuntime.moduleUsesInfoPopup(...args);
 
-const businessHubRuntime = createBusinessHubRuntime({
-  businessHubCardsGrid,
-  getBusinessHubModules: () => getBusinessHubModulesForRole({
-    role: user.role,
-    moduleDefinitionByKey
-  }),
-  moduleDefinitionByKey,
-  moduleOperationalStatus: (mod) => moduleStatusRuntime.moduleOperationalStatus(mod),
-  renderModuleStatusPill: (status, options = {}) => moduleStatusRuntime.renderModuleStatusPill(status, options),
-  escapeHtml,
-  markModuleUsed: (moduleKey, mode = "open") => moduleUsageRuntime.markModuleUsed(moduleKey, mode),
-  ensureManageModalOverlay,
-  getCloseModulePopupActive: () => closeModulePopupActive,
-  setCloseModulePopupActive: (value) => {
-    closeModulePopupActive = value;
-  },
-  openLexiModuleAssist,
-  setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
-  focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey)
-});
 const adminHubRuntime = createAdminHubRuntime({
   getUserRole: () => user?.role,
-  getAdminPage: () => adminPageParam,
   escapeHtml,
   getBusinessHubModules: () => getBusinessHubModulesForRole({
     role: "admin",
@@ -1500,14 +1165,7 @@ const adminHubRuntime = createAdminHubRuntime({
   })
 });
 if (currentRole === "admin") {
-  adminHubRuntime.renderAdminBusinessHub(adminBusinessHubGrid, adminHubDetailSection, {
-    adminHubDetailKicker,
-    adminHubDetailTitle,
-    adminHubDetailSummary,
-    adminHubDetailInfoList,
-    adminHubDetailJobsList,
-    adminHubDetailOutcomesList
-  });
+  adminHubRuntime.renderAdminBusinessHub(adminBusinessHubGrid);
 }
 
 const moduleStatusRuntime = createModuleStatusRuntime({
@@ -1585,9 +1243,8 @@ const moduleActionRuntime = createModuleActionRuntime({
   getUserRole: () => user?.role,
   moduleOperatorBlueprint: (mod) => getModuleOperatorBlueprint(mod, user?.role),
   moduleLexiAssistQuestion: (mod, blueprint) => moduleLexiBriefRuntime.moduleLexiAssistQuestion(mod, blueprint),
-  copilotPopupRefs: (role) => businessCopilotRuntime.copilotPopupRefs(role),
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  resetCopilotChat: (role, introText) => businessCopilotRuntime.resetCopilotChat(role, introText),
+  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
+  resetCopilotChat: (_role, initialMessage = "") => resetDashboardSharedLexiPopup(initialMessage),
   setDashActionStatus,
   setWorkspaceBackButtonVisible: (isVisible) => moduleNavigationRuntime.setWorkspaceBackButtonVisible(isVisible),
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
@@ -1637,7 +1294,7 @@ const modulePopupRuntime = createModulePopupRuntime({
   runModuleOperatorAction: (actionId, mod, options = {}) =>
     moduleActionRuntime.runModuleOperatorAction(actionId, mod, options),
   setDashActionStatus,
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
+  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
   loadHubAutoRoutinePrefs: () => businessReportingRuntime.loadHubAutoRoutinePrefs(),
   saveHubAutoRoutinePrefs: (value) => businessReportingRuntime.saveHubAutoRoutinePrefs(value),
   showManageToast,
@@ -1648,6 +1305,15 @@ const modulePopupRuntime = createModulePopupRuntime({
   isPopupOnlyBusinessModuleKey: (moduleKey) => moduleRoutingRuntime.isPopupOnlyBusinessModuleKey(moduleKey),
   renderPopupOnlyBusinessModule: (moduleKey) => dashboardRoutingUiSupportRuntime.renderPopupOnlyBusinessModule(moduleKey)
 });
+if (subscriberBusinessHubGrid) {
+  adminHubRuntime.bindBusinessHubGrid(
+    subscriberBusinessHubGrid,
+    getBusinessHubModulesForRole({
+      role: "subscriber",
+      moduleDefinitionByKey
+    })
+  );
+}
 const moduleNavigationRuntime = createModuleNavigationRuntime({
   getUserRole: () => user?.role,
   getActiveModuleKey: () => activeModuleKey,
@@ -1662,9 +1328,7 @@ const moduleNavigationRuntime = createModuleNavigationRuntime({
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
   isPinnedBusinessModule: (mod) => moduleRoutingRuntime.isPinnedBusinessModule(mod),
   renderModuleNavigator,
-  renderBusinessHubCards: () => businessHubRuntime.renderBusinessHubCards(),
   workspaceBackToDashboardBtn,
-  dashboardQuickActionsSection,
   getManageModeEnabled,
   showManageToast,
   getManagedBusinessId: () => managedBusinessId,
@@ -1675,9 +1339,7 @@ const moduleNavigationRuntime = createModuleNavigationRuntime({
   todayDateKeyLocal
 });
 const moduleClickRouterRuntime = createModuleClickRouterRuntime({
-  dashboardQuickActionsSection,
   returnToDashboardHomeView,
-  openBusinessHubModulePopup: (moduleKey) => businessHubRuntime.openBusinessHubModulePopup(moduleKey),
   moduleDefinitionByKey,
   moduleUsesInteractivePopup,
   moduleUsesInfoPopup,
@@ -1689,11 +1351,6 @@ const moduleClickRouterRuntime = createModuleClickRouterRuntime({
 const dashboardStartupRuntime = createDashboardStartupRuntime({
   getUserRole: () => user?.role,
   accountingLiveTimeframe,
-  showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
-  hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
-  subscriberCalendarSection,
-  businessGrowthSection,
-  adminPlatformSection,
   initializeUiDensity,
   initializeManageMode: () => dashboardManageModeRuntime.initializeManageMode(),
   setupManagedSectionActions: () => managedSectionActionsRuntime.setupManagedSectionActions(),
@@ -1701,75 +1358,24 @@ const dashboardStartupRuntime = createDashboardStartupRuntime({
   startAccountingLiveStream,
   enforceDashboardRoleLayoutVisibility,
   initializeModuleNavigator: () => moduleNavigationRuntime.initializeModuleNavigator(),
-  renderBusinessGrowthPanel: () => businessGrowthPanelRuntime.renderBusinessGrowthPanel(),
-  initializeMobileBottomNav: () => mobileNavRuntime.initializeMobileBottomNav(),
   bindModuleClickRouter: () => moduleClickRouterRuntime.bindModuleClickRouter(),
-  bindCustomerInteractionEvents: () => customerInteractionsRuntime.bindCustomerInteractionEvents(),
-  bindCustomerLexiCalendarEvents: () => customerLexiCalendarEventsRuntime.bindCustomerLexiCalendarEvents(),
   bindManageDispatcher: () => manageDispatcherRuntime.bindManageDispatcher(),
-  bindCommandCenterEvents: () => commandCenterRuntime.bindCommandCenterEvents(),
   bindCalendarPulseEvents: () => calendarPulseRuntime.bindCalendarPulseEvents(),
   updateBookingRangeControls: () => bookingFilterRuntime.updateBookingRangeControls(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
-  renderBusinessAiWorkspace: (role) => businessCopilotRuntime.renderBusinessAiWorkspace(role),
   scheduleCalendarTodayRefresh: () => calendarDiaryRuntime.scheduleCalendarTodayRefresh(),
-  renderExecutivePulse: () => calendarPulseRuntime.renderExecutivePulse(),
-  renderWorkspaceStarPanel: () => workspaceStarRuntime.renderWorkspaceStarPanel(),
-  bindWorkspaceStarEvents: () => workspaceStarRuntime.bindWorkspaceStarEvents(),
-  bindBusinessCopilotEvents: () => businessCopilotRuntime.bindCopilotEvents(),
-  bindAiLaunchControls: (payload) => aiLaunchControlsRuntime.bindAiLaunchControls(payload),
   bindCalendarLexiEvents: () => calendarLexiRuntime.bindCalendarLexiEvents(),
   bindAccountingIntegrationEvents: () => accountingIntegrationsRuntime.bindAccountingIntegrationEvents(),
   bindStaffRosterControlsEvents: () => staffRosterControlsRuntime.bindStaffRosterControlsEvents(),
-  subscriberAiQuickRoutines,
-  adminAiQuickRoutines,
-  loadAdminBusinessOptions: () => adminBusinessLoadingRuntime.loadAdminBusinessOptions(),
-  loadAdminPlatformOverview: () => adminPlatformRuntime.loadAdminPlatformOverview(),
-  setAdminBusinessStatus: (message, isError = false) => {
-    adminBusinessRuntime.setAdminBusinessStatus(message, isError);
-  },
+  loadAdminBusinessOptions: loadAdminBusinessOptionsForCurrentRole,
+  loadAdminPlatformOverview: loadAdminPlatformOverviewForCurrentRole,
+  setAdminBusinessStatus: setAdminBusinessStatusMessage,
   loadMetrics,
   shouldRenderTopMetricsGrid,
   metricsGrid,
   setDashActionStatus,
   loadBookings,
-  bookingsList,
-  loadBillingSummary,
-  billingLiveBanner,
-  loadBusinessProfile: () => businessProfileRuntime.loadBusinessProfile(),
-  setBusinessProfileStatus: (message, isError = false) => {
-    businessProfileRuntime.setBusinessProfileStatus(message, isError);
-  },
-  loadSocialMediaLinks,
-  socialMediaPreview,
-  loadAccountingIntegrations,
-  setAccountingStatus,
-  loadStaffRoster: () => staffRosterRuntime.loadStaffRoster(),
-  setStaffStatus,
-  loadWaitlist: () => operationsRuntime.loadWaitlist(),
-  setWaitlistStatus,
-  loadCrmSegments: () => operationsRuntime.loadCrmSegments(),
-  setCrmStatus,
-  loadCommercialControls: () => businessControlsRuntime.loadCommercialControls(),
-  setCommercialStatus: (message, isError = false) => businessControlsRuntime.setCommercialStatus(message, isError),
-  loadRevenueAttribution: () => businessControlsRuntime.loadRevenueAttribution(),
-  setRevenueStatus: (message, isError = false) => businessControlsRuntime.setRevenueStatus(message, isError),
-  loadProfitabilitySummary: () => businessControlsRuntime.loadProfitabilitySummary(),
-  setProfitabilityStatus: (message, isError = false) => businessControlsRuntime.setProfitabilityStatus(message, isError)
-});
-const mobileNavRuntime = createDashboardMobileNavRuntime({
-  mobileBottomNav,
-  mobileQuickSheetOverlay,
-  mobileQuickSheetClose,
-  getCurrentRole: () => currentRole,
-  getUserRole: () => user?.role,
-  todayDateKeyLocal,
-  openQuickCreateBookingFromMobile: () => moduleNavigationRuntime.openQuickCreateBookingFromMobile(),
-  returnToDashboardHomeView: () => moduleNavigationRuntime.returnToDashboardHomeView(),
-  focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
-  openCalendarDayWorkspace: (dateKey) => calendarDayWorkspaceRuntime.openCalendarDayWorkspace(dateKey),
-  openDashboardLexiForCurrentRole: (trigger, source = "") => workspaceStarRuntime.openDashboardLexiForCurrentRole(trigger, source),
-  showManageToast
+  bookingsList
 });
 const bookingFilterRuntime = createBookingFilterRuntime({
   bookingRangeToday,
@@ -1798,9 +1404,8 @@ const calendarLexiRuntime = createCalendarLexiRuntime({
   formatMoney,
   t,
   showToast,
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  requestAdminCopilotSubmit: () => adminCopilotForm?.requestSubmit(),
-  requestSubscriberCopilotSubmit: () => subscriberCopilotForm?.requestSubmit(),
+  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
+  requestLexiSubmit: submitDashboardSharedLexiPrompt,
   calendarFeatureMeta,
   calendarFeatureStats,
   calendarSelectedDaySummary,
@@ -1871,7 +1476,6 @@ const calendarPulseRuntime = createCalendarPulseRuntime({
   renderCalendarFeatureSidebarLexi: (summary) => calendarLexiRuntime.renderCalendarFeatureSidebarLexi(summary),
   renderCalendarDiaryWeekStrip: () => calendarDiaryRuntime.renderCalendarDiaryWeekStrip(),
   updateBookingRangeControls: () => bookingFilterRuntime.updateBookingRangeControls(),
-  renderBusinessAiWorkspace: (role) => businessCopilotRuntime.renderBusinessAiWorkspace(role),
   renderWorkspaceStarPanel: () => workspaceStarRuntime.renderWorkspaceStarPanel(),
   applyBookingFilters: () => bookingsRuntime.applyBookingFilters(),
   focusBookingOperations: () => commandCenterRuntime.focusBookingOperations(),
@@ -1954,7 +1558,6 @@ const calendarDiaryRuntime = createCalendarDiaryRuntime({
   setBookingDateFilter: (options = {}) => bookingFilterRuntime.setBookingDateFilter(options),
   applyBookingFilters: () => bookingsRuntime.applyBookingFilters(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
-  renderBusinessAiWorkspace: (role) => businessCopilotRuntime.renderBusinessAiWorkspace(role),
   openCalendarDayWorkspace: (dateKey) => calendarDayWorkspaceRuntime.openCalendarDayWorkspace(dateKey),
   openManageForm,
   createBooking: (payload) => bookingsRuntime.createBooking(payload),
@@ -1970,8 +1573,7 @@ const workspaceStarRuntime = createWorkspaceStarRuntime({
   toDateKey,
   formatMoney,
   isPendingConfirmationStatus: (status) => bookingsRuntime.isPendingConfirmationStatus(status),
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  openCustomerLexiPopup,
+  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
   focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
   workspaceStarPanel,
   workspaceStarSummary,
@@ -1984,8 +1586,6 @@ const workspaceStarRuntime = createWorkspaceStarRuntime({
   workspaceStarLexiPrompt,
   workspaceStarLexiHint,
   calendarMonthLabel,
-  subscriberCopilotOpenPopup,
-  adminCopilotOpenPopup,
   subscriberLexiQuickOpenButtons
 });
 const calendarDayWorkspaceRuntime = createCalendarDayWorkspaceRuntime({
@@ -2025,265 +1625,13 @@ const calendarDayWorkspaceRuntime = createCalendarDayWorkspaceRuntime({
     operationsRuntime.stageWaitlistRecoveryFromBooking(sourceBooking, options),
   showManageToast,
   setBookingDateFilter: (options = {}) => bookingFilterRuntime.setBookingDateFilter(options),
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  adminCopilotForm,
-  subscriberCopilotForm,
+  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
+  requestLexiSubmit: submitDashboardSharedLexiPrompt,
   openManageForm,
   createBooking: (payload) => bookingsRuntime.createBooking(payload),
   rescheduleBooking: (bookingId) => bookingsRuntime.rescheduleBooking(bookingId),
   openManageConfirm,
   cancelBooking: (bookingId) => bookingsRuntime.cancelBooking(bookingId)
-});
-const customerLexiPopupRuntime = createCustomerLexiPopupRuntime({
-  t,
-  getDashboardSpeechRecognition: () => DashboardSpeechRecognition,
-  customerReceptionSection,
-  customerReceptionForm,
-  customerReceptionInput,
-  getPopupOverlay: () => customerLexiPopupOverlay,
-  setPopupOverlay: (value) => {
-    customerLexiPopupOverlay = value;
-  },
-  getPopupContainer: () => customerLexiPopupContainer,
-  setPopupContainer: (value) => {
-    customerLexiPopupContainer = value;
-  },
-  getSpeechRecognition: () => customerLexiSpeechRecognition,
-  setSpeechRecognition: (value) => {
-    customerLexiSpeechRecognition = value;
-  },
-  getMicListening: () => customerLexiMicListening,
-  setMicListening: (value) => {
-    customerLexiMicListening = Boolean(value);
-  },
-  getPopupOpen: () => customerLexiPopupOpen,
-  setPopupOpen: (value) => {
-    customerLexiPopupOpen = Boolean(value);
-  },
-  getPopupLastFocus: () => customerLexiPopupLastFocus,
-  setPopupLastFocus: (value) => {
-    customerLexiPopupLastFocus = value;
-  },
-  getChatPlaceholder: () => customerLexiChatPlaceholder,
-  setChatPlaceholder: (value) => {
-    customerLexiChatPlaceholder = value;
-  },
-  updateCustomerLexiTranscript,
-  setDashActionStatus,
-  hydrateCustomerLexiAvatarPanel: () => customerLexiRealtimeRuntime.hydrateCustomerLexiAvatarPanel(),
-  cleanupCustomerLexiRealtimeConnection,
-  cleanupCustomerLexiAvatarSession: () => customerLexiRealtimeRuntime.cleanupCustomerLexiAvatarSession(),
-  resetCustomerLexiVoiceControls
-});
-const customerLexiRealtimeRuntime = createCustomerLexiRealtimeRuntime({
-  t,
-  token,
-  getSelectedCustomerSalonId: () => selectedCustomerSalonId,
-  getPopupOverlay: () => customerLexiPopupOverlay,
-  getAvatarConfigPromise: () => customerLexiAvatarConfigPromise,
-  setAvatarConfigPromise: (value) => {
-    customerLexiAvatarConfigPromise = value;
-  },
-  getRealtimeSessionPromise: () => customerLexiRealtimeSessionPromise,
-  setRealtimeSessionPromise: (value) => {
-    customerLexiRealtimeSessionPromise = value;
-  },
-  setRealtimeSession: (value) => {
-    customerLexiRealtimeSession = value;
-  },
-  getRealtimeConnection: () => customerLexiRealtimeConnection,
-  setRealtimeConnection: (value) => {
-    customerLexiRealtimeConnection = value;
-  },
-  getAvatarSessionPromise: () => customerLexiAvatarSessionPromise,
-  setAvatarSessionPromise: (value) => {
-    customerLexiAvatarSessionPromise = value;
-  },
-  getAvatarSession: () => customerLexiAvatarSession,
-  setAvatarSession: (value) => {
-    customerLexiAvatarSession = value;
-  },
-  getAvatarRoom: () => customerLexiAvatarRoom,
-  setAvatarRoom: (value) => {
-    customerLexiAvatarRoom = value;
-  },
-  getLivekitScriptPromise: () => customerLexiLivekitScriptPromise,
-  setLivekitScriptPromise: (value) => {
-    customerLexiLivekitScriptPromise = value;
-  },
-  getCustomerLexiAvatarVideo: () => customerLexiPopupRuntime.getCustomerLexiAvatarVideo(),
-  setCustomerLexiAvatarVideoActive: (active) => customerLexiPopupRuntime.setCustomerLexiAvatarVideoActive(active),
-  customerLexiMicSupported: () => customerLexiPopupRuntime.customerLexiMicSupported(),
-  setCustomerLexiAvatarPanelState: (state, status, transcript) =>
-    customerLexiPopupRuntime.setCustomerLexiAvatarPanelState(state, status, transcript),
-  setCustomerLexiMicButtonState: (listening = false) => customerLexiPopupRuntime.setCustomerLexiMicButtonState(listening),
-  setDashActionStatus,
-  getSelectedCustomerSalon: () => customerReceptionRuntime.getSelectedCustomerSalon(),
-  cleanupCustomerLexiRealtimeConnection: () => customerLexiRealtimeRuntime.cleanupCustomerLexiRealtimeConnection(),
-  cleanupCustomerLexiAvatarSession: () => customerLexiRealtimeRuntime.cleanupCustomerLexiAvatarSession()
-});
-const customerLexiPlannerRuntime = createCustomerLexiPlannerRuntime({
-  t,
-  getUserRole: () => user?.role,
-  parseBookingDate,
-  toDateKey,
-  pad2,
-  todayDateKeyLocal,
-  escapeHtml,
-  getStaffInitials: getStaffRosterInitials,
-  getStaffColorForId,
-  formatBusinessTypeLabel: (value) => frontDeskMockRuntime.formatBusinessTypeLabel(value),
-  getSelectedCustomerSalon: () => customerReceptionRuntime.getSelectedCustomerSalon(),
-  getBookingRows: () => bookingRows,
-  customerLexiDaySummary,
-  customerLexiStaffLegend,
-  customerLexiCalendarGrid,
-  customerLexiCalendarMonth,
-  customerLexiCalendarMeta,
-  customerLexiPlannerMeta,
-  customerLexiCalendarViewTabs,
-  getCustomerLexiSelectedDateKey: () => customerLexiSelectedDateKey,
-  setCustomerLexiSelectedDateKey: (value) => {
-    customerLexiSelectedDateKey = value;
-  },
-  getCustomerLexiCalendarView: () => customerLexiCalendarView,
-  getCustomerLexiCalendarMonthCursor: () => customerLexiCalendarMonthCursor
-});
-const customerReceptionRuntime = createCustomerReceptionRuntime({
-  t,
-  normalizeText: (value) => bookingsRuntime.normalizeText(value),
-  escapeHtml,
-  formatBusinessTypeLabel: (value) => frontDeskMockRuntime.formatBusinessTypeLabel(value),
-  getCustomerSalonDirectory: () => customerSalonDirectory,
-  getCustomerSalonResults: () => customerSalonResults,
-  setCustomerSalonResults: (value) => {
-    customerSalonResults = Array.isArray(value) ? value : [];
-  },
-  getSelectedCustomerSalonId: () => selectedCustomerSalonId,
-  setSelectedCustomerSalonId: (value) => {
-    selectedCustomerSalonId = String(value || "").trim();
-  },
-  getCustomerReceptionTranscript: () => customerReceptionTranscript,
-  customerSearchResults,
-  customerSelectedSalonLabel,
-  customerSalonContact,
-  customerAvailableSlots,
-  customerSearchQuery,
-  customerSearchService,
-  customerSearchBusinessType,
-  customerSearchLocation,
-  customerSearchRating,
-  customerSearchDate,
-  customerReceptionMessages,
-  customerReceptionInput,
-  customerChatGuideHint,
-  renderCustomerControlCenter: (rows = []) => customerAnalyticsRuntime.renderCustomerControlCenter(rows),
-  getBookingRows: () => bookingRows,
-  renderCustomerLexiCalendar: () => customerLexiPlannerRuntime.renderCustomerLexiCalendar()
-});
-const customerAnalyticsRuntime = createCustomerAnalyticsRuntime({
-  getUserRole: () => user?.role,
-  getUserEmail: () => user?.email,
-  getBookingRows: () => bookingRows,
-  getSelectedCustomerSalon: () => customerReceptionRuntime.getSelectedCustomerSalon(),
-  parseBookingDate: (value) => dashboardSharedUtilsRuntime.parseBookingDate(value),
-  formatBookingStatusLabel: (status) => bookingsRuntime.formatBookingStatusLabel(status),
-  normalizeText: (value) => bookingsRuntime.normalizeText(value),
-  escapeHtml,
-  renderCustomerLexiCalendar: () => customerLexiPlannerRuntime.renderCustomerLexiCalendar(),
-  customerBookingHistory,
-  customerHistoryIntro,
-  customerAnalyticsGrid,
-  customerControlMetricGrid
-});
-const customerLexiCalendarEventsRuntime = createCustomerLexiCalendarEventsRuntime({
-  getCustomerLexiCalendarMonthCursor: () => customerLexiCalendarMonthCursor,
-  setCustomerLexiCalendarMonthCursor: (value) => {
-    customerLexiCalendarMonthCursor = value instanceof Date ? value : new Date(value);
-  },
-  getCustomerLexiSelectedDateKey: () => customerLexiSelectedDateKey,
-  setCustomerLexiSelectedDateKey: (value) => {
-    customerLexiSelectedDateKey = String(value || "").trim();
-  },
-  getCustomerLexiCalendarView: () => customerLexiCalendarView,
-  setCustomerLexiCalendarView: (value) => {
-    customerLexiCalendarView = String(value || "month").trim().toLowerCase();
-  },
-  renderCustomerLexiCalendar: () => customerLexiPlannerRuntime.renderCustomerLexiCalendar(),
-  getSelectedCustomerSalon: () => customerReceptionRuntime.getSelectedCustomerSalon(),
-  buildCustomerLexiPlannerPrompt: (action, payload = {}) => customerLexiPlannerRuntime.buildCustomerLexiPlannerPrompt(action, payload),
-  queueCustomerLexiPrompt: (prompt) => customerReceptionRuntime.queueCustomerLexiPrompt(prompt),
-  openCustomerLexiPopup: () => customerLexiPopupRuntime.openCustomerLexiPopup(),
-  customerSlotsSection,
-  customerLexiCalendarPrev,
-  customerLexiCalendarNext,
-  customerLexiCalendarGrid,
-  customerLexiCalendarViewTabs,
-  customerLexiAskNextBest,
-  customerLexiDaySummary
-});
-const aiLaunchControlsRuntime = createAiLaunchControlsRuntime({
-  setBusinessAiPrompt: (role, prompt) => businessCopilotRuntime.setBusinessAiPrompt(role, prompt),
-  openBusinessAiChatPopup: (role, options = {}) => businessCopilotRuntime.openBusinessAiChatPopup(role, options),
-  openCustomerLexiPopup: () => customerLexiPopupRuntime.openCustomerLexiPopup(),
-  queueCustomerLexiPrompt: (prompt) => customerReceptionRuntime.queueCustomerLexiPrompt(prompt),
-  adminCopilotForm,
-  subscriberCopilotForm,
-  customerLexiLaunchBtn,
-  customerLexiLaunchBookingBtn
-});
-const customerInteractionsRuntime = createCustomerInteractionsRuntime({
-  getSelectedCustomerSalon: () => customerReceptionRuntime.getSelectedCustomerSalon(),
-  renderCustomerSearchResults: () => customerReceptionRuntime.renderCustomerSearchResults(),
-  renderCustomerSelectedSalon: () => customerReceptionRuntime.renderCustomerSelectedSalon(),
-  runCustomerSalonSearch: () => customerReceptionRuntime.runCustomerSalonSearch(),
-  appendCustomerLexiGuidance: (text) => customerReceptionRuntime.appendCustomerLexiGuidance(text),
-  updateCustomerChatGuideHint: () => customerReceptionRuntime.updateCustomerChatGuideHint(),
-  renderCustomerReceptionChat: () => customerReceptionRuntime.renderCustomerReceptionChat(),
-  getReceptionReply: (inputText) => customerReceptionRuntime.getReceptionReply(inputText),
-  customerSearchForm,
-  customerSearchReset,
-  customerSearchResults,
-  customerSearchQuery,
-  customerSearchService,
-  customerSearchBusinessType,
-  customerSearchLocation,
-  customerSearchRating,
-  customerSearchDate,
-  customerReceptionForm,
-  customerReceptionInput,
-  customerReceptionClear,
-  getSelectedCustomerSalonId: () => selectedCustomerSalonId,
-  setSelectedCustomerSalonId: (value) => {
-    selectedCustomerSalonId = String(value || "").trim();
-  },
-  getCustomerReceptionTranscript: () => customerReceptionTranscript,
-  setCustomerReceptionTranscript: (value) => {
-    customerReceptionTranscript = Array.isArray(value) ? value : [];
-  }
-});
-const customerBootstrapRuntime = createCustomerBootstrapRuntime({
-  getUserRole: () => user?.role,
-  getCustomerSalonDirectory: () => customerSalonDirectory,
-  setCustomerSalonResults: (value) => {
-    customerSalonResults = Array.isArray(value) ? value : [];
-  },
-  setSelectedCustomerSalonId: (value) => {
-    selectedCustomerSalonId = String(value || "").trim();
-  },
-  setCustomerLexiCalendarMonthCursor: (value) => {
-    customerLexiCalendarMonthCursor = value instanceof Date ? value : new Date(value);
-  },
-  setCustomerLexiSelectedDateKey: (value) => {
-    customerLexiSelectedDateKey = String(value || "").trim();
-  },
-  setCustomerReceptionTranscript: (value) => {
-    customerReceptionTranscript = Array.isArray(value) ? value : [];
-  },
-  renderCustomerSearchResults: () => customerReceptionRuntime.renderCustomerSearchResults(),
-  renderCustomerSelectedSalon: () => customerReceptionRuntime.renderCustomerSelectedSalon(),
-  renderCustomerReceptionChat: () => customerReceptionRuntime.renderCustomerReceptionChat(),
-  refreshCustomerDashboard: () => customerAnalyticsRuntime.refreshCustomerDashboard()
 });
 const billingControlsRuntime = createBillingControlsRuntime({
   getUserRole: () => user?.role,
@@ -2902,9 +2250,7 @@ billingControlsRuntime.bindBillingControlEvents();
 businessReportingRuntime.bindBusinessReportingEvents();
 bookingsRuntime.bindBookingEvents();
 
-adminBusinessControlsRuntime.bindAdminBusinessControlsEvents();
 adminPlatformRuntime.bindAdminPlatformEvents();
-adminManagedControlsRuntime.bindAdminManagedControlsEvents();
 adminSupportRuntime.bindAdminSupportEvents();
 dashboardSessionControlsRuntime.bindDashboardSessionControls();
 accountingLiveControlsRuntime.bindAccountingLiveControlsEvents();
@@ -2919,16 +2265,11 @@ businessControlsEventsRuntime.bindBusinessControlsEvents();
 const mockDashboardRuntime = createMockDashboardRuntime({
   getUserRole: () => user?.role,
   getManagedBusinessId: () => managedBusinessId,
-  setManagedBusinessId: (value) => {
-    managedBusinessId = String(value || "").trim();
-  },
+  setManagedBusinessId: setManagedBusinessIdValue,
   setAdminBusinessOptions: (value) => {
     adminBusinessOptions = Array.isArray(value) ? value : [];
   },
-  adminBusinessSelect,
-  setAdminBusinessStatus: (message, isError = false) => {
-    adminBusinessRuntime.setAdminBusinessStatus(message, isError);
-  },
+  setAdminBusinessStatus: setAdminBusinessStatusMessage,
   setBillingSummary: (value) => {
     billingSummary = value || null;
   },

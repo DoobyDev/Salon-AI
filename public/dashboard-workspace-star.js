@@ -10,7 +10,6 @@ export function createWorkspaceStarRuntime(deps) {
     formatMoney,
     isPendingConfirmationStatus,
     openBusinessAiChatPopup,
-    openCustomerLexiPopup,
     focusModuleByKey,
     workspaceStarPanel,
     workspaceStarSummary,
@@ -23,8 +22,6 @@ export function createWorkspaceStarRuntime(deps) {
     workspaceStarLexiPrompt,
     workspaceStarLexiHint,
     calendarMonthLabel,
-    subscriberCopilotOpenPopup,
-    adminCopilotOpenPopup,
     subscriberLexiQuickOpenButtons
   } = deps || {};
 
@@ -132,10 +129,6 @@ export function createWorkspaceStarRuntime(deps) {
       focusModuleByKey?.("calendar");
     });
 
-    subscriberCopilotOpenPopup?.addEventListener("click", (event) => {
-      openDashboardLexiForCurrentRole(event.currentTarget, "daily_workspace");
-    });
-
     subscriberLexiQuickOpenButtons?.forEach((btn) => {
       btn.addEventListener("click", (event) => {
         const source = String(btn.getAttribute("data-open-subscriber-lexi") || "").trim();
@@ -146,7 +139,7 @@ export function createWorkspaceStarRuntime(deps) {
     doc.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
-      const dashboardLexiButton = target.closest("[data-open-subscriber-lexi], #subscriberCopilotOpenPopup, #adminCopilotOpenPopup, #workspaceStarAskLexiBtn");
+      const dashboardLexiButton = target.closest("[data-open-subscriber-lexi], #workspaceStarAskLexiBtn");
       if (dashboardLexiButton instanceof HTMLElement) {
         const source = String(dashboardLexiButton.getAttribute("data-open-subscriber-lexi") || "daily_workspace").trim();
         const role = getUserRole?.();
@@ -156,11 +149,6 @@ export function createWorkspaceStarRuntime(deps) {
           return;
         }
       }
-      const lexiLink = target.closest('a[href="#customerReceptionSection"]');
-      if (!(lexiLink instanceof HTMLElement)) return;
-      if (getUserRole?.() !== "customer") return;
-      event.preventDefault();
-      openCustomerLexiPopup?.();
     });
   }
 

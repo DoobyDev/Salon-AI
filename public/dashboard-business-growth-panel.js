@@ -4,7 +4,6 @@ export function createBusinessGrowthPanelRuntime(deps) {
     getUserRole,
     hideSection,
     showSection,
-    renderBusinessHubCards,
     formatDateShort,
     formatMoney,
     escapeHtml,
@@ -49,7 +48,6 @@ export function createBusinessGrowthPanelRuntime(deps) {
     if (businessHubIntro) {
       businessHubIntro.textContent = "Open a card to see what this business area does, then launch the full workspace or Ask Lexi for help.";
     }
-    renderBusinessHubCards?.();
 
     const billingSummary = getBillingSummary?.();
     if (billingLiveBanner) {

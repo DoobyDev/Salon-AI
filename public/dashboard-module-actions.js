@@ -4,7 +4,7 @@ export function createModuleActionRuntime(deps) {
     getUserRole,
     moduleOperatorBlueprint,
     moduleLexiAssistQuestion,
-    copilotPopupRefs,
+    copilotPopupRefs = () => ({}),
     openBusinessAiChatPopup,
     resetCopilotChat,
     setDashActionStatus,

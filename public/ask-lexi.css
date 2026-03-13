@@ -935,6 +935,20 @@ textarea {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+body[data-role="subscriber"] .dashboard-frame {
+  display: block;
+}
+
+body[data-role="subscriber"] #subscriberDashboard {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body[data-role="subscriber"] #customerDashboard,
+body[data-role="subscriber"] #adminDashboard {
+  display: none !important;
+}
+
 .dashboard-grid-subscriber > .dashboard-card {
   display: grid;
   align-content: start;
@@ -957,6 +971,15 @@ textarea {
 .dashboard-grid-subscriber .insight-grid-two,
 .dashboard-grid-subscriber .selected-day-summary {
   align-items: start;
+}
+
+body[data-role="subscriber"] #subscriberBusinessHubSection {
+  padding: 1.2rem;
+  gap: 1rem;
+}
+
+body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
+  margin-bottom: 1rem;
 }
 
 .dashboard-grid-admin {
@@ -1015,6 +1038,28 @@ textarea {
   border-color: rgba(201, 109, 65, 0.28);
 }
 
+.admin-hub-card-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.admin-hub-card-button p,
+.admin-hub-card-button strong,
+.admin-hub-card-button small,
+.admin-hub-card-button span {
+  margin: 0;
+}
+
+.admin-hub-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .admin-hub-card span {
   color: var(--highlight);
   font-size: 0.82rem;
@@ -1025,6 +1070,122 @@ textarea {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.lexi-modal-card.business-hub-modal-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  width: min(1080px, calc(100vw - 2rem));
+  height: min(760px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.business-hub-modal-summary {
+  margin: 0 0 1rem;
+}
+
+.business-hub-modal-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+  gap: 1rem;
+  align-items: start;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.business-hub-modal-highlight,
+.business-hub-modal-panels {
+  display: grid;
+  gap: 1rem;
+  min-height: 0;
+  align-content: start;
+}
+
+.business-hub-modal-highlight {
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.business-hub-modal-panels {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.business-hub-modal-editor {
+  grid-column: 1 / -1;
+}
+
+.business-hub-modal-editor-fields {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.business-hub-modal-editor-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.business-hub-modal-editor-field span {
+  color: var(--primary-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.business-hub-modal-editor-copy {
+  margin: 0 0 0.8rem;
+}
+
+.business-hub-modal-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0 0 0.9rem;
+}
+
+.business-profile-popup-preview {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.business-profile-popup-image {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 249, 242, 0.96);
+}
+
+.business-profile-popup-copy {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.business-profile-popup-copy p,
+.business-profile-popup-copy span,
+.business-profile-popup-copy strong {
+  margin: 0;
+}
+
+.business-profile-popup-copy span {
+  color: var(--primary-strong);
+  font-size: 0.84rem;
+}
+
+.business-hub-modal-editor-field textarea {
+  width: 100%;
+  min-height: 86px;
+  resize: vertical;
+}
+
+.business-hub-modal-editor-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .admin-nav-card:hover {
@@ -2012,6 +2173,11 @@ textarea {
   position: fixed;
   inset: 0;
   z-index: 50;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 .lexi-modal[hidden] {
@@ -2028,9 +2194,19 @@ textarea {
 .lexi-modal-card {
   position: relative;
   width: min(760px, calc(100vw - 2rem));
-  margin: 6vh auto 0;
+  margin: 0;
   padding: 1.2rem;
   z-index: 1;
+}
+
+.business-hub-modal .lexi-modal-card.business-hub-modal-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  width: min(1080px, calc(100vw - 2rem));
+  height: min(760px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 1rem;
+  overflow: hidden;
 }
 
 .lexi-modal-head,
@@ -2096,8 +2272,9 @@ textarea {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.68rem;
   width: min(1080px, calc(100vw - 2rem));
-  max-height: 88vh;
-  overflow: hidden;
+  max-height: min(88vh, calc(100dvh - 2rem));
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 0.82rem 0.9rem;
   background:
     radial-gradient(circle at top left, rgba(255, 214, 184, 0.54), transparent 24%),
@@ -2156,6 +2333,7 @@ textarea {
   grid-template-columns: minmax(220px, 0.62fr) minmax(0, 1.38fr);
   gap: 0.68rem;
   align-items: stretch;
+  align-content: start;
   min-height: 0;
 }
 
@@ -2286,6 +2464,8 @@ textarea {
 .home-lexi-chat-shell {
   grid-template-rows: auto minmax(0, 1fr) auto;
   min-height: 0;
+  align-content: start;
+  overflow: visible;
   padding: 0.72rem;
   background:
     radial-gradient(circle at top right, rgba(239, 177, 131, 0.15), transparent 26%),
@@ -2599,6 +2779,9 @@ textarea {
   place-items: center;
   overflow: hidden;
   border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 236, 220, 0.92), transparent 32%),
+    linear-gradient(180deg, rgba(255, 249, 242, 0.98), rgba(238, 224, 209, 0.96));
 }
 
 .experience-lexi-aura {
@@ -2634,14 +2817,15 @@ textarea {
 }
 
 .experience-lexi-image {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  width: min(100%, 268px);
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 14%;
+  object-position: center top;
   border-radius: 26px;
-  box-shadow: 0 18px 32px rgba(98, 60, 35, 0.17);
+  box-shadow: inset 0 -40px 90px rgba(98, 60, 35, 0.08);
 }
 
 .experience-lexi-badge {
@@ -2958,7 +3142,7 @@ textarea {
 }
 
 .home-command-grid {
-  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .home-command-grid-inner {
@@ -3202,6 +3386,225 @@ textarea {
   line-height: 1.2;
 }
 
+.home-frontdesk-search {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+}
+
+.home-frontdesk-search label {
+  display: grid;
+  gap: 0.36rem;
+}
+
+.home-frontdesk-search label span,
+.home-frontdesk-results-head strong {
+  color: var(--primary-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-frontdesk-search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: end;
+}
+
+.home-frontdesk-status {
+  min-height: 1.4rem;
+  margin-top: 0.9rem;
+}
+
+.home-frontdesk-results-shell {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.home-frontdesk-results-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.home-frontdesk-results-head small {
+  color: var(--ink-soft);
+}
+
+.home-frontdesk-results {
+  display: grid;
+  gap: 0.75rem;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.home-frontdesk-result {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(239, 177, 131, 0.18), transparent 38%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(246, 236, 226, 0.94));
+  box-shadow: 0 16px 34px rgba(100, 62, 38, 0.08);
+}
+
+.home-frontdesk-result-top,
+.home-frontdesk-result-actions,
+.home-frontdesk-preview-actions,
+.home-frontdesk-preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.home-frontdesk-result-top {
+  justify-content: space-between;
+}
+
+.home-frontdesk-result h3,
+.home-frontdesk-preview-header h3,
+.home-frontdesk-preview-services h4,
+.home-frontdesk-preview-slots h4,
+.home-frontdesk-preview-about h4 {
+  margin: 0;
+}
+
+.home-frontdesk-result p,
+.home-frontdesk-result small,
+.home-frontdesk-preview-copy p {
+  margin: 0;
+}
+
+.home-frontdesk-result-meta,
+.home-frontdesk-preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.home-frontdesk-result-meta span,
+.home-frontdesk-preview-meta span,
+.home-frontdesk-preview-links a,
+.home-frontdesk-preview-links span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.48rem;
+  border-radius: 999px;
+  background: rgba(255, 248, 240, 0.96);
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.home-frontdesk-preview {
+  display: grid;
+  gap: 1rem;
+  min-height: 100%;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.home-frontdesk-modal-card {
+  width: min(1080px, calc(100vw - 2rem));
+  height: min(760px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+}
+
+.home-frontdesk-modal-body {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  gap: 1rem;
+  height: calc(100% - 4.25rem);
+  min-height: 0;
+}
+
+.home-frontdesk-preview-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.home-frontdesk-preview-hero {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.82fr) minmax(0, 1.18fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.home-frontdesk-preview-visual {
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  background:
+    radial-gradient(circle at top, rgba(255, 231, 211, 0.72), transparent 30%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.98), rgba(241, 228, 214, 0.96));
+}
+
+.home-frontdesk-preview-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-frontdesk-preview-copy {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-frontdesk-preview-header {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.home-frontdesk-preview-services,
+.home-frontdesk-preview-slots,
+.home-frontdesk-preview-about {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 251, 246, 0.94);
+}
+
+.home-frontdesk-service-list,
+.home-frontdesk-slot-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.home-frontdesk-service-row,
+.home-frontdesk-slot-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(247, 239, 231, 0.72);
+}
+
+.home-frontdesk-service-row strong,
+.home-frontdesk-slot-row strong {
+  color: var(--ink);
+}
+
+.home-frontdesk-service-row span,
+.home-frontdesk-slot-row span {
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
 .home-operator-diary {
   display: grid;
   gap: 0.9rem;
@@ -3320,8 +3723,18 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .home-lexi-chat-shell {
+    order: -1;
+  }
+
   .home-command-proof {
     justify-content: flex-start;
+  }
+
+  .home-frontdesk-search,
+  .home-frontdesk-preview-hero,
+  .home-frontdesk-modal-body {
+    grid-template-columns: 1fr;
   }
 
   .experience-stage {
@@ -3367,6 +3780,8 @@ textarea {
   .admin-usage-operations-grid,
   .admin-revenue-month-stats,
   .admin-hub-detail-grid,
+  .business-hub-modal-layout,
+  .business-hub-modal-panels,
   .admin-status-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3491,6 +3906,8 @@ textarea {
   .admin-usage-operations-grid,
   .admin-revenue-month-stats,
   .admin-hub-detail-grid,
+  .business-hub-modal-layout,
+  .business-hub-modal-panels,
   .admin-status-columns {
     grid-template-columns: 1fr;
   }
@@ -3678,7 +4095,6 @@ textarea {
   }
 
   .home-lexi-modal-card {
-    margin-top: 2vh;
     padding: 0.82rem;
   }
 
@@ -3744,5 +4160,692 @@ textarea {
     inset: auto 0.5rem 0.5rem 0.5rem;
     width: auto;
     top: 5.5rem;
+  }
+}
+
+/* Homepage Ask Lexi dialog rebuild */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.home-lexi-dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(1080px, calc(100vw - 2rem));
+  height: min(760px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: 0;
+  padding: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(115, 73, 45, 0.14);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 184, 0.42), transparent 22%),
+    radial-gradient(circle at 92% 8%, rgba(29, 127, 119, 0.08), transparent 20%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.995), rgba(242, 230, 216, 0.97));
+  box-shadow: 0 30px 80px rgba(76, 45, 26, 0.24);
+}
+
+.home-lexi-dialog::before {
+  display: none;
+}
+
+.home-lexi-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.home-lexi-dialog-title {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.home-lexi-dialog-title h2 {
+  margin: 0;
+}
+
+.home-lexi-dialog-copy {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.home-lexi-dialog-body {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  gap: 0.9rem;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.home-lexi-dialog-aside,
+.home-lexi-dialog-chat {
+  min-width: 0;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(246, 236, 226, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 14px 30px rgba(92, 57, 34, 0.08);
+}
+
+.home-lexi-dialog-aside {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  padding: 0.85rem;
+}
+
+.home-lexi-dialog-portrait {
+  display: grid;
+  place-items: center;
+  min-height: 250px;
+  padding: 0.9rem 1rem 0.8rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 233, 214, 0.94), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(244, 233, 221, 0.9));
+}
+
+.home-lexi-dialog-image {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 20px;
+  box-shadow: 0 20px 36px rgba(103, 63, 38, 0.16);
+}
+
+.home-lexi-dialog-aside-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.home-lexi-dialog-aside-copy span {
+  color: var(--primary-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-lexi-dialog-aside-copy strong {
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.28;
+}
+
+.home-lexi-dialog-aside-copy p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.48;
+}
+
+.home-lexi-dialog-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.home-lexi-dialog-pills span,
+.home-lexi-dialog-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(187, 105, 63, 0.14);
+  background: rgba(255, 249, 243, 0.94);
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.home-lexi-dialog-chat {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0.85rem;
+  overflow: hidden;
+}
+
+.home-lexi-dialog-chat-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.home-lexi-dialog-chat-head strong {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.home-lexi-dialog-thread {
+  min-height: 0;
+  overflow: auto;
+  padding: 0.65rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.985), rgba(247, 239, 231, 0.93));
+  box-shadow: inset 0 1px 2px rgba(110, 67, 40, 0.05);
+}
+
+.shared-lexi-dialog .home-lexi-dialog-portrait {
+  min-height: 292px;
+  padding: 0.45rem 0.55rem 0.35rem;
+}
+
+.shared-lexi-dialog-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  object-position: center top;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-copy,
+.shared-lexi-dialog .home-lexi-dialog-aside-copy p {
+  max-width: 58ch;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-aside-copy {
+  gap: 0.22rem;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-aside-copy span {
+  font-size: 0.68rem;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-aside-copy strong {
+  font-size: 0.86rem;
+  line-height: 1.16;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-aside-copy p {
+  font-size: 0.8rem;
+  line-height: 1.28;
+}
+
+body.ask-lexi-dashboard .shared-lexi-dialog .home-lexi-dialog-body {
+  grid-template-columns: minmax(250px, 0.76fr) minmax(0, 1.24fr);
+}
+
+.shared-lexi-dialog .home-lexi-dialog-aside {
+  min-height: 0;
+  overflow: hidden;
+  gap: 0.65rem;
+  padding: 0.72rem;
+}
+
+.shared-lexi-dialog .home-lexi-dialog-thread {
+  scrollbar-gutter: stable both-edges;
+}
+
+body.ask-lexi-dashboard .shared-lexi-dialog .home-lexi-dialog-chat {
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  gap: 0.62rem;
+  min-height: 0;
+  align-content: start;
+}
+
+.shared-lexi-dialog-meta {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.shared-lexi-dialog-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.shared-lexi-dialog-support-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 0;
+  padding: 0.38rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(187, 105, 63, 0.14);
+  background: rgba(255, 250, 244, 0.95);
+  color: var(--ink);
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.shared-lexi-dialog-support-badge.is-status {
+  background: rgba(239, 247, 243, 0.95);
+  border-color: rgba(29, 127, 119, 0.18);
+}
+
+.shared-lexi-dialog-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.shared-lexi-dialog-insight {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.58rem 0.6rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 252, 248, 0.88);
+}
+
+.shared-lexi-dialog-insight span,
+.shared-lexi-dialog-prompt-heading {
+  color: var(--primary-strong);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shared-lexi-dialog-insight strong {
+  color: var(--ink);
+  font-size: 0.74rem;
+  line-height: 1.14;
+}
+
+.shared-lexi-dialog-prompt-block {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.shared-lexi-dialog-form-note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  line-height: 1.32;
+}
+
+.home-lexi-dialog-prompts {
+  gap: 0.55rem;
+}
+
+.home-lexi-dialog-prompts .prompt-chip {
+  border-color: rgba(187, 105, 63, 0.12);
+  background: rgba(255, 252, 248, 0.92);
+  color: var(--ink);
+}
+
+.home-lexi-dialog-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.8rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 249, 242, 0.92);
+}
+
+.home-lexi-dialog-form input {
+  min-height: 54px;
+  border-radius: 16px;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 2px rgba(115, 73, 45, 0.04);
+}
+
+.home-lexi-dialog-form .btn {
+  min-height: 54px;
+  padding-inline: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .home-lexi-dialog {
+    width: min(100vw - 1rem, 100%);
+    padding: 0.85rem;
+  }
+
+  .home-lexi-dialog-body {
+    grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+  }
+
+  .home-lexi-dialog-chat {
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+  }
+
+  body.ask-lexi-dashboard .shared-lexi-dialog .home-lexi-dialog-chat {
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  }
+
+  .home-lexi-dialog-portrait {
+    min-height: 180px;
+  }
+
+  .shared-lexi-dialog .home-lexi-dialog-portrait {
+    min-height: 226px;
+  }
+
+  .shared-lexi-dialog-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  .shared-lexi-dialog-insights {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-lexi-dialog-head,
+  .home-lexi-dialog-chat-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-lexi-dialog {
+    height: min(720px, calc(100dvh - 1rem));
+  }
+
+  .home-lexi-dialog-body {
+    grid-template-columns: 1fr;
+  }
+
+  .home-lexi-dialog-form {
+    grid-template-columns: 1fr;
+  }
+
+  .home-lexi-dialog-form .btn {
+    width: 100%;
+  }
+
+  .home-lexi-dialog-thread {
+    min-height: 240px;
+  }
+}
+
+/* Shared dashboard Ask Lexi popup shell */
+body.ask-lexi-dashboard .dashboard-frame .ask-lexi-btn,
+body.ask-lexi-dashboard .dashboard-frame [data-open-subscriber-lexi],
+body.ask-lexi-dashboard .dashboard-frame [data-calendar-diary-action="ask-lexi"],
+body.ask-lexi-dashboard .dashboard-frame .calendar-lexi-action,
+body.ask-lexi-dashboard .dashboard-frame [data-customer-booking-action="lexi"],
+body.ask-lexi-dashboard .dashboard-frame [data-customer-lexi-action],
+body.ask-lexi-dashboard .dashboard-frame [data-admin-notif-action="lexi"],
+body.ask-lexi-dashboard .dashboard-frame [data-admin-detail-action="notif-lexi"],
+body.ask-lexi-dashboard .dashboard-frame .module-info-lexi-btn,
+body.ask-lexi-dashboard .dashboard-frame .module-workspace-lexi-btn,
+body.ask-lexi-dashboard .dashboard-frame .hub-popup-lexi-btn,
+body.ask-lexi-dashboard .lexi-fab-dashboard {
+  display: none !important;
+}
+
+.dashboard-lexi-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(31, 21, 15, 0.48);
+  backdrop-filter: blur(14px);
+}
+
+.dashboard-lexi-overlay.is-open {
+  display: flex;
+}
+
+body.home-lexi-popup-open {
+  overflow: hidden;
+}
+
+.dashboard-lexi-dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(980px, calc(100vw - 2rem));
+  height: min(760px, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid rgba(115, 73, 45, 0.14);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 184, 0.42), transparent 22%),
+    radial-gradient(circle at 92% 8%, rgba(29, 127, 119, 0.08), transparent 20%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.995), rgba(242, 230, 216, 0.97));
+  box-shadow: 0 30px 80px rgba(76, 45, 26, 0.24);
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-kicker {
+  margin: 0 0 0.22rem;
+  color: var(--primary-strong);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-head h3,
+.dashboard-lexi-dialog .home-lexi-popup-head h2 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-head p:last-child {
+  margin: 0.28rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: 58ch;
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-close {
+  width: auto;
+  height: auto;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  color: var(--ink);
+  background: rgba(255, 252, 248, 0.86);
+  border: 1px solid rgba(115, 73, 45, 0.12);
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-body,
+.dashboard-lexi-dialog-body {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  gap: 0.9rem;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dashboard-lexi-dialog .lexi-avatar-shell,
+.dashboard-lexi-dialog .home-lexi-popup-chat-slot,
+.dashboard-lexi-dialog .business-lexi-popup-chat-slot,
+.dashboard-lexi-dialog-chat,
+.dashboard-lexi-dialog .copilot-chat-popup {
+  min-width: 0;
+}
+
+.dashboard-lexi-dialog .dashboard-lexi-dialog-aside,
+.dashboard-lexi-dialog .dashboard-lexi-dialog-chat,
+.dashboard-lexi-dialog .home-lexi-popup-chat-slot,
+.dashboard-lexi-dialog .business-lexi-popup-chat-slot {
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(246, 236, 226, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 14px 30px rgba(92, 57, 34, 0.08);
+}
+
+.dashboard-lexi-dialog .dashboard-lexi-dialog-aside {
+  padding: 0.85rem;
+}
+
+.dashboard-lexi-dialog .dashboard-lexi-dialog-chat,
+.dashboard-lexi-dialog .home-lexi-popup-chat-slot,
+.dashboard-lexi-dialog .business-lexi-popup-chat-slot {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: 0.85rem;
+  overflow: hidden;
+}
+
+.dashboard-lexi-dialog .lexi-avatar-stage {
+  min-height: 270px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 233, 214, 0.94), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(244, 233, 221, 0.9));
+  border: 1px solid rgba(115, 73, 45, 0.1);
+}
+
+.dashboard-lexi-dialog .lexi-avatar-stage::before {
+  background-position: center top !important;
+  background-size: auto 88% !important;
+  background-repeat: no-repeat !important;
+  transform: none !important;
+  transform-origin: 50% 0 !important;
+}
+
+.dashboard-lexi-dialog .lexi-avatar-note,
+.dashboard-lexi-dialog .lexi-avatar-transcript {
+  border-radius: 18px;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  background: rgba(255, 250, 244, 0.78);
+}
+
+.dashboard-lexi-dialog .home-lexi-popup-chat-slot .customer-chat-shell,
+.dashboard-lexi-dialog .business-lexi-popup-chat-slot .copilot-form,
+.dashboard-lexi-dialog .home-lexi-popup-chat-slot .customer-chat-form {
+  min-width: 0;
+}
+
+.dashboard-lexi-dialog .customer-chat-box,
+.dashboard-lexi-dialog .business-lexi-chat-box,
+.dashboard-lexi-dialog .customer-chat-shell,
+.dashboard-lexi-dialog .copilot-form,
+.dashboard-lexi-dialog .copilot-answer,
+.dashboard-lexi-dialog .copilot-card {
+  color: var(--ink);
+}
+
+.dashboard-lexi-dialog .customer-chat-box,
+.dashboard-lexi-dialog .business-lexi-chat-box {
+  min-height: 0;
+  overflow: auto;
+  padding: 0.65rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.985), rgba(247, 239, 231, 0.93));
+  box-shadow: inset 0 1px 2px rgba(110, 67, 40, 0.05);
+}
+
+.dashboard-lexi-dialog .customer-chat-form,
+.dashboard-lexi-dialog .copilot-form {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(115, 73, 45, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 249, 242, 0.92);
+}
+
+.dashboard-lexi-dialog .customer-chat-form input,
+.dashboard-lexi-dialog .copilot-form input,
+.dashboard-lexi-dialog .copilot-form textarea {
+  min-height: 52px;
+  border-radius: 16px;
+  border: 1px solid rgba(115, 73, 45, 0.12);
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ink);
+}
+
+.dashboard-lexi-dialog .customer-chat-msg.ai,
+.dashboard-lexi-dialog .copilot-chat-popup .customer-chat-msg.ai {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 248, 0.99), rgba(246, 237, 229, 0.94));
+  border: 1px solid rgba(115, 73, 45, 0.08);
+  color: var(--ink);
+}
+
+.dashboard-lexi-dialog .customer-chat-msg.user,
+.dashboard-lexi-dialog .copilot-chat-popup .customer-chat-msg.user {
+  background: linear-gradient(180deg, rgba(34, 20, 15, 0.94), rgba(116, 67, 41, 0.92));
+  color: #fffaf5;
+}
+
+.dashboard-lexi-dialog .lexi-popup-mic-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-lexi-dialog .lexi-mic-btn,
+.dashboard-lexi-dialog .customer-chat-form .btn,
+.dashboard-lexi-dialog .copilot-form .btn {
+  min-height: 44px;
+  border-radius: 14px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-lexi-dialog {
+    width: min(100vw - 1rem, 100%);
+    padding: 0.85rem;
+  }
+
+  .dashboard-lexi-dialog .home-lexi-popup-body,
+  .dashboard-lexi-dialog-body {
+    grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-lexi-dialog {
+    height: min(720px, calc(100dvh - 1rem));
+  }
+
+  .dashboard-lexi-dialog .home-lexi-popup-body,
+  .dashboard-lexi-dialog-body {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-lexi-dialog .home-lexi-popup-head {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

@@ -1,6 +1,6 @@
 # App Feature Record
 
-Last updated: 2026-03-12
+Last updated: 2026-03-13
 
 Purpose:
 - Keep a permanent record of what the app can do.
@@ -40,6 +40,7 @@ The app is designed to help salons:
   - subscriber
   - admin
 - Ask Lexi AI assistant available across the product
+- Ask Lexi now uses one shared popup presentation across the homepage and all dashboard shells, replacing the mix of separate popup and drawer designs
 - Booking lifecycle support:
   - create bookings
   - view bookings
@@ -65,6 +66,7 @@ The app is designed to help salons:
 - Guide customers toward a booking
 - Explain how the app works
 - Support booking-related questions in chat
+- Public Ask Lexi now opens from a single homepage nav trigger into the shared portrait-plus-conversation popup
 
 ### Subscriber Lexi
 
@@ -73,6 +75,7 @@ The app is designed to help salons:
 - Help with revenue, finance, and accounting questions
 - Guide use of the dashboard and subscriber tools
 - Stay available as a persistent in-app assistant
+- Subscriber dashboard Ask Lexi access is now consolidated to one header trigger that opens the same shared popup used on the homepage
 - Protected realtime/avatar session startup now requires subscriber or admin auth before live business-assistant sessions can be created
 
 ### Admin Lexi
@@ -83,6 +86,7 @@ The app is designed to help salons:
 - Support platform monitoring and managed-business oversight questions
 - Explain likely notification-delivery problems and suggest the next admin checks in plain language
 - Launch notification-fix guidance directly from the admin dashboard for a selected salon
+- Admin dashboard Ask Lexi access now uses the same shared popup shell as the homepage and other dashboards
 - Protected admin realtime/avatar session startup now requires admin auth before live platform-assistant sessions can be created
 
 ## Admin Dashboard Features
@@ -160,7 +164,7 @@ Status: simplified admin workspace active
   - calmer front desk operations
   - owner control
 - Live Ask Lexi modal on homepage
-- Homepage Ask Lexi modal now presents a stronger premium live-agent chat surface with clearer capability framing, a richer conversation shell, and a more polished composer area
+- Homepage Ask Lexi is now launched from the header nav only, and the popup uses one shared portrait-plus-chat dialog designed to keep Lexi visible and the chat thread professionally framed
 - Public booking activity feed from demo booking endpoint
 - Clear CTA path to:
   - log in
@@ -194,7 +198,7 @@ Status: basic dashboard available
 - Recent aftercare notes from completed visits
 - Direct customer actions from rebooking prompts, salon offers, gift cards, and aftercare notes via prefilled Ask Lexi flows
 - Ask Lexi access from the dashboard
-- First-run onboarding panel that explains what the customer dashboard does and offers quick Lexi-led actions
+- Extra in-panel customer Ask Lexi launchers are now removed from the main customer dashboard shell so the shared header launcher is the primary entrypoint
 - Customer dashboard wording simplified so the main areas are easier to understand at a glance
 - Customer extras like offers, gift cards, and aftercare are now tucked behind a simple expandable section to keep the default view cleaner
 
@@ -211,10 +215,14 @@ Status: basic dashboard available
 
 ## Subscriber Dashboard Features
 
-Status: operational owner dashboard available
+Status: reduced owner workspace active
 
-### Diary and booking operations
+### Current subscriber shell
 
+- Sticky top nav with:
+  - Ask Lexi
+  - Log out
+- Subscriber shared dashboard shell now opens directly on the diary without the extra hero banner above it
 - Full-width booking diary as the main working surface
 - Calendar month navigation
 - Day selection with booking and revenue summary
@@ -236,108 +244,11 @@ Status: operational owner dashboard available
 - Alternative nearby-day suggestions when the selected day is closed or limited
 - Subscriber booking suggestions now fetched from a protected backend route using real business hours and slot-capacity checks
 - Guided booking panel now surfaces client-record prep guidance, consultation prompts, formula notes, stylist preference, and patch-test reminders
-- Guided booking panel now includes stylist assignment plus overlap warnings based on service duration and existing diary bookings
-
-### Daily operating control
-
-- Today booking metrics
-- Expected revenue metrics
-- Reminders due soon metric
-- On duty today metric
-- Diary-first dashboard layout tightened so daily-use cards waste less vertical space
-- Two-column subscriber panels now avoid unnecessary equal-height stretching, reducing dead space in customer, revenue, checkout, and recovery sections
-- Selected-customer and recovery side panels now stay pinned more reliably on larger layouts so follow-up and prevention actions remain in view while scanning lists
-- Recommended action list
-- Communication-status view for reminder, confirmation, and rebooking activity already logged by the team
-- Live notification delivery status for booking SMS/email outcomes, including sent and failed channel counts
-- Communication readiness view for subscriber businesses, showing setup status, reachable upcoming bookings, available channels, and next checks in plain language
-- Reminder settings controls for subscribers, including live on/off, preferred channel, reminder timing, and manual fallback
-- Live booking notification delivery now respects subscriber reminder settings, including on/off state, preferred channel, and manual fallback
-- Scheduled reminders now run in the server background and use the subscriber’s chosen lead time for upcoming bookings
-- Subscriber communication history now distinguishes timed reminder sends from immediate booking confirmations
-- Subscriber communication status now shows reminders due soon, based on the salon’s saved reminder timing and upcoming appointments
-- Reminders-due-soon rows now have direct actions for opening the diary day, reviewing the customer, or asking Lexi what to do
-- Due-soon reminder actions now jump directly into the matching diary day, customer view, or Lexi guidance flow
-- Subscriber dashboard now keeps deeper setup tools and broader CRM tools behind simple expandable sections so the default daily workspace stays clearer
-- Subscriber booking access has been simplified by replacing the large guided-booking explainer block with a smaller direct booking action card
-- Subscriber message-queue tools are now tucked behind an expandable section so the main daily workspace stays focused on diary, recovery, reminders, and customers
-- No-show risk visibility
-- Rebooking prompts surfaced from operations data
-- Recovery view combining:
-  - late cancellations
-  - high no-show risk bookings
-  - rebooking opportunities
-  - waitlist demand
-- One-click recovery actions to open the day, work the waitlist, book a recovered slot, and ask Lexi for the next best move
-- Plain-language no-show prevention panel with suggested reminder wording, confirmation tracking, and fast recovery actions
-- Subscriber messaging board combining rebooking prompts, risky confirmations, and waitlist offers into one outreach queue
-
-### Customer management
-
-- Searchable customer list inside the subscriber dashboard
-- Selected-customer detail view for quick front-desk follow-up
-- Per-customer visit count
-- Per-customer lifetime spend
-- Per-customer cancellation count
-- Last-visit age visibility
-- Next booking visibility
-- Service history summary per customer
-- Recent booking history view per customer
-- Suggested next-step message for rebooking and follow-up
-- One-click book-again action from selected customer view
-- One-click add-to-waitlist action from selected customer view
-- Ask Lexi launch from selected customer view
-- Editable client record per customer for allergies, formula notes, consultation notes, visit prep, preferred stylist, and patch-test status
-
-### Revenue and finance
-
-- Live revenue snapshot
-- Revenue timeframe switching:
-  - today
-  - last 7 days
-  - last 30 days
-- Cancellation-rate visibility
-- Estimated profit visibility
-- Breakeven revenue visibility
-- Revenue bar visualization
-
-### Accounting and commercial support
-
-- Accounting CSV export for business bookings
-- Revenue attribution view by channel
-- Subscriber checkout hub with live memberships, packages, gift cards, and retail visibility
-- One-click rebook-next-visit flow from the service-day panel
-- Gift-card issue form inside the subscriber dashboard
-- Retail product recommendations can be pushed into aftercare notes during service-day checkout
-- Accounting integration status view
-- Accounting integration connect flow
-- Accounting integration disconnect flow
-
-### Team and staff
-
-- Team coverage list
-- Staff roster visibility
-- On-duty vs off-duty visibility
-- Weekly team planner with week navigation and rota-based daily coverage by staff member
-- Weekly team planner editing with selectable staff/day cells, plain-language status and shift controls, save, discard, and reset actions
-
-### Business setup
-
-- Business profile endpoint support
-- Service list support used by quick booking flow
-- Service-driven booking creation
-- Add-booking entry points from header, diary day, and selected customer view
-- Live booking summary inside guided booking panel
-
 ### Ask Lexi for subscribers
 
-- Persistent Ask Lexi drawer / panel
-- Dashboard-wide Ask Lexi entry points
-- Ask Lexi from header
-- Ask Lexi from selected diary day
-- Subscriber Ask Lexi uses current dashboard context such as selected customer, saved client record, recovery item, message task, and booking draft
-- Subscriber Ask Lexi also uses selected-day diary coverage pressure such as rota cover, unassigned bookings, and stylist clashes
-- Subscriber Ask Lexi can now help diagnose reminder-readiness issues using live communication setup and contact-coverage context
+- Header-launched shared Ask Lexi popup
+- Subscriber Ask Lexi presentation now uses the same shared popup shell as homepage and admin
+- Subscriber Ask Lexi uses current dashboard context such as selected-day diary coverage pressure, module context, and booking-diary workflows
 - Quick prompts for:
   - booking customer
   - today's priorities
@@ -345,10 +256,9 @@ Status: operational owner dashboard available
 
 ### Subscriber value
 
-- Gives salon owners one control room for day-to-day trading
-- Puts the diary at the center instead of hiding it behind generic widgets
-- Connects operations, finance, and AI assistance in one place
-- First-run onboarding panel helps new salon owners understand the most important setup steps
+- Keeps the subscriber dashboard focused on the live diary first
+- Removes inline dashboard sprawl so the owner view is easier to scan
+- Keeps the subscriber shell limited to the live diary under the top nav, without the extra Business Hub section
 
 ## Admin Dashboard Features
 
@@ -529,6 +439,27 @@ Status: simplified oversight dashboard available with preview-first admin flow
 
 ## Feature Update Log
 
+- 2026-03-13: The subscriber Business Hub section was removed again so the shared owner route returns to top nav plus booking diary only.
+- 2026-03-13: The admin-style Business Hub section was restored underneath the subscriber booking diary, using the shared subscriber hub runtime so the owner shell now shows top nav, diary, and business hub only.
+- 2026-03-13: The shared `/dashboard` subscriber route now hard-locks customer and admin grids off at the CSS layer so only the top nav and booking diary can appear in the owner shell.
+- 2026-03-13: The shared subscriber dashboard hero banner was removed so the `/dashboard` owner route now opens directly on the diary under the top nav.
+- 2026-03-13: Customer dashboard onboarding card was removed from both the dedicated customer route and the shared dashboard fallback, leaving the customer shell to open directly on bookings and rebooking content.
+- 2026-03-13: The temporary subscriber Business Hub section was removed again so the reduced subscriber shell returns to just the top nav and booking diary.
+- 2026-03-13: Subscriber dashboard was reduced to a diary-first owner shell with only the top nav, booking diary, and shared Business Hub visible in the main layout. Older inline subscriber sections were removed from the live dashboard surface in favor of hub-led navigation.
+- 2026-03-13: Subscriber and customer dashboard Ask Lexi entrypoints were reconnected to the single shared popup runtime, so workspace, module, and calendar Lexi actions now open the same shared Ask Lexi experience instead of dead placeholder launch paths.
+
+### 2026-03-13
+
+- Replaced the mixed homepage, subscriber, customer, and admin Ask Lexi launch paths with one shared popup implementation and one main header launcher per page shell
+- Removed the older static Ask Lexi drawer and extra visible dashboard launch buttons so the app now presents a single cleaner Ask Lexi entry pattern
+- Deleted the unused legacy `public/ask-lexi-dashboard.js` runtime so the old drawer-based dashboard Ask Lexi path no longer sits in the repo as a misleading parallel implementation
+- Standardized the popup content around one professional portrait-plus-conversation layout with a clearer Lexi image panel and a dedicated scrolling chat thread
+- Refined the shared Ask Lexi popup content with role-specific support copy, cleaner prompt framing, and a more polished professional presentation across homepage, subscriber, customer, and admin entrypoints
+- Rebuilt the homepage Ask Lexi popup from scratch into a simpler live-chat dialog after the previous popup shell became too fragile across viewport sizes
+- Replaced the heavier homepage popup rail and layered chat-shell composition with a cleaner portrait-plus-chat layout that keeps the conversation area and composer visible more reliably
+- Simplified the public Ask Lexi popup structure so the homepage interaction reads like one focused booking conversation instead of a stacked promotional modal
+- Extended the same simpler Ask Lexi popup shell direction across the dashboard customer and business-assistant popups so Ask Lexi entrypoints feel visually consistent instead of mixing unrelated popup designs
+
 ### 2026-03-09
 
 - Added permanent feature record document for product and promotion reference
@@ -660,3 +591,37 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Fixed the Ask Lexi popup scroll behavior so the modal keeps a stable overall shape and only the Lexi/user conversation thread scrolls inside it
 - Refined the Ask Lexi popup visual design again without changing its outer footprint, giving the rail, chat shell, thread, and composer a cleaner premium live-agent presentation
 - Rebuilt the homepage `#experience` section from a clean dedicated layout again so Lexi stays visually dominant in a full-width hero without relying on leftover earlier hero-card styles
+- Removed the dead subscriber quick-actions dashboard path from the shared dashboard runtime, reset shell, and reset CSS so `/dashboard` no longer carries hidden subscriber section wiring for markup that has already been deleted
+- Deleted the old unreferenced dashboard reset assets (`dashboard-shell-reset.js` and `rebuild.css`) so the repo no longer carries a second abandoned subscriber/dashboard shell path beside the live dashboard implementation
+- Stopped the shared `/dashboard` startup from loading hidden subscriber-only growth, profile, social, staffing, CRM, commercial, revenue, and profitability branches in the background, so the reduced subscriber route now boots only the diary-first path it still actually shows
+- Deleted the unmounted mobile dashboard navigation path from the shared dashboard runtime because no live dashboard HTML now includes the old mobile bottom-nav / quick-sheet shell that code depended on
+- Added the same 8-card Business Hub used in the admin dashboard into the subscriber dashboard under the booking diary, using the shared admin-hub renderer so both dashboards now show the same card set and styling
+- Corrected the subscriber Business Hub heading and supporting copy so the visible hub section now matches the admin dashboard wording exactly instead of using a different shared-dashboard description
+- Corrected the subscriber Business Hub container spacing so the shared admin-style card grid is no longer compressed by subscriber-only dashboard-card spacing rules
+- Removed the remaining Business Hub card filtering dependency on live module lookups so both admin and subscriber dashboards now always render the full shared 8-card Business Hub set instead of dropping cards when one lookup path is incomplete
+- Aligned the subscriber Business Hub to the same fixed 8-card business-area source used by the admin shell and rendered it whenever the subscriber hub grid exists, so the subscriber dashboard no longer depends on the broader shared-role module path to decide whether those 8 cards appear
+- Replaced the subscriber Business Hub card rendering with direct live HTML plus one small click handler, so the subscriber dashboard no longer depends on a second JS render path to make the 8 Business Hub cards appear
+- Replaced the old under-section admin Business Hub detail view with one shared landscape Business Hub information popup, so both admin and subscriber dashboards now open the same extended card information in a modal instead of rendering a second detail section under the grid
+- Matched the Business Hub information popup shell to the Ask Lexi popup size envelope so both dashboard popups now open in the same overall desktop window footprint
+- Refreshed the dashboard stylesheet asset path and tightened the Business Hub modal selector so the new landscape popup sizing actually overrides the generic modal shell on the live dashboard routes
+- Bound the subscriber Business Hub directly to the same shared modal runtime used by admin, and moved the landscape modal sizing override below the generic dashboard modal shell so both live routes now use the same popup behavior and footprint
+- Bumped the shared Business Hub module import versions and added those modules to the service-worker refresh list so subscriber and admin dashboards now load the same live popup runtime instead of a stale cached Business Hub module path
+- Added a dedicated subscriber Business Hub launcher script on the shared `/dashboard` route so those 8 subscriber cards can always open the same landscape modal even if the wider shared dashboard runtime hits an unrelated subscriber-path failure earlier in boot
+- Expanded the subscriber Business Hub card popups into role-specific extended info windows with editable per-card draft fields inside the same fixed-size landscape modal, using internal scrolling instead of enlarging the popup shell
+- Matched the admin Business Hub card popups to the same extended editable modal flow, with admin-specific draft storage and labels so all 8 admin and subscriber cards now open the same fixed-size editable information popup pattern
+- Rewrote the shared Business Hub popup headings and edit panel copy per card so each admin and subscriber Business Hub popup now reads as its own business area instead of repeating the same generic panel labels
+- Rebuilt the subscriber `Business Information` Business Hub popup into a true business-profile surface using the live subscriber sign-in and business profile fields, customer-facing website/image preview, Ask Lexi help action, and direct profile-management actions inside the existing fixed-size modal
+- Restricted the Business Hub `Change password` action to subscriber and admin roles only, so customer and other roles cannot see that account-management control in the shared popup
+- Fixed the shared Business Hub popup runtime after the Business Information refactor so all Business Hub cards can open again on both admin and subscriber dashboards instead of failing on a stale removed variable reference
+- Fixed the Business Hub `Business Information` popup scroll behavior by making the left preview/highlight column scroll internally too, so the modal keeps its fixed size while the full profile content remains reachable
+- Replaced the homepage command/feed block with a real public Front Desk search and preview surface, so visitors can look up subscribed salons, open a customer-facing business profile, review public business details and imagery, and ask Lexi to handle booking help from the homepage itself
+- Moved the homepage public Front Desk preview off the page and into a dedicated popup window, keeping the inline preview section hidden until a business is explicitly opened from the search results
+- Removed the old inline homepage `home-feed-shell` Front Desk preview path entirely so the public salon preview now exists in one place only: the dedicated popup opened from salon search results
+- Moved the homepage salon result list into the same Front Desk popup too, so searching no longer shows any `home-frontdesk-result` cards underneath the page and the popup is now the only salon-results surface
+
+
+
+
+
+
+

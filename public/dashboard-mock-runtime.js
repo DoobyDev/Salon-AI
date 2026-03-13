@@ -1,12 +1,10 @@
 // Mock/demo dashboard data bootstrap.
 export function createMockDashboardRuntime(deps) {
   const {
-    doc = document,
     getUserRole,
     getManagedBusinessId,
     setManagedBusinessId,
     setAdminBusinessOptions,
-    adminBusinessSelect,
     setAdminBusinessStatus,
     setBillingSummary,
     renderSubscriberBillingControls,
@@ -89,17 +87,6 @@ export function createMockDashboardRuntime(deps) {
         { id: "mock-admin-biz-atelier-beauty", name: "Atelier Beauty Rooms", city: "Birmingham", country: "United Kingdom" }
       ];
       setAdminBusinessOptions?.(adminBusinessOptions);
-      if (adminBusinessSelect) {
-        adminBusinessSelect.innerHTML = "";
-        adminBusinessOptions.forEach((business) => {
-          const option = doc.createElement("option");
-          option.value = String(business.id || "");
-          const location = [business.city, business.country].filter(Boolean).join(", ");
-          option.textContent = location ? `${business.name} (${location})` : String(business.name || "Unnamed business");
-          adminBusinessSelect.appendChild(option);
-        });
-        adminBusinessSelect.value = mockAdminBusinessId;
-      }
       setAdminBusinessStatus?.(`Viewing ${adminBusinessOptions.find((b) => b.id === mockAdminBusinessId)?.name || "selected business"} (mock data).`);
     }
 

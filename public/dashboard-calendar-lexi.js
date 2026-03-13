@@ -8,8 +8,7 @@ export function createCalendarLexiRuntime(deps) {
     t,
     showToast,
     openBusinessAiChatPopup,
-    requestAdminCopilotSubmit,
-    requestSubscriberCopilotSubmit,
+    requestLexiSubmit,
     calendarFeatureMeta,
     calendarFeatureStats,
     calendarSelectedDaySummary,
@@ -233,11 +232,7 @@ export function createCalendarLexiRuntime(deps) {
       focusInput: false,
       prompt
     });
-    if (role === "admin") {
-      requestAdminCopilotSubmit?.();
-    } else {
-      requestSubscriberCopilotSubmit?.();
-    }
+    requestLexiSubmit?.();
     showToast?.(`Lexi is reviewing ${dateLabel || dateKey || "the selected day"}.`);
   }
 

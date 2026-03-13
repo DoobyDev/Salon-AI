@@ -16,7 +16,6 @@ export function createDashboardRoleChromeRuntime(deps) {
     dashUser,
     dashRoleHint,
     dashActionStatus,
-    adminBusinessScope,
     dashIdentityBlock,
     dashboardOverviewSection
   } = deps || {};
@@ -113,17 +112,10 @@ export function createDashboardRoleChromeRuntime(deps) {
       setManagedBusinessId?.(String(user.businessId || "").trim());
     } else if (currentRole === "admin") {
       setManagedBusinessId?.(String(getAdminBusinessParam?.() || "").trim());
-      if (adminBusinessScope) {
-        adminBusinessScope.style.display = "inline-flex";
-      }
     }
 
     hideSection?.(dashRoleHint);
     hideSection?.(dashActionStatus);
-    hideSection?.(adminBusinessScope);
-    if (currentRole === "admin") {
-      showSection?.(adminBusinessScope);
-    }
     showSection?.(dashIdentityBlock);
     dashboardOverviewSection?.classList.remove("actions-only");
   }

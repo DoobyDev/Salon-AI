@@ -1,16 +1,13 @@
 // Admin platform analytics runtime.
 export function createAdminPlatformRuntime(deps) {
   const {
-    win = window,
-    doc = document,
     fetchImpl = fetch,
     getUserRole,
     headers,
     escapeHtml,
     formatMoney,
-    formatDateShort,
     setDashActionStatus,
-    renderAdminManagedBusinessSummary,
+    renderAdminManagedBusinessSummary = () => {},
     parseExportFileName,
     adminPlatformMetricGrid,
     adminRevenueSummaryGrid,
@@ -22,21 +19,12 @@ export function createAdminPlatformRuntime(deps) {
     adminRevenueSignalList,
     adminRevenuePeriodPill,
     adminRevenueNote,
-    adminUsageSummaryGrid,
-    adminUsageHourlyList,
-    adminUsageWeekdayList,
-    adminUsageRoleGrid,
-    adminUsageOperationsGrid,
-    adminUsagePeriodPill,
-    adminUsageNote,
     adminPlatformExportBtn,
     onManageFreeSubscribers,
     getAdminPlatformAnalytics,
     setAdminPlatformAnalytics,
     getAdminRevenueAnalytics,
-    setAdminRevenueAnalytics,
-    getAdminUsageAnalytics,
-    setAdminUsageAnalytics
+    setAdminRevenueAnalytics
   } = deps || {};
 
   function buildMockAdminPlatformAnalytics() {
@@ -60,38 +48,6 @@ export function createAdminPlatformRuntime(deps) {
         monthRevenue: 12440,
         cancelledBookings: 618,
         conversionRate: 72.6
-      },
-      usage: {
-        hourly: [
-          { label: "06:00", total: 22, loginCount: 5, lexiCount: 3 },
-          { label: "09:00", total: 74, loginCount: 18, lexiCount: 21 },
-          { label: "12:00", total: 81, loginCount: 22, lexiCount: 19 },
-          { label: "15:00", total: 67, loginCount: 16, lexiCount: 17 },
-          { label: "18:00", total: 48, loginCount: 11, lexiCount: 12 },
-          { label: "21:00", total: 26, loginCount: 6, lexiCount: 7 }
-        ],
-        weekdays: [
-          { label: "Mon", total: 188 },
-          { label: "Tue", total: 201 },
-          { label: "Wed", total: 214 },
-          { label: "Thu", total: 239 },
-          { label: "Fri", total: 264 },
-          { label: "Sat", total: 177 },
-          { label: "Sun", total: 96 }
-        ],
-        summary: {
-          periodDays: 14,
-          busiestHourLabel: "12:00",
-          quietestHourLabel: "03:00",
-          bestUpdateWindowLabel: "02:00-05:00",
-          bestUpdateWindowEvents: 9,
-          roleCounts: {
-            subscriber: 644,
-            customer: 421,
-            admin: 39,
-            anonymous: 18
-          }
-        }
       }
     };
   }
@@ -127,62 +83,10 @@ export function createAdminPlatformRuntime(deps) {
     return Number(payload?.summary?.activeSubscriptions || 0) > 0 || Array.isArray(payload?.monthly) && payload.monthly.length > 0;
   }
 
-  function renderAdminUsageIntelligenceContent() {
-    if (getUserRole?.() !== "admin") return;
-    const adminUsageAnalytics = getAdminUsageAnalytics?.();
-    if (adminUsageHourlyList) {
-      const hourly = Array.isArray(adminUsageAnalytics?.hourly) ? adminUsageAnalytics.hourly : [];
-      const maxHourly = Math.max(1, ...hourly.map((row) => Number(row?.total || 0)));
-      adminUsageHourlyList.innerHTML = hourly.map((row) => `
-        <article class="admin-usage-hour-card">
-          <strong>${escapeHtml(String(row?.label || "00:00"))}</strong>
-          <small>${escapeHtml(`${Number(row?.total || 0)} events`)}</small>
-          <small>${escapeHtml(`${Number(row?.loginCount || 0)} logins • ${Number(row?.lexiCount || 0)} Lexi`)}</small>
-          <div class="admin-usage-hour-bar">
-            <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxHourly) * 100))}%"></span>
-          </div>
-        </article>
-      `).join("");
-    }
-    if (adminUsageWeekdayList) {
-      const weekdays = Array.isArray(adminUsageAnalytics?.weekdays) ? adminUsageAnalytics.weekdays : [];
-      const maxWeekday = Math.max(1, ...weekdays.map((row) => Number(row?.total || 0)));
-      adminUsageWeekdayList.innerHTML = weekdays.map((row) => `
-        <article class="admin-usage-weekday-card">
-          <strong>${escapeHtml(String(row?.label || "Day"))}</strong>
-          <small>${escapeHtml(`${Number(row?.total || 0)} recorded activity events`)}</small>
-          <div class="admin-usage-weekday-bar">
-            <span style="width:${Math.max(8, Math.round((Number(row?.total || 0) / maxWeekday) * 100))}%"></span>
-          </div>
-        </article>
-      `).join("");
-    }
-    if (adminUsageRoleGrid) {
-      const roleCounts = adminUsageAnalytics?.summary?.roleCounts || {};
-      const rows = [
-        ["Subscribers", Number(roleCounts.subscriber || 0)],
-        ["Customers", Number(roleCounts.customer || 0)],
-        ["Admins", Number(roleCounts.admin || 0)],
-        ["Anonymous", Number(roleCounts.anonymous || 0)]
-      ];
-      const maxRole = Math.max(1, ...rows.map(([, value]) => value));
-      adminUsageRoleGrid.innerHTML = rows.map(([label, value]) => `
-        <article class="admin-usage-role-card">
-          <strong>${escapeHtml(label)}</strong>
-          <small>${escapeHtml(`${value} activity events`)}</small>
-          <div class="admin-usage-role-bar">
-            <span style="width:${Math.max(8, Math.round((value / maxRole) * 100))}%"></span>
-          </div>
-        </article>
-      `).join("");
-    }
-  }
-
   function renderAdminPlatformOverview() {
     if (getUserRole?.() !== "admin") return;
     const adminPlatformAnalytics = getAdminPlatformAnalytics?.();
     const adminRevenueAnalytics = getAdminRevenueAnalytics?.();
-    const adminUsageAnalytics = getAdminUsageAnalytics?.();
 
     if (adminPlatformMetricGrid) {
       const analytics = adminPlatformAnalytics?.analytics || {};
@@ -414,62 +318,6 @@ export function createAdminPlatformRuntime(deps) {
       adminRevenueNote.textContent = String(adminRevenueAnalytics?.note || "");
     }
 
-    if (adminUsageSummaryGrid) {
-      const summary = adminUsageAnalytics?.summary || {};
-      const rows = [
-        ["Activity window", `${Number(summary.periodDays || 14)} days`],
-        ["Busiest hour", `${summary.busiestHourLabel || "00:00"} UTC`],
-        ["Quietest hour", `${summary.quietestHourLabel || "00:00"} UTC`],
-        ["Best update window", `${summary.bestUpdateWindowLabel || "00:00-03:00"} UTC`],
-        ["Subscriber events", String(summary.roleCounts?.subscriber || 0)],
-        ["Customer events", String(summary.roleCounts?.customer || 0)]
-      ];
-      adminUsageSummaryGrid.innerHTML = rows.map(([label, value]) => `
-        <article class="admin-platform-summary-card">
-          <p>${escapeHtml(label)}</p>
-          <strong>${escapeHtml(value)}</strong>
-        </article>
-      `).join("");
-    }
-
-    if (adminUsageOperationsGrid) {
-      const usageSummary = adminUsageAnalytics?.summary || {};
-      const analytics = adminPlatformAnalytics?.analytics || {};
-      const bestWindow = String(usageSummary.bestUpdateWindowLabel || "00:00-03:00").trim();
-      const busiestHour = String(usageSummary.busiestHourLabel || "00:00").trim();
-      const subscriberEvents = Number(usageSummary.roleCounts?.subscriber || 0);
-      const customerEvents = Number(usageSummary.roleCounts?.customer || 0);
-      const roleLead = subscriberEvents >= customerEvents ? "Subscribers" : "Customers";
-      const roleGap = Math.abs(subscriberEvents - customerEvents);
-      const cancellationRate = Number(analytics.totalBookings || 0)
-        ? Number((((Number(analytics.cancelledBookings || 0) / Math.max(1, Number(analytics.totalBookings || 0))) * 100)).toFixed(1))
-        : 0;
-      const cards = [
-        { label: "Best update slot", title: `${bestWindow} UTC`, note: `Quietest 3-hour block based on ${Number(usageSummary.bestUpdateWindowEvents || 0)} recorded events.` },
-        { label: "Peak support cover", title: `${busiestHour} UTC`, note: "This is the busiest hour in the app, so support/admin visibility matters most here." },
-        { label: "Primary traffic", title: `${roleLead} lead by ${roleGap}`, note: `${subscriberEvents} subscriber events vs ${customerEvents} customer events in the current window.` },
-        { label: "Booking risk", title: `${cancellationRate}% cancellation rate`, note: "Useful for deciding whether admin should focus on subscriber support, recovery, or product changes." },
-        { label: "Platform load", title: `${Number(analytics.totalBookings || 0)} bookings`, note: "Daily top calendar and platform revenue should be reviewed together when this starts climbing." },
-        { label: "Revenue watch", title: formatMoney(Number(adminRevenueAnalytics?.summary?.estimatedMrr || 0)), note: "MRR is the fastest health signal for platform growth and churn pressure." }
-      ];
-      adminUsageOperationsGrid.innerHTML = cards.map((card) => `
-        <article class="admin-usage-operations-card">
-          <p>${escapeHtml(card.label)}</p>
-          <strong>${card.title}</strong>
-          <small>${escapeHtml(card.note)}</small>
-        </article>
-      `).join("");
-    }
-
-    if (adminUsagePeriodPill) {
-      adminUsagePeriodPill.textContent = `Last ${Number(adminUsageAnalytics?.summary?.periodDays || 14)} days`;
-    }
-    if (adminUsageNote) {
-      const summary = adminUsageAnalytics?.summary || {};
-      adminUsageNote.textContent = `Best low-activity update window: ${summary.bestUpdateWindowLabel || "00:00-03:00"} UTC, based on ${Number(summary.bestUpdateWindowEvents || 0)} recorded events across the quietest 3-hour block.`;
-    }
-
-    renderAdminUsageIntelligenceContent();
     renderAdminManagedBusinessSummary?.();
   }
 
@@ -502,7 +350,6 @@ export function createAdminPlatformRuntime(deps) {
     }
 
     setAdminPlatformAnalytics?.(analyticsData || null);
-    setAdminUsageAnalytics?.(analyticsData?.usage || null);
     setAdminRevenueAnalytics?.(revenueData || null);
     renderAdminPlatformOverview();
   }
@@ -544,7 +391,6 @@ export function createAdminPlatformRuntime(deps) {
 
   return {
     renderAdminPlatformOverview,
-    renderAdminUsageIntelligenceContent,
     loadAdminPlatformOverview,
     bindAdminPlatformEvents
   };

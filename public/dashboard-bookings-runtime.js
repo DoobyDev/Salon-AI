@@ -16,7 +16,6 @@ export function createBookingsRuntime(deps) {
     setDashActionStatus,
     showManageToast,
     syncLexiPendingReminders,
-    refreshCustomerDashboard,
     renderExecutivePulse,
     renderSubscriberCalendar,
     renderBusinessGrowthPanel,
@@ -216,7 +215,6 @@ export function createBookingsRuntime(deps) {
     if (bookingsCountLabel) {
       bookingsCountLabel.textContent = `Showing ${filtered.length} of ${rows.length} loaded bookings${bookingDateFilterLabel && bookingDateFilterLabel !== "All dates" ? ` (${bookingDateFilterLabel})` : ""}`;
     }
-    refreshCustomerDashboard?.();
     renderExecutivePulse?.();
   }
 

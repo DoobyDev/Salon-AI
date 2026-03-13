@@ -17,7 +17,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme2" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-homepage19" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-homepage43" />
   </head>
   <body class="ask-lexi-shell ask-lexi-home">
     <header class="site-header">
@@ -109,65 +109,75 @@
         <section class="home-command-deck section-card">
           <div class="section-head home-command-head">
             <div class="home-command-intro">
-              <p class="kicker">Front desk outcomes</p>
-              <h2>One complete section for what the product actually changes.</h2>
+              <p class="kicker">Public front desk</p>
+              <h2>Look up a salon, barber, or beauty business and step straight into its customer-facing front desk.</h2>
               <p class="section-copy">
-                Ask Lexi is built for the real salon bottlenecks: missed calls, scattered diary decisions, unclear follow-up, weak handoff between booking and owner action, and revenue leakage from cancellations.
+                Search subscribed businesses, compare live profiles, open the front desk view customers will actually use, and let Lexi help with the booking instead of forcing someone to call.
               </p>
             </div>
             <div class="home-command-proof">
-              <span>Books after hours</span>
-              <span>Feeds the owner dashboard</span>
-              <span>Turns cancellations into action</span>
+              <span>Public business lookup</span>
+              <span>Customer-facing profile view</span>
+              <span>Lexi booking assist</span>
             </div>
           </div>
-          <div class="home-command-grid-inner">
-            <article class="home-command-card">
-              <span>Missed-call recovery</span>
-              <strong>Capture late demand instead of losing it outside opening hours.</strong>
-              <small>Lexi keeps the enquiry moving when the salon cannot get to the phone.</small>
-            </article>
-            <article class="home-command-card">
-              <span>Front desk calm</span>
-              <strong>Handle routine questions and booking friction without interrupting the team.</strong>
-              <small>Service guidance, prep advice, and booking next steps stay clear and consistent.</small>
-            </article>
-            <article class="home-command-card">
-              <span>Owner visibility</span>
-              <strong>See diary pressure, reminders, recovery work, and revenue from one place.</strong>
-              <small>The customer conversation becomes useful operating context instead of lost front-desk noise.</small>
-            </article>
-            <article class="home-command-card">
-              <span>Commercial control</span>
-              <strong>Turn cancellations, open gaps, and rebooking opportunities into visible next actions.</strong>
-              <small>The product does not stop at chat. It feeds the follow-up work that protects the week.</small>
-            </article>
-            <article class="home-command-card">
-              <span>Rebooking momentum</span>
-              <strong>Keep clients moving into the next visit instead of letting the relationship go cold.</strong>
-              <small>Lexi supports follow-up and rebooking prompts so the next appointment stays easier to secure.</small>
-            </article>
-            <article class="home-command-card">
-              <span>Better client guidance</span>
-              <strong>Give clients clearer prep, timing, and service answers before they ever need to call back.</strong>
-              <small>The experience feels more confident, more premium, and less dependent on a busy team member being free.</small>
-            </article>
-          </div>
+          <form class="home-frontdesk-search" id="searchForm">
+            <label>
+              <span>Salon or barber name</span>
+              <input id="filterName" type="text" placeholder="Search by business name" />
+            </label>
+            <label>
+              <span>Business type</span>
+              <select id="filterBusinessType">
+                <option value="">All</option>
+                <option value="hair">Hair salon</option>
+                <option value="barber">Barbershop</option>
+                <option value="beauty">Beauty salon</option>
+              </select>
+            </label>
+            <label>
+              <span>Location</span>
+              <input id="filterLocation" type="text" placeholder="City or country" />
+            </label>
+            <label>
+              <span>Postcode</span>
+              <input id="filterPostcode" type="text" placeholder="Postcode" />
+            </label>
+            <label>
+              <span>Phone</span>
+              <input id="filterPhone" type="text" placeholder="Phone number" />
+            </label>
+            <div class="home-frontdesk-search-actions">
+              <button class="btn" type="submit">Search salons</button>
+              <button class="btn btn-ghost" id="clearFilters" type="button">Clear filters</button>
+            </div>
+          </form>
+          <p class="section-copy home-frontdesk-status" id="frontDeskSearchStatus">
+            Search for a salon, barber, or beauty business to open its public front desk profile.
+          </p>
         </section>
 
-        <section class="home-feed-shell section-card" aria-label="Recent bookings">
-          <div class="section-head section-head-compact">
+      </section>
+
+      <section class="lexi-modal home-frontdesk-modal" id="homeFrontdeskModal" hidden>
+        <div class="lexi-modal-backdrop" id="homeFrontdeskModalBackdrop"></div>
+        <div class="lexi-modal-card home-frontdesk-modal-card" role="dialog" aria-modal="true" aria-labelledby="homeFrontdeskModalTitle">
+          <div class="lexi-modal-head">
             <div>
-              <p class="kicker">Recent bookings</p>
-              <h2>Public booking feed</h2>
+              <p class="kicker">Public front desk</p>
+              <h2 id="homeFrontdeskModalTitle">Salon front desk</h2>
             </div>
-            <button class="btn btn-ghost btn-small" id="homeRefreshFeedBtn" type="button">Refresh</button>
+            <button class="btn btn-ghost btn-small" id="homeFrontdeskModalClose" type="button">Close</button>
           </div>
-          <p class="section-copy home-feed-copy">
-            Lightweight public proof that the front door is active. This is the live rhythm beside the positioning story.
-          </p>
-          <div class="live-booking-feed" id="homeBookingFeed"></div>
-        </section>
+          <div class="home-frontdesk-modal-body">
+            <div class="home-frontdesk-results-shell">
+              <div class="home-frontdesk-results" id="salonResults" aria-live="polite"></div>
+            </div>
+            <div class="home-frontdesk-preview" id="selectedBusiness" aria-live="polite">
+              <div class="empty-state">Choose a salon from the search results to load its public front desk profile.</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="home-operator-shell section-card" id="operator-os">
@@ -193,7 +203,6 @@
               <div class="diary-preview-toolbar">
                 <span>Monday</span>
                 <strong>09:00-18:30</strong>
-                <button class="btn ask-lexi-btn btn-small" id="homeOperatorAskLexiBtn" type="button">Ask Lexi</button>
               </div>
               <div class="diary-preview-grid">
                 <article>
@@ -458,91 +467,6 @@
       </section>
     </main>
 
-    <section class="lexi-modal" id="homeLexiModal" hidden>
-      <div class="lexi-modal-backdrop" data-close-home-lexi></div>
-      <div class="lexi-modal-card home-lexi-modal-card" role="dialog" aria-modal="true" aria-labelledby="homeLexiModalTitle">
-        <div class="lexi-modal-head">
-          <div class="home-lexi-modal-intro">
-            <p class="kicker">Ask Lexi</p>
-            <h2 id="homeLexiModalTitle">Live booking assistant</h2>
-            <p class="home-lexi-modal-copy">
-              The AI salon agent that answers like front-of-house, guides service choice, and moves each conversation toward a booking.
-            </p>
-            <div class="home-lexi-modal-badges" aria-label="Lexi capabilities">
-              <span>Live AI salon agent</span>
-              <span>Books and reschedules</span>
-              <span>Service-match guidance</span>
-            </div>
-          </div>
-          <button class="btn btn-ghost btn-small" id="homeLexiCloseBtn" type="button">Close</button>
-        </div>
-        <div class="home-lexi-modal-layout">
-          <div class="home-lexi-modal-rail">
-            <article class="home-lexi-agent-portrait-card" aria-label="Lexi live agent identity">
-              <div class="home-lexi-agent-portrait-frame">
-                <img
-                  src="/3d-lexi.png"
-                  alt="Lexi AI salon agent portrait"
-                  class="home-lexi-agent-portrait"
-                  width="626"
-                  height="626"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-              <div class="home-lexi-agent-identity">
-                <span>Lexi live agent</span>
-                <strong>AI salon receptionist</strong>
-                <small>Built to sound calm, premium, helpful, and booking-focused from the first reply.</small>
-              </div>
-            </article>
-            <article class="home-lexi-agent-card">
-              <span>Agent status</span>
-              <strong>Lexi is ready to take a live salon enquiry.</strong>
-              <small>Best for bookings, service questions, prep advice, timings, reschedules, and owner-value questions.</small>
-            </article>
-            <article class="home-lexi-agent-card">
-              <span>What feels different</span>
-              <strong>She should sound premium, calm, and useful.</strong>
-              <small>The box needs to sell the product before a user even sends the first message.</small>
-            </article>
-          </div>
-          <div class="home-lexi-chat-shell">
-            <div class="home-lexi-chat-head">
-              <div>
-                <p class="kicker">Conversation</p>
-                <strong>Customer-facing salon assistant</strong>
-              </div>
-              <span class="home-lexi-chat-status">Live</span>
-            </div>
-            <div class="assistant-thread assistant-thread-public" id="homeLexiAssistantThread"></div>
-            <form class="assistant-form assistant-form-stacked home-lexi-assistant-form" id="homeLexiAssistantForm">
-              <input
-                id="homeLexiAssistantInput"
-                type="text"
-                placeholder="Ask about services, timings, bookings, prep, or how the app works"
-              />
-              <div class="assistant-quick-prompts home-lexi-prompt-grid">
-                <button class="prompt-chip" type="button" data-home-lexi-prompt="Book a balayage this Friday after 4 PM">
-                  Book balayage
-                </button>
-                <button class="prompt-chip" type="button" data-home-lexi-prompt="What does Ask Lexi do for salon owners?">
-                  Owner overview
-                </button>
-                <button class="prompt-chip" type="button" data-home-lexi-prompt="How do accounting exports work?">
-                  Accounting export
-                </button>
-              </div>
-              <div class="home-lexi-send-row">
-                <small>Designed to feel like the salon's best front-of-house agent, not a generic chatbot.</small>
-                <button class="btn ask-lexi-btn" type="submit">Send to Lexi</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <footer class="site-footer">
       <div>
         <strong>Ask Lexi</strong>
@@ -555,7 +479,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/ask-lexi-home.js?v=20260313-homepage3"></script>
+    <script type="module" src="/ask-lexi-home.js?v=20260313-homepage15"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme2"></script>
   </body>
 </html>

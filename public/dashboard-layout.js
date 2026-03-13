@@ -33,24 +33,16 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     profitabilitySection,
     bookingSort,
     customerJourneyActionsSection,
-    customerSearchSection,
-    customerReceptionSection,
-    customerLexiCalendarSection,
-    customerSlotsSection,
-    customerHistorySection,
-    customerAnalyticsSection,
     adminCopilotSection,
     accountingPlatformExportBtn,
     adminPlatformSection,
     frontDeskSection,
     bookingOperationsSection,
     metricsGrid,
-    dashboardQuickActionsSection,
     subscriberCalendarSection,
     bookingStatus,
     setActiveStatusChip,
     dashIdentityBlock,
-    adminBusinessScope,
     initializeCustomerExperience,
     subscriberFullDemoModeSection
   } = ctx;
@@ -88,17 +80,10 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     metricsGrid
   ];
   const customerSections = [
-    customerJourneyActionsSection,
-    customerSearchSection,
-    customerReceptionSection,
-    customerLexiCalendarSection,
-    customerSlotsSection,
-    customerHistorySection,
-    customerAnalyticsSection
+    customerJourneyActionsSection
   ];
   const customerSecondarySections = [
     customerJourneyActionsSection,
-    customerAnalyticsSection,
     frontDeskSection
   ];
   const businessWorkspaceSections = [
@@ -161,7 +146,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
   }
   if (role === "admin") {
     hideSection(contactAdminBtn);
-    hideSection(dashboardQuickActionsSection);
     hideSection(subscriberCalendarSection);
     hideSection(bookingOperationsSection);
     hideSection(businessGrowthSection);
@@ -182,7 +166,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
       accountingIntegrationsSection,
       revenueAttributionSection,
       profitabilitySection,
-      adminBusinessScope,
       adminCopilotSection,
       subscriberSubscriptionSection,
       first7DaysSnapshotSection
@@ -191,7 +174,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
   }
   if (role === "subscriber") {
     hideSubscriberSecondarySections();
-    showSection(dashboardQuickActionsSection);
     showSection(subscriberCalendarSection);
     showSection(bookingOperationsSection);
     hideSection(businessGrowthSection);

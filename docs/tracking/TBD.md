@@ -5,6 +5,8 @@ Last updated: 2026-03-13
 Purpose:
 - Keep only unresolved product, UX, or technical decisions here.
 - Do not keep completed or already-decided items in this file.
+- Session rule: implement UI changes against the exact live rendered surface first, then clean up duplicate/legacy/override paths once the accepted version is working so future sessions do not re-break it from a second code path.
+- Session rule: treat dead rendering layers, duplicate paths, stale overrides, and unreliable UI glue as defects to remove promptly, so the app stays tidy and future edits do not keep failing for the same structural reason.
 
 ## Decisions Needed
 - [ ] How far should PWA support go beyond installable shell coverage?
@@ -15,7 +17,7 @@ Purpose:
   - Notes: The section and popup were both heavily iterated on 2026-03-13. The current live build is technically current and being served correctly, but there is still an open product/design decision on the final Lexi-first hero composition and the final premium-vs-live-agent feel of the popup.
 
 - [ ] What is the final scope for public demo surfaces after launch?
-  - Files: public/app.js, src/services/lexi_demo_seed.js, public/dashboard-customer-lexi-realtime.js
+  - Files: public/app.js, src/services/lexi_demo_seed.js
 
 - [ ] What is the final visual scope of Section 3 on the admin dashboard?
   - Files: public/dashboard-admin.html, public/dashboard-admin-platform.js, public/ask-lexi.css

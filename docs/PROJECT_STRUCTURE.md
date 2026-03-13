@@ -50,7 +50,7 @@ Purpose:
   Examples: `dashboard-admin-platform.js`, `dashboard-admin-support.js`.
 - `public/dashboard-customer-<area>.js`
   Customer dashboard and customer journey modules.
-  Examples: `dashboard-customer-reception.js`, `dashboard-customer-lexi-realtime.js`.
+  Examples: `dashboard-shared-lexi-entry.js`, `dashboard-admin-shell.js`.
 - `public/dashboard-manage-<area>.js`
   Shared manage-mode actions and orchestration.
   Examples: `dashboard-manage-ui.js`, `dashboard-manage-dispatcher.js`.

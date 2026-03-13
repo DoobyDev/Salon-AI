@@ -2,9 +2,7 @@
 export function createModuleClickRouterRuntime(deps) {
   const {
     doc = document,
-    dashboardQuickActionsSection,
     returnToDashboardHomeView,
-    openBusinessHubModulePopup,
     moduleDefinitionByKey,
     moduleUsesInteractivePopup,
     moduleUsesInfoPopup,
@@ -22,14 +20,6 @@ export function createModuleClickRouterRuntime(deps) {
       const backBtn = target.closest("#workspaceBackToDashboardBtn");
       if (backBtn instanceof HTMLElement) {
         returnToDashboardHomeView?.();
-        return;
-      }
-
-      const businessHubPopupTrigger = target.closest("[data-business-hub-popup]");
-      if (businessHubPopupTrigger instanceof HTMLElement) {
-        const hubKey = String(businessHubPopupTrigger.getAttribute("data-business-hub-popup") || "").trim();
-        if (!hubKey) return;
-        openBusinessHubModulePopup?.(hubKey);
         return;
       }
 
@@ -55,20 +45,18 @@ export function createModuleClickRouterRuntime(deps) {
       if (!(trigger instanceof HTMLElement)) return;
       const next = String(trigger.getAttribute("data-module-jump") || "").trim();
       if (!next) return;
-      if (dashboardQuickActionsSection?.contains(trigger)) {
-        const mod = moduleDefinitionByKey?.(next);
-        if (mod) {
-          if (moduleUsesInteractivePopup?.(mod)) {
-            openInteractiveModulePopup?.(next);
-            return;
-          }
-          if (moduleUsesInfoPopup?.(mod)) {
-            openModuleInfoModal?.(next);
-            return;
-          }
+      const mod = moduleDefinitionByKey?.(next);
+      if (mod) {
+        if (moduleUsesInteractivePopup?.(mod)) {
+          openInteractiveModulePopup?.(next);
+          return;
         }
-        setWorkspaceBackButtonVisible?.(next !== "home");
+        if (moduleUsesInfoPopup?.(mod)) {
+          openModuleInfoModal?.(next);
+          return;
+        }
       }
+      setWorkspaceBackButtonVisible?.(next !== "home");
       focusModuleByKey?.(next);
     });
   }

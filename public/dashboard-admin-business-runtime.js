@@ -6,11 +6,11 @@ export function createAdminBusinessRuntime(deps) {
     setManagedBusinessId,
     getAdminBusinessOptions,
     normalizeText,
-    adminBusinessSearch,
-    adminBusinessSelect,
-    adminBusinessStatus,
-    adminManagedBusinessLabel,
-    adminManagedBusinessMeta
+    adminBusinessSearch = null,
+    adminBusinessSelect = null,
+    adminBusinessStatus = null,
+    adminManagedBusinessLabel = null,
+    adminManagedBusinessMeta = null
   } = deps || {};
 
   function setAdminBusinessStatus(message, isError = false) {

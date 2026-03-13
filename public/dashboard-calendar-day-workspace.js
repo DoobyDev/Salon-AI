@@ -36,8 +36,7 @@ export function createCalendarDayWorkspaceRuntime(deps) {
     showManageToast,
     setBookingDateFilter,
     openBusinessAiChatPopup,
-    adminCopilotForm,
-    subscriberCopilotForm,
+    requestLexiSubmit,
     openManageForm,
     createBooking,
     rescheduleBooking,
@@ -388,14 +387,13 @@ export function createCalendarDayWorkspaceRuntime(deps) {
                   focusInput: false,
                   prompt: questionText
                 });
-                adminCopilotForm?.requestSubmit();
               } else {
                 openBusinessAiChatPopup?.("subscriber", {
                   focusInput: false,
                   prompt: questionText
                 });
-                subscriberCopilotForm?.requestSubmit();
               }
+              requestLexiSubmit?.();
               return;
             }
             if (action === "copy-summary") {

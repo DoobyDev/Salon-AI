@@ -7274,15 +7274,7 @@ html body .control-room-home .btn-ghost:hover {
 }
 
 /* Ask Lexi CTA buttons */
-#headerLexiAskBtn,
-#heroLexiAskBtn,
-#homeLexiLaunchBtn,
-#subscriberCopilotOpenPopup,
-#adminCopilotOpenPopup,
-#customerLexiLaunchBtn,
-#workspaceStarAskLexiBtn,
 [data-open-subscriber-lexi],
-a[href="#frontdesk"].btn,
 .home-lexi-popup .chat-form .btn[type="submit"],
 .home-lexi-popup .customer-chat-form .btn[type="submit"],
 .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
@@ -7292,15 +7284,7 @@ a[href="#frontdesk"].btn,
   box-shadow: none !important;
 }
 
-#headerLexiAskBtn:hover,
-#heroLexiAskBtn:hover,
-#homeLexiLaunchBtn:hover,
-#subscriberCopilotOpenPopup:hover,
-#adminCopilotOpenPopup:hover,
-#customerLexiLaunchBtn:hover,
-#workspaceStarAskLexiBtn:hover,
 [data-open-subscriber-lexi]:hover,
-a[href="#frontdesk"].btn:hover,
 .home-lexi-popup .chat-form .btn[type="submit"]:hover,
 .home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
 .home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {
@@ -7309,15 +7293,7 @@ a[href="#frontdesk"].btn:hover,
 }
 
 /* Absolute final Ask Lexi button color override */
-html body #headerLexiAskBtn,
-html body #heroLexiAskBtn,
-html body #homeLexiLaunchBtn,
-html body #subscriberCopilotOpenPopup,
-html body #adminCopilotOpenPopup,
-html body #customerLexiLaunchBtn,
-html body #workspaceStarAskLexiBtn,
 html body [data-open-subscriber-lexi],
-html body a[href="#frontdesk"].btn,
 html body .home-lexi-popup .chat-form .btn[type="submit"],
 html body .home-lexi-popup .customer-chat-form .btn[type="submit"],
 html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
@@ -7328,15 +7304,7 @@ html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"] {
   box-shadow: none !important;
 }
 
-html body #headerLexiAskBtn:hover,
-html body #heroLexiAskBtn:hover,
-html body #homeLexiLaunchBtn:hover,
-html body #subscriberCopilotOpenPopup:hover,
-html body #adminCopilotOpenPopup:hover,
-html body #customerLexiLaunchBtn:hover,
-html body #workspaceStarAskLexiBtn:hover,
 html body [data-open-subscriber-lexi]:hover,
-html body a[href="#frontdesk"].btn:hover,
 html body .home-lexi-popup .chat-form .btn[type="submit"]:hover,
 html body .home-lexi-popup .customer-chat-form .btn[type="submit"]:hover,
 html body .home-lexi-popup .business-lexi-inline-form .btn[type="submit"]:hover {

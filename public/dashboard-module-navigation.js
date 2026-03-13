@@ -12,10 +12,8 @@ export function createModuleNavigationRuntime(deps) {
     showSection,
     isPinnedBusinessModule,
     renderModuleNavigator,
-    renderBusinessHubCards,
     setWorkspaceBackButtonVisible,
     workspaceBackToDashboardBtn,
-    dashboardQuickActionsSection,
     getManageModeEnabled,
     showManageToast,
     getManagedBusinessId,
@@ -60,14 +58,12 @@ export function createModuleNavigationRuntime(deps) {
     (setWorkspaceBackButtonVisible || setWorkspaceBackButtonVisibleLocal)(false);
     const role = getUserRole?.();
     if (role === "subscriber" || role === "admin") {
-      const businessHubSection = document.getElementById("businessGrowthSection");
       const overviewSection = document.getElementById("dashboardOverviewSection");
-      const target = businessHubSection || overviewSection || dashboardQuickActionsSection;
+      const target = overviewSection;
       target?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
     focusModuleByKey("home");
-    dashboardQuickActionsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function openQuickCreateBookingFromMobile() {
@@ -125,10 +121,6 @@ export function createModuleNavigationRuntime(deps) {
       setActiveModuleKey?.((sectionModules.find((mod) => mod.startHere) || sectionModules[0] || modules[0]).key);
     }
     applyModuleVisibility();
-    const role = getUserRole?.();
-    if (role === "subscriber" || role === "admin") {
-      renderBusinessHubCards?.();
-    }
   }
 
   return {

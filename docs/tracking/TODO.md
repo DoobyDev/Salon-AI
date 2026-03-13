@@ -15,6 +15,10 @@ Update rule:
 - Mark validation-only items as done only after the relevant browser/test/env check has actually happened.
 - Add new blockers or follow-up work as soon as they are discovered.
 - If an item is finished, delete it instead of archiving it here.
+- For any requested UI/UX change, trace the exact live route, active file path, and rendered surface first instead of changing a likely duplicate path.
+- When a change is accepted as correct, immediately remove, isolate, or neutralize any older duplicate path, stale override, or secondary code path that could overwrite it later.
+- Treat rendering conflicts, stale overrides, duplicate UI paths, and dead layers as maintenance bugs, not optional cleanup.
+- If a layer is unused, unreliable, or repeatedly causes editing regressions, remove it during the fix so the app stays clean, predictable, and maintainable.
 
 ## Current Priority
 
@@ -67,7 +71,7 @@ Files: `public/dashboard-calendar-pulse.js`, `public/dashboard-merch-analytics.j
 Notes: Shared merch analytics logic was deduplicated on 2026-03-10. Confirm rendered numbers, shipment states, and empty states visually.
 
 - [ ] Validate Lexi realtime voice end-to-end with real env values.
-Files: `server.js`, `src/services/lexi_realtime_support.js`, `src/services/lexi_realtime_route_handlers.js`, `public/app.js`, `public/dashboard-customer-lexi-realtime.js`
+Files: `server.js`, `src/services/lexi_realtime_support.js`, `src/services/lexi_realtime_route_handlers.js`, `public/app.js`
 Notes: Intentionally deferred until the end of the build because live OpenAI realtime voice and moving-avatar provider usage adds paid runtime cost. Protected subscriber/admin realtime and avatar session gating is covered by automated tests already; the remaining work is late-stage env configuration plus browser confirmation once rollout is approved.
 
 ## Config And Environment
@@ -96,7 +100,7 @@ Notes: Especially check subscriber/admin control-center panels after the merch s
 
 - [ ] Add targeted comments in complex runtime areas where behavior contracts are easy to break.
 Files: `public/dashboard.js`, `public/dashboard-calendar-pulse.js`, `server.js`, `public/app.js`
-Notes: One guard comment was added on 2026-03-10 for the admin quick-toggle/storyline contract, another now protects the shared role-layout contract in `public/dashboard-startup-runtime.js`, targeted contract comments now protect reminder dedupe plus notification skip-audit behavior in `src/services/reminder_dispatch.js` and `src/services/notifications.js`, and the business-copilot runtime now also documents its popup-card restore contract plus its intentionally sanitized AI-context summary in `public/dashboard-business-copilot.js`; continue selectively. Admin notification-health logic was also extracted into `public/dashboard-admin-notification-health.js`, subscriber readiness plus due-soon reminder logic were extracted into `src/services/subscriber_communication_readiness.js`, the subscriber communications rollup now lives in `src/services/subscriber_communication_summary.js`, subscriber no-show/rebooking calculations now live in `src/services/subscriber_operations_insights.js`, command-center recommendation thresholds now live in `src/services/subscriber_command_center.js`, and more leftover bridge glue was removed from `public/dashboard.js` so manage-UI, request-utils, status/preferences, business-profile, calendar-diary, copilot, shared money/date helpers, provider/date-time helpers, date-key helpers, pad helpers, startup preference wiring, admin/bootstrap/mock dashboard wiring, CRM/waitlist manage-action wiring, calendar-day workspace wiring, staff rota wiring, and broader manager/manage-mode helper delegates now rely more directly on their extracted runtimes. The obvious no-behavior-change alias cleanup passes are now mostly exhausted, so continue only where further extraction still clearly reduces risk.
+Notes: One guard comment was added on 2026-03-10 for the admin quick-toggle/storyline contract, another now protects the shared role-layout contract in `public/dashboard-startup-runtime.js`, and targeted contract comments now protect reminder dedupe plus notification skip-audit behavior in `src/services/reminder_dispatch.js` and `src/services/notifications.js`; continue selectively. Admin notification-health logic was also extracted into `public/dashboard-admin-notification-health.js`, subscriber readiness plus due-soon reminder logic now live in `src/services/subscriber_communication_readiness.js`, the subscriber communications rollup now lives in `src/services/subscriber_communication_summary.js`, subscriber no-show/rebooking calculations now live in `src/services/subscriber_operations_insights.js`, command-center recommendation thresholds now live in `src/services/subscriber_command_center.js`, and more leftover bridge glue was removed from `public/dashboard.js` so manage-UI, request-utils, status/preferences, business-profile, calendar-diary, shared money/date helpers, provider/date-time helpers, date-key helpers, pad helpers, startup preference wiring, admin/bootstrap/mock dashboard wiring, CRM/waitlist manage-action wiring, calendar-day workspace wiring, and staff rota wiring now rely more directly on their extracted runtimes. The obvious no-behavior-change alias cleanup passes are now mostly exhausted, so continue only where further extraction still clearly reduces risk.
 
 ## Operations And Release Readiness
 
