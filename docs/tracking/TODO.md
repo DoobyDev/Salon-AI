@@ -1,6 +1,6 @@
 # TODO Tracker
 
-Last updated: 2026-03-12
+Last updated: 2026-03-13
 
 Purpose:
 - Keep one running list of work that is still incomplete, still needs testing, or still needs validation.
@@ -24,23 +24,23 @@ Local validation target for the next pass:
 - Manual browser pass helper: `docs/DASHBOARD_MANUAL_QA_CHECKLIST_2026-03-11.md`
 
 Tomorrow restart point:
-- Admin dashboard code pass is in a good stop state after the dedicated admin-shell fixes, Business Hub detail restore, inline action feedback restore, and first-round subscriber layout tightening.
-- Homepage work is now the active design track.
+- Admin/dashboard shell work is in a stable stop state after the dedicated customer/admin shell fixes, logout hardening, and header Ask Lexi access cleanup.
+- Homepage work is still the active design track, but it should not continue as broad redesign churn.
 - Today completed on the homepage:
-  - rebuilt `#experience` into one denser combined hero section
-  - removed the old portrait conversation block
-  - pushed Lexi into the dominant first-screen focal point with a larger portrait stage and in-image capability overlays
-  - removed the homepage `status-pill`
-  - removed the homepage `home-lexi-quote` treatment from active presentation
-  - brought the lower homepage sections closer to the hero direction with stronger proof-band, operator, commercial, flow, and pricing framing
-  - tightened the public booking-feed section so it reads more like supporting proof instead of a disconnected utility block
-  - clarified the pricing section so the commercial story reads as system tiers rather than generic AI-chat positioning
-  - added a stronger homepage closeout CTA section so the page now ends with a clearer conversion and operator-value summary instead of dropping straight into the footer
+  - kept the rest of the homepage intact and focused on `#experience` plus the Ask Lexi popup only
+  - rebuilt `#experience` again into a dedicated full-width hero layout instead of letting it inherit the older mixed hero-card structure
+  - pushed Lexi into a larger centered visual stage so she reads more like the star of the app instead of a narrow supporting portrait
+  - widened and recentered the Lexi portrait treatment inside `#experience`
+  - kept iterating the Ask Lexi popup toward a more landscape-first layout with a fixed outer shell and only the conversation thread scrolling
+  - refreshed homepage/dashboard CSS and JS asset versions repeatedly so live browser routes now serve the current assets
+- Important current truth:
+  - the server is serving the latest homepage and popup markup/CSS correctly
+  - if the homepage still feels wrong, that is now a design-direction issue, not a stale-cache/server mismatch
 - Next homepage pass should focus on:
-  - browser-reviewing the full homepage visually at desktop and mobile widths, not just the hero
-  - checking whether the lower sections now feel cohesive with the Lexi-first top section in a real browser session
-  - confirming the new closing CTA section gives the page a stronger ending without feeling repetitive
-  - then either continuing the homepage redesign or switching back to the subscriber dashboard
+  - doing a real browser review of `#experience` at desktop and mobile widths before any more structural edits
+  - deciding whether the current rebuilt hero is acceptable or whether it should be replaced from a clean visual reference instead of incrementally tweaked again
+  - keeping the next iteration scoped to `#experience` only unless a separate issue is found elsewhere on the page
+  - checking the Ask Lexi popup visually after the latest shell/thread-scroll redesign and deciding whether it needs a cleaner luxury pass or a clearer “live AI receptionist” pass
 
 - [ ] Browser-verify PWA installability and shell updates on the live routes.
 Files: `public/index.html`, `public/auth.html`, `public/dashboard.html`, `public/legal.html`, `public/pwa-runtime.js`, `public/sw.js`, `public/manifest.webmanifest`
@@ -52,7 +52,7 @@ Notes: Completed on 2026-03-11 with a headless Edge render pass at desktop and m
 
 - [ ] Browser-validate the dashboard before more structural edits.
 Files: `public/dashboard.html`, `public/dashboard.js`, `public/styles.css`
-Notes: Confirm current subscriber/admin/customer layouts still feel correct after the recent control-center, reminders, onboarding, and simplification passes. A headless Edge route check on 2026-03-11 confirmed unauthenticated `/dashboard?role=subscriber|admin|customer` requests correctly land on the auth surface, and authenticated desktop render captures now exist for the current subscriber and admin dashboard first-view layouts. Those first-view renders looked structurally correct for the current control-center/metric-band/diary composition, but customer dashboard rendering and broader in-page interaction coverage are still pending before this item can be closed. The customer role was also moved onto a dedicated shell on 2026-03-12 so customer chrome and logout behavior no longer depend on the shared subscriber page. The old dashboard mock/demo mode is already disabled in code; remaining demo-scope decisions now apply to public/homepage demo surfaces instead.
+Notes: Confirm current subscriber/admin/customer layouts still feel correct after the recent control-center, reminders, onboarding, simplification passes, dedicated customer/admin shell work, logout return-to-home fixes, and header Ask Lexi entrypoint changes. A headless Edge route check on 2026-03-11 confirmed unauthenticated `/dashboard?role=subscriber|admin|customer` requests correctly land on the auth surface, and authenticated desktop render captures now exist for the current subscriber and admin dashboard first-view layouts. Those first-view renders looked structurally correct for the current control-center/metric-band/diary composition, but customer dashboard rendering and broader in-page interaction coverage are still pending before this item can be closed. The old dashboard mock/demo mode is already disabled in code; remaining demo-scope decisions now apply to public/homepage demo surfaces instead.
 
 - [ ] Browser-verify admin quick toggles in the control center.
 Files: `public/dashboard-calendar-pulse.js`, `public/dashboard.js`

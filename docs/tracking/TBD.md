@@ -1,6 +1,6 @@
 # TBD Tracker
 
-Last updated: 2026-03-12
+Last updated: 2026-03-13
 
 Purpose:
 - Keep only unresolved product, UX, or technical decisions here.
@@ -9,6 +9,10 @@ Purpose:
 ## Decisions Needed
 - [ ] How far should PWA support go beyond installable shell coverage?
   - Files: public/sw.js, public/pwa-runtime.js, public/manifest.webmanifest, public/index.html, public/dashboard.html
+
+- [ ] What is the final visual direction for the homepage `#experience` hero and Ask Lexi popup?
+  - Files: public/index.html, public/ask-lexi.css, public/ask-lexi-home.js
+  - Notes: The section and popup were both heavily iterated on 2026-03-13. The current live build is technically current and being served correctly, but there is still an open product/design decision on the final Lexi-first hero composition and the final premium-vs-live-agent feel of the popup.
 
 - [ ] What is the final scope for public demo surfaces after launch?
   - Files: public/app.js, src/services/lexi_demo_seed.js, public/dashboard-customer-lexi-realtime.js
