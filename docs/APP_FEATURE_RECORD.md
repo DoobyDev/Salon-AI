@@ -227,7 +227,9 @@ Status: reduced owner workspace active
 - Rebuilt subscriber calendar from scratch around a clickable calendar surface instead of the older diary experiments
 - Day, weekly, monthly, and yearly calendar views
 - Monthly grid as the default main diary view
-- Subscriber month planner now uses a true full-month calendar board with weekday-aligned cells, visible open-capacity days, month-level load stats, and a selected-day agenda/rota side panel
+- Subscriber month planner now uses a true full-width calendar board with weekday-aligned cells, stronger classic box outlines, and clearer booking-count labels
+- Monthly day cells now follow a cleaner operator-style layout that shows the date, booking load, rota cover, and open-vs-busy state without the earlier visual clutter
+- Day, week, month, and year tabs now change the active calendar board and headline context while keeping the diary focused on the calendar surface itself
 - Clickable calendar days that open a popup showing who is booked in for that day
 - Walk-in creation directly from the day popup
 - Optional walk-in welcome email when a customer email address is provided
@@ -626,7 +628,8 @@ Status: simplified oversight dashboard available with preview-first admin flow
 ### 2026-03-14
 
 - Added a redesigned subscriber month planner to the dashboard with a proper full calendar board, weekday alignment, richer day cells, and an always-visible month summary panel
-- Added selected-day agenda and rota preview panels beside the subscriber month board so salon owners can keep day detail in view without losing the wider 31-day picture
+- Tightened the subscriber month planner into a clearer operator-style calendar, replacing the noisier month-cell treatment with stronger day numbers, plain booking-count labels, rota-cover context, and cleaner open-vs-busy state cues
+- Connected the subscriber diary view tabs so Day, Week, Month, and Year now each change the live calendar context, then removed the extra right-hand diary panels so the calendar board can run full width as the main working surface
 
 
 

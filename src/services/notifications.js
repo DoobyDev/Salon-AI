@@ -67,6 +67,10 @@ async function sendEmailWithSendGrid(to, subject, text) {
   }
 }
 
+export async function sendDirectEmail({ to, subject, text } = {}) {
+  return sendEmailWithSendGrid(String(to || "").trim(), String(subject || "").trim(), String(text || "").trim());
+}
+
 async function buildFriendlyMessage(booking, businessName, deliveryType = "booking_confirmation") {
   const kind = String(deliveryType || "booking_confirmation").trim().toLowerCase();
   if (!openai) {

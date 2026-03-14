@@ -254,6 +254,7 @@ async function searchBusinesses(options = {}) {
     ...filters,
     limit: String(options.limit || 10)
   });
+  const shouldOpenModal = options.openModal !== false;
   setFrontDeskStatus("Searching subscribed salons and beauty businesses...");
   const response = await fetch(`/api/search/businesses?${params.toString()}`);
   const data = await response.json();
@@ -263,7 +264,9 @@ async function searchBusinesses(options = {}) {
   const results = Array.isArray(data?.results) ? data.results : [];
   businessCache = results;
   renderBusinessResults(results);
-  openFrontdeskModal();
+  if (shouldOpenModal) {
+    openFrontdeskModal();
+  }
   if (!results.length) {
     selectedBusinessId = "";
     if (selectedBusiness) {
@@ -281,7 +284,7 @@ async function searchBusinesses(options = {}) {
 searchForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   try {
-    await searchBusinesses({ autoOpenFirst: true });
+    await searchBusinesses({ autoOpenFirst: true, openModal: true });
   } catch (error) {
     renderBusinessResults([]);
     if (selectedBusiness) {
@@ -298,7 +301,7 @@ clearFiltersBtn?.addEventListener("click", async () => {
   if (filterPostcode) filterPostcode.value = "";
   if (filterPhone) filterPhone.value = "";
   try {
-    await searchBusinesses({ autoOpenFirst: true });
+    await searchBusinesses({ autoOpenFirst: true, openModal: true });
   } catch (error) {
     setFrontDeskStatus(error?.message || "I could not refresh the front desk search.", true);
   }
@@ -361,7 +364,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeFrontdeskModal();
 });
 
-searchBusinesses({ autoOpenFirst: false }).catch((error) => {
+searchBusinesses({ autoOpenFirst: false, openModal: false }).catch((error) => {
   renderBusinessResults([]);
   if (selectedBusiness) {
     selectedBusiness.innerHTML = `<div class="empty-state">${escapeHtml(error?.message || "I could not load the public front desk.")}</div>`;

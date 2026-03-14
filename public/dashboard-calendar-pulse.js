@@ -184,6 +184,119 @@ export function createCalendarPulseRuntime(deps) {
     return new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
   }
 
+  function getDatesInView(anchorDate) {
+    const dates = [];
+    if (!(anchorDate instanceof Date) || Number.isNaN(anchorDate.getTime())) return dates;
+    if (calendarViewMode === "day") {
+      dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate()));
+      return dates;
+    }
+    if (calendarViewMode === "week") {
+      const start = startOfWeek(anchorDate);
+      for (let index = 0; index < 7; index += 1) {
+        dates.push(new Date(start.getFullYear(), start.getMonth(), start.getDate() + index));
+      }
+      return dates;
+    }
+    if (calendarViewMode === "year") {
+      for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
+        const monthDays = new Date(anchorDate.getFullYear(), monthIndex + 1, 0).getDate();
+        for (let day = 1; day <= monthDays; day += 1) {
+          dates.push(new Date(anchorDate.getFullYear(), monthIndex, day));
+        }
+      }
+      return dates;
+    }
+    const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), day));
+    }
+    return dates;
+  }
+
+  function getStaffCoverageSummary(dates) {
+    const totals = new Map();
+    let shiftCount = 0;
+    let coveredDays = 0;
+    (Array.isArray(dates) ? dates : []).forEach((dateObj) => {
+      const staffWorking = Array.isArray(getStaffWorkingForDate?.(dateObj)) ? getStaffWorkingForDate(dateObj) : [];
+      if (staffWorking.length) coveredDays += 1;
+      shiftCount += staffWorking.length;
+      staffWorking.forEach((staff) => {
+        const name = String(staff?.name || "Team member").trim() || "Team member";
+        if (!totals.has(name)) {
+          totals.set(name, { name, shifts: 0, covering: 0 });
+        }
+        const entry = totals.get(name);
+        entry.shifts += 1;
+        if (String(staff?.status || "").trim().toLowerCase() === "covering") {
+          entry.covering += 1;
+        }
+      });
+    });
+    const staffList = Array.from(totals.values()).sort((a, b) => b.shifts - a.shifts || a.name.localeCompare(b.name));
+    return {
+      shiftCount,
+      coveredDays,
+      uniqueStaffCount: staffList.length,
+      staffList
+    };
+  }
+
+  function getViewSummary(anchorDate, rowsByDate) {
+    const dates = getDatesInView(anchorDate);
+    const staffSummary = getStaffCoverageSummary(dates);
+    let activeDays = 0;
+    let totalBookings = 0;
+    let totalRevenue = 0;
+    let openDays = 0;
+    let busiest = null;
+
+    dates.forEach((dateObj) => {
+      const key = toDateKey?.(dateObj);
+      const rows = rowsByDate.get(key) || [];
+      const summary = summarizeRows(rows);
+      totalBookings += summary.total;
+      totalRevenue += summary.revenue;
+      if (summary.total) {
+        activeDays += 1;
+        if (!busiest || summary.total > busiest.count) {
+          busiest = {
+            count: summary.total,
+            date: new Date(dateObj),
+            label: dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+          };
+        }
+      } else {
+        openDays += 1;
+      }
+    });
+
+    return {
+      dates,
+      activeDays,
+      totalBookings,
+      totalRevenue,
+      openDays,
+      busiest,
+      staffSummary
+    };
+  }
+
+  function formatViewEyebrow() {
+    if (calendarViewMode === "day") return "Single day view";
+    if (calendarViewMode === "week") return "Whole week view";
+    if (calendarViewMode === "year") return "Whole year view";
+    return "Whole month view";
+  }
+
+  function formatMetricsTitle() {
+    if (calendarViewMode === "day") return "Day snapshot";
+    if (calendarViewMode === "week") return "7-day snapshot";
+    if (calendarViewMode === "year") return "12-month snapshot";
+    return "31-day snapshot";
+  }
+
   function buildMonthPlaceholderMarkup() {
     const article = doc.createElement("article");
     article.className = "booking-diary-fresh__month-cell is-blank";
@@ -228,34 +341,43 @@ export function createCalendarPulseRuntime(deps) {
     const isToday = key === todayKey;
     const isSelected = String(getSelectedCalendarDateKey?.() || "").trim() === key;
     const staffWorking = getStaffWorkingForDate?.(dateObj) || [];
-    const statusDots = [
-      summary.completed ? `<span class="booking-diary-fresh__month-dot is-completed" title="${escapeHtml(`${summary.completed} completed`)}"></span>` : "",
-      summary.cancelled ? `<span class="booking-diary-fresh__month-dot is-cancelled" title="${escapeHtml(`${summary.cancelled} cancelled`)}"></span>` : "",
-      summary.total && summary.total > summary.completed + summary.cancelled
-        ? `<span class="booking-diary-fresh__month-dot is-live" title="${escapeHtml(`${summary.total - summary.completed - summary.cancelled} live`)}"></span>`
-        : "",
-      !summary.total ? `<span class="booking-diary-fresh__month-dot is-open" title="Open day"></span>` : ""
-    ].filter(Boolean).join("");
-    const bottomLabel = summary.total
-      ? `${summary.total} booking${summary.total === 1 ? "" : "s"}`
-      : staffWorking.length
-        ? `${staffWorking.length} staff`
-        : "Open";
+    const liveCount = Math.max(0, summary.total - summary.completed - summary.cancelled);
+    const bookingLabel = summary.total ? `${summary.total} booking${summary.total === 1 ? "" : "s"}` : "Open capacity";
+    const supportLabel = staffWorking.length
+      ? `${staffWorking.length} staff on rota`
+      : "No rota cover";
+    const stateLabel = isSelected
+      ? "Selected"
+      : isToday
+        ? "Today"
+        : summary.total >= 5
+          ? "Packed"
+          : summary.total >= 3
+            ? "Busy"
+            : summary.total >= 1
+              ? "Light"
+              : "Open";
+    const countBadgeLabel = summary.total ? `${summary.total} booked` : "Open";
+    const articleLabel = [
+      dateObj.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+      bookingLabel,
+      supportLabel,
+      liveCount ? `${liveCount} live` : ""
+    ].filter(Boolean).join(". ");
     const article = doc.createElement("article");
-    article.className = `booking-diary-fresh__month-cell${summary.total ? " has-bookings" : ""}${isToday ? " is-today" : ""}${isSelected ? " selected" : ""}`;
+    article.className = `booking-diary-fresh__month-cell${summary.total ? " has-bookings" : " is-open"}${isToday ? " is-today" : ""}${isSelected ? " selected" : ""}${summary.total >= 5 ? " is-packed" : summary.total >= 3 ? " is-busy" : summary.total ? " is-light" : ""}`;
     article.innerHTML = `
-      <button class="booking-diary-fresh__month-btn" type="button" data-calendar-date="${escapeHtml(key)}" aria-label="${escapeHtml(key)}">
+      <button class="booking-diary-fresh__month-btn" type="button" data-calendar-date="${escapeHtml(key)}" aria-label="${escapeHtml(articleLabel)}">
         <div class="booking-diary-fresh__month-top">
           <strong>${escapeHtml(String(dateObj.getDate()))}</strong>
-          <span class="booking-diary-fresh__month-count">${escapeHtml(summary.total ? String(summary.total) : "Open")}</span>
+          <span class="booking-diary-fresh__month-count${summary.total ? "" : " is-muted"}">${escapeHtml(countBadgeLabel)}</span>
         </div>
         <div class="booking-diary-fresh__month-body">
-          <div class="booking-diary-fresh__month-dots" aria-hidden="true">
-            ${statusDots}
-          </div>
+          <strong class="booking-diary-fresh__month-primary">${escapeHtml(bookingLabel)}</strong>
+          <span class="booking-diary-fresh__month-secondary">${escapeHtml(supportLabel)}</span>
           <div class="booking-diary-fresh__month-foot">
-            <span>${escapeHtml(bottomLabel)}</span>
-            <span>${escapeHtml(isToday ? "Today" : isSelected ? "Selected" : "")}</span>
+            <span>${escapeHtml(liveCount ? `${liveCount} live` : summary.cancelled ? `${summary.cancelled} cancelled` : "Ready to book")}</span>
+            <span>${escapeHtml(stateLabel)}</span>
           </div>
         </div>
       </button>
@@ -341,69 +463,34 @@ export function createCalendarPulseRuntime(deps) {
   function renderCalendarMonthMetrics(anchorDate, rowsByDate) {
     const container = doc.getElementById("calendarMonthMetrics");
     if (!container || !(anchorDate instanceof Date) || Number.isNaN(anchorDate.getTime())) return;
-    const dates = [];
-    if (calendarViewMode === "day") {
-      dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate()));
-    } else if (calendarViewMode === "week") {
-      const start = startOfWeek(anchorDate);
-      for (let index = 0; index < 7; index += 1) {
-        dates.push(new Date(start.getFullYear(), start.getMonth(), start.getDate() + index));
-      }
-    } else if (calendarViewMode === "year") {
-      for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
-        const monthDays = new Date(anchorDate.getFullYear(), monthIndex + 1, 0).getDate();
-        for (let day = 1; day <= monthDays; day += 1) {
-          dates.push(new Date(anchorDate.getFullYear(), monthIndex, day));
-        }
-      }
-    } else {
-      const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
-      for (let day = 1; day <= daysInMonth; day += 1) {
-        dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), day));
-      }
-    }
-
-    let activeDays = 0;
-    let totalBookings = 0;
-    let openDays = 0;
-    let busiest = null;
-    dates.forEach((dateObj) => {
-      const key = toDateKey?.(dateObj);
-      const rows = rowsByDate.get(key) || [];
-      totalBookings += rows.length;
-      if (rows.length) {
-        activeDays += 1;
-        if (!busiest || rows.length > busiest.count) {
-          busiest = {
-            count: rows.length,
-            label: dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
-          };
-        }
-      } else {
-        openDays += 1;
-      }
-    });
+    const summary = getViewSummary(anchorDate, rowsByDate);
+    const totalDays = summary.dates.length;
+    const avgOnActiveDays = summary.activeDays ? Math.max(1, Math.round(summary.totalBookings / summary.activeDays)) : 0;
+    const staffingValue = calendarViewMode === "day" ? summary.staffSummary.uniqueStaffCount : summary.staffSummary.shiftCount;
+    const staffingMeta = calendarViewMode === "day"
+      ? (summary.staffSummary.coveredDays ? `${summary.staffSummary.coveredDays} covered day${summary.staffSummary.coveredDays === 1 ? "" : "s"}` : "No staff cover loaded")
+      : `${summary.staffSummary.uniqueStaffCount} unique staff in view`;
 
     container.innerHTML = `
       <article>
         <span>Booked days</span>
-        <strong>${escapeHtml(String(activeDays))}</strong>
-        <small>${escapeHtml(`${dates.length} day window in view`)}</small>
+        <strong>${escapeHtml(String(summary.activeDays))}</strong>
+        <small>${escapeHtml(`${totalDays} day window in view`)}</small>
       </article>
       <article>
         <span>Total bookings</span>
-        <strong>${escapeHtml(String(totalBookings))}</strong>
-        <small>${escapeHtml(activeDays ? `${Math.max(1, Math.round(totalBookings / activeDays))} average on active days` : "No bookings loaded yet")}</small>
+        <strong>${escapeHtml(String(summary.totalBookings))}</strong>
+        <small>${escapeHtml(summary.activeDays ? `${avgOnActiveDays} average on active days` : "No bookings loaded yet")}</small>
       </article>
       <article>
-        <span>Busiest day</span>
-        <strong>${escapeHtml(busiest ? busiest.label : "None yet")}</strong>
-        <small>${escapeHtml(busiest ? `${busiest.count} appointments booked` : "Open capacity across the board")}</small>
+        <span>Scheduled revenue</span>
+        <strong>${escapeHtml(formatMoney?.(summary.totalRevenue) || "GBP0")}</strong>
+        <small>${escapeHtml(summary.totalRevenue > 0 ? "Loaded from non-cancelled bookings" : "No scheduled revenue in view yet")}</small>
       </article>
       <article>
-        <span>Open days</span>
-        <strong>${escapeHtml(String(openDays))}</strong>
-        <small>${escapeHtml(openDays ? "Ready for same-day or future demand" : "Every day in view has bookings")}</small>
+        <span>${escapeHtml(calendarViewMode === "day" ? "On-shift staff" : "Staff shifts")}</span>
+        <strong>${escapeHtml(String(staffingValue))}</strong>
+        <small>${escapeHtml(staffingMeta)}</small>
       </article>
     `;
   }
@@ -413,13 +500,138 @@ export function createCalendarPulseRuntime(deps) {
     const meta = doc.getElementById("calendarSelectedDayMeta");
     const agenda = doc.getElementById("calendarSelectedDayAgenda");
     const rotaPanel = doc.getElementById("calendarDiaryRotaPanel");
+    const selectedEyebrow = doc.getElementById("calendarSelectedEyebrow");
+    const rotaTitle = doc.getElementById("calendarRotaTitle");
     if (!label || !meta || !agenda || !rotaPanel) return;
+
+    if (calendarViewMode !== "day") {
+      const viewSummary = getViewSummary(anchorDate, rowsByDate);
+      const staffSummary = viewSummary.staffSummary;
+      const dates = viewSummary.dates;
+
+      if (calendarViewMode === "week") {
+        const weekStart = startOfWeek(anchorDate);
+        const weekEnd = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 6);
+        if (selectedEyebrow) selectedEyebrow.textContent = "Week focus";
+        if (rotaTitle) rotaTitle.textContent = "Staff cover this week";
+        label.textContent = `${weekStart.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} - ${weekEnd.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        })}`;
+        meta.textContent = `${viewSummary.totalBookings} bookings across ${viewSummary.activeDays} active day${viewSummary.activeDays === 1 ? "" : "s"} • ${formatMoney?.(viewSummary.totalRevenue)} scheduled • ${staffSummary.shiftCount} staff shifts planned`;
+        agenda.innerHTML = dates.map((dateObj) => {
+          const rows = rowsByDate.get(toDateKey?.(dateObj)) || [];
+          const daySummary = summarizeRows(rows);
+          const staffWorking = getStaffWorkingForDate?.(dateObj) || [];
+          return `
+            <article class="booking-diary-fresh__agenda-card">
+              <div class="booking-diary-fresh__agenda-top">
+                <strong>${escapeHtml(dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }))}</strong>
+                <span>${escapeHtml(rows.length ? `${rows.length} booked` : "Open")}</span>
+              </div>
+              <p>${escapeHtml(rows.length ? `${rows.length} booking${rows.length === 1 ? "" : "s"} in the diary` : "No bookings loaded")}</p>
+              <small>${escapeHtml(`${staffWorking.length} staff on shift${daySummary.revenue > 0 ? ` • ${formatMoney?.(daySummary.revenue)} scheduled` : ""}`)}</small>
+            </article>
+          `;
+        }).join("");
+      } else if (calendarViewMode === "month") {
+        if (selectedEyebrow) selectedEyebrow.textContent = "Month focus";
+        if (rotaTitle) rotaTitle.textContent = "Staff cover this month";
+        label.textContent = anchorDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+        meta.textContent = `${viewSummary.totalBookings} bookings across ${viewSummary.activeDays} active day${viewSummary.activeDays === 1 ? "" : "s"} • ${viewSummary.openDays} open day${viewSummary.openDays === 1 ? "" : "s"} • ${formatMoney?.(viewSummary.totalRevenue)} scheduled`;
+        const busyDays = dates
+          .map((dateObj) => {
+            const rows = rowsByDate.get(toDateKey?.(dateObj)) || [];
+            const daySummary = summarizeRows(rows);
+            const staffWorking = getStaffWorkingForDate?.(dateObj) || [];
+            return { dateObj, daySummary, staffWorking };
+          })
+          .filter((item) => item.daySummary.total > 0)
+          .sort((a, b) => b.daySummary.total - a.daySummary.total || a.dateObj - b.dateObj)
+          .slice(0, 6);
+        agenda.innerHTML = busyDays.length
+          ? busyDays.map((item) => `
+            <article class="booking-diary-fresh__agenda-card">
+              <div class="booking-diary-fresh__agenda-top">
+                <strong>${escapeHtml(item.dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }))}</strong>
+                <span>${escapeHtml(`${item.daySummary.total} booked`)}</span>
+              </div>
+              <p>${escapeHtml(item.daySummary.total >= 5 ? "Packed service day" : item.daySummary.total >= 3 ? "Busy service day" : "Light service day")}</p>
+              <small>${escapeHtml(`${item.staffWorking.length} staff on shift${item.daySummary.revenue > 0 ? ` • ${formatMoney?.(item.daySummary.revenue)} scheduled` : ""}`)}</small>
+            </article>
+          `).join("")
+          : `
+            <article class="booking-diary-fresh__empty-card">
+              <strong>Month still open</strong>
+              <small>No bookings are loaded in this month yet, so the full board is still open capacity.</small>
+            </article>
+          `;
+      } else {
+        if (selectedEyebrow) selectedEyebrow.textContent = "Year focus";
+        if (rotaTitle) rotaTitle.textContent = "Staff cover this year";
+        label.textContent = String(anchorDate.getFullYear());
+        const activeMonths = new Set(
+          dates
+            .filter((dateObj) => (rowsByDate.get(toDateKey?.(dateObj)) || []).length)
+            .map((dateObj) => `${dateObj.getFullYear()}-${dateObj.getMonth()}`)
+        ).size;
+        meta.textContent = `${viewSummary.totalBookings} bookings across ${activeMonths} active month${activeMonths === 1 ? "" : "s"} • ${formatMoney?.(viewSummary.totalRevenue)} scheduled • ${staffSummary.shiftCount} staff shifts planned`;
+        const yearMonths = Array.from({ length: 12 }, (_, monthIndex) => {
+          const monthDate = new Date(anchorDate.getFullYear(), monthIndex, 1);
+          const monthDays = new Date(anchorDate.getFullYear(), monthIndex + 1, 0).getDate();
+          let monthBookings = 0;
+          let monthRevenue = 0;
+          let monthStaff = 0;
+          for (let day = 1; day <= monthDays; day += 1) {
+            const dateObj = new Date(anchorDate.getFullYear(), monthIndex, day);
+            const rows = rowsByDate.get(toDateKey?.(dateObj)) || [];
+            const summary = summarizeRows(rows);
+            monthBookings += summary.total;
+            monthRevenue += summary.revenue;
+            monthStaff += (getStaffWorkingForDate?.(dateObj) || []).length;
+          }
+          return { monthDate, monthBookings, monthRevenue, monthStaff };
+        });
+        agenda.innerHTML = yearMonths.map((item) => `
+          <article class="booking-diary-fresh__agenda-card">
+            <div class="booking-diary-fresh__agenda-top">
+              <strong>${escapeHtml(item.monthDate.toLocaleDateString("en-GB", { month: "long" }))}</strong>
+              <span>${escapeHtml(item.monthBookings ? `${item.monthBookings} booked` : "Open")}</span>
+            </div>
+            <p>${escapeHtml(item.monthBookings ? `${item.monthBookings} bookings loaded this month` : "No bookings loaded this month")}</p>
+            <small>${escapeHtml(`${item.monthStaff} staff shifts${item.monthRevenue > 0 ? ` • ${formatMoney?.(item.monthRevenue)} scheduled` : ""}`)}</small>
+          </article>
+        `).join("");
+      }
+
+      rotaPanel.innerHTML = staffSummary.staffList.length
+        ? staffSummary.staffList.slice(0, calendarViewMode === "year" ? 8 : 6).map((staff) => `
+          <article class="booking-diary-fresh__rota-card">
+            <div>
+              <strong>${escapeHtml(staff.name)}</strong>
+              <small>${escapeHtml(`${staff.shifts} shift${staff.shifts === 1 ? "" : "s"}${staff.covering ? ` • ${staff.covering} covering` : ""}`)}</small>
+            </div>
+            <span>${escapeHtml(getStaffInitials?.(staff.name) || "ST")}</span>
+          </article>
+        `).join("")
+        : `
+          <article class="booking-diary-fresh__empty-card">
+            <strong>No staff cover loaded</strong>
+            <small>This ${escapeHtml(calendarViewMode)} view does not currently show any scheduled team cover.</small>
+          </article>
+        `;
+      return;
+    }
 
     const focusDate = getSelectedOrFallbackDate(anchorDate, rowsByDate);
     const dateKey = toDateKey?.(focusDate);
     const rows = rowsByDate.get(dateKey) || [];
     const staffWorking = getStaffWorkingForDate?.(focusDate) || [];
     const summary = summarizeRows(rows);
+
+    if (selectedEyebrow) selectedEyebrow.textContent = "Selected day";
+    if (rotaTitle) rotaTitle.textContent = "Cover for the selected day";
 
     label.textContent = focusDate.toLocaleDateString("en-GB", {
       weekday: "long",
@@ -1365,7 +1577,11 @@ export function createCalendarPulseRuntime(deps) {
     if (!bookingCalendarGrid || !calendarMonthLabel) return;
     const anchorDate = getCalendarMonth?.() || new Date();
     const rowsByDate = buildBookingRowsByDate();
+    const boardEyebrow = doc.getElementById("calendarBoardEyebrow");
+    const metricsTitle = doc.getElementById("calendarMetricsTitle");
     calendarMonthLabel.textContent = formatCalendarHeadline(anchorDate);
+    if (boardEyebrow) boardEyebrow.textContent = formatViewEyebrow();
+    if (metricsTitle) metricsTitle.textContent = formatMetricsTitle();
     const weekdaysRow = bookingCalendarGrid.previousElementSibling;
     if (weekdaysRow instanceof HTMLElement) {
       weekdaysRow.hidden = calendarViewMode === "year";

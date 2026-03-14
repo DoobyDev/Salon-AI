@@ -52,6 +52,102 @@ export function createAdminHubRuntime(deps) {
       : "";
   }
 
+  function setInputValue(id, value) {
+    const node = document.getElementById(id);
+    if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement) {
+      node.value = String(value ?? "");
+    }
+  }
+
+  function getAuthHeaders() {
+    const token = String(
+      window.sessionStorage.getItem("salon_ai_token") ||
+      window.localStorage.getItem("salon_ai_token") ||
+      ""
+    ).trim();
+    return {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+  }
+
+  function getBusinessHoursPayload() {
+    return {
+      monday: getInputValue("businessHoursMonday") || "Closed",
+      tuesday: getInputValue("businessHoursTuesday") || "Closed",
+      wednesday: getInputValue("businessHoursWednesday") || "Closed",
+      thursday: getInputValue("businessHoursThursday") || "Closed",
+      friday: getInputValue("businessHoursFriday") || "Closed",
+      saturday: getInputValue("businessHoursSaturday") || "Closed",
+      sunday: getInputValue("businessHoursSunday") || "Closed"
+    };
+  }
+
+  function formatServicesForEditor(rows = []) {
+    return (Array.isArray(rows) ? rows : [])
+      .map((row) => `${String(row?.name || "").trim()} | ${Number(row?.durationMin || 0)} | ${Number(row?.price || 0)}`)
+      .filter((line) => !line.startsWith(" | "))
+      .join("\n");
+  }
+
+  function parseServiceEditorText(value) {
+    const lines = String(value || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const services = lines.map((line) => {
+      const parts = line.split("|").map((part) => part.trim());
+      if (parts.length < 3) throw new Error("Service format must be: Name | DurationMin | Price");
+      const [name, durationRaw, priceRaw] = parts;
+      const durationMin = Number(durationRaw);
+      const price = Number(priceRaw);
+      if (!name || !Number.isFinite(durationMin) || durationMin < 5 || !Number.isFinite(price) || price < 0) {
+        throw new Error("Each service requires a valid name, duration (>=5), and price (>=0).");
+      }
+      return { name, durationMin, price };
+    });
+    if (!services.length) throw new Error("Add at least one service.");
+    return services;
+  }
+
+  function applyBusinessProfileSnapshot(profile = {}) {
+    const safeProfile = profile && typeof profile === "object" ? profile : {};
+    setInputValue("businessProfileName", safeProfile.name || "");
+    setInputValue("businessProfileType", safeProfile.type || "hair_salon");
+    setInputValue("businessProfilePhone", safeProfile.phone || "");
+    setInputValue("businessProfileEmail", safeProfile.email || "");
+    setInputValue("businessProfileCity", safeProfile.city || "");
+    setInputValue("businessProfileCountry", safeProfile.country || "");
+    setInputValue("businessProfilePostcode", safeProfile.postcode || "");
+    setInputValue("businessProfileAddress", safeProfile.address || "");
+    setInputValue("businessProfileDescription", safeProfile.description || "");
+    setInputValue("businessProfileWebsiteUrl", safeProfile.websiteUrl || "");
+    setInputValue("businessProfileWebsiteTitle", safeProfile.websiteTitle || "");
+    setInputValue("businessProfileWebsiteSummary", safeProfile.websiteSummary || "");
+    setInputValue("businessProfileWebsiteImageUrl", safeProfile.websiteImageUrl || "");
+    setInputValue("businessProfileServices", formatServicesForEditor(safeProfile.services || []));
+    const hours = safeProfile.hours && typeof safeProfile.hours === "object" ? safeProfile.hours : {};
+    setInputValue("businessHoursMonday", hours.monday || "Closed");
+    setInputValue("businessHoursTuesday", hours.tuesday || "Closed");
+    setInputValue("businessHoursWednesday", hours.wednesday || "Closed");
+    setInputValue("businessHoursThursday", hours.thursday || "Closed");
+    setInputValue("businessHoursFriday", hours.friday || "Closed");
+    setInputValue("businessHoursSaturday", hours.saturday || "Closed");
+    setInputValue("businessHoursSunday", hours.sunday || "Closed");
+  }
+
+  async function saveSubscriberBusinessProfile(payload) {
+    const response = await window.fetch("/api/businesses/me/profile", {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data?.error || "Unable to save business profile.");
+    applyBusinessProfileSnapshot(data?.business || {});
+    return data?.business || {};
+  }
+
   function getSubscriberBusinessProfileSnapshot() {
     const sessionUser = readSessionUser();
     const services = getInputValue("businessProfileServices")
@@ -78,6 +174,42 @@ export function createAdminHubRuntime(deps) {
       websiteImageUrl: getInputValue("businessProfileWebsiteImageUrl"),
       socialImageUrl: getInputValue("socialImageInput"),
       services
+    };
+  }
+
+  function getSubscriberBusinessProfilePreview(snapshot = {}) {
+    const profile = snapshot && typeof snapshot === "object" ? snapshot : {};
+    return {
+      ...profile,
+      businessName: profile.businessName || "Lexi Luxe Studio",
+      businessType: profile.businessType || "hair_salon",
+      businessEmail: profile.businessEmail || "hello@lexiluxestudio.co.uk",
+      phone: profile.phone || "+44 20 7946 0958",
+      address: profile.address || "18 Rose Lane",
+      city: profile.city || "London",
+      country: profile.country || "United Kingdom",
+      postcode: profile.postcode || "SW1A 1AA",
+      description: profile.description || "A modern salon space focused on colour, styling, and calm front-desk service.",
+      websiteUrl: profile.websiteUrl || "https://www.lexiluxestudio.co.uk",
+      websiteTitle: profile.websiteTitle || "Lexi Luxe Studio",
+      websiteSummary: profile.websiteSummary || "Luxury hair appointments, colour work, and styling with a polished customer experience."
+    };
+  }
+
+  function getSubscriberBusinessProfileFormValues(snapshot = {}) {
+    const profile = snapshot && typeof snapshot === "object" ? snapshot : {};
+    return {
+      businessName: profile.businessName || "",
+      businessType: profile.businessType || "hair_salon",
+      businessEmail: profile.businessEmail || "",
+      phone: profile.phone || "",
+      city: profile.city || "",
+      country: profile.country || "",
+      postcode: profile.postcode || "",
+      address: profile.address || "",
+      description: profile.description || "",
+      websiteUrl: profile.websiteUrl || "",
+      websiteSummary: profile.websiteSummary || ""
     };
   }
 
@@ -122,18 +254,13 @@ export function createAdminHubRuntime(deps) {
                   <p class="kicker" id="businessHubModalEditorKicker">Business editing</p>
                   <h3 id="businessHubModalEditorHeading">Edit this area</h3>
                 </div>
-                <span class="status-pill status-neutral" id="businessHubModalEditorStatus">Private draft</span>
               </div>
               <p class="section-copy business-hub-modal-editor-copy" id="businessHubModalEditorCopy"></p>
-              <div class="business-hub-modal-action-row" id="businessHubModalActionRow" hidden>
-                <button class="btn btn-small" id="businessHubModalAskLexiBtn" type="button">Ask Lexi</button>
-                <button class="btn btn-ghost btn-small" id="businessHubModalEditProfileBtn" type="button">Edit business info</button>
-                <button class="btn btn-ghost btn-small" id="businessHubModalPasswordBtn" type="button">Change password</button>
-              </div>
+              <p class="business-hub-modal-editor-feedback" id="businessHubModalEditorFeedback" hidden></p>
               <form class="compact-form" id="businessHubModalEditorForm">
                 <div class="business-hub-modal-editor-fields" id="businessHubModalEditorFields"></div>
                 <div class="business-hub-modal-editor-actions">
-                  <button class="btn btn-small" type="submit">Save updates</button>
+                  <button class="btn btn-small" type="submit" id="businessHubModalSaveBtn">Save updates</button>
                 </div>
               </form>
             </section>
@@ -175,18 +302,16 @@ export function createAdminHubRuntime(deps) {
     const editorKicker = modal.querySelector("#businessHubModalEditorKicker");
     const editorHeading = modal.querySelector("#businessHubModalEditorHeading");
     const editorCopy = modal.querySelector("#businessHubModalEditorCopy");
-    const actionRow = modal.querySelector("#businessHubModalActionRow");
-    const askLexiBtn = modal.querySelector("#businessHubModalAskLexiBtn");
-    const editProfileBtn = modal.querySelector("#businessHubModalEditProfileBtn");
-    const passwordBtn = modal.querySelector("#businessHubModalPasswordBtn");
+    const editorFeedback = modal.querySelector("#businessHubModalEditorFeedback");
     const editorFields = modal.querySelector("#businessHubModalEditorFields");
     const editorForm = modal.querySelector("#businessHubModalEditorForm");
-    const editorStatus = modal.querySelector("#businessHubModalEditorStatus");
+    const saveBtn = modal.querySelector("#businessHubModalSaveBtn");
     const itemTitle = String(item?.title || item?.mod?.label || "Business area");
     const roleLabel = role === "admin" ? "admin" : "subscriber";
     const isBusinessProfileCard = item?.key === "business_profile";
-    const canManagePassword = role === "subscriber" || role === "admin";
-    const isEditableBusinessProfileCard = isBusinessProfileCard && canManagePassword;
+    const isEditableBusinessProfileCard = isBusinessProfileCard && role === "subscriber";
+
+    modal.classList.toggle("business-hub-modal-simple-form", Boolean(isEditableBusinessProfileCard));
 
     if (kicker) kicker.textContent = String(item?.kicker || "Business hub");
     if (highlightKicker) highlightKicker.textContent = `${itemTitle} priorities`;
@@ -201,31 +326,24 @@ export function createAdminHubRuntime(deps) {
     }
     if (isEditableBusinessProfileCard) {
       const profile = getSubscriberBusinessProfileSnapshot();
-      const heroImage = profile.websiteImageUrl || profile.socialImageUrl || "/3d-lexi.png";
-      if (highlightKicker) highlightKicker.textContent = "Customer-facing profile preview";
-      if (highlightTitle) highlightTitle.textContent = profile.businessName || "Your business profile";
+      if (highlightKicker) highlightKicker.textContent = "Business information";
+      if (highlightTitle) highlightTitle.textContent = "Keep your business details current";
       if (summary) {
-        summary.textContent = profile.websiteSummary || profile.description || "This is the profile customers will use when they search for a salon, barber, or beauty business.";
+        summary.textContent = "View and update the core business information your dashboard and customer profile rely on.";
       }
       if (highlightBody instanceof HTMLElement) {
         highlightBody.innerHTML = `
-          <article class="business-profile-popup-preview">
-            <img class="business-profile-popup-image" src="${escapeHtml(heroImage)}" alt="${escapeHtml(profile.businessName || "Business profile image")}" />
-            <div class="business-profile-popup-copy">
-              <strong>${escapeHtml(profile.websiteTitle || profile.businessName || "Business profile")}</strong>
-              <p>${escapeHtml(profile.websiteSummary || profile.description || "Customer-facing business summary will appear here.")}</p>
-              <span>${escapeHtml(profile.websiteUrl || "Add a website link so customers can jump straight to your brand.")}</span>
-            </div>
-          </article>
+          <div class="business-hub-simple-note">
+            <strong>${escapeHtml(profile.businessName || "Your business")}</strong>
+            <p>Use this form to keep your business name, contact details, address, and website information up to date.</p>
+          </div>
         `;
       }
-      if (infoHeading) infoHeading.textContent = "Sign-in and business details";
-      if (jobsHeading) jobsHeading.textContent = "What customers will see";
+      if (infoHeading) infoHeading.textContent = "Current details";
+      if (jobsHeading) jobsHeading.textContent = "What this updates";
       if (infoList) {
         infoList.innerHTML = renderInfoList([
           `Business name: ${profile.businessName || "Not added yet"}`,
-          `Full name: ${profile.fullName || "Not added yet"}`,
-          `Sign-in email: ${profile.signInEmail || profile.businessEmail || "Not added yet"}`,
           `Business email: ${profile.businessEmail || "Not added yet"}`,
           `Phone number: ${profile.phone || "Not added yet"}`,
           `Address: ${[profile.address, profile.city, profile.postcode, profile.country].filter(Boolean).join(", ") || "Not added yet"}`
@@ -233,19 +351,16 @@ export function createAdminHubRuntime(deps) {
       }
       if (jobsList) {
         jobsList.innerHTML = renderInfoList([
-          `Business type: ${profile.businessType || "Not added yet"}`,
-          `Website link: ${profile.websiteUrl || "Not linked yet"}`,
-          `Website title: ${profile.websiteTitle || "Not added yet"}`,
-          `Website summary: ${profile.websiteSummary || "Not added yet"}`,
-          `Services shown to customers: ${profile.services.length ? profile.services.join("; ") : "No services added yet"}`,
-          "Any uploaded website or social image should appear as the profile visual customers recognise."
+          "Your business profile details used across the dashboard",
+          "Customer-facing contact and website information",
+          "The salon description and summary shown in profile areas"
         ]);
       }
       if (outcomesList) {
         outcomesList.innerHTML = renderInfoList([
-          "Customers can recognise the salon quickly from its image, title, and summary.",
-          "Search results can show a stronger, more complete business profile.",
-          "Profile edits here should match the live business details the subscriber wants customers to trust."
+          "Keep the business profile accurate",
+          "Reduce mismatched contact details",
+          "Make it easier to update core information quickly"
         ]);
       }
     } else {
@@ -260,70 +375,183 @@ export function createAdminHubRuntime(deps) {
         const drafts = readDrafts(role);
         const currentDraft = drafts?.[item.key] && typeof drafts[item.key] === "object" ? drafts[item.key] : {};
         const fields = Array.isArray(item?.editFields) ? item.editFields : [];
+        if (editorFeedback instanceof HTMLElement) {
+          editorFeedback.hidden = true;
+          editorFeedback.textContent = "";
+          editorFeedback.dataset.state = "";
+        }
         if (editorKicker) {
           editorKicker.textContent = role === "admin" ? "Admin editing" : "Subscriber editing";
         }
         if (editorHeading) {
-          editorHeading.textContent = isEditableBusinessProfileCard ? "Manage this business profile" : `Update ${itemTitle}`;
+          editorHeading.textContent = isEditableBusinessProfileCard ? "Business information" : `Update ${itemTitle}`;
         }
         if (editorCopy) {
           editorCopy.textContent = isEditableBusinessProfileCard
-            ? "Review what customers will see, open your saved business profile details, and get help from Lexi for profile improvements."
+            ? "Review the business information here, then click Edit if you want to make changes."
             : `Save private ${roleLabel} notes, updates, and next actions for ${itemTitle.toLowerCase()}.`;
         }
-        if (actionRow instanceof HTMLElement) {
-          actionRow.hidden = !isEditableBusinessProfileCard;
-        }
         if (isEditableBusinessProfileCard) {
-          if (askLexiBtn instanceof HTMLButtonElement) {
-            askLexiBtn.onclick = () => {
-              window.openDashboardSharedLexiPopup?.({
-                prompt: "Help me improve my business information profile so customers see the best version of my salon."
-              });
-            };
-          }
-          if (editProfileBtn instanceof HTMLButtonElement) {
-            editProfileBtn.onclick = () => {
-              document.getElementById("businessProfileOpenSetup")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-            };
-          }
-          if (passwordBtn instanceof HTMLButtonElement) {
-            passwordBtn.hidden = !canManagePassword;
-            passwordBtn.onclick = () => {
-              window.location.assign("/auth");
-            };
-          }
-        } else if (passwordBtn instanceof HTMLButtonElement) {
-          passwordBtn.hidden = true;
-        }
-        editorFields.innerHTML = fields.map((field) => {
-          const fieldKey = String(field?.key || "").trim();
-          const savedValue = String(currentDraft?.[fieldKey] || "");
-          return `
-            <label class="business-hub-modal-editor-field">
-              <span>${escapeHtml(String(field?.label || "Notes"))}</span>
-              <textarea name="${escapeHtml(fieldKey)}" rows="4" placeholder="${escapeHtml(String(field?.placeholder || ""))}">${escapeHtml(savedValue)}</textarea>
-            </label>
+          const snapshot = getSubscriberBusinessProfileSnapshot();
+          const profilePreview = getSubscriberBusinessProfilePreview(snapshot);
+          const profileForm = getSubscriberBusinessProfileFormValues(snapshot);
+          editorFields.innerHTML = `
+            <div class="business-hub-info-toolbar">
+              <button class="btn btn-small" type="button" id="businessHubInfoEditBtn">Edit</button>
+            </div>
+            <div class="business-hub-modal-editor-grid">
+              <label class="business-hub-modal-editor-field">
+                <span>Business name</span>
+                <input name="businessName" type="text" value="${escapeHtml(profileForm.businessName)}" placeholder="${escapeHtml(profilePreview.businessName || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Business type</span>
+                <select name="businessType" disabled>
+                  <option value="hair_salon"${profileForm.businessType === "hair_salon" ? " selected" : ""}>Hair Salon</option>
+                  <option value="barbershop"${profileForm.businessType === "barbershop" ? " selected" : ""}>Barbershop</option>
+                  <option value="beauty_salon"${profileForm.businessType === "beauty_salon" ? " selected" : ""}>Beauty Salon</option>
+                </select>
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Business email</span>
+                <input name="businessEmail" type="email" value="${escapeHtml(profileForm.businessEmail)}" placeholder="${escapeHtml(profilePreview.businessEmail || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Phone number</span>
+                <input name="phone" type="text" value="${escapeHtml(profileForm.phone)}" placeholder="${escapeHtml(profilePreview.phone || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>City</span>
+                <input name="city" type="text" value="${escapeHtml(profileForm.city)}" placeholder="${escapeHtml(profilePreview.city || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Country</span>
+                <input name="country" type="text" value="${escapeHtml(profileForm.country)}" placeholder="${escapeHtml(profilePreview.country || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Postcode</span>
+                <input name="postcode" type="text" value="${escapeHtml(profileForm.postcode)}" placeholder="${escapeHtml(profilePreview.postcode || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field business-hub-modal-editor-field-wide">
+                <span>Address</span>
+                <input name="address" type="text" value="${escapeHtml(profileForm.address)}" placeholder="${escapeHtml(profilePreview.address || "")}" required readonly />
+              </label>
+              <label class="business-hub-modal-editor-field business-hub-modal-editor-field-wide">
+                <span>Business description</span>
+                <textarea name="description" rows="4" placeholder="${escapeHtml(profilePreview.description || "Describe the business customers should recognise.")}" readonly>${escapeHtml(profileForm.description)}</textarea>
+              </label>
+              <label class="business-hub-modal-editor-field">
+                <span>Website URL</span>
+                <input name="websiteUrl" type="url" value="${escapeHtml(profileForm.websiteUrl)}" placeholder="${escapeHtml(profilePreview.websiteUrl || "")}" readonly />
+              </label>
+              <label class="business-hub-modal-editor-field business-hub-modal-editor-field-wide">
+                <span>Website summary</span>
+                <textarea name="websiteSummary" rows="3" placeholder="${escapeHtml(profilePreview.websiteSummary || "Short customer-facing summary for search and profile cards.")}" readonly>${escapeHtml(profileForm.websiteSummary)}</textarea>
+              </label>
+            </div>
           `;
-        }).join("");
-        editorForm.onsubmit = (event) => {
-          event.preventDefault();
-          const nextDrafts = readDrafts(role);
-          nextDrafts[item.key] = fields.reduce((acc, field) => {
-            const fieldKey = String(field?.key || "").trim();
-            const input = editorForm.elements.namedItem(fieldKey);
-            if (input instanceof HTMLTextAreaElement) {
-              acc[fieldKey] = input.value.trim();
+          const editBtn = editorFields.querySelector("#businessHubInfoEditBtn");
+          const readOnlyInputs = Array.from(editorFields.querySelectorAll("input[readonly], textarea[readonly]"));
+          const disabledSelects = Array.from(editorFields.querySelectorAll("select:disabled"));
+          if (saveBtn instanceof HTMLButtonElement) {
+            saveBtn.disabled = true;
+          }
+          if (editBtn instanceof HTMLButtonElement) {
+            editBtn.addEventListener("click", () => {
+              readOnlyInputs.forEach((input) => input.removeAttribute("readonly"));
+              disabledSelects.forEach((select) => select.removeAttribute("disabled"));
+              editBtn.hidden = true;
+              if (saveBtn instanceof HTMLButtonElement) {
+                saveBtn.disabled = false;
+              }
+              if (editorHeading) editorHeading.textContent = "Edit business information";
+              if (editorCopy) editorCopy.textContent = "Update the details below and save when you are ready.";
+              if (editorFeedback instanceof HTMLElement) {
+                editorFeedback.hidden = false;
+                editorFeedback.dataset.state = "info";
+                editorFeedback.textContent = "Example fallback text is only shown as a guide. Add your real business details before saving.";
+              }
+            });
+          }
+          editorForm.onsubmit = async (event) => {
+            event.preventDefault();
+            if (!(editorForm instanceof HTMLFormElement)) return;
+            try {
+              if (saveBtn instanceof HTMLButtonElement) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = "Saving...";
+              }
+              const formData = new FormData(editorForm);
+              await saveSubscriberBusinessProfile({
+                name: String(formData.get("businessName") || "").trim(),
+                type: String(formData.get("businessType") || "hair_salon").trim(),
+                phone: String(formData.get("phone") || "").trim(),
+                email: String(formData.get("businessEmail") || "").trim(),
+                city: String(formData.get("city") || "").trim(),
+                country: String(formData.get("country") || "").trim(),
+                postcode: String(formData.get("postcode") || "").trim(),
+                address: String(formData.get("address") || "").trim(),
+                description: String(formData.get("description") || "").trim(),
+                websiteUrl: String(formData.get("websiteUrl") || "").trim(),
+                websiteTitle: snapshot.websiteTitle || String(formData.get("businessName") || "").trim(),
+                websiteSummary: String(formData.get("websiteSummary") || "").trim(),
+                websiteImageUrl: snapshot.websiteImageUrl || snapshot.socialImageUrl || "",
+                hours: getBusinessHoursPayload(),
+                services: parseServiceEditorText(getInputValue("businessProfileServices"))
+              });
+              if (editorHeading) editorHeading.textContent = "Business information";
+              if (editorCopy) {
+                editorCopy.textContent = "Review the business information here, then click Edit if you want to make changes.";
+              }
+              if (editorFeedback instanceof HTMLElement) {
+                editorFeedback.hidden = false;
+                editorFeedback.dataset.state = "success";
+                editorFeedback.textContent = "Business information saved.";
+              }
+              openBusinessHubModal(item);
+            } catch (error) {
+              if (editorFeedback instanceof HTMLElement) {
+                editorFeedback.hidden = false;
+                editorFeedback.dataset.state = "error";
+                editorFeedback.textContent = error?.message || "Unable to save business information.";
+              }
+            } finally {
+              if (saveBtn instanceof HTMLButtonElement) {
+                saveBtn.textContent = "Save updates";
+                if (!modal.hidden) {
+                  saveBtn.disabled = false;
+                }
+              }
             }
-            return acc;
-          }, {});
-          writeDrafts(role, nextDrafts);
-          if (editorStatus) editorStatus.textContent = "Saved";
-          window.setTimeout(() => {
-            if (editorStatus) editorStatus.textContent = "Private draft";
-          }, 1600);
-        };
-        if (editorStatus) editorStatus.textContent = "Private draft";
+          };
+        } else {
+          if (saveBtn instanceof HTMLButtonElement) {
+            saveBtn.disabled = false;
+          }
+          editorFields.innerHTML = fields.map((field) => {
+            const fieldKey = String(field?.key || "").trim();
+            const savedValue = String(currentDraft?.[fieldKey] || "");
+            return `
+              <label class="business-hub-modal-editor-field">
+                <span>${escapeHtml(String(field?.label || "Notes"))}</span>
+                <textarea name="${escapeHtml(fieldKey)}" rows="4" placeholder="${escapeHtml(String(field?.placeholder || ""))}">${escapeHtml(savedValue)}</textarea>
+              </label>
+            `;
+          }).join("");
+          editorForm.onsubmit = (event) => {
+            event.preventDefault();
+            const nextDrafts = readDrafts(role);
+            nextDrafts[item.key] = fields.reduce((acc, field) => {
+              const fieldKey = String(field?.key || "").trim();
+              const input = editorForm.elements.namedItem(fieldKey);
+              if (input instanceof HTMLTextAreaElement) {
+                acc[fieldKey] = input.value.trim();
+              }
+              return acc;
+            }, {});
+            writeDrafts(role, nextDrafts);
+          };
+        }
       } else if (editorFields instanceof HTMLElement) {
         editorFields.innerHTML = "";
       }

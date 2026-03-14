@@ -14,11 +14,85 @@ export function createBookingRouteHandlers({
   getSlotCapacityForBusinessDate,
   isSlotAtCapacity,
   jobRuntime,
+  sendDirectEmail,
   clearReadCache,
   writeAuditLog,
   canMutateBooking,
   normalizeBookingStatusValue
 } = {}) {
+  function pad2(value) {
+    return String(Math.max(0, Number(value || 0))).padStart(2, "0");
+  }
+
+  function buildWalkInTime(dateKey) {
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+    if (String(dateKey || "") === todayKey) {
+      return `${pad2(today.getHours())}:${pad2(today.getMinutes())}`;
+    }
+    return "12:00";
+  }
+
+  async function createWalkInBookingHandler(req, res) {
+    const authRole = String(req.auth?.role || "").trim().toLowerCase();
+    const businessId =
+      authRole === "admin"
+        ? String(req.body?.businessId || req.query?.businessId || "").trim()
+        : String(req.auth?.businessId || req.body?.businessId || "").trim();
+    const customerName = String(req.body?.customerName || "").trim();
+    const customerPhone = String(req.body?.customerPhone || "").trim();
+    const customerEmail = String(req.body?.customerEmail || "").trim().toLowerCase();
+    const date = String(req.body?.date || "").trim();
+    if (!businessId || !customerName || !customerPhone || !date) {
+      return res.status(400).json({ error: "Missing walk-in fields." });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "Invalid walk-in date." });
+    }
+    if (!isValidPhone(customerPhone)) return res.status(400).json({ error: "Invalid customer phone format." });
+    if (customerEmail && !isValidEmail(customerEmail)) return res.status(400).json({ error: "Invalid customer email format." });
+
+    const business = await prisma.business.findUnique({ where: { id: businessId } });
+    if (!business) return res.status(404).json({ error: "Business not found." });
+
+    const booking = await prisma.booking.create({
+      data: {
+        businessId,
+        businessName: business.name,
+        customerName,
+        customerPhone,
+        customerEmail: customerEmail || null,
+        service: "Walk-in Visit",
+        price: 0,
+        date,
+        time: buildWalkInTime(date),
+        status: "completed",
+        source: "manual",
+        notes: "[WalkIn] Added from subscriber calendar popup."
+      }
+    });
+
+    let welcomeEmail = null;
+    if (customerEmail && sendDirectEmail) {
+      welcomeEmail = await sendDirectEmail({
+        to: customerEmail,
+        subject: `Thanks for visiting ${business.name} today`,
+        text: `Hi ${customerName}, thanks for visiting ${business.name} today. We would love to welcome you back, and next time you can use the app to book your appointment more easily.`
+      });
+    }
+
+    clearReadCache();
+    await writeAuditLog({
+      actorRole: authRole || "subscriber",
+      action: "booking.walk_in_created",
+      entityType: "booking",
+      entityId: booking.id,
+      metadata: { businessId: booking.businessId, welcomeEmailOutcome: welcomeEmail?.outcome || "" }
+    });
+
+    return res.status(201).json({ booking, welcomeEmail });
+  }
+
   function parseBookingNotesMeta(notes) {
     const text = String(notes || "").trim();
     if (!text) return { stylistName: "", serviceState: "", serviceNotes: "", aftercareNotes: "", cleanNotes: "" };
@@ -420,6 +494,7 @@ export function createBookingRouteHandlers({
 
   return {
     createBookingHandler,
+    createWalkInBookingHandler,
     publicDemoBookingsHandler,
     adminBookingsHandler,
     myBookingsHandler,

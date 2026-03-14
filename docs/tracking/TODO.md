@@ -1,6 +1,6 @@
 # TODO Tracker
 
-Last updated: 2026-03-13
+Last updated: 2026-03-14
 
 Purpose:
 - Keep one running list of work that is still incomplete, still needs testing, or still needs validation.
@@ -29,6 +29,37 @@ Local validation target for the next pass:
 
 Tomorrow restart point:
 - Admin/dashboard shell work is in a stable stop state after the dedicated customer/admin shell fixes, logout hardening, and header Ask Lexi access cleanup.
+- Subscriber month-calendar work is the active restart point.
+- Current latest calendar state:
+  - a new subscriber month planner was rebuilt and pushed to `main`
+  - git commit pushed: `3ad7007` (`Redesign subscriber month calendar`)
+  - the current live direction is a literal 31-day grid with stronger visible box outlines and reduced day-cell detail
+  - the month board now renders as a true weekday-aligned calendar grid and sits above the selected-day / rota support panels
+  - clicking a day still updates the selected day and opens the existing day popup flow
+  - this latest pass still needs real browser review to confirm the visual direction matches the requested "see the 31 days in a grid" brief
+- Next pass on the subscriber diary should focus on:
+  - opening the live subscriber dashboard in-browser and checking whether the current month grid now reads clearly enough as a classic calendar
+  - if still not correct, deciding between three tighter directions before more code churn:
+    - ultra-classic wall calendar: white cells, dark borders, big numbers
+    - compact product calendar: numbers plus small status dots only
+    - plain operator grid: numbers and booking counts only
+  - keeping further edits scoped to the current live month-grid path in `public/dashboard.html`, `public/dashboard-calendar-pulse.js`, and `public/ask-lexi.css`
+  - avoiding any reintroduction of removed duplicate diary paths or secondary calendar render layers
+- Subscriber Business Hub `Business Information` popup was the latest active UI pass.
+- Current live state of that popup:
+  - it now uses a simpler single business-information form instead of the duplicated read/view version
+  - form fields are scrollable inside the popup again
+  - the top `Edit` button is back and unlocks the read-only fields in place
+  - after `Save updates`, the popup returns to its default read-only state with the `Edit` button shown again
+  - sample/mock business values now act as guidance only instead of silently pre-filling the editable fields
+  - the save button stays disabled until edit mode is opened, and the popup now shows visible save/error feedback
+- Next pass on that popup should focus on:
+  - doing a real browser visual pass on spacing, readonly/edit contrast, and save flow clarity
+  - deciding whether the remaining guidance/fallback text still feels helpful or should be reduced further
+  - only changing the subscriber `Business Information` popup itself, not the outer Business Hub card grid unless a separate issue is found
+- [ ] Write proper welcome email cover letters/templates for subscriber walk-ins.
+Files: `src/services/booking_route_handlers.js`
+Notes: The rebuilt subscriber calendar now sends a simple placeholder thank-you email when a walk-in is added with an email address. Replace that plain text with the final branded cover-letter/email template later.
 - Homepage work is still the active design track, but it should not continue as broad redesign churn.
 - Today completed on the homepage:
   - kept the rest of the homepage intact and focused on `#experience` plus the Ask Lexi popup only
@@ -57,6 +88,10 @@ Notes: Completed on 2026-03-11 with a headless Edge render pass at desktop and m
 - [ ] Browser-validate the dashboard before more structural edits.
 Files: `public/dashboard.html`, `public/dashboard.js`, `public/styles.css`
 Notes: Confirm current subscriber/admin/customer layouts still feel correct after the recent control-center, reminders, onboarding, simplification passes, dedicated customer/admin shell work, logout return-to-home fixes, and header Ask Lexi entrypoint changes. A headless Edge route check on 2026-03-11 confirmed unauthenticated `/dashboard?role=subscriber|admin|customer` requests correctly land on the auth surface, and authenticated desktop render captures now exist for the current subscriber and admin dashboard first-view layouts. Those first-view renders looked structurally correct for the current control-center/metric-band/diary composition, but customer dashboard rendering and broader in-page interaction coverage are still pending before this item can be closed. The old dashboard mock/demo mode is already disabled in code; remaining demo-scope decisions now apply to public/homepage demo surfaces instead.
+
+- [ ] Browser-validate the latest subscriber month grid before more calendar redesign.
+Files: `public/dashboard.html`, `public/dashboard-calendar-pulse.js`, `public/ask-lexi.css`, `public/dashboard-layout.js`
+Notes: On 2026-03-14 the subscriber month planner was rebuilt into a visible weekday-aligned 31-day grid and pushed to `main` in commit `3ad7007`. The latest follow-up pass tightened it again into a cleaner operator-style month board with stronger outlines, larger day numbers, plain booking-count labels, rota-cover context, and less status noise inside each box. The extra right-hand diary panels were then removed so the calendar board now runs full width, with day detail continuing through the existing day popup flow. The next session should start with a real browser visual pass of the live subscriber dashboard and confirm this simplified full-width month board is the accepted end state.
 
 - [ ] Browser-verify admin quick toggles in the control center.
 Files: `public/dashboard-calendar-pulse.js`, `public/dashboard.js`

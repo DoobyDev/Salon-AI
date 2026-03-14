@@ -118,7 +118,7 @@
             <div class="booking-diary-fresh__board-shell">
               <div class="booking-diary-fresh__toolbar">
                 <div>
-                  <p class="booking-diary-fresh__eyebrow">Whole month view</p>
+                  <p class="booking-diary-fresh__eyebrow" id="calendarBoardEyebrow">Whole month view</p>
                   <h3 id="calendarMonthLabel">Current month</h3>
                   <p class="section-copy" id="calendarLegend">Choose a day to review bookings, rota coverage, and gaps.</p>
                 </div>
@@ -140,72 +140,6 @@
               </div>
               <div class="booking-diary-fresh__grid booking-diary-fresh__grid--month" id="bookingCalendarGrid" aria-live="polite"></div>
             </div>
-
-            <aside class="booking-diary-fresh__sidebar">
-              <section class="booking-diary-fresh__panel">
-                <div class="booking-diary-fresh__panel-head">
-                  <div>
-                    <p class="booking-diary-fresh__eyebrow">Month pulse</p>
-                    <h3>31-day snapshot</h3>
-                  </div>
-                </div>
-                <div class="booking-diary-fresh__stat-grid" id="calendarMonthMetrics">
-                  <article>
-                    <span>Booked days</span>
-                    <strong>0</strong>
-                    <small>Waiting for diary data</small>
-                  </article>
-                  <article>
-                    <span>Total bookings</span>
-                    <strong>0</strong>
-                    <small>Month load appears here</small>
-                  </article>
-                  <article>
-                    <span>Busiest day</span>
-                    <strong>None yet</strong>
-                    <small>Highest volume date</small>
-                  </article>
-                  <article>
-                    <span>Open days</span>
-                    <strong>0</strong>
-                    <small>Days ready to fill</small>
-                  </article>
-                </div>
-              </section>
-
-              <section class="booking-diary-fresh__panel">
-                <div class="booking-diary-fresh__panel-head">
-                  <div>
-                    <p class="booking-diary-fresh__eyebrow">Selected day</p>
-                    <h3 id="calendarSelectedDayLabel">Choose a date</h3>
-                  </div>
-                </div>
-                <div class="booking-diary-fresh__selected-meta" id="calendarSelectedDayMeta">
-                  Pick any day in the month grid to inspect bookings, gap pressure, and rota cover.
-                </div>
-                <div class="booking-diary-fresh__selected-list" id="calendarSelectedDayAgenda">
-                  <article class="booking-diary-fresh__empty-card">
-                    <strong>No day selected yet</strong>
-                    <small>The agenda preview will appear here once you pick a date from the board.</small>
-                  </article>
-                </div>
-              </section>
-
-              <section class="booking-diary-fresh__panel">
-                <div class="booking-diary-fresh__panel-head">
-                  <div>
-                    <p class="booking-diary-fresh__eyebrow">Rota view</p>
-                    <h3>Cover for the selected day</h3>
-                  </div>
-                </div>
-                <div class="booking-diary-fresh__selected-list" id="calendarDiaryRotaPanel">
-                  <article class="booking-diary-fresh__empty-card">
-                    <strong>No rota day in focus</strong>
-                    <small>Staff cover will appear here for the selected date.</small>
-                  </article>
-                </div>
-              </section>
-            </aside>
           </div>
         </section>
 

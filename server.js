@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import OpenAI from "openai";
 import Stripe from "stripe";
-import { getNotificationProviderStatus, sendBookingNotifications } from "./src/services/notifications.js";
+import { getNotificationProviderStatus, sendBookingNotifications, sendDirectEmail } from "./src/services/notifications.js";
 import { createAccountingIntegrationsService } from "./src/services/accounting_integrations.js";
 import { createAccountingLiveRevenueHandlers } from "./src/services/accounting_live_revenue_handlers.js";
 import { createAdminAccountSupportService } from "./src/services/admin_account_support.js";
@@ -608,6 +608,7 @@ const { getSlotCapacityForBusinessDate, isSlotAtCapacity } = createBookingCapaci
 }));
 const {
   createBookingHandler,
+  createWalkInBookingHandler,
   publicDemoBookingsHandler,
   adminBookingsHandler,
   myBookingsHandler,
@@ -630,6 +631,7 @@ const {
   getSlotCapacityForBusinessDate,
   isSlotAtCapacity,
   jobRuntime,
+  sendDirectEmail,
   clearReadCache,
   writeAuditLog: writeAuditEntry,
   canMutateBooking: canModifyBooking,
@@ -1002,6 +1004,7 @@ registerApplicationRoutes({
   businessReminderSettingsSaveHandler,
   bookingLimiter,
   createBookingHandler,
+  createWalkInBookingHandler,
   publicDemoBookingsHandler,
   adminBookingsHandler,
   myBookingsHandler,

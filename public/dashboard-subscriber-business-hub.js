@@ -1,4 +1,4 @@
-import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin10";
+import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin11";
 import { getBusinessHubModulesForRole } from "./dashboard-business-hub.js?v=20260313-admin6";
 
 function escapeHtml(value) {

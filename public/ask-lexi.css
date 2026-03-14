@@ -1818,6 +1818,25 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
     0 18px 30px rgba(97, 62, 35, 0.1);
 }
 
+.booking-diary-fresh__month-cell.is-open {
+  background:
+    linear-gradient(180deg, rgba(255, 254, 251, 0.99), rgba(247, 240, 232, 0.94));
+}
+
+.booking-diary-fresh__month-cell.is-light {
+  border-color: rgba(29, 127, 119, 0.26);
+}
+
+.booking-diary-fresh__month-cell.is-busy,
+.booking-diary-fresh__month-cell.is-packed {
+  border-color: rgba(187, 105, 63, 0.42);
+}
+
+.booking-diary-fresh__month-cell.is-packed {
+  background:
+    linear-gradient(180deg, rgba(255, 248, 241, 0.99), rgba(242, 226, 211, 0.95));
+}
+
 .booking-diary-fresh__month-cell.is-blank {
   min-height: 108px;
   background: rgba(246, 237, 228, 0.72);
@@ -1826,7 +1845,7 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
 }
 
 .booking-diary-fresh__grid--month .booking-diary-fresh__month-cell {
-  min-height: 112px;
+  min-height: 126px;
 }
 
 .booking-diary-fresh__month-btn,
@@ -1854,7 +1873,7 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
 
 .booking-diary-fresh__month-top strong,
 .booking-diary-fresh__day-number strong {
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   line-height: 1;
 }
 
@@ -1872,6 +1891,10 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
   font-weight: 800;
 }
 
+.booking-diary-fresh__month-count {
+  min-width: 3.8rem;
+}
+
 .booking-diary-fresh__pill.is-muted,
 .booking-diary-fresh__month-count.is-muted {
   background: rgba(120, 102, 86, 0.1);
@@ -1882,6 +1905,18 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
 .booking-diary-fresh__day-summary {
   display: grid;
   gap: 0.22rem;
+}
+
+.booking-diary-fresh__month-primary {
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.booking-diary-fresh__month-secondary {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.35;
 }
 
 .booking-diary-fresh__day-summary small,
@@ -1926,9 +1961,16 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
 }
 
 .booking-diary-fresh__month-foot {
-  margin-top: 0.15rem;
-  font-size: 0.66rem;
-  min-height: 1rem;
+  margin-top: auto;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(127, 76, 48, 0.14);
+  font-size: 0.68rem;
+  min-height: 1.2rem;
+}
+
+.booking-diary-fresh__month-foot span:last-child {
+  font-weight: 800;
+  color: var(--primary-strong);
 }
 
 .booking-diary-fresh__sidebar {
@@ -2630,14 +2672,18 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
     min-height: 84px;
   }
 
+  .booking-diary-fresh__grid--month .booking-diary-fresh__month-cell {
+    min-height: 108px;
+  }
+
   .booking-diary-fresh__month-btn,
   .booking-diary-fresh__day-btn {
-    padding: 0.65rem;
+    padding: 0.55rem;
   }
 
   .booking-diary-fresh__month-top strong,
   .booking-diary-fresh__day-number strong {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
   }
 
   .booking-diary-fresh__month-count,
@@ -2645,6 +2691,11 @@ body[data-role="subscriber"] #subscriberBusinessHubSection > .section-head {
     font-size: 0.62rem;
   }
 
+  .booking-diary-fresh__month-primary {
+    font-size: 0.8rem;
+  }
+
+  .booking-diary-fresh__month-secondary,
   .booking-diary-fresh__month-foot {
     font-size: 0.61rem;
   }

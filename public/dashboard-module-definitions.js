@@ -10,7 +10,6 @@ export function createModuleDefinitionsRuntime(deps) {
     first7DaysSnapshotSection,
     businessProfileSection,
     bookingOperationsSection,
-    subscriberCalendarSection,
     accountingIntegrationsSection,
     staffRosterSection,
     waitlistSection,
@@ -166,18 +165,6 @@ export function createModuleDefinitionsRuntime(deps) {
           features: ["Reschedule workflow", "Booking updates", "Change handling"],
           howItWorks: "Uses the booking workspace for schedule changes and client updates.",
           howItHelps: "Helps the team process changes quickly during busy periods."
-        },
-        {
-          key: "calendar",
-          section: subscriberCalendarSection,
-          label: "Calendar",
-          popupMode: "interactive",
-          popupSize: "large",
-          cadence: "Use daily",
-          navSummary: "See busy days at a glance so you can plan cover and spot pressure before it builds.",
-          features: ["Monthly bookings view", "Busy-day visibility", "Staffing planning support"],
-          howItWorks: "Shows how busy each day looks across the month using your booking data.",
-          howItHelps: "Makes it easier to spot busy days and plan cover before it gets stressful."
         },
         {
           key: "accounting",

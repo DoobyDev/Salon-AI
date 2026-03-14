@@ -25,6 +25,7 @@ export function registerApplicationRoutes({
   businessReminderSettingsSaveHandler,
   bookingLimiter,
   createBookingHandler,
+  createWalkInBookingHandler,
   publicDemoBookingsHandler,
   adminBookingsHandler,
   myBookingsHandler,
@@ -102,13 +103,13 @@ export function registerApplicationRoutes({
   app.post("/api/auth/register/subscriber", authLimiter, registerSubscriberHandler);
   app.post("/api/auth/register/customer", authLimiter, registerCustomerHandler);
   app.post("/api/auth/login", authLimiter, loginHandler);
-
   app.get("/api/search/businesses", searchBusinessesHandler);
   app.get("/api/businesses/:businessId", publicBusinessDetailHandler);
   app.get("/api/businesses/me/profile", authRequired, requireRole("subscriber", "admin"), businessProfileGetHandler);
   app.post("/api/businesses/me/profile", authRequired, requireRole("subscriber", "admin"), businessProfileSaveHandler);
   app.get("/api/businesses/me/booking-suggestions", authRequired, requireRole("subscriber", "admin"), businessBookingSuggestionsHandler);
   app.post("/api/businesses/me/profile/apply-template", authRequired, requireRole("subscriber", "admin"), applyBusinessTemplateHandler);
+  app.post("/api/businesses/me/walk-ins", authRequired, requireRole("subscriber", "admin"), bookingLimiter, createWalkInBookingHandler);
   app.get("/api/businesses/me/social-media", authRequired, requireRole("subscriber", "admin"), businessSocialMediaGetHandler);
   app.post("/api/businesses/me/social-media", authRequired, requireRole("subscriber", "admin"), businessSocialMediaSaveHandler);
   app.get("/api/businesses/me/reminder-settings", authRequired, requireRole("subscriber", "admin"), businessReminderSettingsGetHandler);
