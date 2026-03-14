@@ -66,8 +66,7 @@ import { createManageRevenueProfitabilityActionsRuntime } from "./dashboard-mana
 import { createManageWaitlistActionsRuntime } from "./dashboard-manage-waitlist-actions.js";
 import { createCommandCenterRuntime } from "./dashboard-command-center.js";
 import { createCalendarDayUtilsRuntime } from "./dashboard-calendar-day-utils.js";
-import { createCalendarLexiRuntime } from "./dashboard-calendar-lexi.js";
-import { createCalendarPulseRuntime } from "./dashboard-calendar-pulse.js";
+import { createCalendarPulseRuntime } from "./dashboard-calendar-pulse.js?v=20260314-calendar2";
 import { createExecutivePulseUtilsRuntime } from "./dashboard-executive-pulse-utils.js";
 import { createCalendarDiaryRuntime } from "./dashboard-calendar-diary.js";
 import { createWorkspaceStarRuntime } from "./dashboard-workspace-star.js";
@@ -76,7 +75,7 @@ import { createAdminSupportRuntime } from "./dashboard-admin-support.js?v=202603
 import { createAdminBusinessRuntime } from "./dashboard-admin-business-runtime.js";
 import { createAdminBusinessLoadingRuntime } from "./dashboard-admin-business-loading.js";
 import { createAdminPlatformRuntime } from "./dashboard-admin-platform.js?v=20260313-admin2";
-import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin10";
+import { createAdminHubRuntime } from "./dashboard-admin-hub.js?v=20260313-admin11";
 import { createBusinessReportingRuntime } from "./dashboard-business-reporting.js";
 import { createBusinessGrowthPanelRuntime } from "./dashboard-business-growth-panel.js";
 import { createBusinessControlsRuntime } from "./dashboard-business-controls-runtime.js";
@@ -339,19 +338,10 @@ const workspaceStarLexiPrompt = document.getElementById("workspaceStarLexiPrompt
 const workspaceStarLexiHint = document.getElementById("workspaceStarLexiHint");
 const loadMoreBookingsBtn = document.getElementById("loadMoreBookings");
 const bookingsCountLabel = document.getElementById("bookingsCountLabel");
-const subscriberCalendarSection = document.getElementById("subscriberCalendarSection");
 const bookingCalendarGrid = document.getElementById("bookingCalendarGrid");
 const calendarMonthLabel = document.getElementById("calendarMonthLabel");
 const calendarLegend = document.getElementById("calendarLegend");
-const bookingCalendarStaffLegend = document.getElementById("bookingCalendarStaffLegend");
-const calendarFeatureMeta = document.getElementById("calendarFeatureMeta");
-const calendarFeatureStats = document.getElementById("calendarFeatureStats");
-const calendarSelectedDaySummary = document.getElementById("calendarSelectedDaySummary");
-const calendarLexiCommandDeck = document.getElementById("calendarLexiCommandDeck");
-const calendarDiaryWeekStrip = document.getElementById("calendarDiaryWeekStrip");
-const calendarDiaryTodayBtn = document.getElementById("calendarDiaryTodayBtn");
-const calendarDiaryAddWalkInBtn = document.getElementById("calendarDiaryAddWalkInBtn");
-const calendarDiaryOpenStaffBtn = document.getElementById("calendarDiaryOpenStaffBtn");
+const calendarViewTabs = document.getElementById("calendarViewTabs");
 const calendarPrev = document.getElementById("calendarPrev");
 const calendarNext = document.getElementById("calendarNext");
 const subscriberExecutivePulseSection = document.getElementById("subscriberExecutivePulseSection");
@@ -1099,7 +1089,6 @@ const enforceDashboardRoleLayoutVisibility = () => {
     frontDeskSection,
     bookingOperationsSection,
     metricsGrid,
-    subscriberCalendarSection,
     bookingStatus,
     setActiveStatusChip,
     dashIdentityBlock,
@@ -1131,7 +1120,6 @@ const moduleDefinitionsRuntime = createModuleDefinitionsRuntime({
   first7DaysSnapshotSection,
   businessProfileSection,
   bookingOperationsSection,
-  subscriberCalendarSection,
   accountingIntegrationsSection,
   staffRosterSection,
   waitlistSection,
@@ -1364,7 +1352,7 @@ const dashboardStartupRuntime = createDashboardStartupRuntime({
   updateBookingRangeControls: () => bookingFilterRuntime.updateBookingRangeControls(),
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
   scheduleCalendarTodayRefresh: () => calendarDiaryRuntime.scheduleCalendarTodayRefresh(),
-  bindCalendarLexiEvents: () => calendarLexiRuntime.bindCalendarLexiEvents(),
+  bindCalendarLexiEvents: () => {},
   bindAccountingIntegrationEvents: () => accountingIntegrationsRuntime.bindAccountingIntegrationEvents(),
   bindStaffRosterControlsEvents: () => staffRosterControlsRuntime.bindStaffRosterControlsEvents(),
   loadAdminBusinessOptions: loadAdminBusinessOptionsForCurrentRole,
@@ -1397,20 +1385,6 @@ const bookingFilterRuntime = createBookingFilterRuntime({
   renderSubscriberCalendar: () => calendarPulseRuntime.renderSubscriberCalendar(),
   toDateKey
 });
-const calendarLexiRuntime = createCalendarLexiRuntime({
-  getUserRole: () => user?.role,
-  getSelectedCalendarDateKey: () => selectedCalendarDateKey,
-  escapeHtml,
-  formatMoney,
-  t,
-  showToast,
-  openBusinessAiChatPopup: openDashboardSharedLexiPopup,
-  requestLexiSubmit: submitDashboardSharedLexiPrompt,
-  calendarFeatureMeta,
-  calendarFeatureStats,
-  calendarSelectedDaySummary,
-  calendarLexiCommandDeck
-});
 const executivePulseUtilsRuntime = createExecutivePulseUtilsRuntime({
   getFrontDeskBusiness: () => (typeof frontDeskBusiness !== "undefined" ? frontDeskBusiness : null),
   getManagedBusinessId: () => managedBusinessId,
@@ -1434,7 +1408,9 @@ const executivePulseUtilsRuntime = createExecutivePulseUtilsRuntime({
   pad2
 });
 const calendarPulseRuntime = createCalendarPulseRuntime({
+  fetchImpl: fetch,
   getUserRole: () => user?.role,
+  getUserBusinessId: () => user?.businessId,
   hideSection: (sectionEl) => dashboardRoutingUiSupportRuntime.hideSection(sectionEl),
   showSection: (sectionEl) => dashboardRoutingUiSupportRuntime.showSection(sectionEl),
   escapeHtml,
@@ -1473,8 +1449,6 @@ const calendarPulseRuntime = createCalendarPulseRuntime({
   },
   getStaffWorkingForDate: (dateObj) => staffDateUtilsRuntime.getStaffWorkingForDate(dateObj),
   getStaffInitials: getStaffRosterInitials,
-  renderCalendarFeatureSidebarLexi: (summary) => calendarLexiRuntime.renderCalendarFeatureSidebarLexi(summary),
-  renderCalendarDiaryWeekStrip: () => calendarDiaryRuntime.renderCalendarDiaryWeekStrip(),
   updateBookingRangeControls: () => bookingFilterRuntime.updateBookingRangeControls(),
   renderWorkspaceStarPanel: () => workspaceStarRuntime.renderWorkspaceStarPanel(),
   applyBookingFilters: () => bookingsRuntime.applyBookingFilters(),
@@ -1487,24 +1461,24 @@ const calendarPulseRuntime = createCalendarPulseRuntime({
   applyBookingDatePreset: (preset) => bookingFilterRuntime.applyBookingDatePreset(preset),
   readExecutivePulseSnapshots: () => executivePulseUtilsRuntime.readExecutivePulseSnapshots(),
   writeExecutivePulseSnapshots: (rows) => executivePulseUtilsRuntime.writeExecutivePulseSnapshots(rows),
+  refreshBookingsAfterDayPopupMutation: () => calendarDayWorkspaceRuntime.refreshBookingsAfterDayPopupMutation(),
+  openManageForm,
+  headers: () => dashboardRequestUtilsRuntime.headers(),
+  withManagedBusiness: (path) => dashboardRequestUtilsRuntime.withManagedBusiness(path),
   showToast,
   showManageToast,
   subscriberExecutivePulseSection,
   bookingCalendarGrid,
   calendarMonthLabel,
-  bookingCalendarStaffLegend,
   calendarLegend,
   calendarPrev,
   calendarNext,
-  calendarDiaryWeekStrip,
-  calendarDiaryTodayBtn,
-  calendarDiaryAddWalkInBtn,
-  calendarDiaryOpenStaffBtn,
   bookingRangeToday,
   bookingRangeWeek,
   bookingRangeMonth,
   bookingRangeClear,
   bookingSearch,
+  calendarViewTabs,
   executivePulseSubtitle,
   executivePulseTitle,
   executivePulseSignals,
@@ -1563,8 +1537,7 @@ const calendarDiaryRuntime = createCalendarDiaryRuntime({
   createBooking: (payload) => bookingsRuntime.createBooking(payload),
   refreshBookingsAfterDayPopupMutation: () => calendarDayWorkspaceRuntime.refreshBookingsAfterDayPopupMutation(),
   showManageToast,
-  focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey),
-  calendarDiaryWeekStrip
+  focusModuleByKey: (moduleKey) => moduleNavigationRuntime.focusModuleByKey(moduleKey)
 });
 const workspaceStarRuntime = createWorkspaceStarRuntime({
   getUserRole: () => user?.role,

@@ -13,7 +13,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/salon-theme.css?v=20260312-theme1" />
-    <link rel="stylesheet" href="/ask-lexi.css?v=20260313-dashboard31" />
+    <link rel="stylesheet" href="/ask-lexi.css?v=20260314-dashboard46" />
   </head>
   <body class="ask-lexi-shell ask-lexi-dashboard" data-role="dashboard">
     <header class="site-header dashboard-header">
@@ -32,60 +32,6 @@
 
     <main class="dashboard-frame">
       <section class="dashboard-grid dashboard-grid-subscriber" id="subscriberDashboard" hidden>
-        <section class="dashboard-card diary-command-center">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Booking diary</p>
-              <h2>Full-width day-to-day diary</h2>
-            </div>
-            <div class="calendar-toolbar">
-              <button class="btn btn-ghost btn-small" id="calendarTodayBtn" type="button">Today</button>
-              <button class="btn btn-ghost btn-small" id="calendarPrevBtn" type="button">Previous</button>
-              <strong id="calendarMonthLabel">Month</strong>
-              <button class="btn btn-ghost btn-small" id="calendarNextBtn" type="button">Next</button>
-            </div>
-          </div>
-
-          <div class="calendar-layout">
-            <div class="calendar-board">
-              <div class="calendar-weekdays" id="calendarWeekdays"></div>
-              <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
-
-            <aside class="calendar-sidecard">
-              <p class="kicker">Selected day</p>
-              <h3 id="selectedDayTitle">Choose a day</h3>
-              <p id="selectedDayMeta">Pick a date to inspect bookings, revenue, and next steps.</p>
-              <div class="agenda-filter-row" id="selectedDayFilters">
-                <button class="btn btn-ghost btn-small is-active" type="button" data-day-filter="all">All</button>
-                <button class="btn btn-ghost btn-small" type="button" data-day-filter="live">Live</button>
-                <button class="btn btn-ghost btn-small" type="button" data-day-filter="cancelled">Cancelled</button>
-                <button class="btn btn-ghost btn-small" type="button" data-day-filter="gaps">Open gaps</button>
-              </div>
-              <div class="agenda-filter-row" id="selectedDayViews">
-                <button class="btn btn-ghost btn-small is-active" type="button" data-day-view="timeline">Timeline</button>
-                <button class="btn btn-ghost btn-small" type="button" data-day-view="stylist">By stylist</button>
-              </div>
-              <div class="status-pill status-neutral" id="selectedDayStatusPill">Loading day status...</div>
-              <div class="selected-day-summary">
-                <article>
-                  <span>Bookings</span>
-                  <strong id="selectedDayBookingCount">0</strong>
-                </article>
-                <article>
-                  <span>Revenue</span>
-                  <strong id="selectedDayRevenue">GBP 0</strong>
-                </article>
-              </div>
-              <div id="selectedDayCoverageCard"></div>
-              <div class="agenda-list" id="selectedDayAgenda"></div>
-              <div class="side-actions">
-                <button class="btn" id="selectedDayAddBookingBtn" type="button">Add booking</button>
-              </div>
-            </aside>
-          </div>
-        </section>
-
         <section class="dashboard-card" id="subscriberBusinessHubSection">
           <div class="section-head">
             <div>
@@ -145,6 +91,121 @@
               <small>No-show risk, rebooking opportunities, and the actions that help protect chair time.</small>
               <span>Open page</span>
             </a>
+          </div>
+        </section>
+
+        <section class="dashboard-card booking-diary-fresh" id="subscriberExecutivePulseSection">
+          <div class="booking-diary-fresh__hero">
+            <div class="booking-diary-fresh__hero-copy">
+              <p class="kicker">Subscriber diary</p>
+              <h2>Month planner</h2>
+              <p class="section-copy">
+                Run the whole month from one clear board. See busy days, open capacity, and the selected day's working detail without losing the wider 31-day picture.
+              </p>
+            </div>
+            <div class="booking-diary-fresh__hero-actions">
+              <div class="status-pill" id="bookingCalendarSelectionStatus">Calendar filter: All dates</div>
+              <div class="calendar-view-tabs" id="calendarViewTabs" role="tablist" aria-label="Calendar views">
+                <button class="calendar-view-tab" type="button" data-calendar-view="day" role="tab" aria-selected="false">Day</button>
+                <button class="calendar-view-tab" type="button" data-calendar-view="week" role="tab" aria-selected="false">Week</button>
+                <button class="calendar-view-tab is-active" type="button" data-calendar-view="month" role="tab" aria-selected="true">Month</button>
+                <button class="calendar-view-tab" type="button" data-calendar-view="year" role="tab" aria-selected="false">Year</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-diary-fresh__shell">
+            <div class="booking-diary-fresh__board-shell">
+              <div class="booking-diary-fresh__toolbar">
+                <div>
+                  <p class="booking-diary-fresh__eyebrow">Whole month view</p>
+                  <h3 id="calendarMonthLabel">Current month</h3>
+                  <p class="section-copy" id="calendarLegend">Choose a day to review bookings, rota coverage, and gaps.</p>
+                </div>
+                <div class="booking-diary-fresh__toolbar-actions">
+                  <button class="btn btn-ghost btn-small" id="calendarPrev" type="button">Previous</button>
+                  <button class="btn btn-ghost btn-small" id="calendarTodayBtn" type="button">Today</button>
+                  <button class="btn btn-ghost btn-small" id="calendarNext" type="button">Next</button>
+                </div>
+              </div>
+
+              <div class="booking-diary-fresh__weekdays" aria-hidden="true">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
+              </div>
+              <div class="booking-diary-fresh__grid booking-diary-fresh__grid--month" id="bookingCalendarGrid" aria-live="polite"></div>
+            </div>
+
+            <aside class="booking-diary-fresh__sidebar">
+              <section class="booking-diary-fresh__panel">
+                <div class="booking-diary-fresh__panel-head">
+                  <div>
+                    <p class="booking-diary-fresh__eyebrow">Month pulse</p>
+                    <h3>31-day snapshot</h3>
+                  </div>
+                </div>
+                <div class="booking-diary-fresh__stat-grid" id="calendarMonthMetrics">
+                  <article>
+                    <span>Booked days</span>
+                    <strong>0</strong>
+                    <small>Waiting for diary data</small>
+                  </article>
+                  <article>
+                    <span>Total bookings</span>
+                    <strong>0</strong>
+                    <small>Month load appears here</small>
+                  </article>
+                  <article>
+                    <span>Busiest day</span>
+                    <strong>None yet</strong>
+                    <small>Highest volume date</small>
+                  </article>
+                  <article>
+                    <span>Open days</span>
+                    <strong>0</strong>
+                    <small>Days ready to fill</small>
+                  </article>
+                </div>
+              </section>
+
+              <section class="booking-diary-fresh__panel">
+                <div class="booking-diary-fresh__panel-head">
+                  <div>
+                    <p class="booking-diary-fresh__eyebrow">Selected day</p>
+                    <h3 id="calendarSelectedDayLabel">Choose a date</h3>
+                  </div>
+                </div>
+                <div class="booking-diary-fresh__selected-meta" id="calendarSelectedDayMeta">
+                  Pick any day in the month grid to inspect bookings, gap pressure, and rota cover.
+                </div>
+                <div class="booking-diary-fresh__selected-list" id="calendarSelectedDayAgenda">
+                  <article class="booking-diary-fresh__empty-card">
+                    <strong>No day selected yet</strong>
+                    <small>The agenda preview will appear here once you pick a date from the board.</small>
+                  </article>
+                </div>
+              </section>
+
+              <section class="booking-diary-fresh__panel">
+                <div class="booking-diary-fresh__panel-head">
+                  <div>
+                    <p class="booking-diary-fresh__eyebrow">Rota view</p>
+                    <h3>Cover for the selected day</h3>
+                  </div>
+                </div>
+                <div class="booking-diary-fresh__selected-list" id="calendarDiaryRotaPanel">
+                  <article class="booking-diary-fresh__empty-card">
+                    <strong>No rota day in focus</strong>
+                    <small>Staff cover will appear here for the selected date.</small>
+                  </article>
+                </div>
+              </section>
+            </aside>
           </div>
         </section>
 
@@ -465,8 +526,8 @@
       })();
     </script>
     <script type="module" src="/dashboard-shared-lexi-entry.js?v=20260313-dashboard8"></script>
-    <script type="module" src="/dashboard-subscriber-business-hub.js?v=20260313-subscriber8"></script>
-    <script type="module" src="/dashboard.js?v=20260313-dashboard46"></script>
+    <script type="module" src="/dashboard-subscriber-business-hub.js?v=20260313-subscriber9"></script>
+    <script type="module" src="/dashboard.js?v=20260314-dashboard61"></script>
     <script type="module" src="/salon-theme.js?v=20260312-theme1"></script>
   </body>
 </html>

@@ -1,8 +1,10 @@
 // Subscriber calendar and executive pulse rendering runtime.
 export function createCalendarPulseRuntime(deps) {
   const {
+    fetchImpl = fetch,
     doc = document,
     getUserRole,
+    getUserBusinessId,
     hideSection,
     showSection,
     escapeHtml,
@@ -32,8 +34,6 @@ export function createCalendarPulseRuntime(deps) {
     setLatestExecutivePulseSnapshotDraft,
     getStaffWorkingForDate,
     getStaffInitials,
-    renderCalendarFeatureSidebarLexi,
-    renderCalendarDiaryWeekStrip,
     updateBookingRangeControls,
     renderWorkspaceStarPanel,
     applyBookingFilters,
@@ -46,24 +46,24 @@ export function createCalendarPulseRuntime(deps) {
     applyBookingDatePreset,
     readExecutivePulseSnapshots,
     writeExecutivePulseSnapshots,
+    refreshBookingsAfterDayPopupMutation,
+    openManageForm,
+    headers,
+    withManagedBusiness,
     showToast,
     showManageToast,
     subscriberExecutivePulseSection,
     bookingCalendarGrid,
     calendarMonthLabel,
-    bookingCalendarStaffLegend,
     calendarLegend,
     calendarPrev,
     calendarNext,
-    calendarDiaryWeekStrip,
-    calendarDiaryTodayBtn,
-    calendarDiaryAddWalkInBtn,
-    calendarDiaryOpenStaffBtn,
     bookingRangeToday,
     bookingRangeWeek,
     bookingRangeMonth,
     bookingRangeClear,
     bookingSearch,
+    calendarViewTabs,
     executivePulseSubtitle,
     executivePulseTitle,
     executivePulseSignals,
@@ -89,31 +89,761 @@ export function createCalendarPulseRuntime(deps) {
     executivePulseSnapshotsSubtitle
   } = deps || {};
 
-  function selectedCalendarDateSummary() {
-    const dateKey = String(getSelectedCalendarDateKey?.() || "").trim();
-    if (!dateKey) return null;
-    const date = parseBookingDate?.(dateKey);
-    if (!date) return null;
-    const rows = (Array.isArray(getBookingRows?.()) ? getBookingRows() : []).filter((row) => {
-      const dt = parseBookingDate?.(row?.date);
-      return dt ? toDateKey?.(dt) === dateKey : false;
+  let calendarViewMode = "month";
+  let openCalendarPopupDateKey = "";
+
+  function getCalendarViewStepDate(baseDate, direction) {
+    const anchor = baseDate instanceof Date && !Number.isNaN(baseDate.getTime()) ? baseDate : new Date();
+    const step = direction < 0 ? -1 : 1;
+    if (calendarViewMode === "day") {
+      return new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + step);
+    }
+    if (calendarViewMode === "week") {
+      return new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + step * 7);
+    }
+    if (calendarViewMode === "year") {
+      return new Date(anchor.getFullYear() + step, 0, 1);
+    }
+    return new Date(anchor.getFullYear(), anchor.getMonth() + step, 1);
+  }
+
+  function startOfWeek(dateObj) {
+    const date = dateObj instanceof Date && !Number.isNaN(dateObj.getTime()) ? new Date(dateObj) : new Date();
+    const offset = date.getDay() === 0 ? -6 : 1 - date.getDay();
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + offset);
+  }
+
+  function formatCalendarHeadline(dateObj) {
+    if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return "Calendar";
+    if (calendarViewMode === "day") {
+      return dateObj.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    }
+    if (calendarViewMode === "week") {
+      const start = startOfWeek(dateObj);
+      const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+      return `${start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} - ${end.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      })}`;
+    }
+    if (calendarViewMode === "year") {
+      return String(dateObj.getFullYear());
+    }
+    return dateObj.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  }
+
+  function buildBookingRowsByDate() {
+    const map = new Map();
+    (Array.isArray(getBookingRows?.()) ? getBookingRows() : []).forEach((row) => {
+      const bookingDate = parseBookingDate?.(row?.date);
+      if (!bookingDate) return;
+      const key = toDateKey?.(bookingDate);
+      if (!key) return;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(row);
     });
-    const cancelled = rows.filter((row) => String(row?.status || "").toLowerCase() === "cancelled").length;
-    const completed = rows.filter((row) => String(row?.status || "").toLowerCase() === "completed").length;
-    const revenue = rows
-      .filter((row) => String(row?.status || "").toLowerCase() !== "cancelled")
+    map.forEach((rows) => {
+      rows.sort((a, b) => String(a?.time || "").localeCompare(String(b?.time || "")));
+    });
+    return map;
+  }
+
+  function summarizeRows(rows = []) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const revenue = safeRows
+      .filter((row) => normalizeStatus(row?.status) !== "cancelled")
       .reduce((sum, row) => sum + Number(row?.price || 0), 0);
-    const staff = getStaffWorkingForDate?.(date) || [];
+    const completed = safeRows.filter((row) => normalizeStatus(row?.status) === "completed").length;
+    const cancelled = safeRows.filter((row) => normalizeStatus(row?.status) === "cancelled").length;
     return {
-      dateKey,
-      label: date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
-      bookings: rows.length,
-      cancelled,
+      total: safeRows.length,
       completed,
-      revenue,
-      staffCount: staff.length,
-      staffNames: staff.map((member) => member.name).slice(0, 6)
+      cancelled,
+      revenue
     };
+  }
+
+  function getSelectedOrFallbackDate(anchorDate, rowsByDate) {
+    const selectedKey = String(getSelectedCalendarDateKey?.() || "").trim();
+    if (selectedKey) {
+      const selectedDate = parseBookingDate?.(selectedKey) || new Date(selectedKey);
+      if (selectedDate instanceof Date && !Number.isNaN(selectedDate.getTime())) return selectedDate;
+    }
+    const today = new Date();
+    if (anchorDate instanceof Date && !Number.isNaN(anchorDate.getTime()) && anchorDate.getFullYear() === today.getFullYear() && anchorDate.getMonth() === today.getMonth()) {
+      return today;
+    }
+    const firstBookedKey = Array.from(rowsByDate.keys())
+      .filter((key) => {
+        const dateObj = new Date(key);
+        return dateObj instanceof Date && !Number.isNaN(dateObj.getTime()) && dateObj.getFullYear() === anchorDate.getFullYear() && dateObj.getMonth() === anchorDate.getMonth();
+      })
+      .sort()[0];
+    if (firstBookedKey) return new Date(firstBookedKey);
+    return new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+  }
+
+  function buildMonthPlaceholderMarkup() {
+    const article = doc.createElement("article");
+    article.className = "booking-diary-fresh__month-cell is-blank";
+    article.setAttribute("aria-hidden", "true");
+    return article;
+  }
+
+  function buildDayCellMarkup(dateObj, rowsByDate) {
+    const key = toDateKey?.(dateObj);
+    const rows = rowsByDate.get(key) || [];
+    const summary = summarizeRows(rows);
+    const todayKey = toDateKey?.(new Date());
+    const isToday = key === todayKey;
+    const isSelected = String(getSelectedCalendarDateKey?.() || "").trim() === key;
+    const previewNames = rows.slice(0, 3).map((row) => String(row?.customerName || "Customer").trim()).filter(Boolean);
+    const article = doc.createElement("article");
+    article.className = `booking-diary-fresh__day-card${summary.total ? " has-bookings" : ""}${isToday ? " is-today" : ""}${isSelected ? " selected" : ""}`;
+    article.innerHTML = `
+      <button class="booking-diary-fresh__day-btn" type="button" data-calendar-date="${escapeHtml(key)}" aria-label="${escapeHtml(key)}">
+        <div class="booking-diary-fresh__day-number">
+          <strong>${escapeHtml(String(dateObj.getDate()))}</strong>
+          ${summary.total ? `<span class="booking-diary-fresh__pill">${escapeHtml(String(summary.total))} booked</span>` : `<span class="booking-diary-fresh__pill is-muted">Open</span>`}
+        </div>
+        <div class="booking-diary-fresh__day-summary">
+          <span>${escapeHtml(summary.total ? `${summary.total} appointment${summary.total === 1 ? "" : "s"}` : "No bookings yet")}</span>
+          ${
+            previewNames.length
+              ? `<small>${escapeHtml(previewNames.join(", "))}${rows.length > previewNames.length ? ` +${rows.length - previewNames.length} more` : ""}</small>`
+              : `<small>${escapeHtml(isToday ? "Tap to review today and add walk-ins." : "Tap to review this day.")}</small>`
+          }
+        </div>
+      </button>
+    `;
+    return article;
+  }
+
+  function buildMonthCellMarkup(dateObj, rowsByDate) {
+    const key = toDateKey?.(dateObj);
+    const rows = rowsByDate.get(key) || [];
+    const summary = summarizeRows(rows);
+    const todayKey = toDateKey?.(new Date());
+    const isToday = key === todayKey;
+    const isSelected = String(getSelectedCalendarDateKey?.() || "").trim() === key;
+    const staffWorking = getStaffWorkingForDate?.(dateObj) || [];
+    const statusDots = [
+      summary.completed ? `<span class="booking-diary-fresh__month-dot is-completed" title="${escapeHtml(`${summary.completed} completed`)}"></span>` : "",
+      summary.cancelled ? `<span class="booking-diary-fresh__month-dot is-cancelled" title="${escapeHtml(`${summary.cancelled} cancelled`)}"></span>` : "",
+      summary.total && summary.total > summary.completed + summary.cancelled
+        ? `<span class="booking-diary-fresh__month-dot is-live" title="${escapeHtml(`${summary.total - summary.completed - summary.cancelled} live`)}"></span>`
+        : "",
+      !summary.total ? `<span class="booking-diary-fresh__month-dot is-open" title="Open day"></span>` : ""
+    ].filter(Boolean).join("");
+    const bottomLabel = summary.total
+      ? `${summary.total} booking${summary.total === 1 ? "" : "s"}`
+      : staffWorking.length
+        ? `${staffWorking.length} staff`
+        : "Open";
+    const article = doc.createElement("article");
+    article.className = `booking-diary-fresh__month-cell${summary.total ? " has-bookings" : ""}${isToday ? " is-today" : ""}${isSelected ? " selected" : ""}`;
+    article.innerHTML = `
+      <button class="booking-diary-fresh__month-btn" type="button" data-calendar-date="${escapeHtml(key)}" aria-label="${escapeHtml(key)}">
+        <div class="booking-diary-fresh__month-top">
+          <strong>${escapeHtml(String(dateObj.getDate()))}</strong>
+          <span class="booking-diary-fresh__month-count">${escapeHtml(summary.total ? String(summary.total) : "Open")}</span>
+        </div>
+        <div class="booking-diary-fresh__month-body">
+          <div class="booking-diary-fresh__month-dots" aria-hidden="true">
+            ${statusDots}
+          </div>
+          <div class="booking-diary-fresh__month-foot">
+            <span>${escapeHtml(bottomLabel)}</span>
+            <span>${escapeHtml(isToday ? "Today" : isSelected ? "Selected" : "")}</span>
+          </div>
+        </div>
+      </button>
+    `;
+    return article;
+  }
+
+  function renderMonthlyGrid(anchorDate, rowsByDate) {
+    bookingCalendarGrid.className = "booking-diary-fresh__grid booking-diary-fresh__grid--month";
+    bookingCalendarGrid.innerHTML = "";
+    const firstOfMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+    const weekdayOffset = (firstOfMonth.getDay() + 6) % 7;
+    const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
+    for (let offset = 0; offset < weekdayOffset; offset += 1) {
+      bookingCalendarGrid.appendChild(buildMonthPlaceholderMarkup());
+    }
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      bookingCalendarGrid.appendChild(buildMonthCellMarkup(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), day), rowsByDate));
+    }
+    const remainder = (weekdayOffset + daysInMonth) % 7;
+    const trailing = remainder === 0 ? 0 : 7 - remainder;
+    for (let offset = 0; offset < trailing; offset += 1) {
+      bookingCalendarGrid.appendChild(buildMonthPlaceholderMarkup());
+    }
+  }
+
+  function renderWeeklyGrid(anchorDate, rowsByDate) {
+    bookingCalendarGrid.className = "booking-diary-fresh__grid booking-diary-fresh__grid--week";
+    bookingCalendarGrid.innerHTML = "";
+    const weekStart = startOfWeek(anchorDate);
+    for (let offset = 0; offset < 7; offset += 1) {
+      const date = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + offset);
+      const cell = buildDayCellMarkup(date, rowsByDate);
+      cell.classList.add("booking-diary-fresh__day-card--week");
+      bookingCalendarGrid.appendChild(cell);
+    }
+  }
+
+  function renderDailyGrid(anchorDate, rowsByDate) {
+    bookingCalendarGrid.className = "booking-diary-fresh__grid booking-diary-fresh__grid--day";
+    bookingCalendarGrid.innerHTML = "";
+    const cell = buildDayCellMarkup(anchorDate, rowsByDate);
+    cell.classList.add("booking-diary-fresh__day-card--single");
+    bookingCalendarGrid.appendChild(cell);
+  }
+
+  function renderYearlyGrid(anchorDate, rowsByDate) {
+    bookingCalendarGrid.className = "booking-diary-fresh__grid booking-diary-fresh__grid--year";
+    bookingCalendarGrid.innerHTML = "";
+    for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
+      const monthDate = new Date(anchorDate.getFullYear(), monthIndex, 1);
+      const card = doc.createElement("article");
+      card.className = "booking-diary-fresh__mini-month";
+      const weekdayOffset = (monthDate.getDay() + 6) % 7;
+      const daysInMonth = new Date(anchorDate.getFullYear(), monthIndex + 1, 0).getDate();
+      let monthBookingCount = 0;
+      const monthRows = [];
+      for (let index = 0; index < weekdayOffset; index += 1) {
+        monthRows.push('<span class="booking-diary-fresh__mini-day is-empty" aria-hidden="true"></span>');
+      }
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(anchorDate.getFullYear(), monthIndex, day);
+        const key = toDateKey?.(date);
+        const count = (rowsByDate.get(key) || []).length;
+        monthBookingCount += count;
+        monthRows.push(`
+          <button class="booking-diary-fresh__mini-day${count ? " has-bookings" : ""}" type="button" data-calendar-date="${escapeHtml(key)}">
+            <span>${escapeHtml(String(day))}</span>
+          </button>
+        `);
+      }
+      card.innerHTML = `
+        <div class="booking-diary-fresh__mini-month-head">
+          <strong>${escapeHtml(monthDate.toLocaleDateString("en-GB", { month: "long" }))}</strong>
+          <small>${escapeHtml(String(monthBookingCount))} bookings</small>
+        </div>
+        <div class="booking-diary-fresh__mini-month-grid">${monthRows.join("")}</div>
+      `;
+      bookingCalendarGrid.appendChild(card);
+    }
+  }
+
+  function renderCalendarMonthMetrics(anchorDate, rowsByDate) {
+    const container = doc.getElementById("calendarMonthMetrics");
+    if (!container || !(anchorDate instanceof Date) || Number.isNaN(anchorDate.getTime())) return;
+    const dates = [];
+    if (calendarViewMode === "day") {
+      dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate()));
+    } else if (calendarViewMode === "week") {
+      const start = startOfWeek(anchorDate);
+      for (let index = 0; index < 7; index += 1) {
+        dates.push(new Date(start.getFullYear(), start.getMonth(), start.getDate() + index));
+      }
+    } else if (calendarViewMode === "year") {
+      for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
+        const monthDays = new Date(anchorDate.getFullYear(), monthIndex + 1, 0).getDate();
+        for (let day = 1; day <= monthDays; day += 1) {
+          dates.push(new Date(anchorDate.getFullYear(), monthIndex, day));
+        }
+      }
+    } else {
+      const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        dates.push(new Date(anchorDate.getFullYear(), anchorDate.getMonth(), day));
+      }
+    }
+
+    let activeDays = 0;
+    let totalBookings = 0;
+    let openDays = 0;
+    let busiest = null;
+    dates.forEach((dateObj) => {
+      const key = toDateKey?.(dateObj);
+      const rows = rowsByDate.get(key) || [];
+      totalBookings += rows.length;
+      if (rows.length) {
+        activeDays += 1;
+        if (!busiest || rows.length > busiest.count) {
+          busiest = {
+            count: rows.length,
+            label: dateObj.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+          };
+        }
+      } else {
+        openDays += 1;
+      }
+    });
+
+    container.innerHTML = `
+      <article>
+        <span>Booked days</span>
+        <strong>${escapeHtml(String(activeDays))}</strong>
+        <small>${escapeHtml(`${dates.length} day window in view`)}</small>
+      </article>
+      <article>
+        <span>Total bookings</span>
+        <strong>${escapeHtml(String(totalBookings))}</strong>
+        <small>${escapeHtml(activeDays ? `${Math.max(1, Math.round(totalBookings / activeDays))} average on active days` : "No bookings loaded yet")}</small>
+      </article>
+      <article>
+        <span>Busiest day</span>
+        <strong>${escapeHtml(busiest ? busiest.label : "None yet")}</strong>
+        <small>${escapeHtml(busiest ? `${busiest.count} appointments booked` : "Open capacity across the board")}</small>
+      </article>
+      <article>
+        <span>Open days</span>
+        <strong>${escapeHtml(String(openDays))}</strong>
+        <small>${escapeHtml(openDays ? "Ready for same-day or future demand" : "Every day in view has bookings")}</small>
+      </article>
+    `;
+  }
+
+  function renderSelectedDayPanel(anchorDate, rowsByDate) {
+    const label = doc.getElementById("calendarSelectedDayLabel");
+    const meta = doc.getElementById("calendarSelectedDayMeta");
+    const agenda = doc.getElementById("calendarSelectedDayAgenda");
+    const rotaPanel = doc.getElementById("calendarDiaryRotaPanel");
+    if (!label || !meta || !agenda || !rotaPanel) return;
+
+    const focusDate = getSelectedOrFallbackDate(anchorDate, rowsByDate);
+    const dateKey = toDateKey?.(focusDate);
+    const rows = rowsByDate.get(dateKey) || [];
+    const staffWorking = getStaffWorkingForDate?.(focusDate) || [];
+    const summary = summarizeRows(rows);
+
+    label.textContent = focusDate.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+    meta.textContent = rows.length
+      ? `${summary.total} bookings loaded • ${summary.completed} completed • ${summary.cancelled} cancelled${summary.revenue > 0 ? ` • ${formatMoney?.(summary.revenue)} scheduled` : ""}`
+      : "No bookings loaded for this date yet. Use it as an open-capacity day or add a walk-in.";
+
+    agenda.innerHTML = rows.length
+      ? rows.slice(0, 5).map((row) => `
+        <article class="booking-diary-fresh__agenda-card">
+          <div class="booking-diary-fresh__agenda-top">
+            <strong>${escapeHtml(String(row?.time || "Time not set"))}</strong>
+            <span>${escapeHtml(String(row?.status || "pending"))}</span>
+          </div>
+          <p>${escapeHtml(String(row?.customerName || "Customer"))}</p>
+          <small>${escapeHtml(String(row?.service || "Service"))}</small>
+        </article>
+      `).join("")
+      : `
+        <article class="booking-diary-fresh__empty-card">
+          <strong>Open diary day</strong>
+          <small>No bookings are loaded for this date, so it is ready for outreach, same-day demand, or protected admin time.</small>
+        </article>
+      `;
+
+    rotaPanel.innerHTML = staffWorking.length
+      ? staffWorking.slice(0, 5).map((staff) => `
+        <article class="booking-diary-fresh__rota-card">
+          <div>
+            <strong>${escapeHtml(String(staff?.name || "Team member"))}</strong>
+            <small>${escapeHtml(String(staff?.status === "covering" ? "Covering shift" : "Scheduled to work"))}</small>
+          </div>
+          <span>${escapeHtml(getStaffInitials?.(String(staff?.name || "")) || "ST")}</span>
+        </article>
+      `).join("")
+      : `
+        <article class="booking-diary-fresh__empty-card">
+          <strong>No rota cover set</strong>
+          <small>This day does not currently show any scheduled team cover.</small>
+        </article>
+      `;
+  }
+
+  function ensureCalendarDayPopup() {
+    let modal = doc.getElementById("calendarDayPopupModal");
+    if (modal) return modal;
+    modal = doc.createElement("section");
+    modal.className = "lexi-modal calendar-day-popup-modal";
+    modal.id = "calendarDayPopupModal";
+    modal.hidden = true;
+    modal.innerHTML = `
+      <div class="lexi-modal-backdrop" data-calendar-day-popup-close></div>
+      <div class="lexi-modal-card calendar-day-popup-card" role="dialog" aria-modal="true" aria-labelledby="calendarDayPopupTitle">
+        <div class="lexi-modal-head">
+          <div>
+            <p class="kicker">Day Bookings</p>
+            <h2 id="calendarDayPopupTitle">Selected day</h2>
+          </div>
+          <button class="btn btn-ghost btn-small" type="button" data-calendar-day-popup-close>Close</button>
+        </div>
+        <p class="section-copy" id="calendarDayPopupSummary"></p>
+        <div class="calendar-day-popup-stats" id="calendarDayPopupStats"></div>
+        <div class="calendar-day-popup-list" id="calendarDayPopupList"></div>
+        <div class="calendar-day-popup-actions">
+          <button class="btn" type="button" id="calendarDayPopupWalkInBtn">Add Walk-in</button>
+          <button class="btn btn-ghost" type="button" id="calendarDayPopupWorkspaceBtn">Open Day Workspace</button>
+        </div>
+      </div>
+    `;
+    const close = () => {
+      modal.hidden = true;
+      openCalendarPopupDateKey = "";
+    };
+    modal.querySelectorAll("[data-calendar-day-popup-close]").forEach((node) => node.addEventListener("click", close));
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) close();
+    });
+    doc.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !modal.hidden) close();
+    });
+    doc.body.appendChild(modal);
+    return modal;
+  }
+
+  async function createWalkInBooking(dateKey, values) {
+    const businessId = String(getUserBusinessId?.() || "").trim();
+    const payload = {
+      businessId,
+      date: dateKey,
+      customerName: String(values?.customerName || "").trim(),
+      customerPhone: String(values?.customerPhone || "").trim(),
+      customerEmail: String(values?.customerEmail || "").trim().toLowerCase()
+    };
+    const endpoint = withManagedBusiness?.("/api/businesses/me/walk-ins") || "/api/businesses/me/walk-ins";
+    const response = await fetchImpl(endpoint, {
+      method: "POST",
+      headers: headers?.(),
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data?.error || "Could not add walk-in.");
+    return data;
+  }
+
+  async function openWalkInForm(dateKey) {
+    const values = await openManageForm?.({
+      title: `Add Walk-in (${dateKey})`,
+      submitLabel: "Save Walk-in",
+      fields: [
+        { id: "customerName", label: "Full Name", required: true },
+        { id: "customerPhone", label: "Phone Number", required: true, placeholder: "+447700900123" },
+        { id: "customerEmail", label: "Email Address", type: "email" }
+      ]
+    });
+    if (!values) return;
+    await createWalkInBooking(dateKey, values);
+    await refreshBookingsAfterDayPopupMutation?.();
+    showManageToast?.(String(values.customerEmail || "").trim() ? "Walk-in saved and welcome email queued." : "Walk-in saved.");
+    openCalendarDayPopup(dateKey);
+  }
+
+  function openCalendarDayPopup(dateKey) {
+    const modal = ensureCalendarDayPopup();
+    const safeDateKey = String(dateKey || "").trim();
+    if (!safeDateKey) return;
+    openCalendarPopupDateKey = safeDateKey;
+    const dateObj = parseDateKeyToDate(safeDateKey);
+    const rows = getBookingsForDateKey(safeDateKey);
+    const summary = summarizeRows(rows);
+    const title = modal.querySelector("#calendarDayPopupTitle");
+    const copy = modal.querySelector("#calendarDayPopupSummary");
+    const stats = modal.querySelector("#calendarDayPopupStats");
+    const list = modal.querySelector("#calendarDayPopupList");
+    const walkInBtn = modal.querySelector("#calendarDayPopupWalkInBtn");
+    const workspaceBtn = modal.querySelector("#calendarDayPopupWorkspaceBtn");
+    if (title) {
+      title.textContent = dateObj
+        ? dateObj.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+        : safeDateKey;
+    }
+    if (copy) {
+      copy.textContent = rows.length
+        ? `${rows.length} booking${rows.length === 1 ? "" : "s"} are currently in the diary for this day.`
+        : "No bookings are currently in the diary for this day yet.";
+    }
+    if (stats) {
+      stats.innerHTML = `
+        <article><span>Bookings</span><strong>${escapeHtml(String(summary.total))}</strong></article>
+        <article><span>Revenue</span><strong>${escapeHtml(formatMoney(summary.revenue))}</strong></article>
+        <article><span>Completed</span><strong>${escapeHtml(String(summary.completed))}</strong></article>
+      `;
+    }
+    if (list) {
+      list.innerHTML = rows.length
+        ? rows
+            .map(
+              (row) => `
+                <article class="calendar-day-popup-row">
+                  <div>
+                    <strong>${escapeHtml(`${row.time || "--:--"} - ${row.customerName || "Customer"}`)}</strong>
+                    <small>${escapeHtml(row.service || "Service")}</small>
+                  </div>
+                  <span>${escapeHtml(String(row.status || "confirmed"))}</span>
+                </article>
+              `
+            )
+            .join("")
+        : `<div class="empty-state">No one is booked in for this day yet.</div>`;
+    }
+    if (walkInBtn) {
+      walkInBtn.onclick = () => {
+        openWalkInForm(safeDateKey).catch((error) => showManageToast?.(error?.message || "Could not save walk-in.", "error"));
+      };
+    }
+    if (workspaceBtn) {
+      workspaceBtn.onclick = () => {
+        modal.hidden = true;
+        openCalendarDayWorkspace?.(safeDateKey);
+      };
+    }
+    modal.hidden = false;
+    setBookingDateFilter?.({
+      keys: new Set([safeDateKey]),
+      label: `Selected ${safeDateKey}`,
+      selectedDateKey: safeDateKey
+    });
+    applyBookingFilters?.();
+    renderSubscriberCalendar();
+  }
+
+  function normalizeStatus(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function parseClockMinutes(value) {
+    const raw = String(value || "").trim();
+    const match = raw.match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+    return hours * 60 + minutes;
+  }
+
+  function formatClockLabel(totalMinutes) {
+    const minutes = Number(totalMinutes);
+    if (!Number.isFinite(minutes)) return "";
+    const normalized = Math.max(0, Math.round(minutes));
+    const hours = Math.floor(normalized / 60);
+    const mins = normalized % 60;
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const hour12 = ((hours + 11) % 12) + 1;
+    return `${hour12}:${String(mins).padStart(2, "0")} ${suffix}`;
+  }
+
+  function parseDateKeyToDate(dateKey) {
+    const raw = String(dateKey || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+    const parsed = new Date(`${raw}T12:00:00`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function getFocusDateKey() {
+    return String(getSelectedCalendarDateKey?.() || todayDateKeyLocal?.() || "").trim();
+  }
+
+  function getBusinessHoursForDate(dateObj) {
+    if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+    const keys = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const dayKey = keys[dateObj.getDay()];
+    const input = doc.getElementById(`businessHours${dayKey.charAt(0).toUpperCase()}${dayKey.slice(1)}`);
+    const raw = String(input?.value || "").trim();
+    if (!raw || /closed/i.test(raw)) return null;
+    const match = raw.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
+    if (!match) return null;
+    const start = parseClockMinutes(match[1]);
+    const end = parseClockMinutes(match[2]);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
+    return { start, end, label: raw };
+  }
+
+  function estimateBookingDurationMinutes(row) {
+    const serviceName = String(row?.service || "").trim().toLowerCase();
+    const servicesInput = doc.getElementById("businessProfileServices");
+    const lines = String(servicesInput?.value || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    for (const line of lines) {
+      const [name, durationRaw] = line.split("|").map((part) => part?.trim?.() || "");
+      const duration = Number(durationRaw);
+      const normalizedName = String(name || "").trim().toLowerCase();
+      if (!normalizedName || !Number.isFinite(duration) || duration <= 0) continue;
+      if (normalizedName === serviceName || normalizedName.includes(serviceName) || serviceName.includes(normalizedName)) {
+        return Math.max(30, duration);
+      }
+    }
+    return 60;
+  }
+
+  function getBookingsForDateKey(dateKey) {
+    return (Array.isArray(getBookingRows?.()) ? getBookingRows() : [])
+      .filter((row) => {
+        const bookingDate = parseBookingDate?.(row?.date);
+        return bookingDate ? toDateKey?.(bookingDate) === dateKey : false;
+      })
+      .map((row) => {
+        const start = parseClockMinutes(row?.time);
+        const duration = estimateBookingDurationMinutes(row);
+        return {
+          ...row,
+          startMinutes: Number.isFinite(start) ? start : null,
+          endMinutes: Number.isFinite(start) ? start + duration : null,
+          durationMinutes: duration
+        };
+      })
+      .sort((a, b) => {
+        const aStart = Number.isFinite(a.startMinutes) ? a.startMinutes : 9999;
+        const bStart = Number.isFinite(b.startMinutes) ? b.startMinutes : 9999;
+        if (aStart !== bStart) return aStart - bStart;
+        return String(a?.createdAt || "").localeCompare(String(b?.createdAt || ""));
+      });
+  }
+
+  function buildOpenGapRows(rows, dayWindow) {
+    const entries = Array.isArray(rows) ? rows.filter((row) => Number.isFinite(row.startMinutes)) : [];
+    const start = Number(dayWindow?.start);
+    const end = Number(dayWindow?.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return [];
+    const gaps = [];
+    let cursor = start;
+    entries.forEach((row) => {
+      if (row.startMinutes > cursor) {
+        gaps.push({ start: cursor, end: row.startMinutes });
+      }
+      cursor = Math.max(cursor, Number(row.endMinutes || row.startMinutes || cursor));
+    });
+    if (cursor < end) {
+      gaps.push({ start: cursor, end });
+    }
+    return gaps.filter((gap) => gap.end - gap.start >= 45);
+  }
+
+  function getVisibleRowsForFilter(rows, gaps) {
+    if (calendarDayFilter === "cancelled") {
+      return rows.filter((row) => normalizeStatus(row?.status).includes("cancel"));
+    }
+    if (calendarDayFilter === "live") {
+      return rows.filter((row) => !normalizeStatus(row?.status).includes("cancel"));
+    }
+    if (calendarDayFilter === "gaps") {
+      return gaps;
+    }
+    return rows;
+  }
+
+  function renderDailyScheduleGrid(container, rows, dayWindow) {
+    if (!container) return;
+    const focusDateKey = getFocusDateKey();
+    const focusDate = parseDateKeyToDate(focusDateKey) || new Date();
+    const allRows = Array.isArray(rows) ? rows : [];
+    const visibleGaps = buildOpenGapRows(allRows, dayWindow);
+    const visibleRows = getVisibleRowsForFilter(allRows, visibleGaps);
+    const scheduleRows = [];
+    for (let minutes = dayWindow.start; minutes <= dayWindow.end; minutes += 30) {
+      const slotRows = Array.isArray(visibleRows)
+        ? visibleRows.filter((row) => Number.isFinite(row?.startMinutes) && row.startMinutes >= minutes && row.startMinutes < minutes + 30)
+        : [];
+      const slotGaps = Array.isArray(visibleRows)
+        ? visibleRows.filter((gap) => Number.isFinite(gap?.start) && gap.start >= minutes && gap.start < minutes + 30 && gap?.end > gap?.start)
+        : [];
+      scheduleRows.push(`
+        <article class="subscriber-diary-slot">
+          <div class="subscriber-diary-slot-time">${escapeHtml(formatClockLabel(minutes))}</div>
+          <div class="subscriber-diary-slot-body">
+            ${
+              slotRows.length
+                ? slotRows
+                    .map((row) => {
+                      const status = normalizeStatus(row?.status || "pending");
+                      const chipClass = status.includes("cancel")
+                        ? "is-cancelled"
+                        : status.includes("complete")
+                          ? "is-completed"
+                          : status.includes("confirm")
+                            ? "is-confirmed"
+                            : "is-pending";
+                      const price = Number(row?.price || 0);
+                      return `
+                        <button class="subscriber-diary-booking ${chipClass}" type="button" data-open-day-workspace="${escapeHtml(focusDateKey)}">
+                          <div class="subscriber-diary-booking-head">
+                            <strong>${escapeHtml(String(row?.time || formatClockLabel(minutes)))} - ${escapeHtml(String(row?.customerName || "Customer"))}</strong>
+                            <span>${escapeHtml(String(row?.status || "pending"))}</span>
+                          </div>
+                          <p>${escapeHtml(String(row?.service || "Service"))}</p>
+                          <small>${escapeHtml(`${row.durationMinutes} mins`)}${price > 0 ? ` • ${escapeHtml(formatMoney(price))}` : ""}</small>
+                        </button>
+                      `;
+                    })
+                    .join("")
+                : slotGaps.length
+                  ? slotGaps
+                      .map((gap) => `
+                        <div class="subscriber-diary-gap">
+                          <strong>${escapeHtml(`${Math.round((gap.end - gap.start) / 60 * 10) / 10}h open gap`)}</strong>
+                          <small>${escapeHtml(`${formatClockLabel(gap.start)} to ${formatClockLabel(gap.end)}`)}</small>
+                        </div>
+                      `)
+                      .join("")
+                  : `<div class="subscriber-diary-slot-empty">${escapeHtml(
+                      focusDate.toDateString() === new Date().toDateString() ? "Available" : "Open"
+                    )}</div>`
+            }
+          </div>
+        </article>
+      `);
+    }
+    container.innerHTML = `<div class="subscriber-diary-grid">${scheduleRows.join("")}</div>`;
+  }
+
+  function renderDailyListView(container, rows, dayWindow) {
+    if (!container) return;
+    const visibleGaps = buildOpenGapRows(rows, dayWindow);
+    const visibleRows = getVisibleRowsForFilter(rows, visibleGaps);
+    if (calendarDayFilter === "gaps") {
+      container.innerHTML = visibleRows.length
+        ? `<div class="subscriber-diary-list">${visibleRows
+            .map(
+              (gap) => `
+                <article class="subscriber-diary-list-card is-gap">
+                  <strong>${escapeHtml(`${formatClockLabel(gap.start)} to ${formatClockLabel(gap.end)}`)}</strong>
+                  <small>${escapeHtml(`${gap.end - gap.start} minutes of open capacity`)}</small>
+                </article>
+              `
+            )
+            .join("")}</div>`
+        : `<div class="empty-state">No open gaps of 45 minutes or more in this day.</div>`;
+      return;
+    }
+    container.innerHTML = visibleRows.length
+      ? `<div class="subscriber-diary-list">${visibleRows
+          .map((row) => {
+            const price = Number(row?.price || 0);
+            return `
+              <article class="subscriber-diary-list-card">
+                <div>
+                  <strong>${escapeHtml(String(row?.time || "Time not set"))} - ${escapeHtml(String(row?.customerName || "Customer"))}</strong>
+                  <small>${escapeHtml(String(row?.service || "Service"))}</small>
+                </div>
+                <div class="subscriber-diary-list-meta">
+                  <span>${escapeHtml(String(row?.status || "pending"))}</span>
+                  <span>${escapeHtml(`${row.durationMinutes} mins`)}</span>
+                  ${price > 0 ? `<span>${escapeHtml(formatMoney(price))}</span>` : ""}
+                </div>
+              </article>
+            `;
+          })
+          .join("")}</div>`
+      : `<div class="empty-state">No bookings match this diary filter for the selected day.</div>`;
   }
 
   function renderExecutivePulseMiniBars(container, buckets, valueKey, { emptyText = "No data yet" } = {}) {
@@ -633,107 +1363,47 @@ export function createCalendarPulseRuntime(deps) {
 
   function renderSubscriberCalendar() {
     if (!bookingCalendarGrid || !calendarMonthLabel) return;
-    const calendarMonth = getCalendarMonth?.() || new Date();
-    const year = calendarMonth.getFullYear();
-    const month = calendarMonth.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const monthLabel = new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(firstDay);
-    calendarMonthLabel.textContent = monthLabel;
-
-    const bookingRows = Array.isArray(getBookingRows?.()) ? getBookingRows() : [];
-    const selectedCalendarDateKey = String(getSelectedCalendarDateKey?.() || "").trim();
-    const bookingCountByDate = new Map();
-    bookingRows.forEach((booking) => {
-      const bookingDate = parseBookingDate?.(booking.date);
-      if (!bookingDate) return;
-      const key = toDateKey?.(bookingDate);
-      bookingCountByDate.set(key, (bookingCountByDate.get(key) || 0) + 1);
-    });
-
-    let monthStaffLegendCount = 0;
-    if (bookingCalendarStaffLegend) {
-      const monthStaffMap = new Map();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      for (let day = 1; day <= daysInMonth; day += 1) {
-        const date = new Date(year, month, day);
-        (getStaffWorkingForDate?.(date) || []).forEach((staff) => {
-          if (!monthStaffMap.has(staff.id)) monthStaffMap.set(staff.id, staff);
-        });
-      }
-      const chips = Array.from(monthStaffMap.values())
-        .slice(0, 10)
-        .map((staff) => `
-          <span class="calendar-staff-chip" title="${escapeHtml(staff.name)}">
-            <span class="calendar-day-staff-dot" style="--staff-color:${escapeHtml(staff.color)}">${escapeHtml(getStaffInitials?.(staff.name))}</span>
-            <span>${escapeHtml(staff.name)}</span>
-          </span>
-        `);
-      if (monthStaffMap.size > 10) {
-        chips.push(`<span class="calendar-staff-chip">+${monthStaffMap.size - 10} more staff</span>`);
-      }
-      bookingCalendarStaffLegend.innerHTML = chips.join("");
-      monthStaffLegendCount = monthStaffMap.size;
+    const anchorDate = getCalendarMonth?.() || new Date();
+    const rowsByDate = buildBookingRowsByDate();
+    calendarMonthLabel.textContent = formatCalendarHeadline(anchorDate);
+    const weekdaysRow = bookingCalendarGrid.previousElementSibling;
+    if (weekdaysRow instanceof HTMLElement) {
+      weekdaysRow.hidden = calendarViewMode === "year";
     }
 
-    bookingCalendarGrid.innerHTML = "";
-    const todayKey = toDateKey?.(new Date());
-    const weekdayOffset = (firstDay.getDay() + 6) % 7;
-    for (let index = 0; index < weekdayOffset; index += 1) {
-      const spacer = doc.createElement("div");
-      spacer.className = "calendar-day empty";
-      bookingCalendarGrid.appendChild(spacer);
+    if (calendarViewMode === "day") {
+      renderDailyGrid(anchorDate, rowsByDate);
+    } else if (calendarViewMode === "week") {
+      renderWeeklyGrid(anchorDate, rowsByDate);
+    } else if (calendarViewMode === "year") {
+      renderYearlyGrid(anchorDate, rowsByDate);
+    } else {
+      renderMonthlyGrid(anchorDate, rowsByDate);
     }
 
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    let monthlyBookings = 0;
+    renderCalendarMonthMetrics(anchorDate, rowsByDate);
+    renderSelectedDayPanel(anchorDate, rowsByDate);
+
+    let totalBookings = 0;
     let activeDays = 0;
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      const currentDate = new Date(year, month, day);
-      const key = toDateKey?.(currentDate);
-      const count = bookingCountByDate.get(key) || 0;
-      const staffWorking = getStaffWorkingForDate?.(currentDate) || [];
-      if (count > 0) {
-        monthlyBookings += count;
+    rowsByDate.forEach((rows) => {
+      if (rows.length) {
+        totalBookings += rows.length;
         activeDays += 1;
       }
-      const visibleStaffDots = staffWorking.slice(0, 4);
-      const extraStaffCount = Math.max(0, staffWorking.length - visibleStaffDots.length);
-      const staffTitle = staffWorking.length
-        ? `Working staff: ${staffWorking.map((item) => item.name).join(", ")}`
-        : "No rota coverage set";
-      const cell = doc.createElement("article");
-      const selected = selectedCalendarDateKey && selectedCalendarDateKey === key;
-      const isToday = key === todayKey;
-      cell.className = `calendar-day${count > 0 ? " has-bookings" : ""}${selected ? " selected" : ""}${isToday ? " is-today" : ""}`;
-      cell.dataset.dateKey = key;
-      cell.innerHTML = `
-        <button class="calendar-day-btn" type="button" data-date-key="${key}" aria-label="${key}: ${count} booking${count === 1 ? "" : "s"}">
-          <strong>${day}</strong>
-          <small class="calendar-day-count${count > 0 ? "" : " is-empty"}">${count > 0 ? String(count) : ""}</small>
-          <span class="calendar-day-staff-dots" title="${escapeHtml(staffTitle)}" aria-label="${escapeHtml(staffTitle)}">
-            ${visibleStaffDots
-              .map((item) => `<span class="calendar-day-staff-dot" style="--staff-color:${escapeHtml(item.color)}" title="${escapeHtml(item.name)}">${escapeHtml(getStaffInitials?.(item.name))}</span>`)
-              .join("")}
-            ${extraStaffCount > 0 ? `<span class="calendar-day-staff-more">+${extraStaffCount}</span>` : ""}
-          </span>
-        </button>
-      `;
-      bookingCalendarGrid.appendChild(cell);
-    }
+    });
 
     if (calendarLegend) {
-      calendarLegend.textContent = monthlyBookings > 0
-        ? `${monthlyBookings} bookings across ${activeDays} day${activeDays === 1 ? "" : "s"} this month.`
-        : "No bookings in the diary this month yet.";
+      calendarLegend.textContent = totalBookings > 0
+        ? `${formatCalendarHeadline(anchorDate)}. ${totalBookings} bookings across ${activeDays} day${activeDays === 1 ? "" : "s"}. Click any day box to open that date.`
+        : `${formatCalendarHeadline(anchorDate)}. No bookings are loaded in this ${calendarViewMode} view yet. Click any day box to review or add a walk-in.`;
     }
-    renderCalendarFeatureSidebarLexi?.({
-      monthLabel,
-      monthlyBookings,
-      activeDays,
-      staffLegendCount: monthStaffLegendCount,
-      selectedDay: selectedCalendarDateSummary()
+    calendarViewTabs?.querySelectorAll("[data-calendar-view]").forEach((button) => {
+      if (!(button instanceof HTMLElement)) return;
+      const isActive = String(button.getAttribute("data-calendar-view") || "") === calendarViewMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", isActive ? "true" : "false");
     });
-    renderCalendarDiaryWeekStrip?.();
     updateBookingRangeControls?.();
     renderWorkspaceStarPanel?.();
   }
@@ -741,58 +1411,39 @@ export function createCalendarPulseRuntime(deps) {
   function bindCalendarPulseEvents() {
     calendarPrev?.addEventListener("click", () => {
       const current = getCalendarMonth?.() || new Date();
-      setCalendarMonth?.(new Date(current.getFullYear(), current.getMonth() - 1, 1));
+      setCalendarMonth?.(getCalendarViewStepDate(current, -1));
       renderSubscriberCalendar();
     });
 
     calendarNext?.addEventListener("click", () => {
       const current = getCalendarMonth?.() || new Date();
-      setCalendarMonth?.(new Date(current.getFullYear(), current.getMonth() + 1, 1));
+      setCalendarMonth?.(getCalendarViewStepDate(current, 1));
       renderSubscriberCalendar();
     });
 
     bookingCalendarGrid?.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
-      const button = target.closest(".calendar-day-btn");
+      const button = target.closest("[data-calendar-date]");
       if (!(button instanceof HTMLElement)) return;
-      const dateKey = String(button.getAttribute("data-date-key") || "").trim();
-      if (!dateKey) return;
-      setBookingDateFilter?.({
-        keys: new Set([dateKey]),
-        label: `Selected ${dateKey}`,
-        selectedDateKey: dateKey
-      });
-      if (bookingSearch && !bookingSearch.value) {
-        focusBookingOperations?.();
-      }
-      applyBookingFilters?.();
-      renderSubscriberCalendar();
-      openCalendarDayWorkspace?.(dateKey);
-    });
-
-    calendarDiaryWeekStrip?.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-      const button = target.closest("[data-date-key]");
-      if (!(button instanceof HTMLElement)) return;
-      const dateKey = String(button.getAttribute("data-date-key") || "").trim();
+      const dateKey = String(button.getAttribute("data-calendar-date") || "").trim();
       if (!dateKey) return;
       jumpToCalendarDate?.(dateKey);
+      openCalendarDayPopup(dateKey);
     });
 
-    calendarDiaryTodayBtn?.addEventListener("click", () => {
-      jumpToCalendarDate?.(todayDateKeyLocal?.());
+    doc.getElementById("calendarTodayBtn")?.addEventListener("click", () => {
+      setCalendarMonth?.(new Date());
+      renderSubscriberCalendar();
     });
 
-    calendarDiaryAddWalkInBtn?.addEventListener("click", () => {
-      openCalendarDiaryWalkIn?.().catch((error) => {
-        showManageToast?.(error?.message || "Could not add walk-in.", "error");
-      });
-    });
-
-    calendarDiaryOpenStaffBtn?.addEventListener("click", () => {
-      focusModuleByKey?.("staff");
+    calendarViewTabs?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) return;
+      const nextView = String(target.getAttribute("data-calendar-view") || "").trim().toLowerCase();
+      if (!["day", "week", "month", "year"].includes(nextView)) return;
+      calendarViewMode = nextView;
+      renderSubscriberCalendar();
     });
 
     bookingRangeToday?.addEventListener("click", () => applyBookingDatePreset?.("today"));
@@ -835,7 +1486,6 @@ export function createCalendarPulseRuntime(deps) {
   }
 
   return {
-    selectedCalendarDateSummary,
     renderExecutivePulseMiniBars,
     buildExecutiveStoryPolylinePoints,
     buildExecutiveStoryAreaPath,

@@ -39,7 +39,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     frontDeskSection,
     bookingOperationsSection,
     metricsGrid,
-    subscriberCalendarSection,
     bookingStatus,
     setActiveStatusChip,
     dashIdentityBlock,
@@ -146,7 +145,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
   }
   if (role === "admin") {
     hideSection(contactAdminBtn);
-    hideSection(subscriberCalendarSection);
     hideSection(bookingOperationsSection);
     hideSection(businessGrowthSection);
     hideSection(adminCopilotSection);
@@ -159,7 +157,6 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
     hideSubscriberSecondarySections();
     hideCustomerSecondarySections();
     hideSections([
-      subscriberCalendarSection,
       bookingOperationsSection,
       businessProfileSection,
       socialMediaSection,
@@ -174,7 +171,7 @@ export function applyDashboardRoleLayoutVisibility(ctx) {
   }
   if (role === "subscriber") {
     hideSubscriberSecondarySections();
-    showSection(subscriberCalendarSection);
+    showSection(subscriberExecutivePulseSection);
     showSection(bookingOperationsSection);
     hideSection(businessGrowthSection);
   }

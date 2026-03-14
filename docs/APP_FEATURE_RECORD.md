@@ -1,6 +1,6 @@
 # App Feature Record
 
-Last updated: 2026-03-13
+Last updated: 2026-03-14
 
 Purpose:
 - Keep a permanent record of what the app can do.
@@ -224,17 +224,13 @@ Status: reduced owner workspace active
   - Log out
 - Subscriber shared dashboard shell now opens directly on the diary without the extra hero banner above it
 - Full-width booking diary as the main working surface
-- Calendar month navigation
-- Day selection with booking and revenue summary
-- Selected-day booking agenda
-- Selected-day agenda filters for:
-  - all bookings
-  - live bookings
-  - cancelled bookings
-  - open-gap view
-- Selected-day diary views for:
-  - timeline
-  - grouped by stylist
+- Rebuilt subscriber calendar from scratch around a clickable calendar surface instead of the older diary experiments
+- Day, weekly, monthly, and yearly calendar views
+- Monthly grid as the default main diary view
+- Subscriber month planner now uses a true full-month calendar board with weekday-aligned cells, visible open-capacity days, month-level load stats, and a selected-day agenda/rota side panel
+- Clickable calendar days that open a popup showing who is booked in for that day
+- Walk-in creation directly from the day popup
+- Optional walk-in welcome email when a customer email address is provided
 - Selected-day coverage check showing planned team cover, assigned vs unassigned bookings, and stylist clash pressure
 - Guided booking panel for new appointments
 - Booking cancellation from the dashboard
@@ -244,6 +240,8 @@ Status: reduced owner workspace active
 - Alternative nearby-day suggestions when the selected day is closed or limited
 - Subscriber booking suggestions now fetched from a protected backend route using real business hours and slot-capacity checks
 - Guided booking panel now surfaces client-record prep guidance, consultation prompts, formula notes, stylist preference, and patch-test reminders
+- Business Hub `Business Information` popup now shows the subscriber's current business details in a simpler editable form so they can review and update core business information in one place
+- The subscriber `Business Information` popup now keeps sample fallback text as guidance only instead of pre-filling editable fields, and the save flow now shows visible editing and save/error feedback
 ### Ask Lexi for subscribers
 
 - Header-launched shared Ask Lexi popup
@@ -259,6 +257,7 @@ Status: reduced owner workspace active
 - Keeps the subscriber dashboard focused on the live diary first
 - Removes inline dashboard sprawl so the owner view is easier to scan
 - Keeps the subscriber shell limited to the live diary under the top nav, without the extra Business Hub section
+- Gives subscribers a cleaner self-service place to keep their core business details current
 
 ## Admin Dashboard Features
 
@@ -417,7 +416,7 @@ Status: simplified oversight dashboard available with preview-first admin flow
 ### What subscribers get
 
 - full salon operating dashboard
-- diary-first day-to-day workspace
+- premium booking diary workspace
 - revenue and accounting visibility
 - staff and operations support
 - Ask Lexi embedded throughout the app
@@ -438,7 +437,13 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - One AI Front Desk for Booking, Customer Questions, and Daily Operations
 
 ## Feature Update Log
-
+- 2026-03-14: The subscriber booking diary was removed from the live subscriber dashboard after multiple rejected rebuild attempts, leaving the owner shell without a diary surface until a fresh approved replacement is built. The older `subscriberCalendarSection`, the later `subscriberBookingCalendarSection` rebuild, and the unused calendar Lexi sidebar runtime file were all removed from the live path.
+- 2026-03-14: The subscriber monthly calendar grid was cleaned up to use a dedicated month-cell render path and a single full-width month-board layout, removing the extra override layers that had been obscuring the intended month-diary presentation.
+- 2026-03-14: The subscriber monthly calendar view was simplified again so each month day now renders as a compact clickable box with just the date and booking status, making the full month easier to see at once.
+- 2026-03-14: The rebuilt subscriber booking diary was pushed further toward a literal month-box calendar, with the month grid now presented as the full-width primary surface, real month days only in monthly view, and the selected-day / Lexi detail cards moved underneath the calendar instead of sharing the main row.
+- 2026-03-14: The subscriber booking diary was deleted and rebuilt from scratch into a new multi-view calendar with day, weekly, monthly, and yearly views, clickable day popups, and a walk-in capture flow with optional welcome email sending.
+- 2026-03-13: The subscriber `Business Information` popup now keeps sample fallback text as guidance only, disables saving until edit mode is opened, and shows visible save/error feedback instead of silently failing.
+- 2026-03-13: Subscriber Business Hub `Business Information` now opens as a simpler editable business-details form inside the popup so owners can review and update core profile information in one place.
 - 2026-03-13: The subscriber Business Hub section was removed again so the shared owner route returns to top nav plus booking diary only.
 - 2026-03-13: The admin-style Business Hub section was restored underneath the subscriber booking diary, using the shared subscriber hub runtime so the owner shell now shows top nav, diary, and business hub only.
 - 2026-03-13: The shared `/dashboard` subscriber route now hard-locks customer and admin grids off at the CSS layer so only the top nav and booking diary can appear in the owner shell.
@@ -611,13 +616,17 @@ Status: simplified oversight dashboard available with preview-first admin flow
 - Matched the admin Business Hub card popups to the same extended editable modal flow, with admin-specific draft storage and labels so all 8 admin and subscriber cards now open the same fixed-size editable information popup pattern
 - Rewrote the shared Business Hub popup headings and edit panel copy per card so each admin and subscriber Business Hub popup now reads as its own business area instead of repeating the same generic panel labels
 - Rebuilt the subscriber `Business Information` Business Hub popup into a true business-profile surface using the live subscriber sign-in and business profile fields, customer-facing website/image preview, Ask Lexi help action, and direct profile-management actions inside the existing fixed-size modal
-- Restricted the Business Hub `Change password` action to subscriber and admin roles only, so customer and other roles cannot see that account-management control in the shared popup
 - Fixed the shared Business Hub popup runtime after the Business Information refactor so all Business Hub cards can open again on both admin and subscriber dashboards instead of failing on a stale removed variable reference
 - Fixed the Business Hub `Business Information` popup scroll behavior by making the left preview/highlight column scroll internally too, so the modal keeps its fixed size while the full profile content remains reachable
 - Replaced the homepage command/feed block with a real public Front Desk search and preview surface, so visitors can look up subscribed salons, open a customer-facing business profile, review public business details and imagery, and ask Lexi to handle booking help from the homepage itself
 - Moved the homepage public Front Desk preview off the page and into a dedicated popup window, keeping the inline preview section hidden until a business is explicitly opened from the search results
 - Removed the old inline homepage `home-feed-shell` Front Desk preview path entirely so the public salon preview now exists in one place only: the dedicated popup opened from salon search results
 - Moved the homepage salon result list into the same Front Desk popup too, so searching no longer shows any `home-frontdesk-result` cards underneath the page and the popup is now the only salon-results surface
+
+### 2026-03-14
+
+- Added a redesigned subscriber month planner to the dashboard with a proper full calendar board, weekday alignment, richer day cells, and an always-visible month summary panel
+- Added selected-day agenda and rota preview panels beside the subscriber month board so salon owners can keep day detail in view without losing the wider 31-day picture
 
 
 
