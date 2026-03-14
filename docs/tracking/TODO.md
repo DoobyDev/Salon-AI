@@ -30,6 +30,8 @@ Local validation target for the next pass:
 Tomorrow restart point:
 - Admin/dashboard shell work is in a stable stop state after the dedicated customer/admin shell fixes, logout hardening, and header Ask Lexi access cleanup.
 - Subscriber month-calendar work is the active restart point.
+- Latest pushed checkpoint commit:
+  - `b7fc70b` (`Checkpoint calendar and dashboard progress`)
 - Current latest calendar state:
   - a new subscriber month planner was rebuilt and pushed to `main`
   - git commit pushed: `3ad7007` (`Redesign subscriber month calendar`)

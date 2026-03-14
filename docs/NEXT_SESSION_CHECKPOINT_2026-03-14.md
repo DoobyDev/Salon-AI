@@ -49,8 +49,8 @@ Active source of truth is still:
 
 ## Git Note
 
-- The current workspace was prepared for a checkpoint save, but the git commit did not complete because elevated commit permission was declined during this session.
-- Local file changes are still present in the working tree.
-- Next session can either:
-  - create the checkpoint commit first
-  - or continue directly from the existing working tree
+- Checkpoint commit created and pushed on 2026-03-14:
+  - `b7fc70b` `Checkpoint calendar and dashboard progress`
+- Branch:
+  - `main`
+- Resume from this commit for the next session.
